@@ -1,8 +1,4 @@
-import { getTranslations } from 'next-intl/server';
-
-export default async function FeaturedProducts({ locale }: { locale: string }) {
-  const t = await getTranslations({ locale, namespace: 'Home' });
-  
+export default function FeaturedProducts({ locale = 'en' }: { locale?: string }) {
   const products = [
     { id: 1, name: 'Smart Cabinet Pro', description: 'Advanced intelligent storage solution', image: '/products/pro.jpg' },
     { id: 2, name: 'Vending Machine Elite', description: 'Smart vending with AI recognition', image: '/products/elite.jpg' },
@@ -13,10 +9,10 @@ export default async function FeaturedProducts({ locale }: { locale: string }) {
     <section className="bg-gradient-to-br from-gray-50 to-blue-50 px-4 py-20 sm:py-28">
       <div className="mx-auto max-w-6xl animate-fade-in-up">
         <h2 className="mb-4 text-center text-3xl font-bold text-gray-900 sm:text-4xl">
-          {t('featured.title')}
+          Featured Products
         </h2>
         <p className="mb-12 text-center text-lg text-gray-600">
-          {t('featured.subtitle')}
+          Discover our most popular intelligent storage solutions
         </p>
         
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">

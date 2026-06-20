@@ -1,8 +1,4 @@
-import { getTranslations } from 'next-intl/server';
-
-export default async function HeroSection({ locale }: { locale: string }) {
-  const t = await getTranslations({ locale, namespace: 'Home' });
-  
+export default function HeroSection({ locale = 'en' }: { locale?: string }) {
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 px-4 py-20 sm:py-28 lg:py-40">
       {/* Animated Background Pattern */}
@@ -22,17 +18,17 @@ export default async function HeroSection({ locale }: { locale: string }) {
       
       <div className="relative mx-auto max-w-6xl text-center animate-fade-in-up">
         <h1 className="mb-6 text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
-          {t('hero.heading')}
+          Smart Cabinet
         </h1>
         <p className="mx-auto mb-10 max-w-2xl text-lg text-blue-100 sm:text-xl">
-          {t('hero.subheading')}
+          Intelligent storage solutions for modern businesses
         </p>
         <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
           <a
             href={`/${locale}/products`}
             className="rounded-xl bg-white px-8 py-4 text-base font-semibold text-blue-600 shadow-lg transition-all hover:bg-blue-50 hover:shadow-xl hover:-translate-y-0.5"
           >
-            {t('hero.cta')}
+            View Products
           </a>
           <a
             href={`/${locale}/about`}

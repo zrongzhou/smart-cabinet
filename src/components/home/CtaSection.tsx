@@ -1,4 +1,4 @@
-export default function CtaSection({ locale }: { locale: string }) {
+export default function CtaSection({ locale = 'en' }: { locale?: string }) {
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-700 to-blue-900 px-4 py-20 sm:py-28">
       {/* Animated Background Pattern */}

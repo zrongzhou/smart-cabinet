@@ -1,19 +1,16 @@
-import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
 
 interface Props {
-  params: { locale: string; slug: string };
+  params: { slug: string };
 }
 
-export async function generateMetadata({ params: { locale, slug } }: Props): Promise<Metadata> {
-  const t = await getTranslations({ locale, namespace: 'Category' });
-  
+export async function generateMetadata({ params: { slug } }: Props): Promise<Metadata> {
   // In real app, fetch category data for dynamic metadata
   // const category = await getCategory(slug);
   
   return {
-    title: `${slug} - ${t('meta.title')}`,
-    description: t('meta.description'),
+    title: `${slug} - Smart Cabinet`,
+    description: `View products in ${slug} category.`,
   };
 }
 
@@ -31,35 +28,45 @@ const mockCategories: Record<string, { name: string; products: any[] }> = {
       { id: '2', name: 'Vending Machine X1', price: 4999, images: ['/images/product-2.jpg'] },
     ],
   },
-  'intelligent-lockers': {
-    name: 'Intelligent Lockers',
-    products: [
-      { id: '3', name: 'Locker Pro', price: 1999, images: ['/images/product-3.jpg'] },
-    ],
-  },
 };
 
-export default async function CategoryPage({ params: { locale, slug } }: Props) {
-  const t = await getTranslations({ locale, namespace: 'Category' });
-  
+export default function CategoryPage({ params: { slug } }: Props) {
+  // In real app, fetch category by slug
   const category = mockCategories[slug];
   
   if (!category) {
-    return <div className="container mx-auto px-4 py-8">Category not found</div>;
+    return (
+      <main className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 px-4 py-12">
+        <div className="container mx-auto max-w-4xl text-center">
+          <h1 className="mb-4 text-4xl font-extrabold text-gray-900">Category Not Found</h1>
+          <p className="text-lg text-gray-600">The category you are looking for does not exist.</p>
+        </div>
+      </main>
+    );
   }
   
   return (
-    <main className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">{category.name}</h1>
-      
-      <div className="product-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {category.products.map((product) => (
-          <div key={product.id} className="border rounded-lg p-4">
-            <img src={product.images[0]} alt={product.name} className="w-full rounded-lg mb-4" />
-            <h2 className="text-xl font-semibold mb-2">{product.name}</h2>
-            <p className="text-blue-600 font-bold">${product.price}</p>
-          </div>
-        ))}
+    <main className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 px-4 py-12">
+      <div className="container mx-auto max-w-7xl animate-fade-in-up">
+        {/* Page header */}
+        <div className="mb-12 text-center">
+          <h1 className="mb-4 text-4xl font-extrabold text-gray-900 sm:text-5xl">
+            {category.name}
+          </h1>
+          <p className="mx-auto max-w-2xl text-lg text-gray-600">
+            Explore our {category.name} collection
+          </p>
+        </div>
+        
+        {/* Products Grid */}
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          {category.products.map((product: any) => (
+            <div key={product.id} className="rounded-2xl bg-white p-6 shadow-sm">
+              <h3 className="mb-2 text-lg font-bold text-gray-900">{product.name}</h3>
+              <p className="mb-4 text-xl font-extrabold text-blue-600">${product.price}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </main>
   );
