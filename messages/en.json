@@ -1,0 +1,77 @@
+{
+  "Home": {
+    "title": "Smart Cabinet - Intelligent Storage Solutions",
+    "description": "Leading provider of intelligent storage solutions for modern businesses worldwide.",
+    "hero": {
+      "heading": "Smart Storage Solutions for the Modern World",
+      "subheading": "Discover our range of intelligent cabinets, vending machines, and lockers designed for efficiency and innovation.",
+      "cta": "Explore Products"
+    }
+  },
+  "Products": {
+    "title": "Products - Smart Cabinet",
+    "description": "Browse our collection of smart cabinets, vending machines, and intelligent lockers.",
+    "meta": {
+      "title": "Products - Smart Cabinet",
+      "description": "Browse our collection of smart cabinets, vending machines, and intelligent lockers."
+    },
+    "heading": "Our Products",
+    "subheading": "Discover our range of intelligent storage solutions"
+  },
+  "ProductDetail": {
+    "meta": {
+      "title": "Product Details - Smart Cabinet",
+      "description": "View detailed information about our smart storage products."
+    }
+  },
+  "FAQ": {
+    "meta": {
+      "title": "FAQ - Smart Cabinet",
+      "description": "Frequently asked questions about our intelligent storage solutions."
+    },
+    "heading": "Frequently Asked Questions",
+    "subheading": "Find answers to common questions about our products and services"
+  },
+  "Category": {
+    "meta": {
+      "title": "Category - Smart Cabinet",
+      "description": "Browse products by category."
+    }
+  },
+  "About": {
+    "title": "About Us - Smart Cabinet",
+    "description": "Learn about Smart Cabinet, leading provider of intelligent storage solutions."
+  },
+  "Contact": {
+    "title": "Contact Us - Smart Cabinet",
+    "description": "Get in touch with Smart Cabinet for inquiries about our intelligent storage solutions."
+  },
+  "Admin": {
+    "login": {
+      "title": "Admin Login - Smart Cabinet",
+      "description": "Login to admin panel"
+    },
+    "dashboard": {
+      "title": "Admin Dashboard - Smart Cabinet"
+    },
+    "products": {
+      "title": "Manage Products - Smart Cabinet",
+      "new": "New Product - Smart Cabinet"
+    }
+  },
+  "Nav": {
+    "home": "Home",
+    "products": "Products",
+    "about": "About",
+    "faq": "FAQ",
+    "contact": "Contact",
+    "login": "Login"
+  },
+  "Footer": {
+    "description": "Leading provider of intelligent storage solutions for modern businesses worldwide.",
+    "products": "Products",
+    "company": "Company",
+    "contact": "Contact Us",
+    "copyright": "All rights reserved."
+  }
+}
