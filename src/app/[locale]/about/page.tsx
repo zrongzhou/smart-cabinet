@@ -469,13 +469,13 @@ export default function AboutPage() {
       </section>
 
       {/* Factory Workshop with Capability Cards */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white dark:from-slate-800 dark:to-slate-900">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-[var(--section-alt-bg)]">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-4xl sm:text-5xl font-bold text-[var(--text-primary)] mb-4">
               {t('about.factory.title')}
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            <p className="text-xl text-[var(--text-secondary)] max-w-2xl mx-auto">
               {t('about.factory.subtitle')}
             </p>
           </div>

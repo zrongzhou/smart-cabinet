@@ -929,9 +929,9 @@
   border-color: var(--tc-border) !important;
 }
 
-/* Dark 模式：轮播/滑动卡片容器 */
-[data-theme="dark"] [class*="rounded-2xl"],
-[data-theme="dark"] [class*="rounded-3xl"] {
+/* Dark 模式：轮播/滑动卡片容器（排除 absolute 定位的装饰覆盖层！） */
+[data-theme="dark"] [class*="rounded-2xl"]:not([class*="absolute"]),
+[data-theme="dark"] [class*="rounded-3xl"]:not([class*="absolute"]) {
   background-color: var(--tc-bg-card) !important;
 }
 
@@ -942,10 +942,10 @@
   border-color: var(--tc-border) !important;
 }
 
-/* --- FeaturedProducts / Solutions 组件主题适配 --- */
-[data-theme="dark"] section .bg-white,
-[data-theme="dark"] section .rounded-2xl,
-[data-theme="dark"] section .rounded-3xl {
+/* --- FeaturedProducts / Solutions 组件主题适配（排除 absolute 覆盖层！）--- */
+[data-theme="dark"] section .bg-white:not([class*="absolute"]),
+[data-theme="dark"] section .rounded-2xl:not([class*="absolute"]),
+[data-theme="dark"] section .rounded-3xl:not([class*="absolute"]) {
   background-color: var(--tc-bg-card) !important;
 }
 
