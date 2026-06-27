@@ -474,7 +474,7 @@ export default function ProductsPage() {
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={locale === 'zh' ? '搜索产品名称、SKU...' : locale === 'ar' ? 'بحث عن المنتجات...' : 'Search products by name, SKU...'}
               className="w-full pl-11 pr-10 py-2.5 border rounded-xl text-sm focus:ring-2 outline-none transition-all text-[var(--text-primary)]"
-              style={{ backgroundColor: 'var(--section-alt-bg, #f9fafb)', borderColor: 'var(--border-color, #e5e7eb)', '--tw-ring-color': 'var(--primary-color, #2563eb)' }}
+              style={{ backgroundColor: 'var(--section-alt-bg, #f9fafb)', borderColor: 'var(--border-color, #e5e7eb)' }}
             />
             {searchQuery && (
               <button

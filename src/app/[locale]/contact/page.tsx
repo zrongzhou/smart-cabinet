@@ -245,7 +245,7 @@ export default function ContactPage() {
                       required
                       value={formData.name}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 border rounded-xl focus:ring-2 outline-none transition-all" style={{ borderColor: 'var(--border-color, #e5e7eb)', '--tw-ring-color': 'var(--primary-color, #2563eb)' }}
+                      className="w-full px-4 py-3 border rounded-xl focus:ring-2 outline-none transition-all" style={{ borderColor: 'var(--border-color, #e5e7eb)' }}
                       placeholder={locale === 'zh' ? '您的姓名' : locale === 'ar' ? 'أدخل اسمك' : 'John Doe'}
                     />
                   </div>
@@ -261,7 +261,7 @@ export default function ContactPage() {
                       required
                       value={formData.email}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 border rounded-xl focus:ring-2 outline-none transition-all" style={{ borderColor: 'var(--border-color, #e5e7eb)', '--tw-ring-color': 'var(--primary-color, #2563eb)' }}
+                      className="w-full px-4 py-3 border rounded-xl focus:ring-2 outline-none transition-all" style={{ borderColor: 'var(--border-color, #e5e7eb)' }}
                       placeholder={locale === 'zh' ? '电子邮箱' : locale === 'ar' ? 'البريد الإلكتروني' : 'john@example.com'}
                     />
                   </div>
