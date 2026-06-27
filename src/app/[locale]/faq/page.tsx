@@ -105,20 +105,22 @@ export default function FAQPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
+      <div className="min-h-screen" style={{ backgroundColor: 'var(--bg-color)' }}>
         {/* Page Header Skeleton */}
-        <section className="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white py-16 px-4 sm:px-6 lg:px-8">
+        <section className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
+          style={{ background: 'linear-gradient(135deg, #1e3a8a, #1e40af, #2563eb)' }}
+        >
           <div className="max-w-5xl mx-auto text-center">
-            <div className="h-10 bg-blue-800/50 rounded-lg w-64 mx-auto mb-4 animate-pulse" />
-            <div className="h-6 bg-blue-800/30 rounded-lg w-96 mx-auto animate-pulse" />
+            <div className="h-10 rounded-lg w-64 mx-auto mb-4 animate-pulse" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }} />
+            <div className="h-6 rounded-lg w-96 mx-auto animate-pulse" style={{ backgroundColor: 'rgba(255,255,255,0.08)' }} />
           </div>
         </section>
         <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="space-y-4">
             {[1, 2, 3, 4, 5].map(i => (
-              <div key={i} className="bg-white dark:bg-slate-800 rounded-xl p-6 animate-pulse">
-                <div className="h-6 bg-gray-200 dark:bg-slate-700 rounded w-3/4 mb-3" />
-                <div className="h-4 bg-gray-100 dark:bg-slate-600 rounded w-full" />
+              <div key={i} className="rounded-xl p-6 animate-pulse" style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-color)' }}>
+                <div className="h-6 rounded w-3/4 mb-3" style={{ backgroundColor: 'var(--border-color)' }} />
+                <div className="h-4 rounded w-full" style={{ backgroundColor: 'var(--section-alt-bg)' }} />
               </div>
             ))}
           </div>
@@ -128,16 +130,18 @@ export default function FAQPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--bg-color)' }}>
       {/* Page Header */}
-      <section className="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-300/10 rounded-full blur-3xl" />
+      <section className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
+        style={{ background: 'linear-gradient(135deg, #1e3a8a, #1e40af, #2563eb)' }}
+      >
+        <div className="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }} />
+        <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full blur-3xl" style={{ backgroundColor: 'rgba(255,255,255,0.04)' }} />
         <div className="max-w-5xl mx-auto text-center relative z-10">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-white/10 backdrop-blur-sm rounded-2xl mb-6">
+          <div className="inline-flex items-center justify-center w-16 h-16 backdrop-blur-sm rounded-2xl mb-6" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}>
             <HelpCircle className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-4xl sm:text-5xl font-bold mb-4">
+          <h1 className="text-4xl sm:text-5xl font-bold mb-4 text-white">
             {t.title}
           </h1>
           <p className="text-xl text-blue-100">
@@ -152,13 +156,18 @@ export default function FAQPage() {
         <div className="mb-12 space-y-6">
           {/* Search bar */}
           <div className="relative max-w-md mx-auto">
-            <Search className="absolute left-3.5 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
+            <Search className="absolute left-3.5 top-1/2 transform -translate-y-1/2 w-5 h-5" style={{ color: 'var(--text-secondary)' }} />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t.searchPlaceholder}
-              className="w-full pl-11 pr-4 py-3 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 outline-none transition-all text-gray-900 dark:text-white"
+              className="w-full pl-11 pr-4 py-3 border rounded-xl text-sm outline-none transition-all"
+              style={{
+                backgroundColor: 'var(--card-bg)',
+                borderColor: 'var(--border-color)',
+                color: 'var(--text-primary)',
+              }}
             />
           </div>
 
@@ -168,11 +177,16 @@ export default function FAQPage() {
               <button
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.id)}
-                className={`px-4 py-2 rounded-full text-[14px] font-medium transition-all duration-300 ${
-                  activeCategory === cat.id
-                    ? 'bg-blue-600 text-white shadow-md hover:shadow-lg'
-                    : 'bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 hover:shadow-sm'
-                }`}
+                className="px-4 py-2 rounded-full text-[14px] font-medium transition-all duration-300"
+                style={activeCategory === cat.id ? {
+                  backgroundColor: 'var(--primary-color)',
+                  color: '#ffffff',
+                  boxShadow: '0 4px 14px rgba(0,0,0,0.15)',
+                } : {
+                  backgroundColor: 'var(--card-bg)',
+                  color: 'var(--text-primary)',
+                  border: '1px solid var(--border-color)',
+                }}
               >
                 {cat.label}
               </button>
@@ -185,22 +199,27 @@ export default function FAQPage() {
           {filteredFaqs.map((faq, index) => (
               <div
                 key={faq.id}
-                className={`bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 overflow-hidden transition-all duration-300 hover:shadow-md ${
-                  openIndex === index ? 'shadow-lg' : ''
-                }`}
+                className="rounded-xl border overflow-hidden transition-all duration-300 hover:shadow-md"
+                style={{
+                  backgroundColor: 'var(--card-bg)',
+                  borderColor: 'var(--border-color)',
+                  boxShadow: openIndex === index ? '0 10px 30px rgba(0,0,0,0.1)' : undefined,
+                }}
               >
                 {/* Question */}
                 <button
                   onClick={() => toggleFAQ(index)}
-                  className="w-full px-6 py-5 text-left flex items-center justify-between gap-4 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors duration-200"
+                  className="w-full px-6 py-5 text-left flex items-center justify-between gap-4 transition-colors duration-200"
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--section-alt-bg)'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                 >
-                  <span className="font-semibold text-gray-900 dark:text-white text-[15px]">
+                  <span className="font-semibold text-[15px]" style={{ color: 'var(--text-primary)' }}>
                     {locale === 'zh' ? faq.question.zh : locale === 'ar' ? faq.question.ar : faq.question.en}
                   </span>
                   {openIndex === index ? (
-                    <ChevronUp className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                    <ChevronUp className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--primary-color)' }} />
                   ) : (
-                    <ChevronDown className="w-5 h-5 text-gray-400 dark:text-gray-500 flex-shrink-0" />
+                    <ChevronDown className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--text-secondary)' }} />
                   )}
                 </button>
 
@@ -211,8 +230,11 @@ export default function FAQPage() {
                   }`}
                 >
                   <div className="px-6 pb-6">
-                    <div className="bg-blue-50 dark:bg-slate-700/50 rounded-lg p-4 border-l-4 border-blue-600">
-                      <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-[14px]">
+                    <div className="rounded-lg p-4" style={{
+                      backgroundColor: 'rgba(59,130,246,0.08)',
+                      borderLeft: '4px solid #2563eb'
+                    }}>
+                      <p className="leading-relaxed text-[14px]" style={{ color: 'var(--text-secondary)' }}>
                         {locale === 'zh' ? faq.answer.zh : locale === 'ar' ? faq.answer.ar : faq.answer.en}
                       </p>
                     </div>
@@ -225,8 +247,8 @@ export default function FAQPage() {
         {/* Empty State */}
         {filteredFaqs.length === 0 && (
           <div className="text-center py-20">
-            <HelpCircle className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-            <p className="text-xl text-gray-400 dark:text-gray-500">
+            <HelpCircle className="w-16 h-16 mx-auto mb-4" style={{ color: 'var(--text-muted)' }} />
+            <p className="text-xl" style={{ color: 'var(--text-secondary)' }}>
               {t.empty}
             </p>
           </div>
@@ -234,17 +256,21 @@ export default function FAQPage() {
 
         {/* Still have questions */}
         <div className="mt-16 text-center">
-          <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-lg border border-gray-100 dark:border-slate-700">
-            <MessageCircle className="w-12 h-12 text-blue-600 dark:text-blue-400 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+          <div className="rounded-2xl p-8 shadow-lg" style={{
+            backgroundColor: 'var(--card-bg)',
+            border: '1px solid var(--border-color)'
+          }}>
+            <MessageCircle className="w-12 h-12 mx-auto mb-4" style={{ color: 'var(--primary-color)' }} />
+            <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
               {t.stillHaveQuestions}
             </h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
+            <p className="mb-6" style={{ color: 'var(--text-secondary)' }}>
               {t.description}
             </p>
             <a
               href={`/${locale}/contact`}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl"
+              className="inline-flex items-center gap-2 px-6 py-3 text-white rounded-xl transition-all duration-200 font-medium shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+              style={{ backgroundColor: 'var(--primary-color)' }}
             >
               {t.contactUs}
               <ArrowRight className="w-4 h-4" />
