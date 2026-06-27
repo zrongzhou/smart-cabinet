@@ -654,7 +654,7 @@ export default function AboutPage() {
           <div className="flex flex-col sm:flex-row gap-6 justify-center mb-12">
             <a
               href={`/${locale}/contact`}
-              className="group about-cta-btn inline-flex items-center justify-center px-10 py-5 font-bold rounded-2xl hover:-translate-y-2 transition-all duration-300 shadow-2xl text-lg text-white"
+              className="group about-cta-btn inline-flex items-center justify-center px-10 py-5 font-bold rounded-2xl hover:-translate-y-2 transition-all duration-300 shadow-2xl text-lg"
               style={{ background: 'linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%)', color: 'var(--primary-color, #2563eb)' }}
               onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 10px 40px rgba(255,255,255,0.3)'; }}
               onMouseLeave={(e) => { e.currentTarget.style.boxShadow = ''; }}
