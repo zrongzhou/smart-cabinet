@@ -7,10 +7,9 @@
  * 2. Migrates data from site_settings.custom_dimension_labels → custom_dimensions table
  * 3. Verifies data integrity after migration
  *
- * Usage: npx tsx scripts/migrate-custom-dimensions.ts
- *   Or in deployment: node scripts/migrate-custom-dimensions.js
+ * Usage: node scripts/migrate-custom-dimensions.js
  *
- * Run AFTER: prisma migrate deploy
+ * Run AFTER: prisma migrate deploy (or manual SQL migration)
  * Run BEFORE: pm2 start/restart
  */
 
@@ -26,13 +25,11 @@ async function migrate() {
     console.log('[1/4] Checking schema...');
     try {
       const testRow = await prisma.customDimension.findFirst({ select: { id: true, key: true } });
-      console.log(`  ✓ Schema OK: custom_dimensions has "key" column`);
-    } catch (schemaErr: any) {
-      if (schemaErr.message?.includes('column') || schemaErr.message?.does not exist) {
-        console.error(`  ✗ Schema issue: ${schemaErr.message}`);
-        console.log('  → Please run "prisma migrate dev" or "prisma migrate deploy" first');
-        process.exit(1);
-      }
+      console.log('  OK: Schema has "key" column');
+    } catch (schemaErr) {
+      console.error('  Schema issue:', schemaErr.message);
+      console.log('  -> Please run SQL migration first');
+      process.exit(1);
     }
 
     // Step 2: Check current state of both sources
@@ -44,67 +41,67 @@ async function migrate() {
     });
 
     let legacyData = null;
-    if (setting?.value) {
+    if (setting && setting.value) {
       legacyData = typeof setting.value === 'string' ? JSON.parse(setting.value) : setting.value;
     }
 
-    console.log(`  custom_dimensions table: ${dbDims.length} rows`);
-    console.log(`  site_settings (legacy):  ${legacyData ? Object.keys(legacyData).length : 0} entries`);
+    console.log('  custom_dimensions table:', dbDims.length, 'rows');
+    console.log('  site_settings (legacy):', legacyData ? Object.keys(legacyData).length : 0, 'entries');
 
     // Step 3: Migrate if needed
     console.log('\n[3/4] Migrating data...');
 
     if (!legacyData || Object.keys(legacyData).length === 0) {
-      console.log('  → No legacy data to migrate, skipping.');
+      console.log('  -> No legacy data to migrate, skipping.');
     } else if (dbDims.length > 0 && dbDims.length >= Object.keys(legacyData).length) {
-      // Already migrated - check for any missing entries
-      const existingKeys = new Set(dbDims.map(d => d.key));
-      const missingKeys = Object.keys(legacyData).filter(k => !existingKeys.has(k));
+      // Already migrated - check for missing entries
+      const existingKeys = new Set(dbDims.map(function(d) { return d.key; }));
+      var missingKeys = Object.keys(legacyData).filter(function(k) { return !existingKeys.has(k); });
       if (missingKeys.length > 0) {
-        console.log(`  → Found ${missingKeys.length} missing entries, migrating...`);
+        console.log('  -> Found', missingKeys.length, 'missing entries, migrating...');
         await migrateEntries(missingKeys, legacyData);
       } else {
-        console.log('  → Already up to date, skipping.');
+        console.log('  -> Already up to date, skipping.');
       }
     } else {
       // Full migration
-      console.log(`  → Migrating ${Object.keys(legacyData).length} entries...`);
+      console.log('  -> Migrating', Object.keys(legacyData).length, 'entries...');
       await migrateEntries(Object.keys(legacyData), legacyData);
     }
 
     // Step 4: Verify
     console.log('\n[4/4] Verification...');
-    const finalCount = await prisma.customDimension.count({ where: { status: 'active' } });
-    const sampleRows = await prisma.customDimension.findMany({ take: 3 });
+    var finalCount = await prisma.customDimension.count({ where: { status: 'active' } });
+    var sampleRows = await prisma.customDimension.findMany({ take: 3 });
 
-    console.log(`  ✓ Total active dimensions: ${finalCount}`);
-    sampleRows.forEach(row => {
-      const name = typeof row.name === 'object' ? JSON.stringify(row.name) : row.name;
-      console.log(`    - [${row.key}] ${name} icon=${row.icon || 'none'}`);
+    console.log('  Total active dimensions:', finalCount);
+    sampleRows.forEach(function(row) {
+      var nameStr = typeof row.name === 'object' ? JSON.stringify(row.name) : row.name;
+      console.log('   - [' + row.key + ']', nameStr, 'icon=' + (row.icon || 'none'));
     });
 
-    console.log('\n=== Migration complete! ✅ ===');
+    console.log('\n=== Migration complete! ===');
   } catch (error) {
-    console.error('\n❌ Migration failed:', error);
+    console.error('\nMigration failed:', error);
     process.exit(1);
   } finally {
-    await prisma.$disconnect();
+    prisma.\$disconnect();
   }
 }
 
-async function migrateEntries(keys: string[], sourceData: any) {
-  let maxOrder = 0;
+async function migrateEntries(keys, sourceData) {
+  var maxOrder = 0;
   try {
-    const maxResult = await prisma.customDimension.aggregate({ _max: { order: true } });
+    var maxResult = await prisma.customDimension.aggregate({ _max: { order: true } });
     maxOrder = maxResult._max.order || 0;
-  } catch { /* ignore */ }
+  } catch (e) { /* ignore */ }
 
-  for (let i = 0; i < keys.length; i++) {
-    const k = keys[i];
-    const val = sourceData[k];
+  for (var i = 0; i < keys.length; i++) {
+    var k = keys[i];
+    var val = sourceData[k];
     if (!val || typeof val !== 'object') continue;
 
-    const nameObj = {
+    var nameObj = {
       zh: val.labelZh || val.labelEn || val.labelAr || k,
       en: val.labelEn || val.labelZh || val.labelAr || k,
       ar: val.labelAr || val.labelZh || val.labelEn || k,
@@ -122,9 +119,9 @@ async function migrateEntries(keys: string[], sourceData: any) {
           status: 'active',
         },
       });
-      console.log(`    + "${k}" → ${nameObj.en}`);
-    } catch (upsertErr: any) {
-      console.error(`    ✗ Failed to upsert "${k}": ${upsertErr.message}`);
+      console.log('   + "' + k + '" ->', nameObj.en);
+    } catch (upsertErr) {
+      console.error('   Failed to upsert "' + k + '":', upsertErr.message);
     }
   }
 }

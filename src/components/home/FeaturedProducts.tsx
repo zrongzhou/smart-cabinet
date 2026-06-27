@@ -1,45 +1,187 @@
-export default function FeaturedProducts({ locale = 'en' }: { locale?: string }) {
-  const products = [
-    { id: 1, name: 'Smart Cabinet Pro', description: 'Advanced intelligent storage solution', image: '/products/pro.jpg' },
-    { id: 2, name: 'Vending Machine Elite', description: 'Smart vending with AI recognition', image: '/products/elite.jpg' },
-    { id: 3, name: 'Intelligent Locker', description: 'Secure storage with mobile access', image: '/products/locker.jpg' },
-  ];
-  
+'use client';
+
+import { useState, useEffect } from 'react';
+import { Package, ArrowRight } from 'lucide-react';
+import { useLocale } from '@/lib/i18n';
+import { Product } from '@/data/unified-data';
+import { fetchUnifiedProducts } from '@/data/unified-data';
+
+interface FeaturedProductsProps {
+  locale?: string;
+}
+
+export default function FeaturedProducts({ locale: propLocale }: FeaturedProductsProps) {
+  const { locale, t } = useLocale();
+  const currentLocale = propLocale || locale;
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Load featured products from API
+  useEffect(() => {
+    async function loadProducts() {
+      try {
+        const allProducts = await fetchUnifiedProducts('active');
+        const featured = allProducts.filter(p => p.featured && p.status === 'active');
+        setFeaturedProducts(featured);
+      } catch (e) {
+        console.error('Failed to load featured products:', e);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadProducts();
+  }, []);
+
   return (
-    <section className="bg-gradient-to-br from-gray-50 to-blue-50 px-4 py-20 sm:py-28">
-      <div className="mx-auto max-w-6xl animate-fade-in-up">
-        <h2 className="mb-4 text-center text-3xl font-bold text-gray-900 sm:text-4xl">
-          Featured Products
-        </h2>
-        <p className="mb-12 text-center text-lg text-gray-600">
-          Discover our most popular intelligent storage solutions
-        </p>
-        
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-          {products.map((product, index) => (
-            <div
-              key={product.id}
-              className="group overflow-hidden rounded-2xl bg-white shadow-sm transition-all duration-500 hover:-translate-y-2 hover:shadow-xl animate-fade-in-up"
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
-              <div className="relative h-48 overflow-hidden bg-gray-100">
-                <div className="flex h-full items-center justify-center bg-gradient-to-br from-blue-100 to-blue-200">
-                  <span className="text-4xl">📦</span>
+    <section className="py-24 px-4 sm:px-6 lg:px-8 bg-[var(--section-bg)] relative overflow-hidden">
+      {/* Section background decoration */}
+      <div className="absolute top-0 left-0 w-72 h-72 bg-blue-100/40 dark:bg-blue-900/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-cyan-100/30 dark:bg-cyan-900/10 rounded-full blur-3xl translate-x-1/3 translate-y-1/3" />
+
+      <div className="max-w-7xl mx-auto relative z-10">
+        {/* Section Header */}
+        <div className="text-center mb-16">
+          <div className="inline-block px-4 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-full text-sm font-semibold mb-4">
+            ★ {currentLocale === 'zh' ? '精选产品' : 'Featured'}
+          </div>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 dark:text-white mb-4 tracking-tight">
+            {t('featuredProducts.title')}
+          </h2>
+          <p className="text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
+            {t('featuredProducts.subtitle')}
+          </p>
+        </div>
+
+        {/* Loading Skeleton */}
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="bg-[var(--section-alt-bg)] rounded-3xl overflow-hidden">
+                <div className="h-56 bg-[var(--border-color)] animate-pulse" />
+                <div className="p-8 space-y-3">
+                  <div className="h-4 w-20 bg-[var(--border-color)] rounded animate-pulse" />
+                  <div className="h-6 w-full bg-[var(--border-color)] rounded animate-pulse" />
+                  <div className="h-4 w-3/4 bg-[var(--border-color)] rounded animate-pulse" />
                 </div>
               </div>
-              <div className="p-6">
-                <h3 className="mb-2 text-xl font-bold text-gray-900">{product.name}</h3>
-                <p className="mb-4 text-gray-600">{product.description}</p>
-                <a
-                  href={`/${locale}/products`}
-                  className="inline-block rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:from-blue-700 hover:to-blue-800"
-                >
-                  View Details
-                </a>
-              </div>
+            ))}
+          </div>
+        ) : (
+          <>
+            {/* Products Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {featuredProducts.map((product, index) => {
+                return (
+                  <div
+                    key={product.id}
+                    className="group relative bg-[var(--card-bg)] rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden transform hover:-translate-y-3 hover:scale-[1.02]"
+                  >
+                    {/* Product Image or Gradient Header */}
+                    <div className="relative h-56 overflow-hidden bg-[var(--section-alt-bg)]">
+                      {product.images && product.images[0] ? (
+                        <>
+                          <img 
+                            src={product.images[0]} 
+                            alt={currentLocale === 'zh' ? product.name.zh : currentLocale === 'ar' ? product.name.ar : product.name.en}
+                            className="w-full h-full object-cover group-hover:scale-125 transition-transform duration-700"
+                            onError={(e) => { 
+                              const target = e.target as HTMLImageElement;
+                              target.style.display = 'none';
+                              const fallback = target.nextElementSibling as HTMLElement;
+                              if (fallback) fallback.style.display = 'flex';
+                            }}
+                            loading={index < 2 ? "eager" : "lazy"}
+                          />
+                          {/* Fallback - shown when img fails to load */}
+                          <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-blue-400 flex flex-col items-center justify-center text-white" style={{display: 'none'}}>
+                            <Package className="w-12 h-12 mb-2 opacity-80" />
+                            <span className="text-sm font-medium">{currentLocale === 'zh' ? product.name.zh : currentLocale === 'ar' ? product.name.ar : product.name.en || product.sku || 'Product'}</span>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="h-full bg-gradient-to-br from-blue-600 to-blue-400 flex flex-col items-center justify-center text-white p-8 relative overflow-hidden">
+                          <div className="absolute inset-0 opacity-20">
+                            <div className="absolute top-4 right-4 w-20 h-20 border-2 border-white/40 rounded-full" />
+                            <div className="absolute bottom-4 left-4 w-12 h-12 border-2 border-white/40 rounded-lg rotate-12" />
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 border border-white/20 rounded-full" />
+                          </div>
+                          <Package className="w-16 h-16 mb-3 text-white/90 relative z-10" />
+                          <span className="text-sm font-medium text-white/90 relative z-10 text-center">{currentLocale === 'zh' ? product.name.zh : currentLocale === 'ar' ? product.name.ar : product.name.en || product.sku || 'Product'}</span>
+                        </div>
+                      )}
+                      
+                      {/* Floating badge */}
+                      <div className="absolute top-4 left-4 z-20">
+                        <span className="bg-[var(--card-bg)]/90 backdrop-blur-sm text-[var(--primary-color)] text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+                          {product.sku}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="p-8">
+                      {/* Category badge */}
+                      <div className="mb-3">
+                        <span className="inline-block px-3 py-1 bg-[var(--badge-bg)] text-[var(--primary-color)] rounded-full text-xs font-medium">
+                          {(() => {
+                            const cat = product.categories?.[0];
+                            if (!cat) return 'Product';
+                            if (cat.name && typeof cat.name === 'object') {
+                              return currentLocale === 'zh' ? (cat.name.zh || cat.name.en || '') :
+                                     currentLocale === 'ar' ? (cat.name.ar || cat.name.en || '') :
+                                     (cat.name.en || '');
+                            }
+                            return cat.name || cat.slug || 'Product';
+                          })()}
+                        </span>
+                      </div>
+
+                      <h3 className="text-lg font-extrabold text-[var(--text-primary)] mb-3 line-clamp-2 group-hover:text-[var(--primary-color)] transition-colors duration-300">
+                        {currentLocale === 'zh' ? product.name.zh : currentLocale === 'ar' ? product.name.ar : product.name.en}
+                      </h3>
+
+                      <p className="text-sm text-[var(--text-secondary)] mb-5 line-clamp-3 leading-relaxed">
+                        {currentLocale === 'zh' ? product.description?.zh : currentLocale === 'ar' ? product.description?.ar : product.description?.en}
+                      </p>
+
+                      {/* Price + CTA */}
+                      <div className="flex items-center justify-between pt-4 border-t border-[var(--border-color)]">
+                        {product.hidePrice ? (
+                          <span className="text-sm text-[var(--text-secondary)]">Contact Us for Quote</span>
+                        ) : product.price ? (
+                          <span className="text-xl font-bold text-[var(--primary-color)]">¥{product.price}</span>
+                        ) : (
+                          <span className="text-sm text-[var(--text-muted)]">Contact for price</span>
+                        )}
+                        <a
+                          href={`/${currentLocale}/products/${product.slug}`}
+                          className="inline-flex items-center text-[var(--primary-color)] font-semibold hover:opacity-80 transition-opacity group/link text-sm"
+                        >
+                          {t('nav.products')}
+                          <ArrowRight className="ml-1.5 w-4 h-4 group-hover/link:translate-x-1.5 transition-transform duration-300" />
+                        </a>
+                      </div>
+                    </div>
+
+                    {/* Hover overlay */}
+                    <div className="absolute inset-0 rounded-3xl ring-1 ring-blue-500/0 group-hover:ring-blue-500/50 transition-all duration-300 pointer-events-none" />
+                  </div>
+                );
+              })}
             </div>
-          ))}
-        </div>
+
+            {/* View All Button */}
+            <div className="text-center mt-16">
+              <a
+                href={`/${currentLocale}/products`}
+                className="group inline-flex items-center px-10 py-4 bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold rounded-2xl hover:from-blue-700 hover:to-blue-600 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-blue-500/30 transform hover:-translate-y-1 text-lg"
+              >
+                {t('featuredProducts.viewAll')}
+                <ArrowRight className="ml-2.5 w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />
+              </a>
+            </div>
+          </>
+        )}
       </div>
     </section>
   );

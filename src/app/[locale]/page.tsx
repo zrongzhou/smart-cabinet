@@ -1,24 +1,29 @@
-import type { Metadata } from 'next';
 import HeroSection from '@/components/home/HeroSection';
 import FeaturedProducts from '@/components/home/FeaturedProducts';
 import AdvantagesSection from '@/components/home/AdvantagesSection';
+import SolutionsPreview from '@/components/home/SolutionsPreview';
+import TestimonialsSection from '@/components/home/TestimonialsSection';
+import BlogPreview from '@/components/home/BlogPreview';
+import TrustBadges from '@/components/home/TrustBadges';
 import CtaSection from '@/components/home/CtaSection';
 
-export async function generateMetadata(): Promise<Metadata> {
-  return {
-    title: 'Smart Cabinet - Intelligent Storage Solutions',
-    description: 'Professional smart cabinets, vending machines, and lockers for modern businesses.',
-    keywords: ['smart cabinet', 'vending machine', 'intelligent locker', 'storage solutions'],
+interface HomePageProps {
+  params: {
+    locale: string;
   };
 }
 
-export default function HomePage() {
+export default function HomePage({ params: { locale } }: HomePageProps) {
   return (
-    <main>
+    <>
       <HeroSection />
       <FeaturedProducts />
       <AdvantagesSection />
+      <SolutionsPreview />
+      <TestimonialsSection />
+      <BlogPreview />
+      <TrustBadges />
       <CtaSection />
-    </main>
+    </>
   );
 }
