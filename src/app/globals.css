@@ -72,7 +72,7 @@
   --tc-input-border:    #334155;
 
   /* ===== Component Theme Variables (v115) ===== */
-  --card-bg:          #1e293b;
+  --card-bg:          #253349;   /* 比section-alt-bg亮20%，确保卡片可区分 */
   --section-bg:        #0f172a;
   --section-alt-bg:    #1e293b;
   --text-primary:      #f1f5f9;
@@ -239,7 +239,7 @@
   --tc-input-border:    #2A2A3E;
 
   /* ===== Component Theme Variables (v115) ===== */
-  --card-bg:          #12121a;
+  --card-bg:          #1a1a2e;   /* 比section-alt-bg亮，确保卡片层次 */
   --section-bg:        #0a0a0f;
   --section-alt-bg:    #12121a;
   --text-primary:      #e0e0ff;
@@ -2003,6 +2003,111 @@ html {
 [data-theme="fashion"] .theme-cta-bg .cta-phone-btn {
   background: rgba(255, 255, 255, 0.1) !important;
   border-color: rgba(255, 255, 255, 0.35) !important;
+}
+
+/* ============================================================
+   v129d — 截图问题修复 (2026-06-27)
+   
+   问题1: AdvantagesSection 卡片全空白（Dark等深色主题）
+   根因: --section-alt-bg 与 --card-bg 同色 + rounded-3xl 强制覆盖
+   
+   问题2: TestimonialsSection 文字太浅看不清  
+   根因: 硬编码 text-gray-* 不适配多主题
+   ============================================================ */
+
+/* ===== 问题1修复: AdvantagesSection 卡片内容可见性 ===== */
+
+/* Dark主题: section-alt-bg(#1e293b) 和 card-bg(#1e293b) 完全同色 → 需要让卡片有区分 */
+[data-theme="dark"] section[class*="section-alt"] .rounded-3xl,
+[data-theme="dark"] .bg-\[var\(--section-alt-bg\)\] .rounded-3xl {
+  background-color: #253349 !important;  /* 比section-alt-bg亮20%，形成层次 */
+  border-color: #334155 !important;
+}
+[data-theme="dark"] .bg-\[var\(--section-alt-bg\)\] .rounded-3xl .w-20 {
+  /* 确保图标容器可见 */
+  opacity: 1 !important;
+}
+[data-theme="dark"] .bg-\[var\(--section-alt-bg\)\] .rounded-3xl h3,
+[data-theme="dark"] .bg-\[var\(--section-alt-bg\)\] .rounded-3xl p,
+[data-theme="dark"] .bg-\[var\(--section-alt-bg\)\] .rounded-3xl span:not([class*="bg-"]) {
+  color: var(--text-primary, #f1f5f9) !important;
+}
+[data-theme="dark"] .bg-\[var\(--section-alt-bg\)\] .rounded-3xl p.text-\[var\(--text-secondary\)\] {
+  color: var(--text-secondary, #94a3b8) !important;
+}
+
+/* Ocean主题: 也做类似保护（浅色主题但卡片可能被覆盖） */
+[data-theme="ocean"] .bg-\[var\(--section-alt-bg\)\] .rounded-3xl h3,
+[data-theme="ocean"] .bg-\[var\(--section-alt-bg\)\] .rounded-3xl p {
+  color: var(--text-primary) !important;
+}
+
+/* 全主题安全网: AdvantagesSection 图标容器确保可见 */
+[data-theme="cyberpunk"] .rounded-3xl > div:first-of-type.w-20,
+[data-theme="dark"] .rounded-3xl > div:first-of-type.w-20,
+[data-theme="minimal"] .rounded-3xl > div:first-of-type.w-20 {
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: flex !important;
+}
+
+/* ===== 问题2修复: TestimonialsSection 文字对比度 ===== */
+
+/* Testimonials 区域在所有主题下文字必须可读 */
+section.bg-white .rounded-3xl p.text-gray-600,
+section.bg-white .rounded-3xl .text-gray-600 {
+  color: var(--text-secondary, #475569) !important;
+}
+section.bg-white .rounded-3xl .text-gray-500,
+section.bg-white .rounded-3xl .text-gray-400 {
+  color: var(--text-muted, #6b7280) !important;
+}
+section.bg-white .rounded-3xl .text-gray-900,
+section.bg-white .rounded-3xl .font-bold {
+  color: var(--text-primary, #111827) !important;
+}
+
+/* Dark主题下的 Testimonials: bg-white被覆盖为深色后，文字需要反转 */
+[data-theme="dark"] section.bg-white .rounded-3xl p,
+[data-theme="dark"] section.bg-white .rounded-3xl .text-gray-600 {
+  color: var(--text-secondary, #94a3b8) !important;
+}
+[data-theme="dark"] section.bg-white .rounded-3xl .text-gray-500,
+[data-theme="dark"] section.bg-white .rounded-3xl .text-gray-400 {
+  color: var(--text-muted, #64748b) !important;
+}
+[data-theme="dark"] section.bg-white .rounded-3xl .font-bold,
+[data-theme="dark"] section.bg-white .rounded-3xl .text-gray-900 {
+  color: var(--text-primary, #f1f5f9) !important;
+}
+/* Dark主题下 Testimonials 的星星和引用图标保持明亮 */
+[data-theme="dark"] section.bg-white .rounded-3xl .text-amber-400 {
+  color: #fbbf24 !important;
+}
+[data-theme="dark"] section.bg-white .rounded-3xl .text-blue-600 {
+  color: var(--primary-color, #60a5fa) !important;
+}
+
+/* Cyberpunk主题 Testimonials */
+[data-theme="cyberpunk"] section.bg-white .rounded-3xl p {
+  color: var(--text-secondary, #b0b0e0) !important;
+}
+[data-theme="cyberpunk"] section.bg-white .rounded-3xl .font-bold {
+  color: var(--text-primary, #e0e0ff) !important;
+}
+[data-theme="cyberpunk"] section.bg-white .rounded-3xl .text-gray-500 {
+  color: var(--text-muted, #8080c0) !important;
+}
+
+/* Minimal主题 Testimonials: 确保高对比度 */
+[data-theme="minimal"] section.bg-white .rounded-3xl p {
+  color: #444444 !important;
+}
+[data-theme="minimal"] section.bg-white .rounded-3xl .font-bold {
+  color: #111111 !important;
+}
+[data-theme="minimal"] section.bg-white .rounded-3xl .text-gray-500 {
+  color: #666666 !important;
 }
 
 /* --- theme-solution-header: Solutions 页面头部主题适配 --- */
