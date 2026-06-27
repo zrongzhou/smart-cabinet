@@ -43,8 +43,8 @@ export default function CtaSection({ locale: propLocale }: CtaSectionProps) {
           }}
         />
       </div>
-      <div className="absolute top-0 left-1/4 w-72 h-72 bg-blue-600/20 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-600/20 rounded-full blur-3xl" />
+      <div className="absolute top-0 left-1/4 w-72 h-72 rounded-full blur-3xl" style={{ backgroundColor: 'rgba(255,255,255,0.08)' }} />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 rounded-full blur-3xl" style={{ backgroundColor: 'rgba(255,255,255,0.05)', animationDelay: '1s' }} />
       
       {/* Floating elements */}
       <div className="absolute top-20 right-20 w-20 h-20 border-2 border-white/10 rotate-45 rounded-2xl animate-pulse" />

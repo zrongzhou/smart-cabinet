@@ -16,68 +16,12 @@ const iconMap: Record<string, any> = {
   Building2,
 };
 
-// Color theme configurations
-const colorThemes = {
-  blue: {
-    gradient: 'from-blue-500 to-blue-700',
-    gradientLight: 'from-blue-100 to-blue-200',
-    bg: 'bg-blue-50',
-    bgDark: 'bg-blue-900',
-    text: 'text-blue-600',
-    textDark: 'text-blue-400',
-    border: 'border-blue-200',
-    hover: 'hover:border-blue-400',
-  },
-  green: {
-    gradient: 'from-green-500 to-green-700',
-    gradientLight: 'from-green-100 to-green-200',
-    bg: 'bg-green-50',
-    bgDark: 'bg-green-900',
-    text: 'text-green-600',
-    textDark: 'text-green-400',
-    border: 'border-green-200',
-    hover: 'hover:border-green-400',
-  },
-  purple: {
-    gradient: 'from-purple-500 to-purple-700',
-    gradientLight: 'from-purple-100 to-purple-200',
-    bg: 'bg-purple-50',
-    bgDark: 'bg-purple-900',
-    text: 'text-purple-600',
-    textDark: 'text-purple-400',
-    border: 'border-purple-200',
-    hover: 'hover:border-purple-400',
-  },
-  amber: {
-    gradient: 'from-amber-500 to-orange-700',
-    gradientLight: 'from-amber-100 to-orange-200',
-    bg: 'bg-amber-50',
-    bgDark: 'bg-amber-900',
-    text: 'text-amber-600',
-    textDark: 'text-amber-400',
-    border: 'border-amber-200',
-    hover: 'hover:border-amber-400',
-  },
-  cyan: {
-    gradient: 'from-cyan-500 to-sky-700',
-    gradientLight: 'from-cyan-100 to-sky-200',
-    bg: 'bg-cyan-50',
-    bgDark: 'bg-cyan-900',
-    text: 'text-cyan-600',
-    textDark: 'text-cyan-400',
-    border: 'border-cyan-200',
-    hover: 'hover:border-cyan-400',
-  },
-  pink: {
-    gradient: 'from-pink-500 to-rose-700',
-    gradientLight: 'from-pink-100 to-rose-200',
-    bg: 'bg-pink-50',
-    bgDark: 'bg-pink-900',
-    text: 'text-pink-600',
-    textDark: 'text-pink-400',
-    border: 'border-pink-200',
-    hover: 'hover:border-pink-400',
-  },
+// 使用网站主题色，不按 solution 分颜色
+const solutionCardStyle = {
+  gradient: '',  // 用 inline style
+  iconBg: 'var(--icon-bg)',
+  accentColor: 'var(--primary-color)',
+  accentBg: 'var(--section-alt-bg)',
 };
 
 interface SolutionsPageProps {
@@ -107,7 +51,7 @@ export default function SolutionsPage({ params: { locale } }: SolutionsPageProps
           <h1 className="text-4xl sm:text-5xl font-bold mb-4">
             {t('solutions.title')}
           </h1>
-          <p className="text-xl text-blue-100">
+          <p className="text-xl" style={{ color: 'var(--tc-text-secondary)' }}>
             {t('solutions.subtitle')}
           </p>
         </div>
@@ -117,7 +61,6 @@ export default function SolutionsPage({ params: { locale } }: SolutionsPageProps
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {solutions.map((solution, index) => {
-            const theme = colorThemes[(solution as any).color as keyof typeof colorThemes] || colorThemes.blue;
             const Icon = iconMap[solution.icon] || Cog;
             const isExpanded = expanded === index;
 
@@ -134,11 +77,12 @@ export default function SolutionsPage({ params: { locale } }: SolutionsPageProps
             return (
               <div
                 key={solution.id}
-                className={`group relative bg-[var(--card-bg)] rounded-3xl p-8 shadow-lg ${theme.hover} hover:shadow-2xl transition-all duration-500 border border-[var(--border-color)] hover:-translate-y-3 hover:scale-[1.03]`}
+                className="group relative bg-[var(--card-bg)] rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-[var(--border-color)] hover:-translate-y-3 hover:scale-[1.03]"
               >
                 {/* Icon Container with gradient bg */}
                 <div
-                  className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${theme.gradient} flex items-center justify-center mb-8 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg`}
+                  className="w-20 h-20 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg"
+                  style={{ backgroundColor: 'var(--primary-color)' }}
                 >
                   <Icon className="w-10 h-10 text-white" />
                 </div>
@@ -181,7 +125,8 @@ export default function SolutionsPage({ params: { locale } }: SolutionsPageProps
                   {/* Expand Button */}
                   <button
                     onClick={() => toggleSolution(index)}
-                    className={`w-full py-2 mb-4 flex items-center justify-center space-x-2 ${theme.text} hover:underline focus:outline-none`}
+                    className="w-full py-2 mb-4 flex items-center justify-center space-x-2 hover:underline focus:outline-none"
+                    style={{ color: 'var(--primary-color)' }}
                   >
                     <span>{isExpanded ? (currentLocale === 'zh' ? '收起详情' : currentLocale === 'ar' ? 'إخفاء التفاصيل' : 'Show Less') : (currentLocale === 'zh' ? '查看详情' : currentLocale === 'ar' ? 'عرض التفاصيل' : 'View Details')}</span>
                     {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -205,13 +150,20 @@ export default function SolutionsPage({ params: { locale } }: SolutionsPageProps
                       {/* Core Benefits with Metrics */}
                       {benefitsDetailed && benefitsDetailed.length > 0 && (
                         <div>
-                          <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
+                          <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-3">
                             {currentLocale === 'zh' ? '核心收益' : currentLocale === 'ar' ? 'الفوائد الرئيسية' : 'Core Benefits'}
                           </h4>
                           <div className="space-y-3">
                             {benefitsDetailed.map((benefit: { metric: string; description: string }, idx: number) => (
-                              <div key={idx} className={`flex items-center space-x-3 ${theme.bg} rounded-lg p-3`}>
-                                <div className={`text-2xl font-bold ${theme.text}`}>
+                              <div
+                                key={idx}
+                                className="flex items-center space-x-3 rounded-lg p-3"
+                                style={{ backgroundColor: 'var(--section-alt-bg)' }}
+                              >
+                                <div
+                                  className="text-2xl font-bold"
+                                  style={{ color: 'var(--primary-color)' }}
+                                >
                                   {benefit.metric}
                                 </div>
                                 <div className="text-sm text-[var(--text-secondary)]">
@@ -224,10 +176,19 @@ export default function SolutionsPage({ params: { locale } }: SolutionsPageProps
                       )}
 
                       {/* Case Data */}
-                      <div className={`${theme.bg} rounded-xl p-4`}>
+                      <div
+                        className="rounded-xl p-4"
+                        style={{ backgroundColor: 'var(--section-alt-bg)' }}
+                      >
                         <div className="flex items-center space-x-2 mb-2">
-                          <TrendingUp className={`w-5 h-5 ${theme.text}`} />
-                          <span className={`text-lg font-bold ${theme.text}`}>{caseMetric}</span>
+                          <TrendingUp
+                            className="w-5 h-5"
+                            style={{ color: 'var(--primary-color)' }}
+                          />
+                          <span
+                            className="text-lg font-bold"
+                            style={{ color: 'var(--primary-color)' }}
+                          >{caseMetric}</span>
                         </div>
                         <p className="text-sm text-[var(--text-secondary)] mb-2">
                           {caseDescription}
