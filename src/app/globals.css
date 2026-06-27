@@ -929,9 +929,9 @@
   border-color: var(--tc-border) !important;
 }
 
-/* Dark 模式：轮播/滑动卡片容器（排除 absolute 定位的装饰覆盖层！排除 CTA 按钮！） */
-[data-theme="dark"] [class*="rounded-2xl"]:not([class*="absolute"]):not(.cta-primary-btn):not(.cta-phone-btn),
-[data-theme="dark"] [class*="rounded-3xl"]:not([class*="absolute"]):not(.cta-primary-btn):not(.cta-phone-btn) {
+/* Dark 模式：轮播/滑动卡片容器（排除 absolute 定位的装饰覆盖层！排除所有 CTA 按钮！） */
+[data-theme="dark"] [class*="rounded-2xl"]:not([class*="absolute"]):not(.cta-primary-btn):not(.cta-phone-btn):not(.about-cta-btn),
+[data-theme="dark"] [class*="rounded-3xl"]:not([class*="absolute"]):not(.cta-primary-btn):not(.cta-phone-btn):not(.about-cta-btn) {
   background-color: var(--tc-bg-card) !important;
 }
 
@@ -942,10 +942,10 @@
   border-color: var(--tc-border) !important;
 }
 
-/* --- FeaturedProducts / Solutions 组件主题适配（排除 absolute 覆盖层！排除 CTA 按钮！）--- */
-[data-theme="dark"] section .bg-white:not([class*="absolute"]):not(.cta-primary-btn):not(.cta-phone-btn),
-[data-theme="dark"] section .rounded-2xl:not([class*="absolute"]):not(.cta-primary-btn):not(.cta-phone-btn),
-[data-theme="dark"] section .rounded-3xl:not([class*="absolute"]):not(.cta-primary-btn):not(.cta-phone-btn) {
+/* --- FeaturedProducts / Solutions 组件主题适配（排除 absolute 覆盖层！排除所有 CTA 按钮！）--- */
+[data-theme="dark"] section .bg-white:not([class*="absolute"]):not(.cta-primary-btn):not(.cta-phone-btn):not(.about-cta-btn),
+[data-theme="dark"] section .rounded-2xl:not([class*="absolute"]):not(.cta-primary-btn):not(.cta-phone-btn):not(.about-cta-btn),
+[data-theme="dark"] section .rounded-3xl:not([class*="absolute"]):not(.cta-primary-btn):not(.cta-phone-btn):not(.about-cta-btn) {
   background-color: var(--tc-bg-card) !important;
 }
 

@@ -631,27 +631,33 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* CTA Section with Dynamic Settings */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white relative overflow-hidden">
+      {/* CTA Section - Theme-adaptive with CSS variables */}
+      <section
+        className="py-20 px-4 sm:px-6 lg:px-8 text-white relative overflow-hidden"
+        style={{ background: 'linear-gradient(135deg, var(--primary-color, #2563eb) 0%, color-mix(in srgb, var(--primary-color, #2563eb) 80%, black) 100%)' }}
+      >
         {/* Decorative elements */}
         <div className="absolute inset-0 opacity-10">
           <div className="w-full h-full" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} />
         </div>
-        <div className="absolute top-0 left-1/4 w-72 h-72 bg-blue-500/30 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-0 left-1/4 w-72 h-72 bg-white/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
 
         <div className="max-w-5xl mx-auto text-center relative z-10">
           <h2 className="text-4xl sm:text-5xl font-bold mb-6">
             {t('about.cta.title')}
           </h2>
-          <p className="text-xl text-blue-100 mb-12 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-xl text-white/80 mb-12 max-w-2xl mx-auto leading-relaxed">
             {t('about.cta.subtitle')}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center mb-12">
             <a
               href={`/${locale}/contact`}
-              className="group inline-flex items-center justify-center px-10 py-5 bg-white text-blue-900 font-bold rounded-2xl hover:bg-blue-50 transition-all duration-300 shadow-2xl hover:shadow-blue-500/25 hover:-translate-y-2 text-lg"
+              className="group about-cta-btn inline-flex items-center justify-center px-10 py-5 font-bold rounded-2xl hover:-translate-y-2 transition-all duration-300 shadow-2xl text-lg text-white"
+              style={{ background: 'linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%)', color: 'var(--primary-color, #2563eb)' }}
+              onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 10px 40px rgba(255,255,255,0.3)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.boxShadow = ''; }}
             >
               {t('nav.contact')}
               <ChevronRight className="ml-2 w-6 h-6 group-hover:translate-x-2 transition-transform duration-300" />
@@ -665,7 +671,7 @@ export default function AboutPage() {
             </a>
           </div>
 
-          <div className="flex items-center justify-center space-x-2 text-blue-200">
+          <div className="flex items-center justify-center space-x-2 text-white/60">
             <span>{contactEmail}</span>
           </div>
         </div>
