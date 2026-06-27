@@ -57,10 +57,10 @@ export default function SolutionsPreview({ locale: propLocale }: SolutionsPrevie
               <a
                 key={solution.slug}
                 href={`/${currentLocale}/solutions#${solution.slug}`}
-                className="group relative bg-[var(--card-bg)] rounded-2xl p-6 shadow-md hover:shadow-xl transition-all duration-300 text-center hover:-translate-y-2"
+                className="group relative bg-[var(--card-bg)] rounded-2xl p-6 shadow-md hover:shadow-xl transition-all duration-300 text-center hover:-translate-y-2 border border-[var(--border-color)]"
               >
                 {/* Icon Container */}
-                <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-[var(--icon-bg)] flex items-center justify-center group-hover:bg-[var(--primary-color)] transition-colors duration-300">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-xl flex items-center justify-center group-hover:bg-[var(--primary-color)] transition-colors duration-300" style={{ backgroundColor: 'var(--icon-bg)' }}>
                   <Icon className="w-8 h-8 text-[var(--primary-color)] group-hover:text-white transition-colors duration-300" />
                 </div>
 
@@ -82,7 +82,7 @@ export default function SolutionsPreview({ locale: propLocale }: SolutionsPrevie
         <div className="text-center mt-12">
           <a
             href={`/${currentLocale}/solutions`}
-            className="inline-flex items-center px-8 py-3 bg-[var(--primary-color)] text-white font-semibold rounded-xl hover:opacity-90 transition-all duration-200 shadow-md hover:shadow-lg"
+            className="btn-gradient-primary inline-flex items-center px-8 py-3 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-200"
           >
             {t('solutions.viewAll')}
             <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

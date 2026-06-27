@@ -103,12 +103,12 @@ function TimelineItem({ year, titleKey, descriptionKey, isLeft, locale, t }: { y
     >
       {/* Content side */}
       <div className={`w-5/12 ${showLeft ? 'text-right pr-8' : 'text-left pl-8'}`}>
-        <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-100 dark:border-slate-700">
-          <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-2">{year}</div>
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+        <div className="bg-[var(--card-bg)] rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-[var(--border-color)]">
+          <div className="text-2xl font-bold text-[var(--primary-color)] mb-2">{year}</div>
+          <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2">
             {t(titleKey)}
           </h3>
-          <p className="text-gray-600 dark:text-gray-300">
+          <p className="text-[var(--text-secondary)]">
             {t(descriptionKey)}
           </p>
         </div>
@@ -352,10 +352,10 @@ export default function AboutPage() {
               ].map((item, index) => {
                 const Icon = item.icon;
                 return (
-                  <div key={index} className="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border border-gray-100 dark:border-slate-700">
-                    <Icon className="w-8 h-8 text-blue-600 dark:text-blue-400 mb-3" />
-                    <div className="text-2xl font-bold text-gray-900 dark:text-white">{item.label}</div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">{t(item.sublabelKey)}</div>
+                  <div key={index} className="bg-[var(--card-bg)] rounded-xl p-5 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border border-[var(--border-color)]">
+                    <Icon className="w-8 h-8 text-[var(--primary-color)] mb-3" />
+                    <div className="text-2xl font-bold text-[var(--text-primary)]">{item.label}</div>
+                    <div className="text-sm text-[var(--text-secondary)]">{t(item.sublabelKey)}</div>
                   </div>
                 );
               })}
@@ -395,7 +395,7 @@ export default function AboutPage() {
               return (
                 <div key={index} className="group perspective-1000">
                   <div className={`relative rounded-2xl p-7 lg:p-9
-                    bg-white dark:bg-slate-800 border ${p.border}
+                    bg-[var(--card-bg)] border ${p.border}
                     shadow-sm ${p.glow}
                     transition-all duration-500 ease-out
                     group-hover:-translate-y-2 group-hover:shadow-2xl
@@ -420,15 +420,13 @@ export default function AboutPage() {
                         />
                       </div>
 
-                      {/* Number — extra large, bold, colored */}
-                      <div className={`text-5xl lg:text-[3.75rem] font-black mb-2 tracking-tighter
-                        bg-gradient-to-br ${p.numGrad} bg-clip-text text-transparent`}
-                        style={{ lineHeight: 1 }}>
+                      {/* Number — solid color for reliability across all themes (gradient text was invisible on light themes) */}
+                      <div className="text-5xl lg:text-[3.75rem] font-black mb-2 tracking-tighter text-[var(--text-primary)]" style={{ lineHeight: 1 }}>
                         {stat.prefix}{stat.number}{stat.suffix}
                       </div>
 
                       {/* Label */}
-                      <p className={`text-sm font-semibold ${p.accent} uppercase tracking-wide mt-1`}>
+                      <p className="text-sm font-semibold uppercase tracking-wide mt-1 text-[var(--text-secondary)]">
                         {t(stat.labelKey)}
                       </p>
                     </div>
@@ -512,14 +510,14 @@ export default function AboutPage() {
             {capabilities.map((cap, index) => {
               const Icon = cap.icon;
               return (
-                <div key={index} className="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100 dark:border-slate-700">
-                  <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 rounded-xl flex items-center justify-center mb-6">
+                <div key={index} className="bg-[var(--card-bg)] rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-[var(--border-color)]">
+                  <div className="w-16 h-16 bg-gradient-to-br from-[var(--primary-color)] to-[opacity-80] rounded-xl flex items-center justify-center mb-6" style={{ background: 'linear-gradient(135deg, var(--primary-color, #2563eb), color-mix(in srgb, var(--primary-color, #2563eb) 70%, #fff))' }}>
                     <Icon className="w-8 h-8 text-white" />
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                  <h3 className="text-2xl font-bold text-[var(--text-primary)] mb-3">
                     {t(cap.titleKey)}
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                  <p className="text-[var(--text-secondary)] leading-relaxed">
                     {t(cap.descriptionKey)}
                   </p>
                 </div>
@@ -545,14 +543,14 @@ export default function AboutPage() {
             {values.map((value, index) => {
               const Icon = value.icon;
               return (
-                <div key={index} className="bg-gradient-to-br from-blue-50 to-white dark:from-slate-800 dark:to-slate-700 rounded-2xl p-10 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-blue-100 dark:border-slate-600">
-                  <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 rounded-2xl flex items-center justify-center mb-8">
+                <div key={index} className="bg-[var(--card-bg)] rounded-2xl p-10 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-[var(--border-color)]">
+                  <div className="w-20 h-20 rounded-2xl flex items-center justify-center mb-8" style={{ background: 'linear-gradient(135deg, var(--primary-color, #2563eb), color-mix(in srgb, var(--primary-color, #2563eb) 70%, #fff))' }}>
                     <Icon className="w-10 h-10 text-white" />
                   </div>
-                  <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                  <h3 className="text-3xl font-bold text-[var(--text-primary)] mb-4">
                     {t(value.titleKey)}
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-lg">
+                  <p className="text-[var(--text-secondary)] leading-relaxed text-lg">
                     {t(value.descriptionKey)}
                   </p>
                 </div>
@@ -578,13 +576,13 @@ export default function AboutPage() {
               return (
                 <div
                   key={index}
-                  className="bg-white dark:bg-slate-700 rounded-xl p-6 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-100 dark:border-slate-600"
+                  className="bg-[var(--card-bg)] rounded-xl p-6 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-[var(--border-color)]"
                 >
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-900/30 dark:to-blue-800/30 flex items-center justify-center">
-                    <Icon className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, var(--primary-color, #2563eb)15%, color-mix(in srgb, var(--primary-color, #2563eb) 8%, transparent))' }}>
+                    <Icon className="w-8 h-8 text-[var(--primary-color)]" />
                   </div>
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{cert.name}</h3>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                  <h3 className="text-lg font-bold text-[var(--text-primary)] mb-2">{cert.name}</h3>
+                  <p className="text-xs text-[var(--text-muted)]">
                     {t(cert.fullNameKey)}
                   </p>
                 </div>

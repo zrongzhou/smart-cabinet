@@ -2006,17 +2006,16 @@ html {
 }
 
 /* ============================================================
-   v129e — 统一设计系统修复 (2026-06-27)
-   
-   1. 修复 AdvantagesSection 空白卡片（overlay 遮挡根因）
-   2. 统一全站按钮渐变样式
-   3. Testimonials 文字对比度
+   v130 — 全主题设计系统统一 (2026-06-27)
+
+   核心原则: 组件自身使用 CSS 变量 (--text-primary 等),
+   不再依赖大量 !important 覆盖规则。
+   本文件只保留极少数全局安全网规则。
    ============================================================ */
 
-/* ===== 全站统一渐变按钮 (.btn-gradient-primary) ===== */
-/* 用于所有主要操作按钮：Sign Up, Get a Quote, CTA 等 */
+/* ===== 1. 全站渐变按钮工具类 ===== */
 .btn-gradient-primary {
-  background: linear-gradient(135deg, var(--primary-color) 0%, 
+  background: linear-gradient(135deg, var(--primary-color) 0%,
     color-mix(in srgb, var(--primary-color) 65%, #000) 100%) !important;
   color: #fff !important;
   box-shadow: 0 4px 14px color-mix(in srgb, var(--primary-color) 35%, transparent);
@@ -2028,110 +2027,39 @@ html {
   filter: brightness(1.08);
 }
 
-/* ===== 问题1修复: AdvantagesSection 卡片内容可见性 (v129e) ===== */
-/* 根因(v129d): .bg-[var(--section-alt-bg)] .rounded-3xl 选择器过于宽泛，
-   把组件内的 absolute inset-0 hover overlay 也染了不透明背景，
-   导致 overlay 遮住所有卡片内容！
-   
-   修复方案:
-   - 不再用 !important 覆盖 background-color（CSS变量--card-bg已经正确）
-   - 强制所有 absolute 定位的 overlay 保持透明
-   - 仅保留文字颜色安全网规则 */
-
-/* 🔴 关键：强制所有 absolute positioned overlay 透明，防止遮挡内容 */
-[data-theme="dark"] .bg-\[var\(--section-alt-bg\)\] .rounded-3xl > [class*="inset-0"],
-[data-theme="dark"] .bg-\[var\(--section-alt-bg\)\] .rounded-3xl > [style*="inset"],
-.bg-\[var\(--section-alt-bg\)\] .rounded-3xl > [class*="absolute"][class*="inset"] {
+/* ===== 2. 关键安全网: hover overlay 绝对不能遮挡内容 (v129e根因修复) ===== */
+/* 所有 absolute positioned 的 inset-0 overlay 必须保持透明 */
+[class*="absolute"][class*="inset-0"],
+[style*="position: absolute"][style*="inset"] {
   background: transparent !important;
   background-color: transparent !important;
 }
 
-/* Dark主题文字颜色安全网 — 确保卡片内文字在深色背景下可读 */
-[data-theme="dark"] .bg-\[var\(--section-alt-bg\)\] .rounded-3xl h3,
-[data-theme="dark"] .bg-\[var\(--section-alt-bg\)\] .rounded-3xl p,
-[data-theme="dark"] .bg-\[var\(--section-alt-bg\)\] .rounded-3xl span:not([class*="bg-"]) {
-  color: var(--text-primary, #f1f5f9) !important;
-}
-[data-theme="dark"] .bg-\[var\(--section-alt-bg\)\] .rounded-3xl p.text-\[var\(--text-secondary\)\] {
-  color: var(--text-secondary, #94a3b8) !important;
-}
-
-/* Ocean主题: 也做类似保护（浅色主题但卡片可能被覆盖） */
-[data-theme="ocean"] .bg-\[var\(--section-alt-bg\)\] .rounded-3xl h3,
-[data-theme="ocean"] .bg-\[var\(--section-alt-bg\)\] .rounded-3xl p {
-  color: var(--text-primary) !important;
+/* ===== 3. bg-white 全主题转换 (之前只有Dark和Cyberpunk有!) ===== */
+/* Nature, Ocean, Guofeng, Fashion 等浅色主题也需要转换 bg-white */
+[data-theme="nature"] .bg-white,
+[data-theme="ocean"] .bg-white,
+[data-theme="guofeng"] .bg-white,
+[data-theme="fashion"] .bg-white,
+[data-theme="minimal"] .bg-white,
+[data-theme="neumorphic"] .bg-white {
+  background-color: var(--tc-bg-card) !important;
 }
 
-/* 全主题安全网: AdvantagesSection 图标容器确保可见 */
-[data-theme="cyberpunk"] .rounded-3xl > div:first-of-type.w-20,
-[data-theme="dark"] .rounded-3xl > div:first-of-type.w-20,
-[data-theme="minimal"] .rounded-3xl > div:first-of-type.w-20 {
-  opacity: 1 !important;
-  visibility: visible !important;
-  display: flex !important;
-}
-
-/* ===== 问题2修复: TestimonialsSection 文字对比度 ===== */
-
-/* Testimonials 区域在所有主题下文字必须可读 */
+/* ===== 4. Testimonials 安全网（组件仍使用硬编码 text-gray-*）===== */
 section.bg-white .rounded-3xl p.text-gray-600,
 section.bg-white .rounded-3xl .text-gray-600 {
   color: var(--text-secondary, #475569) !important;
+}
+section.bg-white .rounded-3xl .font-bold {
+  color: var(--text-primary, #111827) !important;
 }
 section.bg-white .rounded-3xl .text-gray-500,
 section.bg-white .rounded-3xl .text-gray-400 {
   color: var(--text-muted, #6b7280) !important;
 }
-section.bg-white .rounded-3xl .text-gray-900,
-section.bg-white .rounded-3xl .font-bold {
-  color: var(--text-primary, #111827) !important;
-}
 
-/* Dark主题下的 Testimonials: bg-white被覆盖为深色后，文字需要反转 */
-[data-theme="dark"] section.bg-white .rounded-3xl p,
-[data-theme="dark"] section.bg-white .rounded-3xl .text-gray-600 {
-  color: var(--text-secondary, #94a3b8) !important;
-}
-[data-theme="dark"] section.bg-white .rounded-3xl .text-gray-500,
-[data-theme="dark"] section.bg-white .rounded-3xl .text-gray-400 {
-  color: var(--text-muted, #64748b) !important;
-}
-[data-theme="dark"] section.bg-white .rounded-3xl .font-bold,
-[data-theme="dark"] section.bg-white .rounded-3xl .text-gray-900 {
-  color: var(--text-primary, #f1f5f9) !important;
-}
-/* Dark主题下 Testimonials 的星星和引用图标保持明亮 */
-[data-theme="dark"] section.bg-white .rounded-3xl .text-amber-400 {
-  color: #fbbf24 !important;
-}
-[data-theme="dark"] section.bg-white .rounded-3xl .text-blue-600 {
-  color: var(--primary-color, #60a5fa) !important;
-}
-
-/* Cyberpunk主题 Testimonials */
-[data-theme="cyberpunk"] section.bg-white .rounded-3xl p {
-  color: var(--text-secondary, #b0b0e0) !important;
-}
-[data-theme="cyberpunk"] section.bg-white .rounded-3xl .font-bold {
-  color: var(--text-primary, #e0e0ff) !important;
-}
-[data-theme="cyberpunk"] section.bg-white .rounded-3xl .text-gray-500 {
-  color: var(--text-muted, #8080c0) !important;
-}
-
-/* Minimal主题 Testimonials: 确保高对比度 */
-[data-theme="minimal"] section.bg-white .rounded-3xl p {
-  color: #444444 !important;
-}
-[data-theme="minimal"] section.bg-white .rounded-3xl .font-bold {
-  color: #111111 !important;
-}
-[data-theme="minimal"] section.bg-white .rounded-3xl .text-gray-500 {
-  color: #666666 !important;
-}
-
-/* --- theme-solution-header: Solutions 页面头部主题适配 --- */
-.theme-solution-header {
+/* ===== 5. Solutions 页面头部主题适配 ===== */
   background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%) !important;
 }
 [data-theme="dark"] .theme-solution-header {
@@ -2160,143 +2088,7 @@ section.bg-white .rounded-3xl .font-bold {
   background: linear-gradient(135deg, #4a5568 0%, #718096 100%) !important;
 }
 
-/* ============================================================
-   COMPONENT-SPECIFIC THEME FIXES — v7
-   
-   修复特定组件在各主题下的可见性问题
-   ============================================================ */
-
-/* ===== TrustBadges 组件主题适配 ===== */
-
-/* TrustBadges: 统计数字在所有主题下必须可见 */
-/* 默认使用 theme-aware 颜色 */
-[class*="TrustBadges"] .text-blue-600,
-[class*="trustBadges"] .text-blue-600 {
-  color: var(--tc-primary) !important;
-}
-
-/* 确保统计数字的容器背景正确 */
-[class*="TrustBadges"] .bg-white {
-  background-color: var(--tc-bg-card) !important;
-}
-
-/* Minimal 主题：统计数字必须是黑色，背景白色 */
-[data-theme="minimal"] [class*="TrustBadges"] .text-4xl.font-extrabold {
-  color: #000000 !important;
-}
-
-/* Minimal 主题：认证卡片图标和文字必须可见 */
-[data-theme="minimal"] [class*="TrustBadges"] .text-gray-500 {
-  color: #666666 !important;
-}
-
-[data-theme="minimal"] [class*="TrustBadges"] .text-gray-900 {
-  color: #000000 !important;
-}
-
-/* Cyberpunk 主题：统计数字使用霓虹色 */
-[data-theme="cyberpunk"] [class*="TrustBadges"] .text-4xl.font-extrabold {
-  color: var(--tc-primary) !important;
-  text-shadow: 0 0 10px var(--tc-primary) !important;
-}
-
-/* Cyberpunk 主题：认证卡片在深色背景上必须可见 */
-[data-theme="cyberpunk"] [class*="TrustBadges"] .bg-white {
-  background-color: var(--tc-bg-card) !important;
-  border-color: rgba(0, 240, 255, 0.3) !important;
-}
-
-[data-theme="cyberpunk"] [class*="TrustBadges"] .text-gray-500 {
-  color: var(--tc-text-secondary) !important;
-}
-
-[data-theme="cyberpunk"] [class*="TrustBadges"] .text-gray-900 {
-  color: var(--tc-heading) !important;
-}
-
-/* Guofeng 主题：认证区域文字加深 */
-[data-theme="guofeng"] [class*="TrustBadges"] .text-gray-500 {
-  color: var(--tc-text-secondary) !important;
-}
-
-/* Nature 主题：认证区域文字加深 */
-[data-theme="nature"] [class*="TrustBadges"] .text-gray-500 {
-  color: var(--tc-text-secondary) !important;
-}
-
-/* Ocean 主题：认证区域文字加深 */
-[data-theme="ocean"] [class*="TrustBadges"] .text-gray-500 {
-  color: var(--tc-text-secondary) !important;
-}
-
-/* ===== SolutionsPreview 组件主题适配 ===== */
-
-/* SolutionsPreview: 卡片标题在所有主题下必须可见 */
-[class*="SolutionsPreview"] .text-gray-900 {
-  color: var(--tc-heading) !important;
-}
-
-[class*="SolutionsPreview"] .text-gray-600 {
-  color: var(--tc-text-secondary) !important;
-}
-
-/* SolutionsPreview: 卡片背景适配 */
-[class*="SolutionsPreview"] .bg-gradient-to-br.from-blue-50 {
-  background-color: var(--tc-bg-card) !important;
-  background-image: none !important;
-}
-
-/* Cyberpunk 主题：Solutions 卡片 */
-[data-theme="cyberpunk"] [class*="SolutionsPreview"] .bg-gradient-to-br {
-  background-color: var(--tc-bg-card) !important;
-  border: 1px solid rgba(0, 240, 255, 0.3) !important;
-  box-shadow: 0 0 20px rgba(0, 240, 255, 0.15) !important;
-}
-
-[data-theme="cyberpunk"] [class*="SolutionsPreview"] .text-gray-900 {
-  color: var(--tc-heading) !important;
-  text-shadow: 0 0 8px var(--tc-primary) !important;
-}
-
-[data-theme="cyberpunk"] [class*="SolutionsPreview"] .text-gray-600 {
-  color: var(--tc-text-secondary) !important;
-}
-
-/* Minimal 主题：Solutions 卡片去掉蓝色渐变 */
-[data-theme="minimal"] [class*="SolutionsPreview"] .bg-gradient-to-br {
-  background-color: var(--tc-bg-card) !important;
-  background-image: none !important;
-  border: 1px solid var(--tc-border) !important;
-}
-
-[data-theme="minimal"] [class*="SolutionsPreview"] .text-blue-600 {
-  color: #000000 !important;
-}
-
-[data-theme="minimal"] [class*="SolutionsPreview"] .bg-blue-100 {
-  background-color: #F5F5F5 !important;
-}
-
-[data-theme="minimal"] [class*="SolutionsPreview"] .text-blue-600 {
-  color: #000000 !important;
-}
-
-/* ===== Product Detail Page 主题适配 ===== */
-
-/* 产品详情页主图容器在所有主题下必须有背景 */
-[class*="ProductDetail"] .aspect-square.bg-gray-100,
-[class*="product-detail"] .aspect-square.bg-gray-100 {
-  background-color: var(--tc-bg-section) !important;
-}
-
-/* Cyberpunk 主题：产品详情页 */
-[data-theme="cyberpunk"] [class*="ProductDetail"] .bg-white {
-  background-color: var(--tc-bg-card) !important;
-}
-
-/* ===== 确保所有主题下 badge/标签文字可见 ===== */
-
-/* 浅色主题（Nature/Ocean/Guofeng/Fashion）下，蓝色 badge 文字需要加深 */
+/* ===== 打印样式已定义在上面 (约 line 1966) ===== */
 [data-theme="nature"] .bg-blue-100.text-blue-700,
 [data-theme="ocean"] .bg-blue-100.text-blue-700 {
   background-color: rgba(22, 163, 74, 0.1) !important;

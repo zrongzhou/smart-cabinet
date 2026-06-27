@@ -492,15 +492,15 @@ export default function ProductsPage() {
             
             {/* Row1: Dimension Tabs - unified design system */}
             <div className="flex flex-wrap items-center justify-center gap-2">
-              {/* "All" button - neutral gradient when active, matches sibling style */}
+              {/* "All" button - light neutral style matching sibling pills */}
               <button
                 onClick={() => handleDimensionChange('all')}
                 className={`relative px-4 py-2 rounded-full text-[14px] font-semibold transition-all duration-200 inline-flex items-center gap-1.5 ${
                   activeDimension === 'all'
-                    /* Active: subtle slate gradient — harmonizes with colored siblings */
-                    ? 'bg-gradient-to-r from-slate-500 to-slate-600 text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 ring-1 ring-white/20'
-                    /* Inactive: same base style as other inactive tabs */
-                    : 'bg-white text-gray-500 border border-gray-200 hover:border-gray-300 hover:shadow-sm hover:-translate-y-0.5'
+                    /* Active: subtle primary color — visible in ALL themes */
+                    ? 'bg-[var(--primary-color)] text-white shadow-md hover:shadow-lg hover:-translate-y-0.5'
+                    /* Inactive: light pill same as other inactive tabs */
+                    : 'bg-[var(--card-bg)] text-[var(--text-secondary)] border border-[var(--border-color)] hover:border-[var(--primary-color)]/30 hover:shadow-sm hover:-translate-y-0.5'
                 }`}
               >
                 <span>{t('products.filterAll') || 'All'}</span>
@@ -531,8 +531,8 @@ export default function ProductsPage() {
                       isActive
                         /* Active: colored gradient — primary visual state */
                         ? `${dc.activeGradient} text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 ring-1 ring-white/25`
-                        /* Inactive: unified white-pill style regardless of product count */
-                        : 'bg-white text-gray-500 border border-gray-200 hover:border-gray-300 hover:shadow-sm hover:-translate-y-0.5'
+                        /* Inactive: unified light-pill style using CSS vars */
+                        : `bg-[var(--card-bg)] text-[var(--text-secondary)] border border-[var(--border-color)] hover:border-[var(--primary-color)]/30 hover:shadow-sm hover:-translate-y-0.5`
                     }`}
                     title={isEmpty ? (locale === 'zh' ? '该维度暂无产品' : 'No products in this dimension') : ''}
                   >
@@ -583,8 +583,8 @@ export default function ProductsPage() {
                             isSelected
                               /* Selected: soft tint of parent dimension color */
                               ? `${dc.activeBg} text-white shadow-sm font-medium hover:shadow-md`
-                              /* Unselected: clean light pill — consistent for ALL categories */
-                              : `bg-gray-50 text-gray-500 border border-gray-200 hover:border-gray-300 hover:bg-white hover:shadow-sm`
+                              /* Unselected: clean light pill using CSS vars — consistent for ALL categories */
+                              : `bg-[var(--card-bg)] text-[var(--text-secondary)] border border-[var(--border-color)] hover:border-[var(--primary-color)]/30 hover:shadow-sm`
                           }`}
                         >
                           {isSelected && (

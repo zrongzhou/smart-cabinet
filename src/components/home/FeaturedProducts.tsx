@@ -77,8 +77,8 @@ export default function FeaturedProducts({ locale: propLocale }: FeaturedProduct
                     className="group relative bg-[var(--card-bg)] rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden transform hover:-translate-y-3 hover:scale-[1.02]"
                   >
                     {/* Product Image or Gradient Header */}
-                    <div className="relative h-56 overflow-hidden bg-[var(--section-alt-bg)]">
-                      {product.images && product.images[0] ? (
+                    <div className="relative h-56 overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700" style={{ backgroundColor: 'var(--section-alt-bg)' }}>
+                      {(product.images && product.images.length > 0 && product.images[0]) ? (
                         <>
                           <img 
                             src={product.images[0]} 
@@ -102,7 +102,7 @@ export default function FeaturedProducts({ locale: propLocale }: FeaturedProduct
                           </div>
                         </>
                       ) : (
-                        <div className="h-full flex flex-col items-center justify-center text-white p-8 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%)' }}>
+                        <div className="h-full flex flex-col items-center justify-center text-white p-8 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, var(--primary-color, #2563eb) 0%, color-mix(in srgb, var(--primary-color, #2563eb) 70%, #fff) 100%)' }}>
                           <div className="absolute inset-0 opacity-20">
                             <div className="absolute top-4 right-4 w-20 h-20 border-2 border-white/40 rounded-full" />
                             <div className="absolute bottom-4 left-4 w-12 h-12 border-2 border-white/40 rounded-lg rotate-12" />
