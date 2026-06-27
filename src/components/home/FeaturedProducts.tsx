@@ -92,14 +92,17 @@ export default function FeaturedProducts({ locale: propLocale }: FeaturedProduct
                             }}
                             loading={index < 2 ? "eager" : "lazy"}
                           />
-                          {/* Fallback - shown when img fails to load */}
-                          <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-blue-400 flex flex-col items-center justify-center text-white" style={{display: 'none'}}>
+                          {/* Fallback - shown when img fails to load; use inline style to survive Tailwind purge */}
+                          <div
+                            className="absolute inset-0 flex flex-col items-center justify-center text-white"
+                            style={{ display: 'none', background: 'linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%)' }}
+                          >
                             <Package className="w-12 h-12 mb-2 opacity-80" />
                             <span className="text-sm font-medium">{currentLocale === 'zh' ? product.name.zh : currentLocale === 'ar' ? product.name.ar : product.name.en || product.sku || 'Product'}</span>
                           </div>
                         </>
                       ) : (
-                        <div className="h-full bg-gradient-to-br from-blue-600 to-blue-400 flex flex-col items-center justify-center text-white p-8 relative overflow-hidden">
+                        <div className="h-full flex flex-col items-center justify-center text-white p-8 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%)' }}>
                           <div className="absolute inset-0 opacity-20">
                             <div className="absolute top-4 right-4 w-20 h-20 border-2 border-white/40 rounded-full" />
                             <div className="absolute bottom-4 left-4 w-12 h-12 border-2 border-white/40 rounded-lg rotate-12" />

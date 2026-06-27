@@ -558,7 +558,7 @@ export default function ProductsPage() {
               return (
                 <div className="mt-3 pt-3 border-t border-gray-100/80 dark:border-gray-700/40">
                   {/* Compact label row - shows which dimension is active */}
-                  <div className="flex items-center gap-2 mb-2.5 px-1">
+                  <div className="flex items-center justify-center gap-2 mb-2.5 px-1">
                     <div className={`h-[2px] w-5 rounded-full ${dc.barColor}`} />
                     <span className={`text-[12px] font-medium uppercase tracking-wider ${dc.textColor} opacity-60`}>
                       {dimLabel}
@@ -567,7 +567,7 @@ export default function ProductsPage() {
                       — {locale === 'zh' ? '选择子分类' : locale === 'ar' ? 'اختر التصنيف الفرعي' : 'sub-categories'}
                     </span>
                   </div>
-                  <div className="flex flex-wrap items-center justify-start gap-[6px]">
+                  <div className="flex flex-wrap items-center justify-center gap-[6px]">
                     {allCats.map((cat, catIndex) => {
                       const count = categoryProductCount[cat.id] || 0;
                       const isSelected = activeCategories.includes(cat.id);
