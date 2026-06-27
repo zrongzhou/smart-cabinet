@@ -261,7 +261,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
                   </a>
                   <a
                     href={`/${locale}/register`}
-                    className="px-4 py-2 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-all duration-200"
+                    className="px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 btn-gradient-primary"
                   >
                     {locale === 'zh' ? '注册' : locale === 'ar' ? 'إنشاء حساب' : 'Sign Up'}
                   </a>
@@ -271,7 +271,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
               {/* Get a Quote Button */}
               <a
                 href={`/${locale}/contact`}
-                className="inline-flex items-center px-5 py-2 bg-[var(--primary-color)] text-white font-medium rounded-lg hover:opacity-90 transition-all duration-200 text-sm shadow-sm hover:shadow-md"
+                className="inline-flex items-center px-5 py-2 font-semibold rounded-lg transition-all duration-200 text-sm btn-gradient-primary"
               >
                 {t('nav.getQuote')}
               </a>
@@ -418,7 +418,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
               <a
                 href={`/${locale}/contact`}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="block w-full text-center py-3 bg-[var(--primary-color)] text-white font-medium rounded-lg hover:opacity-90 transition-all duration-200"
+                className="block w-full text-center py-3 font-semibold rounded-lg transition-all duration-200 btn-gradient-primary"
               >
                 {t('nav.getQuote')}
               </a>

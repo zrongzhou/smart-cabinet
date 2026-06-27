@@ -2006,27 +2006,47 @@ html {
 }
 
 /* ============================================================
-   v129d — 截图问题修复 (2026-06-27)
+   v129e — 统一设计系统修复 (2026-06-27)
    
-   问题1: AdvantagesSection 卡片全空白（Dark等深色主题）
-   根因: --section-alt-bg 与 --card-bg 同色 + rounded-3xl 强制覆盖
-   
-   问题2: TestimonialsSection 文字太浅看不清  
-   根因: 硬编码 text-gray-* 不适配多主题
+   1. 修复 AdvantagesSection 空白卡片（overlay 遮挡根因）
+   2. 统一全站按钮渐变样式
+   3. Testimonials 文字对比度
    ============================================================ */
 
-/* ===== 问题1修复: AdvantagesSection 卡片内容可见性 ===== */
+/* ===== 全站统一渐变按钮 (.btn-gradient-primary) ===== */
+/* 用于所有主要操作按钮：Sign Up, Get a Quote, CTA 等 */
+.btn-gradient-primary {
+  background: linear-gradient(135deg, var(--primary-color) 0%, 
+    color-mix(in srgb, var(--primary-color) 65%, #000) 100%) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--primary-color) 35%, transparent);
+  transition: all 0.25s ease;
+}
+.btn-gradient-primary:hover {
+  transform: translateY(-1.5px);
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--primary-color) 45%, transparent);
+  filter: brightness(1.08);
+}
 
-/* Dark主题: section-alt-bg(#1e293b) 和 card-bg(#1e293b) 完全同色 → 需要让卡片有区分 */
-[data-theme="dark"] section[class*="section-alt"] .rounded-3xl,
-[data-theme="dark"] .bg-\[var\(--section-alt-bg\)\] .rounded-3xl {
-  background-color: #253349 !important;  /* 比section-alt-bg亮20%，形成层次 */
-  border-color: #334155 !important;
+/* ===== 问题1修复: AdvantagesSection 卡片内容可见性 (v129e) ===== */
+/* 根因(v129d): .bg-[var(--section-alt-bg)] .rounded-3xl 选择器过于宽泛，
+   把组件内的 absolute inset-0 hover overlay 也染了不透明背景，
+   导致 overlay 遮住所有卡片内容！
+   
+   修复方案:
+   - 不再用 !important 覆盖 background-color（CSS变量--card-bg已经正确）
+   - 强制所有 absolute 定位的 overlay 保持透明
+   - 仅保留文字颜色安全网规则 */
+
+/* 🔴 关键：强制所有 absolute positioned overlay 透明，防止遮挡内容 */
+[data-theme="dark"] .bg-\[var\(--section-alt-bg\)\] .rounded-3xl > [class*="inset-0"],
+[data-theme="dark"] .bg-\[var\(--section-alt-bg\)\] .rounded-3xl > [style*="inset"],
+.bg-\[var\(--section-alt-bg\)\] .rounded-3xl > [class*="absolute"][class*="inset"] {
+  background: transparent !important;
+  background-color: transparent !important;
 }
-[data-theme="dark"] .bg-\[var\(--section-alt-bg\)\] .rounded-3xl .w-20 {
-  /* 确保图标容器可见 */
-  opacity: 1 !important;
-}
+
+/* Dark主题文字颜色安全网 — 确保卡片内文字在深色背景下可读 */
 [data-theme="dark"] .bg-\[var\(--section-alt-bg\)\] .rounded-3xl h3,
 [data-theme="dark"] .bg-\[var\(--section-alt-bg\)\] .rounded-3xl p,
 [data-theme="dark"] .bg-\[var\(--section-alt-bg\)\] .rounded-3xl span:not([class*="bg-"]) {

@@ -490,15 +490,17 @@ export default function ProductsPage() {
             {/* Subtle accent bar - shows under active dimension tab instead of top line */}
             <div className="h-1" />
             
-            {/* Row1: Dimension Tabs */}
-            {/* Row 1: Dimension Tabs - compact, pill-based */}
+            {/* Row1: Dimension Tabs - unified design system */}
             <div className="flex flex-wrap items-center justify-center gap-2">
+              {/* "All" button - neutral gradient when active, matches sibling style */}
               <button
                 onClick={() => handleDimensionChange('all')}
                 className={`relative px-4 py-2 rounded-full text-[14px] font-semibold transition-all duration-200 inline-flex items-center gap-1.5 ${
                   activeDimension === 'all'
-                    ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 shadow-md hover:shadow-lg hover:-translate-y-0.5'
-                    : 'bg-[var(--card-bg)] border border-[var(--border-color)] text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:shadow-sm hover:-translate-y-0.5'
+                    /* Active: subtle slate gradient — harmonizes with colored siblings */
+                    ? 'bg-gradient-to-r from-slate-500 to-slate-600 text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 ring-1 ring-white/20'
+                    /* Inactive: same base style as other inactive tabs */
+                    : 'bg-white text-gray-500 border border-gray-200 hover:border-gray-300 hover:shadow-sm hover:-translate-y-0.5'
                 }`}
               >
                 <span>{t('products.filterAll') || 'All'}</span>
@@ -526,11 +528,11 @@ export default function ProductsPage() {
                     key={type}
                     onClick={() => handleDimensionChange(type)}
                     className={`relative px-3.5 py-2 rounded-full text-[14px] font-medium transition-all duration-200 inline-flex items-center gap-1.5 ${
-                      isEmpty
-                        ? `${dc.lightBg} ${dc.textColor} border ${dc.border} opacity-40 cursor-default`
-                        : isActive
-                          ? `${dc.activeGradient} text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 ring-1 ring-white/25`
-                          : `bg-[var(--card-bg)] ${dc.textColor} border border-[var(--border-color)]/70 hover:shadow-sm hover:-translate-y-0.5`
+                      isActive
+                        /* Active: colored gradient — primary visual state */
+                        ? `${dc.activeGradient} text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 ring-1 ring-white/25`
+                        /* Inactive: unified white-pill style regardless of product count */
+                        : 'bg-white text-gray-500 border border-gray-200 hover:border-gray-300 hover:shadow-sm hover:-translate-y-0.5'
                     }`}
                     title={isEmpty ? (locale === 'zh' ? '该维度暂无产品' : 'No products in this dimension') : ''}
                   >
@@ -538,11 +540,13 @@ export default function ProductsPage() {
                     {isActive && (
                       <div className="absolute left-0 top-1.5 bottom-1.5 w-[3px] bg-white/60 rounded-r" />
                     )}
+                    {/* Dimension icon — always show in its brand color */}
                     {dimensionIcon && <span className="flex-shrink-0">{dimensionIcon}</span>}
                     <span>{label}</span>
-                    {!isEmpty && (
-                      <span className={`text-[12px] font-normal tabular-nums ml-0.5 ${isActive ? 'text-white/75' : 'opacity-50'}`}>{count}</span>
-                    )}
+                    {/* Count badge — subtle, always visible */}
+                    <span className={`text-[11px] font-normal tabular-nums ml-0.5 ${isActive ? 'text-white/70' : 'text-gray-400'}`}>
+                      ({count})
+                    </span>
                   </button>
                 );
               })}
@@ -556,19 +560,19 @@ export default function ProductsPage() {
               const dimLabel = getDimensionLabel(activeDimension);
 
               return (
-                <div className="mt-3 pt-3 border-t border-gray-100/80 dark:border-gray-700/40">
-                  {/* Compact label row - shows which dimension is active */}
+                <div className="mt-3 pt-3 border-t border-gray-100">
+                  {/* Label row - shows which dimension is active */}
                   <div className="flex items-center justify-center gap-2 mb-2.5 px-1">
                     <div className={`h-[2px] w-5 rounded-full ${dc.barColor}`} />
                     <span className={`text-[12px] font-medium uppercase tracking-wider ${dc.textColor} opacity-60`}>
                       {dimLabel}
                     </span>
                     <span className="text-[11px] text-gray-400 font-normal">
-                      — {locale === 'zh' ? '选择子分类' : locale === 'ar' ? 'اختر التصنيف الفرعي' : 'sub-categories'}
+                      — {locale === 'zh' ? '子分类' : locale === 'ar' ? 'تصنيفات فرعية' : 'sub-categories'}
                     </span>
                   </div>
                   <div className="flex flex-wrap items-center justify-center gap-[6px]">
-                    {allCats.map((cat, catIndex) => {
+                    {allCats.map((cat) => {
                       const count = categoryProductCount[cat.id] || 0;
                       const isSelected = activeCategories.includes(cat.id);
                       return (
@@ -577,8 +581,10 @@ export default function ProductsPage() {
                           onClick={() => toggleCategory(cat.id)}
                           className={`relative px-3 py-1.5 rounded-full text-[13px] transition-all duration-200 leading-none inline-flex items-center ${
                             isSelected
-                              ? `${dc.activeGradient} text-white shadow-md font-medium hover:shadow-lg hover:-translate-y-0.5`
-                              : `bg-gray-50/80 dark:bg-gray-800/50 text-gray-600 dark:text-gray-400 border border-gray-200/70 dark:border-gray-600/50 hover:border-${dc.barColor.replace('bg-', '')}/40 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-white dark:hover:bg-gray-700/50 hover:shadow-sm ${count === 0 ? 'opacity-40 cursor-default' : ''}`
+                              /* Selected: soft tint of parent dimension color */
+                              ? `${dc.activeBg} text-white shadow-sm font-medium hover:shadow-md`
+                              /* Unselected: clean light pill — consistent for ALL categories */
+                              : `bg-gray-50 text-gray-500 border border-gray-200 hover:border-gray-300 hover:bg-white hover:shadow-sm`
                           }`}
                         >
                           {isSelected && (
@@ -593,9 +599,10 @@ export default function ProductsPage() {
                             }
                             return String(n || cat.slug || '');
                           })()}</span>
-                          {count > 0 && (
-                            <span className={`ml-1.5 text-[11px] tabular-nums ${isSelected ? 'text-white/65' : 'text-gray-400 dark:text-gray-500'}`}>({count})</span>
-                          )}
+                          {/* Count — always visible, no dimming */}
+                          <span className={`ml-1.5 text-[11px] tabular-nums ${isSelected ? 'text-white/70' : 'text-gray-400'}`}>
+                            ({count})
+                          </span>
                         </button>
                       );
                     })}
