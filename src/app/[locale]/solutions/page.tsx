@@ -51,7 +51,7 @@ export default function SolutionsPage({ params: { locale } }: SolutionsPageProps
           <h1 className="text-4xl sm:text-5xl font-bold mb-4">
             {t('solutions.title')}
           </h1>
-          <p className="text-xl" style={{ color: 'var(--tc-text-secondary)' }}>
+          <p className="text-xl text-white/80">
             {t('solutions.subtitle')}
           </p>
         </div>

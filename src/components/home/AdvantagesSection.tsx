@@ -3,37 +3,25 @@
 import { Zap, Shield, Radio, Cpu, Clock, Users, Leaf, ArrowRight } from 'lucide-react';
 import { useLocale } from '@/lib/i18n';
 
-// 使用网站主题色，为每个卡片创建不同的透明度效果
-const iconBgMap: Record<string, string> = {
-  blue: 'rgba(59,130,246,0.12)',
-  emerald: 'rgba(59,130,246,0.15)',
-  violet: 'rgba(59,130,246,0.18)',
-  amber: 'rgba(59,130,246,0.20)',
-  cyan: 'rgba(59,130,246,0.22)',
-  pink: 'rgba(59,130,246,0.25)',
-};
-
+// 图标容器使用实际颜色（白色图标需要足够深的背景）
+// 注意：inline style 的 linear-gradient 中不能使用 CSS 变量，必须用 hex 值
 const iconGradientMap: Record<string, string> = {
-  blue: 'linear-gradient(135deg, var(--primary-color), var(--primary-hover))',
-  emerald: 'linear-gradient(135deg, var(--primary-color), var(--primary-hover))',
-  violet: 'linear-gradient(135deg, var(--primary-color), var(--primary-dark))',
-  amber: 'linear-gradient(135deg, var(--primary-color), var(--primary-hover))',
-  cyan: 'linear-gradient(135deg, var(--primary-dark), var(--primary-color))',
-  pink: 'linear-gradient(135deg, var(--primary-color), var(--primary-dark))',
+  blue:   'linear-gradient(135deg, #2563eb, #60a5fa)',
+  emerald:'linear-gradient(135deg, #059669, #34d399)',
+  violet: 'linear-gradient(135deg, #7c3aed, #a78bfa)',
+  amber:  'linear-gradient(135deg, #d97706, #fbbf24)',
+  cyan:   'linear-gradient(135deg, #0891b2, #22d3ee)',
+  pink:   'linear-gradient(135deg, #db2777, #f472b6)',
 };
 
 const shadowMap: Record<string, string> = {
-  blue: '0 8px 25px rgba(0,0,0,0.15)',
-  emerald: '0 8px 25px rgba(0,0,0,0.18)',
-  violet: '0 8px 25px rgba(0,0,0,0.20)',
-  amber: '0 8px 25px rgba(0,0,0,0.15)',
-  cyan: '0 8px 25px rgba(0,0,0,0.18)',
-  pink: '0 8px 25px rgba(0,0,0,0.20)',
+  blue:   '0 8px 25px rgba(37,99,235,0.25)',
+  emerald:'0 8px 25px rgba(5,150,105,0.25)',
+  violet: '0 8px 25px rgba(124,58,237,0.25)',
+  amber:  '0 8px 25px rgba(217,119,6,0.25)',
+  cyan:   '0 8px 25px rgba(8,145,178,0.25)',
+  pink:   '0 8px 25px rgba(219,39,119,0.25)',
 };
-
-function getIconBg(color: string): string {
-  return iconBgMap[color] || iconBgMap.blue;
-}
 
 function getIconGradient(color: string): string {
   return iconGradientMap[color] || iconGradientMap.blue;
