@@ -22,16 +22,19 @@ export async function GET() {
       // Convert DB rows to the legacy JSON format for frontend compatibility
       const result: Record<string, any> = {};
       dims.forEach(dim => {
-        let nameObj = dim.name;
+        let nameObj: Record<string, any> = {};
+        const rawName = dim.name;
         // Handle stringified JSON (defensive)
-        if (typeof nameObj === 'string') {
-          try { nameObj = JSON.parse(nameObj); } catch { /* keep as-is */ }
+        if (typeof rawName === 'string') {
+          try { nameObj = JSON.parse(rawName); } catch { nameObj = {}; }
+        } else if (rawName && typeof rawName === 'object' && !Array.isArray(rawName)) {
+          nameObj = rawName as Record<string, any>;
         }
 
         result[dim.key] = {
-          labelZh: (nameObj?.zh as string) || '',
-          labelEn: (nameObj?.en as string) || '',
-          labelAr: (nameObj?.ar as string) || '',
+          labelZh: (nameObj.zh as string) || '',
+          labelEn: (nameObj.en as string) || '',
+          labelAr: (nameObj.ar as string) || '',
           icon: dim.icon || '',
         };
       });
