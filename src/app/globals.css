@@ -929,9 +929,9 @@
   border-color: var(--tc-border) !important;
 }
 
-/* Dark 模式：轮播/滑动卡片容器（排除 absolute 定位的装饰覆盖层！） */
-[data-theme="dark"] [class*="rounded-2xl"]:not([class*="absolute"]),
-[data-theme="dark"] [class*="rounded-3xl"]:not([class*="absolute"]) {
+/* Dark 模式：轮播/滑动卡片容器（排除 absolute 定位的装饰覆盖层！排除 CTA 按钮！） */
+[data-theme="dark"] [class*="rounded-2xl"]:not([class*="absolute"]):not(.cta-primary-btn):not(.cta-phone-btn),
+[data-theme="dark"] [class*="rounded-3xl"]:not([class*="absolute"]):not(.cta-primary-btn):not(.cta-phone-btn) {
   background-color: var(--tc-bg-card) !important;
 }
 
@@ -942,10 +942,10 @@
   border-color: var(--tc-border) !important;
 }
 
-/* --- FeaturedProducts / Solutions 组件主题适配（排除 absolute 覆盖层！）--- */
-[data-theme="dark"] section .bg-white:not([class*="absolute"]),
-[data-theme="dark"] section .rounded-2xl:not([class*="absolute"]),
-[data-theme="dark"] section .rounded-3xl:not([class*="absolute"]) {
+/* --- FeaturedProducts / Solutions 组件主题适配（排除 absolute 覆盖层！排除 CTA 按钮！）--- */
+[data-theme="dark"] section .bg-white:not([class*="absolute"]):not(.cta-primary-btn):not(.cta-phone-btn),
+[data-theme="dark"] section .rounded-2xl:not([class*="absolute"]):not(.cta-primary-btn):not(.cta-phone-btn),
+[data-theme="dark"] section .rounded-3xl:not([class*="absolute"]):not(.cta-primary-btn):not(.cta-phone-btn) {
   background-color: var(--tc-bg-card) !important;
 }
 
@@ -1972,37 +1972,13 @@ html {
   background: linear-gradient(to right, #6B7280, #9CA3AF) !important;
 }
 
-/* ===== CTA Section 内部按钮/联系信息 - 主题适配 (v129) ===== */
-/* 简约主题(纯黑背景): 主按钮用深色玻璃态，避免白色刺眼方块 */
-[data-theme="minimal"] .theme-cta-bg .cta-primary-btn {
-  background: rgba(255, 255, 255, 0.08) !important;
-  color: #ffffff !important;
-  border-color: rgba(255, 255, 255, 0.2) !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
-}
-[data-theme="minimal"] .theme-cta-bg .cta-primary-btn:hover {
-  background: rgba(255, 255, 255, 0.15) !important;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5) !important;
-}
-[data-theme="minimal"] .theme-cta-bg .cta-phone-btn {
+/* ===== CTA Section 按钮主题适配 (v131) ===== */
+/* 主按钮现在使用内联 style (CSS变量渐变)，这里不再用 !important 覆盖 */
+/* 仅保留 phone-btn 的微调（它仍使用 Tailwind 类） */
+[data-theme="minimal"] .theme-cta-bg .cta-phone-btn,
+[data-theme="cyberpunk"] .theme-cta-bg .cta-phone-btn {
   background: rgba(255, 255, 255, 0.05) !important;
   border-color: rgba(255, 255, 255, 0.2) !important;
-}
-
-/* 时尚/粉紫主题: 主按钮柔和融合 */
-[data-theme="fashion"] .theme-cta-bg .cta-primary-btn {
-  background: rgba(255, 255, 255, 0.92) !important;
-  color: #880E4F !important;
-  border-color: rgba(255, 255, 255, 0.4) !important;
-  box-shadow: 0 4px 24px rgba(233, 30, 99, 0.25) !important;
-}
-[data-theme="fashion"] .theme-cta-bg .cta-primary-btn:hover {
-  background: #ffffff !important;
-  box-shadow: 0 8px 32px rgba(233, 30, 99, 0.35) !important;
-}
-[data-theme="fashion"] .theme-cta-bg .cta-phone-btn {
-  background: rgba(255, 255, 255, 0.1) !important;
-  border-color: rgba(255, 255, 255, 0.35) !important;
 }
 
 /* ============================================================

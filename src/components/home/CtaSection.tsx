@@ -65,18 +65,36 @@ export default function CtaSection({ locale: propLocale }: CtaSectionProps) {
           {t('cta.readyDesc')}
         </p>
 
-        {/* CTA Buttons - Glass-morphism style for all-theme compatibility */}
+        {/* CTA Buttons - Theme-adaptive glass-morphism */}
         <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
           <a
             href={`/${currentLocale}/contact`}
-            className="group cta-primary-btn inline-flex items-center justify-center px-12 py-5 bg-white/90 text-blue-900 font-extrabold rounded-2xl hover:bg-white transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-2 text-lg backdrop-blur-sm border border-white/30"
+            className="group cta-primary-btn inline-flex items-center justify-center px-12 py-5 font-extrabold rounded-2xl hover:-translate-y-2 transition-all duration-300 shadow-xl hover:shadow-2xl text-lg backdrop-blur-sm border border-white/20"
+            style={{
+              background: 'linear-gradient(135deg, var(--primary-color, #3b82f6) 0%, var(--primary-hover, #2563eb) 100%)',
+              color: '#ffffff',
+              boxShadow: '0 10px 40px rgba(0,0,0,0.3)',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.boxShadow = '0 20px 50px rgba(0,0,0,0.4)';
+              e.currentTarget.style.transform = 'translateY(-2px)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow = '0 10px 40px rgba(0,0,0,0.3)';
+              e.currentTarget.style.transform = 'translateY(0)';
+            }}
           >
             {t('cta.button')}
             <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-2 transition-transform duration-300" />
           </a>
           <a
             href={`tel:${contactPhone.replace(/\s/g, '')}`}
-            className="group cta-phone-btn inline-flex items-center justify-center px-12 py-5 border-2 border-white/40 text-white font-extrabold rounded-2xl hover:bg-white/15 hover:border-white/60 transition-all duration-300 backdrop-blur-md text-lg bg-white/5"
+            className="group cta-phone-btn inline-flex items-center justify-center px-12 py-5 border-2 font-extrabold rounded-2xl hover:bg-white/15 transition-all duration-300 backdrop-blur-md text-lg"
+            style={{
+              borderColor: 'rgba(255,255,255,0.4)',
+              color: '#ffffff',
+              backgroundColor: 'rgba(255,255,255,0.08)',
+            }}
           >
             <Phone className="mr-3 w-5 h-5" />
             {contactPhone}
