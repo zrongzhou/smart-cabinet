@@ -1,0 +1,276 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== 产品 ====================
+model Product {
+  id                String   @id @default(cuid())
+  slug              String   @unique
+  sku               String   @unique
+  name              Json     // { zh, en, ar }
+  description       Json?    // { zh, en, ar }
+  shortDescription  Json?    // { zh, en, ar }
+  price             Float?   @default(0)
+  hidePrice         Boolean  @default(false)
+  images            String[] // URL 数组
+  features          Json?    // { en: string[], zh: string[], ar: string[] }
+  specifications    Json?    // { key: { zh, en, ar } }
+  status            String   @default("active") // active/draft/coming-soon/discontinued
+  featured          Boolean  @default(false)
+  order             Int      @default(0)
+  relatedProducts   String[] // Product id 数组
+  seoTitle         Json?    // { zh, en, ar }
+  seoDescription   Json?    // { zh, en, ar }
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  deletedAt         DateTime? // 软删除
+
+  categories        Category[] @relation(map: "ProductCategory")
+  tags              Tag[]      @relation(map: "ProductTag")
+
+  favorites        Favorite[]   // 添加这行
+  orderItems       OrderItem[]  // 添加这行
+  reviews          Review[]   // 添加这行
+
+  @@index([status, featured])
+  @@index([slug])
+  @@index([order])
+  @@map("products")
+}
+
+// ==================== 分类 ====================
+model Category {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        Json     // { zh, en, ar }
+  icon        String?  // emoji 或图标名
+  description Json?
+  parentId    String?
+  order       Int      @default(0)
+  status      String   @default("active") // active/draft
+  type        String   @default("product") // product/blog/faq
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  products    Product[] @relation(map: "ProductCategory")
+  children    Category[] @relation("CategoryHierarchy")
+  parent      Category? @relation("CategoryHierarchy", fields: [parentId], references: [id])
+
+  @@index([type, status])
+  @@index([slug])
+  @@index([parentId])
+  @@map("categories")
+}
+
+// ==================== 标签 ====================
+model Tag {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  name      Json     // { zh, en, ar }
+  color     String   @default("#3B82F6") // hex 颜色
+  createdAt DateTime @default(now())
+
+  products  Product[] @relation(map: "ProductTag")
+  blogs     BlogPost[] @relation(map: "BlogPostTag")
+
+  @@index([slug])
+  @@map("tags")
+}
+
+// ==================== 博客 ====================
+model BlogPost {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       Json     // { zh, en, ar }
+  excerpt     Json?    // { zh, en, ar }
+  content     Json     // { zh, en, ar } Markdown
+  author      String   @default("")
+  publishedAt DateTime
+  status      String   @default("published") // published/draft/archived
+  featured    Boolean  @default(false)
+  image       String?
+  category    String?  // 分类 slug，固定枚举
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  tags        Tag[]      @relation(map: "BlogPostTag")
+
+  @@index([status, publishedAt])
+  @@index([slug])
+  @@index([featured])
+  @@map("blog_posts")
+}
+
+// ==================== FAQ ====================
+model FAQ {
+  id        String   @id @default(cuid())
+  question   Json     // { zh, en, ar }
+  answer     Json     // { zh, en, ar }
+  category   String   // 固定枚举
+  order      Int      @default(0)
+  status     String   @default("active") // active/draft
+  featured   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([status, category])
+  @@index([order])
+  @@map("faqs")
+}
+
+// ==================== 自定义维度（分类类型标签）====================
+model CustomDimension {
+  id          String   @id @default(cuid())
+  key         String   @unique // 维度标识，如 "robots", "cabinet-type" 等
+  name        Json     // { zh, en, ar } 三语名称
+  icon        String?  // emoji 或图标名
+  description Json?    // 额外描述/元数据
+  order       Int      @default(0)
+  status      String   @default("active")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([key])
+  @@index([status, order])
+  @@map("custom_dimensions")
+}
+
+// ==================== 网站设置（KV 模型）====================
+model SiteSettings {
+  key       String   @unique
+  value     Json     // { zh, en, ar } 或任意 JSON
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@map("site_settings")
+}
+
+// ==================== 页面内容 ====================
+model Page {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  title     Json     // { zh, en, ar }
+  blocks    Json?    // 页面内容块数组
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("pages")
+}
+
+// ==================== 媒体文件 ====================
+model MediaFile {
+  id           String   @id @default(cuid())
+  filename     String
+  originalName String
+  mimeType    String
+  size         Int
+  url          String
+  uploadedAt   DateTime @default(now())
+
+  @@map("media_files")
+}
+
+// ==================== 用户 ====================
+model User {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  passwordHash   String
+  name           String
+  avatar         String?
+  company        String?
+  phone          String?
+  role           String   @default("user") // "user" | "admin"
+  isActive       Boolean  @default(true)
+  refreshToken   String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  favorites      Favorite[]  // 添加这行
+  orders         Order[]     // 添加这行
+  reviews        Review[]   // 添加这行
+
+  @@map("users")
+}
+
+// ==================== 收藏 ====================
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  createdAt DateTime @default(now())
+  
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, productId])
+  @@index([userId])
+  @@index([productId])
+  @@map("favorites")
+}
+
+// ==================== 订单 ====================
+model Order {
+  id              String   @id @default(cuid())
+  userId          String
+  status          String   @default("pending") // pending/processing/shipped/delivered/cancelled
+  total           Float
+  shippingAddress Json?    // { name, address, city, country, zipCode }
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  user    User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items   OrderItem[]
+  
+  @@index([userId, status])
+  @@index([createdAt])
+  @@map("orders")
+}
+
+// ==================== 订单项 ====================
+model OrderItem {
+  id        String   @id @default(cuid())
+  orderId   String
+  productId String
+  quantity  Int      @default(1)
+  price     Float    // 下单时的价格
+  name      Json     // { zh, en, ar } 下单时的产品名称
+  
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  @@index([orderId])
+  @@index([productId])
+  @@map("order_items")
+}
+
+// ==================== 评论 ====================
+model Review {
+  id          String   @id @default(cuid())
+  productId   String
+  userId      String?
+  authorName  String   // 评论者名字（游客也可评论）
+  authorEmail String?  // 评论者邮箱（可选）
+  rating      Int      @default(5)  // 评分 1-5
+  title       String?  // 评论标题（可选）
+  content     String   // 评论内容
+  images      String[] // 评论图片（可选，最多3张）
+  isVerified  Boolean  @default(false) // 是否验证购买
+  isApproved  Boolean  @default(false) // 是否需要审核
+  helpful     Int      @default(0)  // 有帮助次数
+  notHelpful  Int      @default(0)  // 没帮助次数
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user    User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  
+  @@index([productId])
+  @@index([isApproved])
+  @@map("reviews")
+}

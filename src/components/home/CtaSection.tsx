@@ -1,32 +1,110 @@
-export default function CtaSection({ locale = 'en' }: { locale?: string }) {
+'use client';
+
+import { useState, useEffect } from 'react';
+import { ArrowRight, Phone, Mail } from 'lucide-react';
+import { useLocale } from '@/lib/i18n';
+import { fetchUnifiedSettings, SiteSettings } from '@/data/unified-data';
+
+interface CtaSectionProps {
+  locale?: string;
+}
+
+export default function CtaSection({ locale: propLocale }: CtaSectionProps) {
+  const { locale, t } = useLocale();
+  const currentLocale = propLocale || locale;
+  const [settings, setSettings] = useState<SiteSettings | null>(null);
+
+  useEffect(() => {
+    async function loadSettings() {
+      try {
+        const s = await fetchUnifiedSettings();
+        setSettings(s);
+      } catch (e) {
+        console.error('Failed to load site settings:', e);
+      }
+    }
+    loadSettings();
+  }, []);
+
+  const contactEmail = settings?.contactEmail || 'sabrina@wstoolcabinet.com';
+  const contactPhone = settings?.contactPhone || '+86 156 2216 0659';
+
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-700 to-blue-900 px-4 py-20 sm:py-28">
-      {/* Animated Background Pattern */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute -top-24 -right-24 h-96 w-96 rounded-full bg-blue-400 blur-3xl animate-pulse" />
-        <div className="absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-indigo-400 blur-3xl animate-pulse animation-delay-1000" />
+    <section className="relative py-28 px-4 sm:px-6 lg:px-8 theme-cta-bg relative overflow-hidden">
+      {/* Decorative Elements */}
+      <div className="absolute inset-0 opacity-[0.03]">
+        <div
+          className="w-full h-full"
+          style={{
+            backgroundImage: `
+              radial-gradient(circle at 2px 2px, white 1px, transparent 0)
+            `,
+            backgroundSize: '40px 40px',
+          }}
+        />
       </div>
+      <div className="absolute top-0 left-1/4 w-72 h-72 bg-blue-600/20 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-600/20 rounded-full blur-3xl" />
       
-      <div className="relative mx-auto max-w-4xl text-center animate-fade-in-up">
-        <h2 className="mb-6 text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
-          Ready to Transform Your Storage?
+      {/* Floating elements */}
+      <div className="absolute top-20 right-20 w-20 h-20 border-2 border-white/10 rotate-45 rounded-2xl animate-pulse" />
+      <div className="absolute bottom-20 left-20 w-16 h-16 border-2 border-white/10 rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
+
+      {/* Content */}
+      <div className="relative z-10 max-w-5xl mx-auto text-center" style={{ color: '#ffffff' }}>
+        {/* Badge */}
+        <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-6 py-2 mb-10 hover:bg-white/15 transition-colors duration-300">
+          <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+          <span className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.9)' }}>{t('cta.badge')}</span>
+        </div>
+
+        <h2 className="text-3xl sm:text-4xl lg:text-6xl font-extrabold mb-8 tracking-tight leading-tight" style={{ color: '#ffffff', textShadow: '0 2px 20px rgba(0,0,0,0.3)' }}>
+          {t('cta.readyTitle')}
         </h2>
-        <p className="mb-10 text-lg text-blue-100 sm:text-xl">
-          Contact us today to learn more about our intelligent storage solutions
+        <p className="text-xl mb-14 max-w-3xl mx-auto leading-relaxed font-light" style={{ color: 'rgba(255,255,255,0.85)', textShadow: '0 1px 10px rgba(0,0,0,0.2)' }}>
+          {t('cta.readyDesc')}
         </p>
-        <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
+
+        {/* CTA Buttons - Glass-morphism style for all-theme compatibility */}
+        <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
           <a
-            href={`/${locale}/contact`}
-            className="rounded-xl bg-white px-8 py-4 text-base font-semibold text-blue-600 shadow-lg transition-all hover:bg-blue-50 hover:shadow-xl hover:-translate-y-0.5"
+            href={`/${currentLocale}/contact`}
+            className="group cta-primary-btn inline-flex items-center justify-center px-12 py-5 bg-white/90 text-blue-900 font-extrabold rounded-2xl hover:bg-white transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-2 text-lg backdrop-blur-sm border border-white/30"
           >
-            Contact Us
+            {t('cta.button')}
+            <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-2 transition-transform duration-300" />
           </a>
           <a
-            href={`/${locale}/products`}
-            className="rounded-xl border-2 border-white px-8 py-4 text-base font-semibold text-white transition-all hover:bg-white/10"
+            href={`tel:${contactPhone.replace(/\s/g, '')}`}
+            className="group cta-phone-btn inline-flex items-center justify-center px-12 py-5 border-2 border-white/40 text-white font-extrabold rounded-2xl hover:bg-white/15 hover:border-white/60 transition-all duration-300 backdrop-blur-md text-lg bg-white/5"
           >
-            View Products
+            <Phone className="mr-3 w-5 h-5" />
+            {contactPhone}
           </a>
+        </div>
+
+        {/* Contact Info - enhanced visibility with stronger backdrop */}
+        <div className="inline-flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-8 text-sm font-medium px-6 py-3.5 rounded-full bg-black/40 backdrop-blur-lg border border-white/10" style={{ color: 'rgba(255,255,255,0.98)', textShadow: '0 1px 12px rgba(0,0,0,0.5)' }}>
+          <div className="flex items-center space-x-2.5">
+            <span className="flex items-center justify-center w-7 h-7 rounded-full bg-white/15 backdrop-blur-sm border border-white/20">
+              <Mail className="w-3.5 h-3.5" />
+            </span>
+            <span className="font-semibold">{contactEmail}</span>
+          </div>
+          <div className="hidden sm:block w-px h-4 bg-white/30" />
+          <div className="flex items-center space-x-2.5">
+            <span className="flex items-center justify-center w-7 h-7 rounded-full bg-white/15 backdrop-blur-sm border border-white/20">
+              <Phone className="w-3.5 h-3.5" />
+            </span>
+            <span className="font-semibold">{contactPhone.replace(/^>\s*/, '')}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Scroll Indicator */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+        <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center pt-2">
+          <div className="w-1 h-2 bg-white/50 rounded-full animate-pulse" />
         </div>
       </div>
     </section>
