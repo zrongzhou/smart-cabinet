@@ -214,7 +214,7 @@ export default function ContactPage() {
 
           {/* Right Column - Contact Form */}
           <div className={`lg:col-span-3 ${isRTL ? 'order-1' : ''}`}>
-            <div className="rounded-2xl shadow-md p-8 border" style={{ backgroundColor: 'var(--card-bg, #ffffff)', borderColor: 'var(--border-color, #e5e7eb)' }}>
+            <div className="contact-card rounded-2xl shadow-md p-8 border" style={{ backgroundColor: 'var(--card-bg, #ffffff)', borderColor: 'var(--border-color, #e5e7eb)' }}>
               <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-6">{t('contact.sendMessage')}</h2>
 
               {isSubmitted && (

@@ -79,7 +79,7 @@ export default function TestimonialsSection({ locale: propLocale }: Testimonials
           {testimonials.map((testimonial, index) => (
             <div
               key={index}
-              className="group bg-[var(--card-bg)] rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-[var(--border-color)] hover:border-[var(--primary-color)]/30 relative overflow-hidden"
+              className="group testimonial-card bg-[var(--card-bg)] rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-[var(--border-color)] hover:border-[var(--primary-color)]/30 relative overflow-hidden"
             >
               {/* Hover glow effect */}
               <div className="absolute inset-0 bg-gradient-to-r from-[var(--primary-color)]/0 via-[var(--primary-color)]/5 to-[var(--primary-color)]/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl" />

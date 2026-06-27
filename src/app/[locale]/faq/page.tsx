@@ -199,7 +199,7 @@ export default function FAQPage() {
           {filteredFaqs.map((faq, index) => (
               <div
                 key={faq.id}
-                className="rounded-xl border overflow-hidden transition-all duration-300 hover:shadow-md"
+                className="faq-card rounded-xl border overflow-hidden transition-all duration-300 hover:shadow-md"
                 style={{
                   backgroundColor: 'var(--card-bg)',
                   borderColor: 'var(--border-color)',
@@ -255,8 +255,8 @@ export default function FAQPage() {
         )}
 
         {/* Still have questions */}
-        <div className="mt-16 text-center">
-          <div className="rounded-2xl p-8 shadow-lg" style={{
+          <div className="faq-card mt-16 text-center">
+            <div className="rounded-2xl p-8 shadow-lg" style={{
             backgroundColor: 'var(--card-bg)',
             border: '1px solid var(--border-color)'
           }}>

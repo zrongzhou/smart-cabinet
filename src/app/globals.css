@@ -921,10 +921,10 @@
   background-color: var(--tc-bg-card) !important;
 }
 
-/* Dark 模式：产品卡片、特性卡片等 */
-[data-theme="dark"] .shadow-md,
-[data-theme="dark"] .shadow-lg,
-[data-theme="dark"] .shadow-sm {
+/* Dark 模式：产品卡片、特性卡片等（仅匹配直接有 shadow 类的元素，排除 hover: 前缀和已用 CSS 变量的组件） */
+[data-theme="dark"] .shadow-md:not([class*="hover:"]):not(.faq-card):not(.testimonial-card):not(.contact-card):not(.advantage-card):not(.solution-card),
+[data-theme="dark"] .shadow-lg:not([class*="hover:"]):not(.faq-card):not(.testimonial-card):not(.contact-card):not(.advantage-card):not(.solution-card),
+[data-theme="dark"] .shadow-sm:not([class*="hover:"]):not(.faq-card):not(.testimonial-card):not(.contact-card):not(.advantage-card):not(.solution-card) {
   background-color: var(--tc-bg-card) !important;
   border-color: var(--tc-border) !important;
 }

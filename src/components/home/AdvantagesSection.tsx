@@ -123,7 +123,7 @@ export default function AdvantagesSection({ locale: propLocale }: AdvantagesSect
             return (
               <div
                 key={adv.id}
-                className="group relative bg-[var(--card-bg)] rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-[var(--border-color)] hover:-translate-y-3 hover:scale-[1.03]"
+                className="group relative advantage-card bg-[var(--card-bg)] rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-[var(--border-color)] hover:-translate-y-3 hover:scale-[1.03]"
               >
                 {/* Icon Container with gradient bg - using inline style for production compatibility */}
                 <div
