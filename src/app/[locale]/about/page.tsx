@@ -282,9 +282,9 @@ export default function AboutPage() {
   })();
 
   return (
-    <div className="bg-gray-50 dark:bg-slate-900">
+    <div style={{ backgroundColor: 'var(--tc-bg, #f9fafb)' }}>
       {/* Hero Section with Breadcrumb */}
-      <section className="relative bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white py-24 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      <section className="relative text-white py-24 px-4 sm:px-6 lg:px-8 overflow-hidden theme-hero-bg">
         {/* Gradient glow ornaments */}
         <div className="absolute top-20 left-10 w-96 h-96 bg-blue-500/30 rounded-full blur-3xl animate-pulse" />
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
@@ -334,11 +334,11 @@ export default function AboutPage() {
 
           {/* Text Content with Icon Cards */}
           <div className={isRTL ? 'lg:order-1 text-right' : ''}>
-            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">{t('about.intro.title')}</h2>
-            <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-6 text-lg">
+            <h2 className="text-4xl font-bold text-[var(--text-primary)] mb-6">{t('about.intro.title')}</h2>
+            <p className="text-[var(--text-secondary)] leading-relaxed mb-6 text-lg">
               {t('about.intro.text1')}
             </p>
-            <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-8 text-lg">
+            <p className="text-[var(--text-secondary)] leading-relaxed mb-8 text-lg">
               {t('about.intro.text2')}
             </p>
 
@@ -365,18 +365,18 @@ export default function AboutPage() {
       </section>
 
       {/* Core Statistics — Premium card design with depth & color */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white via-gray-50/80 to-gray-50 dark:from-slate-900 dark:via-slate-800/80 dark:to-slate-800 relative overflow-hidden">
+      <section className="py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden" style={{ background: 'linear-gradient(180deg, var(--card-bg, #fff) 0%, var(--section-alt-bg, #f9fafb) 100%)' }}>
         {/* Subtle background pattern */}
         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, #1e40af 1px, transparent 0)', backgroundSize: '32px 32px' }} />
 
         <div className="max-w-7xl mx-auto relative z-10">
           {/* Section title with accent */}
           <div className="text-center mb-16">
-            <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 mb-4">
+            <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider mb-4" style={{ backgroundColor: 'var(--icon-bg, #dbeafe)', color: 'var(--primary-color, #2563eb)' }}>
               {locale === 'zh' ? '核心数据' : locale === 'ar' ? 'بيانات أساسية' : 'Key Metrics'}
             </span>
-            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4 tracking-tight">{t('about.stats.title')}</h2>
-            <p className="text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">{t('about.stats.subtitle')}</p>
+            <h2 className="text-4xl sm:text-5xl font-bold text-[var(--text-primary)] mb-4 tracking-tight">{t('about.stats.title')}</h2>
+            <p className="text-lg text-[var(--text-secondary)] max-w-2xl mx-auto leading-relaxed">{t('about.stats.subtitle')}</p>
           </div>
 
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-7">
@@ -441,10 +441,10 @@ export default function AboutPage() {
       {/* Development Timeline */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+          <h2 className="text-4xl sm:text-5xl font-bold text-[var(--text-primary)] mb-4">
             {t('about.timeline.title')}
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+          <p className="text-xl text-[var(--text-secondary)] max-w-2xl mx-auto">
             {t('about.timeline.subtitle')}
           </p>
         </div>
@@ -528,13 +528,13 @@ export default function AboutPage() {
       </section>
 
       {/* Company Values - 2x2 Grid */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900">
+      <section className="py-20 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: 'var(--section-bg, #ffffff)' }}>
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-4xl sm:text-5xl font-bold text-[var(--text-primary)] mb-4">
               {t('about.values.title')}
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            <p className="text-xl text-[var(--text-secondary)] max-w-2xl mx-auto">
               {t('about.values.subtitle')}
             </p>
           </div>
@@ -561,12 +561,12 @@ export default function AboutPage() {
       </section>
 
       {/* Certifications */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-slate-800">
+      <section className="py-20 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: 'var(--section-alt-bg, #f9fafb)' }}>
         <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+          <h2 className="text-4xl sm:text-5xl font-bold text-[var(--text-primary)] mb-4">
             {t('about.certifications')}
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-12">
+          <p className="text-xl text-[var(--text-secondary)] max-w-2xl mx-auto mb-12">
             {t('about.certificationsText')}
           </p>
 
@@ -593,13 +593,13 @@ export default function AboutPage() {
       </section>
 
       {/* Industries We Serve - Tag Cloud Style */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900">
+      <section className="py-20 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: 'var(--section-bg, #ffffff)' }}>
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-4xl sm:text-5xl font-bold text-[var(--text-primary)] mb-4">
               {t('about.industries.title')}
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            <p className="text-xl text-[var(--text-secondary)] max-w-2xl mx-auto">
               {t('about.industries.subtitle')}
             </p>
           </div>

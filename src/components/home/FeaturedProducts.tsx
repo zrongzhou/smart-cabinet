@@ -35,19 +35,19 @@ export default function FeaturedProducts({ locale: propLocale }: FeaturedProduct
   return (
     <section className="py-24 px-4 sm:px-6 lg:px-8 bg-[var(--section-bg)] relative overflow-hidden">
       {/* Section background decoration */}
-      <div className="absolute top-0 left-0 w-72 h-72 bg-blue-100/40 dark:bg-blue-900/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-cyan-100/30 dark:bg-cyan-900/10 rounded-full blur-3xl translate-x-1/3 translate-y-1/3" />
+      <div className="absolute top-0 left-0 w-72 h-72 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" style={{ backgroundColor: 'color-mix(in srgb, var(--primary-color, #3b82f6) 15%, transparent)' }} />
+      <div className="absolute bottom-0 right-0 w-96 h-96 rounded-full blur-3xl translate-x-1/3 translate-y-1/3" style={{ backgroundColor: 'color-mix(in srgb, var(--primary-color, #06b6d4) 10%, transparent)' }} />
 
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <div className="inline-block px-4 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-full text-sm font-semibold mb-4">
+          <div className="inline-block px-4 py-1 rounded-full text-sm font-semibold mb-4" style={{ backgroundColor: 'var(--icon-bg, #dbeafe)', color: 'var(--primary-color, #2563eb)' }}>
             ★ {currentLocale === 'zh' ? '精选产品' : 'Featured'}
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 dark:text-white mb-4 tracking-tight">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[var(--text-primary)] mb-4 tracking-tight">
             {t('featuredProducts.title')}
           </h2>
-          <p className="text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg text-[var(--text-secondary)] max-w-2xl mx-auto leading-relaxed">
             {t('featuredProducts.subtitle')}
           </p>
         </div>
@@ -177,7 +177,8 @@ export default function FeaturedProducts({ locale: propLocale }: FeaturedProduct
             <div className="text-center mt-16">
               <a
                 href={`/${currentLocale}/products`}
-                className="group inline-flex items-center px-10 py-4 bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold rounded-2xl hover:from-blue-700 hover:to-blue-600 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-blue-500/30 transform hover:-translate-y-1 text-lg"
+                className="group inline-flex items-center px-10 py-4 text-white font-bold rounded-2xl transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 text-lg"
+                style={{ background: 'linear-gradient(135deg, var(--primary-color, #2563eb) 0%, var(--primary-hover, #3b82f6) 100%)' }}
               >
                 {t('featuredProducts.viewAll')}
                 <ArrowRight className="ml-2.5 w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />

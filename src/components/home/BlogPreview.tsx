@@ -65,12 +65,18 @@ export default function BlogPreview({ locale: propLocale }: BlogPreviewProps) {
                     }}
                     loading="lazy"
                   />
-                  {/* Fallback - shown when img fails to load */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${
-                    index % 3 === 0 ? 'from-blue-600 via-blue-500 to-cyan-400'
-                    : index % 3 === 1 ? 'from-emerald-600 via-emerald-500 to-teal-400'
-                    : 'from-violet-600 via-violet-500 to-purple-400'
-                  } flex items-center justify-center`} style={{display: 'none'}}>
+                  {/* Fallback - shown when img fails to load; use inline style to avoid Tailwind purge */}
+                  <div
+                    className="absolute inset-0 flex items-center justify-center"
+                    style={{
+                      display: 'none',
+                      background: index % 3 === 0
+                        ? 'linear-gradient(135deg, #2563eb 0%, #06b6d4 100%)'
+                        : index % 3 === 1
+                          ? 'linear-gradient(135deg, #059669 0%, #14b8a6 100%)'
+                          : 'linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)'
+                    }}
+                  >
                     <span className="text-white font-bold text-lg text-center px-4">
                       {currentLocale === 'zh' ? post.title.zh : post.title.en}
                     </span>
@@ -78,11 +84,16 @@ export default function BlogPreview({ locale: propLocale }: BlogPreviewProps) {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-300" />
                 </div>
               ) : (
-                <div className={`h-52 bg-gradient-to-br ${
-                  index % 3 === 0 ? 'from-blue-600 via-blue-500 to-cyan-400'
-                  : index % 3 === 1 ? 'from-emerald-600 via-emerald-500 to-teal-400'
-                  : 'from-violet-600 via-violet-500 to-purple-400'
-                } flex items-center justify-center relative overflow-hidden`}>
+                <div
+                  className="h-52 flex items-center justify-center relative overflow-hidden"
+                  style={{
+                    background: index % 3 === 0
+                      ? 'linear-gradient(135deg, #2563eb 0%, #06b6d4 100%)'
+                      : index % 3 === 1
+                        ? 'linear-gradient(135deg, #059669 0%, #14b8a6 100%)'
+                        : 'linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)'
+                  }}
+                >
                   <div className="absolute top-4 right-4 w-20 h-20 border-2 border-white/30 rounded-full" />
                   <div className="absolute bottom-4 left-4 w-12 h-12 border-2 border-white/30 rounded-lg rotate-12" />
                   <span className="relative z-10 text-white font-bold text-lg text-center px-4">
@@ -132,7 +143,8 @@ export default function BlogPreview({ locale: propLocale }: BlogPreviewProps) {
         <div className="text-center mt-16">
           <a
             href={`/${currentLocale}/blog`}
-            className="group inline-flex items-center px-10 py-4 bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold rounded-2xl hover:from-blue-700 hover:to-blue-600 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-blue-500/30 transform hover:-translate-y-1 text-lg"
+            className="group inline-flex items-center px-10 py-4 text-white font-bold rounded-2xl transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 text-lg"
+            style={{ background: 'linear-gradient(135deg, var(--primary-color, #2563eb) 0%, var(--primary-hover, #3b82f6) 100%)' }}
           >
             {t('blog.preview.viewAll')}
             <ArrowRight className="ml-2.5 w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />

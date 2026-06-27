@@ -388,11 +388,11 @@ export default function ProductsPage() {
   // Skeleton loading component
   if (loading) {
     return (
-      <div className="min-h-screen bg-[var(--bg-secondary)]">
+      <div className="min-h-screen" style={{ backgroundColor: 'var(--tc-bg, #f9fafb)' }}>
         {/* Header skeleton */}
-        <section className="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-300/10 rounded-full blur-3xl" />
+        <section className="text-white py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden theme-hero-bg">
+          <div className="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }} />
+          <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full blur-3xl" style={{ backgroundColor: 'rgba(255,255,255,0.04)' }} />
           <div className="max-w-5xl mx-auto text-center relative z-10">
             <div className="h-12 w-64 bg-white/20 rounded-lg mx-auto mb-4 animate-pulse" />
             <div className="h-6 w-80 bg-white/10 rounded-lg mx-auto animate-pulse" />
@@ -404,22 +404,22 @@ export default function ProductsPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             {/* Search bar skeleton */}
             <div className="relative max-w-md mx-auto mb-5">
-              <div className="w-full h-11 bg-[var(--bg-secondary)] rounded-xl animate-pulse" />
+              <div className="w-full h-11 bg-[var(--section-alt-bg, #f9fafb)] rounded-xl animate-pulse" />
             </div>
 
             {/* Dimension tabs skeleton */}
             <div className="flex flex-wrap gap-3 justify-center mb-5">
               {[1, 2, 3, 4, 5].map(i => (
-                <div key={i} className="h-10 w-28 bg-[var(--bg-secondary)] rounded-full animate-pulse" />
+                <div key={i} className="h-10 w-28 bg-[var(--section-alt-bg, #f9fafb)] rounded-full animate-pulse" />
               ))}
             </div>
 
             {/* Category pills skeleton */}
-            <div className="pt-3 border-t border-gray-100/80 dark:border-gray-700/40">
-              <div className="h-4 w-24 bg-[var(--bg-secondary)] rounded-full animate-pulse mb-2.5 mx-auto" />
+            <div className="pt-3 border-t" style={{ borderColor: 'color-mix(in srgb, var(--border-color, #e5e7eb) 50%, transparent)' }}>
+              <div className="h-4 w-24 bg-[var(--section-alt-bg, #f9fafb)] rounded-full animate-pulse mb-2.5 mx-auto" />
               <div className="flex flex-wrap gap-[6px] justify-start">
                 {[1, 2, 3, 4, 5, 6].map(i => (
-                  <div key={i} className="h-8 w-20 bg-[var(--bg-secondary)] rounded-full animate-pulse" />
+                  <div key={i} className="h-8 w-20 bg-[var(--section-alt-bg, #f9fafb)] rounded-full animate-pulse" />
                 ))}
               </div>
             </div>
@@ -431,10 +431,10 @@ export default function ProductsPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
             {[1, 2, 3, 4, 5, 6].map(i => (
               <div key={i} className="bg-[var(--card-bg)] rounded-2xl shadow-md overflow-hidden">
-                <div className="h-68 bg-[var(--bg-secondary)] animate-pulse" />
+                <div className="h-68 bg-[var(--section-alt-bg, #f9fafb)] animate-pulse" />
                 <div className="p-5 space-y-3">
-                  <div className="h-4 w-20 bg-[var(--bg-secondary)] rounded animate-pulse" />
-                  <div className="h-6 w-full bg-[var(--bg-secondary)] rounded animate-pulse" />
+                  <div className="h-4 w-20 bg-[var(--section-alt-bg, #f9fafb)] rounded animate-pulse" />
+                  <div className="h-6 w-full bg-[var(--section-alt-bg, #f9fafb)] rounded animate-pulse" />
                   <div className="h-4 w-16 bg-gray-100 rounded animate-pulse" />
                   <div className="h-4 w-3/4 bg-gray-100 rounded animate-pulse" />
                 </div>
@@ -447,11 +447,11 @@ export default function ProductsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--tc-bg, #f9fafb)' }}>
       {/* Page Header */}
-      <section className="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-300/10 rounded-full blur-3xl" />
+      <section className="text-white py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden theme-hero-bg">
+        <div className="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }} />
+        <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full blur-3xl" style={{ backgroundColor: 'rgba(255,255,255,0.04)' }} />
         <div className="max-w-5xl mx-auto text-center relative z-10">
           <h1 className="text-4xl sm:text-5xl font-bold mb-4">
             {t('products.title')}
@@ -467,18 +467,22 @@ export default function ProductsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           {/* Search bar */}
           <div className="relative max-w-md mx-auto mb-5">
-            <Search className="absolute left-3.5 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-3.5 top-1/2 transform -translate-y-1/2 w-5 h-5" style={{ color: 'var(--text-muted, #9ca3af)' }} />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={locale === 'zh' ? '搜索产品名称、SKU...' : locale === 'ar' ? 'بحث عن المنتجات...' : 'Search products by name, SKU...'}
-              className="w-full pl-11 pr-10 py-2.5 bg-[var(--bg-secondary,#f8fafc)] border border-[var(--border-color)] rounded-xl text-sm focus:ring-2 focus:ring-[var(--primary-color)]/20 focus:border-[var(--primary-color)] outline-none transition-all text-[var(--text-primary)]"
+              className="w-full pl-11 pr-10 py-2.5 border rounded-xl text-sm focus:ring-2 outline-none transition-all text-[var(--text-primary)]"
+              style={{ backgroundColor: 'var(--section-alt-bg, #f9fafb)', borderColor: 'var(--border-color, #e5e7eb)', '--tw-ring-color': 'var(--primary-color, #2563eb)' }}
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3.5 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                className="absolute right-3.5 top-1/2 transform -translate-y-1/2 transition-colors"
+                style={{ color: 'var(--text-muted, #9ca3af)' }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--text-primary, #111827)'; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--text-muted, #9ca3af)'; }}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
@@ -615,7 +619,7 @@ export default function ProductsPage() {
           {/* Results count */}
           {(searchQuery || activeCategories.length > 0 || activeDimension !== 'all') && (
             <div className="text-center mt-4">
-              <span className="inline-flex items-center px-3.5 py-1 bg-[var(--bg-secondary)] text-[var(--text-secondary)] border border-[var(--border-color)] rounded-full text-[12px] font-medium">
+              <span className="inline-flex items-center px-3.5 py-1 bg-[var(--section-alt-bg, #f9fafb)] text-[var(--text-secondary)] border border-[var(--border-color)] rounded-full text-[12px] font-medium">
                 {locale === 'zh'
                   ? `找到 ${filteredProducts.length} 个产品`
                   : locale === 'ar'
@@ -657,7 +661,7 @@ export default function ProductsPage() {
                   >
                     {/* Product Image */}
                     {product.images && product.images[0] ? (
-                      <div className="relative h-56 overflow-hidden bg-[var(--bg-secondary)]">
+                      <div className="relative h-56 overflow-hidden bg-[var(--section-alt-bg, #f9fafb)]">
                         <img src={product.images[0]} alt={name}
                           className="w-full h-56 object-contain p-4 transition-transform duration-500 group-hover:scale-110"
                           loading={isPriority ? 'eager' : 'lazy'}
@@ -671,7 +675,7 @@ export default function ProductsPage() {
                         </div>
                       </div>
                     ) : (
-                      <div className="h-56 bg-gradient-to-br from-[var(--bg-secondary)] to-[var(--border-color)] flex items-center justify-center">
+                      <div className="h-56 bg-gradient-to-br from-[var(--section-alt-bg, #f9fafb)] to-[var(--border-color)] flex items-center justify-center">
                         <Package className="w-16 h-16 text-gray-400 mx-auto" />
                         <p className="text-xs text-gray-400 absolute bottom-4">{locale === 'zh' ? '暂无图片' : 'No Image'}</p>
                       </div>
@@ -724,7 +728,7 @@ export default function ProductsPage() {
                 <button
                   onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
-                  className="flex items-center space-x-1 px-4 py-3 rounded-lg border border-[var(--border-color)] text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors min-h-[44px]"
+                  className="flex items-center space-x-1 px-4 py-3 rounded-lg border border-[var(--border-color)] text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--section-alt-bg, #f9fafb)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors min-h-[44px]"
                 >
                   <ChevronLeft className="w-4 h-4" />
                   {locale === 'zh' ? '上一页' : locale === 'ar' ? 'السابق' : 'Previous'}
@@ -747,7 +751,7 @@ export default function ProductsPage() {
                 <button
                   onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages}
-                  className="flex items-center space-x-1 px-4 py-3 rounded-lg border border-[var(--border-color)] text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors min-h-[44px]"
+                  className="flex items-center space-x-1 px-4 py-3 rounded-lg border border-[var(--border-color)] text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--section-alt-bg, #f9fafb)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors min-h-[44px]"
                 >
                   {locale === 'zh' ? '下一页' : locale === 'ar' ? 'التالي' : 'Next'}
                   <ChevronRight className="w-4 h-4" />

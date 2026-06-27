@@ -133,9 +133,9 @@ export default function ContactPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--tc-bg, #f9fafb)' }}>
       {/* Page Header */}
-      <section className="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      <section className="text-white py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden theme-hero-bg">
         <div className="absolute top-0 right-0 w-80 h-80 bg-blue-400/10 rounded-full blur-3xl" />
         <div className="max-w-5xl mx-auto text-center relative z-10">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-white/10 backdrop-blur-sm rounded-2xl mb-6">
@@ -151,21 +151,21 @@ export default function ContactPage() {
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
           {/* Left Column - Contact Info */}
           <div className={`lg:col-span-2 ${isRTL ? 'order-2' : ''}`}>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 flex items-center gap-3">
-              <span className="w-1.5 h-8 bg-blue-600 rounded-full inline-block" />
+            <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-8 flex items-center gap-3">
+              <span className="w-1.5 h-8 rounded-full inline-block" style={{ backgroundColor: 'var(--primary-color, #2563eb)' }} />
               {t('contact.getInTouch')}
             </h2>
 
             <div className="space-y-5">
               {contactInfoItems.map((item, idx) => (
-                <div key={idx} className={`flex items-start gap-4 p-4 rounded-xl border ${item.color} dark:bg-slate-800 dark:border-slate-700 transition-all hover:shadow-md`}>
+                <div key={idx} className={`flex items-start gap-4 p-4 rounded-xl border transition-all hover:shadow-md ${item.color}`} style={{ backgroundColor: 'var(--card-bg, #ffffff)', borderColor: 'var(--border-color, #e5e7eb)' }}>
                   <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${item.color.split(' ')[0]}`}>
                     <item.icon className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white mb-1 text-sm">{item.label}</h3>
+                    <h3 className="font-semibold text-[var(--text-primary)] mb-1 text-sm">{item.label}</h3>
                     {item.lines.map((line, i) => (
-                      <p key={i} className={`${i === 0 ? 'text-gray-700 dark:text-gray-200 font-semibold text-sm' : 'text-gray-500 dark:text-gray-400 font-normal text-xs mt-0.5'}`}>
+                      <p key={i} className={`${i === 0 ? 'text-[var(--text-primary)] font-semibold text-sm' : 'text-[var(--text-secondary)] font-normal text-xs mt-0.5'}`}>
                         {line}
                       </p>
                     ))}
@@ -187,7 +187,7 @@ export default function ContactPage() {
             </div>
 
             {/* Map - OpenStreetMap embed (no API key needed) */}
-            <div className="mt-6 rounded-2xl overflow-hidden border border-blue-200 relative bg-gray-100">
+            <div className="mt-6 rounded-2xl overflow-hidden border relative" style={{ borderColor: 'var(--border-color, #e5e7eb)', backgroundColor: 'var(--section-alt-bg, #f9fafb)' }}>
               {/* OpenStreetMap iframe - works for all locales without API key */}
               <iframe
                 src="https://www.openstreetmap.org/export/embed.html?bbox=113.45%2C23.15%2C113.55%2C23.25&layer=mapnik&marker=23.20%2C113.50"
@@ -201,11 +201,11 @@ export default function ContactPage() {
                 className="w-full"
               />
               {/* Fallback address card */}
-              <div className="bg-white/90 backdrop-blur-sm p-4 border-t border-blue-100">
+              <div className="backdrop-blur-sm p-4 border-t" style={{ backgroundColor: 'rgba(255,255,255,0.9)', borderColor: 'var(--border-color, #e5e7eb)' }}>
                 <div className="flex items-center gap-3">
                   <MapPin className="w-5 h-5 text-red-500 flex-shrink-0" />
                   <div>
-                    <p className="text-sm font-medium text-gray-900">{displayAddress || (locale === 'zh' ? '中国广东省广州市番禺区' : 'Panyu District, Guangzhou, China')}</p>
+                    <p className="text-sm font-medium text-[var(--text-primary)]">{displayAddress || (locale === 'zh' ? '中国广东省广州市番禺区' : 'Panyu District, Guangzhou, China')}</p>
                   </div>
                 </div>
               </div>
@@ -214,8 +214,8 @@ export default function ContactPage() {
 
           {/* Right Column - Contact Form */}
           <div className={`lg:col-span-3 ${isRTL ? 'order-1' : ''}`}>
-            <div className="bg-white rounded-2xl shadow-md p-8 border border-gray-100">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('contact.sendMessage')}</h2>
+            <div className="rounded-2xl shadow-md p-8 border" style={{ backgroundColor: 'var(--card-bg, #ffffff)', borderColor: 'var(--border-color, #e5e7eb)' }}>
+              <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-6">{t('contact.sendMessage')}</h2>
 
               {isSubmitted && (
                 <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl flex items-start gap-3 animate-in fade-in">
@@ -245,7 +245,7 @@ export default function ContactPage() {
                       required
                       value={formData.name}
                       onChange={handleChange}
-                      className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all hover:border-blue-300`}
+                      className="w-full px-4 py-3 border rounded-xl focus:ring-2 outline-none transition-all" style={{ borderColor: 'var(--border-color, #e5e7eb)', '--tw-ring-color': 'var(--primary-color, #2563eb)' }}
                       placeholder={locale === 'zh' ? '您的姓名' : locale === 'ar' ? 'أدخل اسمك' : 'John Doe'}
                     />
                   </div>
@@ -261,7 +261,7 @@ export default function ContactPage() {
                       required
                       value={formData.email}
                       onChange={handleChange}
-                      className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all hover:border-blue-300`}
+                      className="w-full px-4 py-3 border rounded-xl focus:ring-2 outline-none transition-all" style={{ borderColor: 'var(--border-color, #e5e7eb)', '--tw-ring-color': 'var(--primary-color, #2563eb)' }}
                       placeholder={locale === 'zh' ? '电子邮箱' : locale === 'ar' ? 'البريد الإلكتروني' : 'john@example.com'}
                     />
                   </div>
@@ -325,7 +325,10 @@ export default function ContactPage() {
                 {/* Submit Button */}
                 <button
                   type="submit"
-                  className="w-full px-8 py-4 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 group"
+                  className="w-full px-8 py-4 text-white font-semibold rounded-xl transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 group"
+                  style={{ backgroundColor: 'var(--primary-color, #2563eb)' }}
+                  onMouseEnter={(e) => { (e.target as HTMLElement).style.backgroundColor = 'var(--primary-hover, #1d4ed8)'; }}
+                  onMouseLeave={(e) => { (e.target as HTMLElement).style.backgroundColor = 'var(--primary-color, #2563eb)'; }}
                 >
                   <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   <span>{t('contact.form.submit')}</span>
@@ -333,7 +336,7 @@ export default function ContactPage() {
               </form>
 
               {/* Trust note */}
-              <div className="mt-6 flex items-center gap-2 text-xs text-gray-400 justify-center">
+              <div className="mt-6 flex items-center gap-2 text-xs justify-center" style={{ color: 'var(--text-muted, #9ca3af)' }}>
                 <CheckCircle className="w-4 h-4" />
                 <span>{locale === 'zh' ? '您的信息安全，我们不会向第三方分享任何信息' : locale === 'ar' ? 'معلوماتك آمنة، لا نشارك أي معلومات مع أطراف ثالثة' : 'Your information is secure and never shared with third parties'}</span>
               </div>
