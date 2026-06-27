@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <defs>
+    <linearGradient id="bg-bp" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#312e81"/><stop offset="100%" style="stop-color:#4338ca"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg-bp)"/>
+  <!-- Star / Award icon -->
+  <polygon points="320,70 345,130 410,130 355,170 380,235 320,195 195,235 220,170 165,130 230,130" fill="#fbbf24" opacity="0.9"/>
+  <polygon points="320,95 338,135 393,135 348,167 368,217 320,183 197,217 217,167 172,135 227,135" fill="none" stroke="#fde68a" stroke-width="1.5" opacity="0.5"/>
+  <!-- Checklist lines -->
+  <rect x="140" y="265" width="360" height="14" rx="4" fill="#1e1b4b" stroke="#6366f1" stroke-width="1"/>
+  <rect x="155" y="268" width="200" height="8" rx="2" fill="#6366f1" opacity="0.5"/>
+  <circle cx="147" cy="272" r="4" fill="#22c55e"/>
+  <polyline points="144,272 147,275 152,269" fill="none" stroke="white" stroke-width="1.2"/>
+  <rect x="140" y="288" width="360" height="14" rx="4" fill="#1e1b4b" stroke="#6366f1" stroke-width="1"/>
+  <rect x="155" y="291" width="280" height="8" rx="2" fill="#6366f1" opacity="0.5"/>
+  <circle cx="147" cy="295" r="4" fill="#22c55e"/>
+  <polyline points="144,295 147,298 152,292" fill="none" stroke="white" stroke-width="1.2"/>
+  <rect x="140" y="311" width="360" height="14" rx="4" fill="#1e1b4b" stroke="#6366f1" stroke-width="1"/>
+  <rect x="155" y="314" width="160" height="8" rx="2" fill="#6366f1" opacity="0.5"/>
+  <circle cx="147" cy="318" r="4" fill="#22c55e"/>
+  <polyline points="144,318 147,321 152,315" fill="none" stroke="white" stroke-width="1.2"/>
+  <!-- Title -->
+  <text x="320" y="50" text-anchor="middle" fill="#a5b4fc" font-size="24" font-weight="bold" font-family="Arial,sans-serif">BEST PRACTICE</text>
+  <text x="320" y="345" text-anchor="middle" fill="#818cf8" font-size="14" font-family="Arial,sans-serif">Proven Methods · Optimization · Expert Tips</text>
+</svg>

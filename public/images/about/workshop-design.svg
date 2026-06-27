@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480">
+  <defs>
+    <linearGradient id="bg1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a"/>
+      <stop offset="100%" style="stop-color:#1e3a5f"/>
+    </linearGradient>
+    <pattern id="grid1" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e40af" stroke-width="0.8" opacity="0.4"/>
+    </pattern>
+  </defs>
+  <!-- Background -->
+  <rect width="640" height="480" fill="url(#bg1)"/>
+  <rect width="640" height="480" fill="url(#grid1)"/>
+  <!-- Blueprint lines -->
+  <rect x="120" y="100" width="400" height="280" rx="4" fill="none" stroke="#3b82f6" stroke-width="2" stroke-dasharray="12,6" opacity="0.7"/>
+  <rect x="160" y="140" width="180" height="200" fill="none" stroke="#60a5fa" stroke-width="1.5" opacity="0.6"/>
+  <rect x="380" y="160" width="120" height="160" fill="none" stroke="#60a5fa" stroke-width="1.5" opacity="0.6"/>
+  <!-- Dimension lines -->
+  <line x1="160" y1="350" x2="340" y2="350" stroke="#f97316" stroke-width="2"/>
+  <line x1="160" y1="345" x2="160" y2="355" stroke="#f97316" stroke-width="2"/>
+  <line x1="340" y1="345" x2="340" y2="355" stroke="#f97316" stroke-width="2"/>
+  <line x1="380" y1="325" x2="500" y2="325" stroke="#f97316" stroke-width="2"/>
+  <line x1="380" y1="320" x2="380" y2="330" stroke="#f97316" stroke-width="2"/>
+  <line x1="500" y1="320" x2="500" y2="330" stroke="#f97316" stroke-width="2"/>
+  <!-- Ruler -->
+  <rect x="80" y="420" width="480" height="20" rx="3" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  <line x1="100" y1="420" x2="100" y2="440" stroke="#94a3b8" stroke-width="1" opacity="0.6"/>
+  <line x1="200" y1="420" x2="200" y2="440" stroke="#94a3b8" stroke-width="1" opacity="0.6"/>
+  <line x1="300" y1="420" x2="300" y2="440" stroke="#94a3b8" stroke-width="1" opacity="0.6"/>
+  <line x1="400" y1="420" x2="400" y2="440" stroke="#94a3b8" stroke-width="1" opacity="0.6"/>
+  <line x1="500" y1="420" x2="500" y2="440" stroke="#94a3b8" stroke-width="1" opacity="0.6"/>
+  <!-- Pencil icon -->
+  <g transform="translate(520, 60) rotate(15)">
+    <rect x="0" y="0" width="14" height="80" rx="3" fill="#f97316"/>
+    <polygon points="0,80 14,80 7,100" fill="#1e293b"/>
+    <rect x="0" y="0" width="14" height="12" rx="3" fill="#fb923c"/>
+  </g>
+  <!-- Title -->
+  <text x="320" y="50" text-anchor="middle" fill="#60a5fa" font-size="28" font-weight="bold" font-family="Arial,sans-serif">DESIGN</text>
+  <text x="320" y="460" text-anchor="middle" fill="#94a3b8" font-size="16" font-family="Arial,sans-serif">CAD Drawing · Engineering Design · 3D Modeling</text>
+</svg>

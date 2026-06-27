@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480">
+  <defs>
+    <linearGradient id="bg3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#134e4a"/>
+      <stop offset="100%" style="stop-color:#115e59"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="640" height="480" fill="url(#bg3)"/>
+  <!-- Machine frame -->
+  <rect x="80" y="120" width="480" height="280" rx="12" fill="#0f2928" stroke="#2dd4bf" stroke-width="2"/>
+  <!-- Bending arm -->
+  <rect x="120" y="180" width="400" height="24" rx="4" fill="#134e4a" stroke="#2dd4bf" stroke-width="1.5"/>
+  <!-- Hydraulic press -->
+  <rect x="240" y="100" width="160" height="100" rx="8" fill="#115e59" stroke="#2dd4bf" stroke-width="2"/>
+  <rect x="270" y="80" width="100" height="30" rx="4" fill="#0d9488" stroke="#2dd4bf" stroke-width="1.5"/>
+  <!-- Arrow indicating bending direction -->
+  <path d="M 320 300 L 320 250 L 300 270 L 320 250 L 340 270" stroke="#fbbf24" stroke-width="3" fill="none" opacity="0.8"/>
+  <!-- Metal plate before bending -->
+  <rect x="100" y="340" width="180" height="12" rx="2" fill="#5eead4" opacity="0.7"/>
+  <!-- Metal plate after bending (L-shape) -->
+  <path d="M 360 340 L 440 340 L 440 400 L 520 400" stroke="#fbbf24" stroke-width="12" stroke-linecap="round" fill="none" opacity="0.8"/>
+  <path d="M 360 340 L 440 340 L 440 400 L 520 400" stroke="#fde68a" stroke-width="8" stroke-linecap="round" fill="none" opacity="0.5"/>
+  <!-- Angle indicator -->
+  <path d="M 440 310 A 30 30 0 0 1 460 340" stroke="#fbbf24" stroke-width="2" fill="none" opacity="0.7"/>
+  <text x="470" y="325" fill="#fbbf24" font-size="14" font-weight="bold" font-family="Arial,sans-serif">90°</text>
+  <!-- Control panel -->
+  <rect x="140" y="420" width="360" height="36" rx="6" fill="#0f2928" stroke="#2dd4bf" stroke-width="1.5"/>
+  <text x="320" y="444" text-anchor="middle" fill="#2dd4bf" font-size="14" font-family="monospace,sans-serif">BEND ANGLE: 90°  |  PRESSURE: 120T</text>
+  <!-- Title -->
+  <text x="320" y="60" text-anchor="middle" fill="#2dd4bf" font-size="28" font-weight="bold" font-family="Arial,sans-serif">BENDING</text>
+  <text x="320" y="460" text-anchor="middle" fill="#5eead4" font-size="16" font-family="Arial,sans-serif">CNC Bending · Press Brake · Angle Precision ±0.5°</text>
+</svg>

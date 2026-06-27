@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <defs>
+    <linearGradient id="bg-cs" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e1b4b"/><stop offset="100%" style="stop-color:#312e81"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg-cs)"/>
+  <!-- Speech bubble left -->
+  <rect x="60" y="100" width="240" height="130" rx="16" fill="#3730a3" stroke="#6366f1" stroke-width="1.5"/>
+  <polygon points="120,230 140,260 170,230" fill="#3730a3" stroke="#6366f1" stroke-width="1.5"/>
+  <text x="180" y="145" text-anchor="middle" fill="#a5b4fc" font-size="13" font-family="Arial,sans-serif" opacity="0.8">"Smart cabinets</text>
+  <text x="180" y="168" text-anchor="middle" fill="#a5b4fc" font-size="13" font-family="Arial,sans-serif" opacity="0.8">transformed our</text>
+  <text x="180" y="191" text-anchor="middle" fill="#a5b4fc" font-size="13" font-family="Arial,sans-serif" opacity="0.8">workflow. Downtime</text>
+  <text x="180" y="214" text-anchor="middle" fill="#a5b4fc" font-size="13" font-family="Arial,sans-serif" opacity="0.8">dropped 80%."</text>
+  <!-- Speech bubble right -->
+  <rect x="340" y="100" width="240" height="130" rx="16" fill="#4338ca" stroke="#818cf8" stroke-width="1.5"/>
+  <polygon points="500,230 480,260 450,230" fill="#4338ca" stroke="#818cf8" stroke-width="1.5"/>
+  <text x="460" y="145" text-anchor="middle" fill="#c7d2fe" font-size="13" font-family="Arial,sans-serif" opacity="0.8">"ROI in 6 months.</text>
+  <text x="460" y="168" text-anchor="middle" fill="#c7d2fe" font-size="13" font-family="Arial,sans-serif" opacity="0.8">Inventory accuracy</text>
+  <text x="460" y="191" text-anchor="middle" fill="#c7d2fe" font-size="13" font-family="Arial,sans-serif" opacity="0.8">went from 65% to</text>
+  <text x="460" y="214" text-anchor="middle" fill="#c7d2fe" font-size="13" font-family="Arial,sans-serif" opacity="0.8">99.8%."</text>
+  <!-- Avatars -->
+  <circle cx="150" cy="268" r="18" fill="#4f46e5" stroke="#6366f1" stroke-width="1.5"/>
+  <text x="150" y="274" text-anchor="middle" fill="#a5b4fc" font-size="14" font-weight="bold" font-family="Arial,sans-serif">JM</text>
+  <circle cx="490" cy="268" r="18" fill="#6366f1" stroke="#818cf8" stroke-width="1.5"/>
+  <text x="490" y="274" text-anchor="middle" fill="#c7d2fe" font-size="14" font-weight="bold" font-family="Arial,sans-serif">SL</text>
+  <!-- Title -->
+  <text x="320" y="50" text-anchor="middle" fill="#818cf8" font-size="24" font-weight="bold" font-family="Arial,sans-serif">CUSTOMER STORY</text>
+  <text x="320" y="340" text-anchor="middle" fill="#6366f1" font-size="14" font-family="Arial,sans-serif">Testimonials · Case Interviews · Success Stories</text>
+</svg>
