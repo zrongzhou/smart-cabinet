@@ -8,22 +8,22 @@ import { Product, Category } from '@/lib/api';
 import { getBaseUrl } from '@/data/unified-data';
 
 // ============================================================
-// DIMENSION ICON SYSTEM — Lucide React components only (v132)
+// DIMENSION ICON SYSTEM — Lucide React components only (v133)
 // NO emoji — emojis render inconsistently across platforms/themes
+// Priority: Admin DB setting > Built-in default > Settings fallback
 // ============================================================
 
-/** Built-in dimension type → Lucide icon component mapping */
-const dimensionIconMap: Record<string, any> = {
-  'cabinet-type':   Archive,     // 🗄 → file cabinet icon
-  'managed-items':  Package,     // 📦 → box/package icon
-  'industry':       Factory,     // 🏭 → factory building
-  'custom-solution': Settings,    // ⚙️ → gear (already good)
-  // Common custom types
-  'robots':         Cpu,         // 🤖 → processor chip
+/** Built-in DEFAULT icons for dimension types — used ONLY when admin hasn't set a custom one */
+const dimensionDefaultIcons: Record<string, any> = {
+  'cabinet-type':   Archive,     // file cabinet
+  'managed-items':  Package,     // box/package
+  'industry':       Factory,     // factory building
+  'custom-solution': Settings,    // gear
+  'robots':         Cpu,         // processor chip
   'robotics':       Cpu,
 };
 
-/** All supported Lucide icons for custom dimensions (from API/localStorage) */
+/** All supported Lucide icons — registry for admin-selected icon names from DB */
 const lucideIconRegistry: Record<string, any> = {
   Package, Archive, Box, Briefcase, Building2, Factory, Settings, Wrench, Cpu,
   Shield, Lock, Star, Heart, Truck, Zap, Clock, Globe, Database, FileText,
@@ -32,7 +32,7 @@ const lucideIconRegistry: Record<string, any> = {
 
 /** Dimension visual config — all colors use CSS variables for theme compatibility */
 const dimensionColors: Record<string, {
-  colorClass: string;   // CSS variable class for inactive state icon color
+  colorClass: string;
   activeBg: string;
   barColor: string;
   textColor: string;
@@ -42,45 +42,31 @@ const dimensionColors: Record<string, {
   'industry':        { colorClass: 'text-[var(--primary-color)]', activeBg: 'var(--primary-color)', barColor: 'bg-[var(--primary-color)]', textColor: 'text-[var(--primary-color)]' },
   'custom-solution': { colorClass: 'text-[var(--primary-color)]', activeBg: 'var(--primary-color)', barColor: 'bg-[var(--primary-color)]', textColor: 'text-[var(--primary-color)]' },
 };
-/** Default for unknown/custom dimension types (e.g., "robots", "ai-tools") */
 const defaultDimColor = { colorClass: 'text-[var(--primary-color)]', activeBg: 'var(--primary-color)', barColor: 'bg-[var(--primary-color)]', textColor: 'text-[var(--primary-color)]' };
 
 /**
- * Get the Lucide React component for a dimension type.
- * ALWAYS returns a Lucide component (never emoji/string).
- *
- * Priority:
- * 1. Built-in mapping (dimensionIconMap) — highest priority
- * 2. API/LocalStorage custom icon name → looked up in lucideIconRegistry
- * 3. Fallback: Settings (gear)
+ * Resolve icon for a dimension type.
+ * Priority: customIcons (from DB/API) → built-in defaults → Settings
+ * ALWAYS returns a Lucide React component.
  */
-const getDimensionIcon = (type: string): any => {
+function resolveDimensionIcon(type: string, customIcons: Record<string, any>): any {
   const normalized = type.toLowerCase().replace(/[_\s]+/g, '-');
 
-  // 1. Built-in types — these can NEVER be overridden
-  if (dimensionIconMap[normalized]) return dimensionIconMap[normalized];
-  if (dimensionIconMap[type]) return dimensionIconMap[type];
-
-  // 2. Custom dimension icons from API (via parseAndSetLabels) or localStorage
-  try {
-    const saved = localStorage.getItem('admin_custom_dimensions');
-    if (saved) {
-      const dims = JSON.parse(saved);
-      const iconKey = normalized;
-      const savedIconName = (dims[iconKey] || dims[type])?.icon;
-      if (savedIconName && typeof savedIconName === 'string') {
-        // Look up the Lucide component by name
-        const lucideComp = lucideIconRegistry[savedIconName];
-        if (lucideComp) return lucideComp;
-      }
-    }
-  } catch (e) {
-    // Silently fail — not critical
+  // 1. Admin-customized icon from database (HIGHEST priority — admin is always right!)
+  const customIconName = (customIcons[normalized] || customIcons[type])?.icon;
+  if (customIconName && typeof customIconName === 'string') {
+    const registered = lucideIconRegistry[customIconName];
+    if (registered) return registered;
+    // If admin set an unrecognized name, fall through to default
   }
+
+  // 2. Built-in default icon
+  if (dimensionDefaultIcons[normalized]) return dimensionDefaultIcons[normalized];
+  if (dimensionDefaultIcons[type]) return dimensionDefaultIcons[type];
 
   // 3. Universal fallback
   return Settings;
-};
+}
 
   // Label maps for dimension tabs - matches Category.type values in DB
   const labelMapZh: Record<string, string> = {
@@ -122,6 +108,8 @@ export default function ProductsPage() {
   const [categoryExpanded, setCategoryExpanded] = useState<Record<string, boolean>>({});
   const [customDimLabels, setCustomDimLabels] = useState<Record<string, string>>({});
   const [customDimLabelsI18n, setCustomDimLabelsI18n] = useState<Record<string, {zh?: string, en?: string, ar?: string}>>({});
+  /** Custom icons from admin DB/API — overrides built-in defaults */
+  const [customDimIcons, setCustomDimIcons] = useState<Record<string, {icon?: string}>>({});
 
   // Load custom dimension labels — API (DB) as PRIMARY, localStorage as cache/fallback
   useEffect(() => {
@@ -153,6 +141,7 @@ export default function ProductsPage() {
       if (!dims || typeof dims !== 'object') return;
       const labels: Record<string, string> = {};
       const labelsI18n: Record<string, {zh?: string, en?: string, ar?: string}> = {};
+      const icons: Record<string, {icon?: string}> = {};
 
       Object.entries(dims).forEach(([key, val]: [string, any]) => {
         if (val && typeof val === 'object') {
@@ -162,6 +151,10 @@ export default function ProductsPage() {
             en: val.labelEn || val.label || undefined,
             ar: val.labelAr || val.label || undefined,
           };
+          // Extract icon — this is what admin sets in the backend!
+          if (val.icon) {
+            icons[key] = { icon: String(val.icon) };
+          }
         } else if (typeof val === 'string' && val) {
           labels[key] = val;
           labelsI18n[key] = { zh: val, en: val, ar: val };
@@ -170,6 +163,7 @@ export default function ProductsPage() {
 
       setCustomDimLabels(labels);
       setCustomDimLabelsI18n(labelsI18n);
+      setCustomDimIcons(icons); // Store custom icons for resolveDimensionIcon()
     };
 
     loadDimLabels();
@@ -453,7 +447,7 @@ export default function ProductsPage() {
                 const count = dimensionProductCount[type] || 0;
                 const isEmpty = count === 0;
                 const dc = dimensionColors[type] || defaultDimColor;
-                const IconComp = getDimensionIcon(type); // Always returns a Lucide component
+                const IconComp = resolveDimensionIcon(type, customDimIcons); // Admin DB > built-in default
                 const isActive = activeDimension === type && !isEmpty;
 
                 // Render Lucide icon — white when active, primary color when inactive
@@ -504,14 +498,14 @@ export default function ProductsPage() {
               const dimLabel = getDimensionLabel(activeDimension);
 
               return (
-                <div className="mt-3 pt-3 border-t" style={{ borderColor: 'var(--border-color, #e5e7eb)' }}>
-                  {/* Label row - shows which dimension is active */}
+                <div className="mt-3 pt-3 border-t" style={{ borderColor: 'var(--border-color, #d1d5db)' }}>
+                  {/* Label row — BOLD and visible in ALL themes */}
                   <div className="flex items-center justify-center gap-2 mb-2.5 px-1">
                     <div className={`h-[2px] w-5 rounded-full ${dc.barColor}`} />
-                    <span className={`text-[12px] font-medium uppercase tracking-wider ${dc.textColor} opacity-60`}>
+                    <span className={`text-[12px] font-bold uppercase tracking-wider ${dc.textColor}`}>
                       {dimLabel}
                     </span>
-                    <span className="text-[11px] font-normal" style={{ color: 'var(--text-muted, #9ca3af)' }}>
+                    <span className="text-[11px] font-semibold" style={{ color: 'var(--text-secondary, #4b5563)' }}>
                       — {locale === 'zh' ? '子分类' : locale === 'ar' ? 'تصنيفات فرعية' : 'sub-categories'}
                     </span>
                   </div>
@@ -525,10 +519,10 @@ export default function ProductsPage() {
                           onClick={() => toggleCategory(cat.id)}
                           className={`relative px-3 py-1.5 rounded-full text-[13px] transition-all duration-200 leading-none inline-flex items-center ${
                             isSelected
-                              /* Selected: primary color background */
-                              ? `text-white shadow-sm font-medium hover:shadow-md`
-                              /* Unselected: clean light pill using CSS vars — consistent for ALL categories */
-                              : `bg-[var(--card-bg)] text-[var(--text-secondary)] border border-[var(--border-color)] hover:border-[var(--primary-color)]/30 hover:shadow-sm`
+                              /* Selected: solid primary background */
+                              ? `text-white shadow-sm font-semibold hover:shadow-md`
+                              /* Unselected: HIGH contrast — readable text on light bg */
+                              : `bg-[var(--card-bg,#fff)] text-[var(--text-primary,#111827)] border border-[var(--border-color,#d1d5db)] hover:border-[var(--primary-color,#3b82f6)] hover:shadow-sm hover:bg-[var(--primary-color-lightest,rgba(59,130,246,0.06))]`
                           }`}
                           style={isSelected ? { backgroundColor: 'var(--primary-color)' } : undefined}
                         >
@@ -544,8 +538,10 @@ export default function ProductsPage() {
                             }
                             return String(n || cat.slug || '');
                           })()}</span>
-                          {/* Count — always visible, no dimming */}
-                          <span className={`ml-1.5 text-[11px] tabular-nums ${isSelected ? 'text-white/70' : 'text-[var(--text-muted)]'}`}>
+                          {/* Count — always clearly visible */}
+                          <span className={`ml-1.5 text-[11px] tabular-nums ${isSelected ? 'text-white/80' : ''}`}
+                            style={!isSelected ? { color: 'var(--text-secondary, #4b5563)' } : undefined}
+                          >
                             ({count})
                           </span>
                         </button>
