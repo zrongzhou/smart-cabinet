@@ -34,27 +34,26 @@ function CountUp({ end, duration = 2 }: { end: string; duration?: number }) {
   return <span>{count}{end.replace(/\d/g, '')}</span>;
 }
 
-// Star layer configuration - realistic night sky with depth
+// Star layer configuration - REALISTIC night sky with DEPTH
 interface StarLayer {
   count: number;
   sizeRange: [number, number];
   opacityRange: [number, number];
   color: string;
-  // Most stars are STATIC; only the closest layer has tiny drift
   speedFactor: number; // 0 = completely static
 }
 
 const STAR_LAYERS: StarLayer[] = [
-  // Layer 0: Deep background - tiny, dim, numerous, STATIC (the "sea of distant stars")
-  { count: 120, sizeRange: [0.15, 0.4], opacityRange: [0.08, 0.25], color: 'rgba(180,190,220,', speedFactor: 0 },
-  // Layer 1: Far stars - small, dim, STATIC (twinkle only)
-  { count: 60, sizeRange: [0.3, 0.7], opacityRange: [0.15, 0.4], color: 'rgba(200,215,255,', speedFactor: 0 },
-  // Layer 2: Mid-distance - medium, slightly brighter, STATIC
-  { count: 30, sizeRange: [0.6, 1.3], opacityRange: [0.3, 0.6], color: 'rgba(224,242,254,', speedFactor: 0 },
-  // Layer 3: Close bright stars - larger, bright, VERY slow drift
-  { count: 12, sizeRange: [1.2, 2.5], opacityRange: [0.5, 0.95], color: 'rgba(255,255,255,', speedFactor: 0.015 },
-  // Layer 4: Foreground "diamond" stars - brightest, cross-shaped sparkle, nearly static
-  { count: 4, sizeRange: [2.0, 3.5], opacityRange: [0.7, 1.0], color: 'rgba(255,255,255,', speedFactor: 0.008 },
+  // Layer 0: Deep background "sea of stars" - tiny, very dim, static
+  { count: 100, sizeRange: [0.12, 0.35], opacityRange: [0.06, 0.2], color: 'rgba(170,185,220,', speedFactor: 0 },
+  // Layer 1: Far stars - small, dim twinkle, static position
+  { count: 50, sizeRange: [0.28, 0.65], opacityRange: [0.12, 0.35], color: 'rgba(190,210,245,', speedFactor: 0 },
+  // Layer 2: Mid-distance stars - medium brightness, static
+  { count: 25, sizeRange: [0.5, 1.2], opacityRange: [0.25, 0.55], color: 'rgba(218,235,255,', speedFactor: 0 },
+  // Layer 3: Close bright stars - LARGE, bright, noticeable TWINKLE, tiny drift
+  { count: 10, sizeRange: [1.8, 3.2], opacityRange: [0.5, 1.0], color: 'rgba(255,255,255,', speedFactor: 0.008 },
+  // Layer 4: Foreground DIAMOND stars - VERY large, brightest, cross-shaped, dramatic twinkle
+  { count: 3, sizeRange: [3.0, 4.8], opacityRange: [0.75, 1.0], color: 'rgba(240,248,255,', speedFactor: 0.004 },
 ];
 
 export default function HeroSection() {
@@ -102,6 +101,9 @@ export default function HeroSection() {
           const speed = 0.01 + Math.random() * 0.02;
           const angle = Math.random() * Math.PI * 2;
 
+          // Layer 3-4 stars get stronger twinkle
+          const twinkleSpeedMult = layerIndex >= 3 ? 1.8 : 1;
+
           stars.push({
             x: Math.random() * canvas.width,
             y: Math.random() * canvas.height,
@@ -111,18 +113,18 @@ export default function HeroSection() {
             baseOpacity: layer.opacityRange[0] + Math.random() * (layer.opacityRange[1] - layer.opacityRange[0]),
             color: layer.color,
             twinkleOffset: Math.random() * Math.PI * 2,
-            twinkleSpeed: 0.8 + Math.random() * 2.0,
+            twinkleSpeed: (0.6 + Math.random() * 1.8) * twinkleSpeedMult,
             layer: layerIndex,
-            hasCross: layerIndex >= 4 && size > 1.8,
+            hasCross: layerIndex >= 3 && size > 2.0,
           });
         }
       });
     };
 
-    // Draw static Milky Way background (very subtle)
+    // Draw subtle Milky Way
     const drawMilkyWay = () => {
       ctx.save();
-      ctx.globalAlpha = 0.035 + Math.sin(Date.now() * 0.00008) * 0.01;
+      ctx.globalAlpha = 0.03 + Math.sin(Date.now() * 0.00008) * 0.01;
       ctx.translate(canvas.width * 0.5, canvas.height * 0.45);
       ctx.rotate(-0.35);
       ctx.scale(1, 0.22);
@@ -135,28 +137,25 @@ export default function HeroSection() {
       ctx.restore();
     };
 
-    // Draw nebula hints (very subtle colored clouds)
+    // Subtle nebula hints
     const drawNebulae = () => {
       const t = Date.now() * 0.00005;
-
-      // Purple-blue top-left
       const g1 = ctx.createRadialGradient(
         canvas.width * 0.12 + Math.sin(t) * 20,
         canvas.height * 0.18 + Math.cos(t * 0.7) * 15, 0,
         canvas.width * 0.12, canvas.height * 0.18, canvas.width * 0.3
       );
-      g1.addColorStop(0, `rgba(99, 102, 241, ${0.06 + Math.sin(t * 1.3) * 0.02})`);
+      g1.addColorStop(0, `rgba(99, 102, 241, ${0.05 + Math.sin(t * 1.3) * 0.015})`);
       g1.addColorStop(1, 'rgba(0, 0, 0, 0)');
       ctx.fillStyle = g1;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Cyan bottom-right
       const g2 = ctx.createRadialGradient(
         canvas.width * 0.82 + Math.cos(t * 0.8) * 20,
         canvas.height * 0.78 + Math.sin(t * 1.1) * 15, 0,
         canvas.width * 0.82, canvas.height * 0.78, canvas.width * 0.28
       );
-      g2.addColorStop(0, `rgba(6, 182, 212, ${0.04 + Math.cos(t * 0.9) * 0.015})`);
+      g2.addColorStop(0, `rgba(6, 182, 212, ${0.03 + Math.cos(t * 0.9) * 0.01})`);
       g2.addColorStop(1, 'rgba(0, 0, 0, 0)');
       ctx.fillStyle = g2;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -166,37 +165,44 @@ export default function HeroSection() {
       const time = Date.now() * 0.001;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Static deep space background elements
+      // Background layers
       drawNebulae();
       drawMilkyWay();
 
-      // Draw all stars (sorted by layer for painter's algorithm)
+      // Sort by depth (painter's algorithm)
       const sorted = [...stars].sort((a, b) => a.layer - b.layer);
 
       sorted.forEach((star) => {
-        // Movement: only closest layers drift, very slowly
+        // Movement: only closest layers drift slightly
         if (STAR_LAYERS[star.layer].speedFactor > 0) {
           star.x += star.vx * STAR_LAYERS[star.layer].speedFactor;
           star.y += star.vy * STAR_LAYERS[star.layer].speedFactor;
-          // Wrap around
           if (star.x < -5) star.x = canvas.width + 5;
           if (star.x > canvas.width + 5) star.x = -5;
           if (star.y < -5) star.y = canvas.height + 5;
           if (star.y > canvas.height + 5) star.y = -5;
         }
 
-        // Twinkle: natural-looking sine wave brightness variation
-        const twinkle = Math.sin(time * star.twinkleSpeed + star.twinkleOffset);
-        // Use asymmetric wave so stars spend more time at peak brightness than dim
-        const twinkleFactor = 0.65 + ((twinkle + 1) * 0.175) + (Math.pow(Math.max(0, twinkle), 2) * 0.15);
-        const currentOpacity = Math.min(1, Math.max(0.04, star.baseOpacity * twinkleFactor));
+        // === DRAMATIC TWINKLE for close stars (Layer 3-4) ===
+        let twinkleFactor: number;
+        if (star.layer >= 3) {
+          // Bright stars: dramatic pulsing twinkle (like real bright stars)
+          const twinkle = Math.sin(time * star.twinkleSpeed + star.twinkleOffset);
+          const flash = Math.pow(Math.max(0, twinkle), 3); // Occasional bright flash
+          twinkleFactor = 0.55 + ((twinkle + 1) * 0.2) + flash * 0.35;
+        } else {
+          // Distant stars: gentle subtle shimmer
+          const twinkle = Math.sin(time * star.twinkleSpeed + star.twinkleOffset);
+          twinkleFactor = 0.70 + ((twinkle + 1) * 0.15);
+        }
+        const currentOpacity = Math.min(1, Math.max(0.03, star.baseOpacity * twinkleFactor));
 
-        // Glow halo for bright close stars (layers 3-4)
-        if (star.layer >= 3 && currentOpacity > 0.5 && star.size > 1.2) {
-          const glowSize = star.size * (3.5 + star.layer);
+        // Glow halo for Layer 3-4 stars (much larger and brighter)
+        if (star.layer >= 3 && currentOpacity > 0.4 && star.size > 1.5) {
+          const glowSize = star.size * (4 + star.layer * 1.5);
           const glowGrad = ctx.createRadialGradient(star.x, star.y, 0, star.x, star.y, glowSize);
-          glowGrad.addColorStop(0, `rgba(180, 200, 255, ${currentOpacity * 0.12})`);
-          glowGrad.addColorStop(0.4, `rgba(140, 170, 220, ${currentOpacity * 0.05})`);
+          glowGrad.addColorStop(0, `rgba(180, 210, 255, ${currentOpacity * 0.18})`);
+          glowGrad.addColorStop(0.35, `rgba(140, 180, 230, ${currentOpacity * 0.08})`);
           glowGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
           ctx.fillStyle = glowGrad;
           ctx.beginPath();
@@ -210,23 +216,39 @@ export default function HeroSection() {
         ctx.fillStyle = star.color + currentOpacity + ')';
         ctx.fill();
 
-        // Cross-shaped diffraction spikes on the brightest foreground stars
-        if (star.hasCross && currentOpacity > 0.72) {
-          const spikeLen = star.size * (2.5 + (currentOpacity - 0.72) * 8);
-          const spikeOpacity = (currentOpacity - 0.72) * 2.8;
-          ctx.strokeStyle = `rgba(220, 235, 255, ${spikeOpacity * 0.35})`;
-          ctx.lineWidth = 0.4;
+        // Cross-shaped diffraction spikes on brightest stars (Layer 4 always, Layer 3 when big)
+        if (star.hasCross && currentOpacity > 0.6) {
+          const intensity = Math.min(1, (currentOpacity - 0.6) / 0.4);
+          const spikeLen = star.size * (2.8 + intensity * 6);
+          const spikeOpacity = intensity * 0.45;
+
+          // Primary cross (brighter)
+          ctx.strokeStyle = `rgba(220, 240, 255, ${spikeOpacity})`;
+          ctx.lineWidth = 0.6 + intensity * 0.4;
           ctx.beginPath();
           ctx.moveTo(star.x - spikeLen, star.y);
           ctx.lineTo(star.x + spikeLen, star.y);
           ctx.moveTo(star.x, star.y - spikeLen);
           ctx.lineTo(star.x, star.y + spikeLen);
           ctx.stroke();
+
+          // Secondary faint cross (diagonal) for Layer 4
+          if (star.layer >= 4 && intensity > 0.5) {
+            const diagLen = spikeLen * 0.5;
+            ctx.strokeStyle = `rgba(200, 225, 255, ${spikeOpacity * 0.3})`;
+            ctx.lineWidth = 0.3;
+            ctx.beginPath();
+            ctx.moveTo(star.x - diagLen, star.y - diagLen);
+            ctx.lineTo(star.x + diagLen, star.y + diagLen);
+            ctx.moveTo(star.x + diagLen, star.y - diagLen);
+            ctx.moveTo(star.x - diagLen, star.y + diagLen);
+            ctx.stroke();
+          }
         }
       });
 
-      // Rare shooting star (0.8% chance per frame = roughly every 2 seconds)
-      if (Math.random() < 0.008) {
+      // Rare shooting star
+      if (Math.random() < 0.006) {
         const sx = Math.random() * canvas.width * 0.7;
         const sy = Math.random() * canvas.height * 0.25;
         const slen = 80 + Math.random() * 140;
@@ -277,20 +299,20 @@ export default function HeroSection() {
       className="homepage-starry relative min-h-[75vh] flex items-center justify-center overflow-hidden"
       style={{ minHeight: '75vh' }}
     >
-      {/* Multi-layer deep space gradient background */}
+      {/* Multi-layer deep space gradient */}
       <div className="absolute inset-0 z-0" style={{
-        background: `radial-gradient(ellipse at 50% 35%, rgba(25, 33, 68, 0.35) 0%, transparent 60%),
-                   radial-gradient(ellipse at 15% 85%, rgba(45, 35, 90, 0.18) 0%, transparent 45%),
-                   radial-gradient(ellipse at 85% 15%, rgba(25, 50, 85, 0.2) 0%, transparent 45%),
+        background: `radial-gradient(ellipse at 50% 35%, rgba(25, 33, 68, 0.38) 0%, transparent 60%),
+                   radial-gradient(ellipse at 15% 85%, rgba(45, 35, 90, 0.2) 0%, transparent 45%),
+                   radial-gradient(ellipse at 85% 15%, rgba(25, 50, 85, 0.22) 0%, transparent 45%),
                    linear-gradient(178deg, #02010a 0%, #060b1a 16%, #0a1028 32%, #0d1535 48%, #09142c 66%, #050e21 84%, #020814 100%)`,
       }} />
 
       {/* Star field canvas */}
       <canvas ref={canvasRef} className="absolute inset-0 z-0 pointer-events-none" style={{ width: '100%', height: '100%' }} />
 
-      {/* Subtle vignette for depth focus */}
+      {/* Vignette for depth focus - stronger for better contrast */}
       <div className="absolute inset-0 z-[1]" style={{
-        background: `radial-gradient(ellipse 75% 55% at 50% 42%, transparent 0%, rgba(2, 4, 12, 0.3) 65%, rgba(2, 4, 12, 0.52) 100%)`,
+        background: `radial-gradient(ellipse 70% 50% at 50% 42%, transparent 0%, rgba(2, 4, 12, 0.35) 60%, rgba(2, 4, 12, 0.58) 100%)`,
         pointerEvents: 'none',
       }} />
 
@@ -300,7 +322,7 @@ export default function HeroSection() {
       <div className="absolute bottom-[12%] right-[3%] w-[350px] h-[350px] rounded-full blur-[110px] z-0"
         style={{ backgroundColor: 'rgba(139, 92, 246, 0.07)' }} />
 
-      {/* Content - text with star-like glow */}
+      {/* Content - with 3D text effects and star integration */}
       <div className="relative z-10 text-center text-white px-6 max-w-5xl mx-auto">
         <motion.div variants={staggerChildren} initial="hidden" animate="visible">
           {/* Badge */}
@@ -312,41 +334,94 @@ export default function HeroSection() {
               <span className="text-xs font-medium tracking-wide" style={{ color: '#93c5fd' }}>{t('hero.badge')}</span>
             </div>
 
-            {/* Title - STAR GLOW EFFECT */}
+            {/* Title - 3D GLOW EFFECT with layered text-shadows for depth */}
             <motion.h1
               className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight leading-[1.15] hero-title-glow"
-              style={{ color: '#ffffff' }}
+              style={{
+                color: '#ffffff',
+                // Multi-layer 3D text shadow: blue outer glow → white inner light → dark depth
+                textShadow: `
+                  0 0 40px rgba(147, 197, 253, 0.35),
+                  0 0 80px rgba(59, 130, 246, 0.18),
+                  0 0 120px rgba(99, 102, 241, 0.08),
+                  0 2px 4px rgba(0, 0, 0, 0.8),
+                  0 4px 16px rgba(0, 0, 0, 0.5),
+                  0 0 1px rgba(200, 220, 255, 0.6)
+                `,
+              }}
             >
               {t('hero.title')}
             </motion.h1>
           </motion.div>
 
-          {/* Subtitle */}
+          {/* Subtitle - 3D floating effect */}
           <motion.p variants={fadeInUp}
             className="text-base md:text-lg lg:text-xl mb-4 font-medium max-w-2xl mx-auto subtitle-glow"
-            style={{ color: '#bfdbfe', textShadow: '0 0 20px rgba(147, 197, 253, 0.15), 0 2px 12px rgba(0, 0, 0, 0.45)' }}
+            style={{
+              color: '#e0f2fe',
+              textShadow: `
+                0 0 24px rgba(147, 197, 253, 0.25),
+                0 0 48px rgba(59, 130, 246, 0.12),
+                0 2px 8px rgba(0, 0, 0, 0.6),
+                0 1px 0 rgba(255, 255, 255, 0.15)
+              `,
+            }}
           >
             {t('hero.subtitle')}
           </motion.p>
 
           {/* Description */}
           <motion.p variants={fadeInUp}
-            className="text-sm md:text-base mb-10 max-w-2xl mx-auto leading-relaxed font-normal opacity-85"
-            style={{ color: '#cbd5e1', textShadow: '0 1px 8px rgba(0, 0, 0, 0.35)' }}
+            className="text-sm md:text-base mb-10 max-w-2xl mx-auto leading-relaxed font-normal opacity-90"
+            style={{
+              color: '#cbd5e1',
+              textShadow: '0 1px 6px rgba(0, 0, 0, 0.5), 0 0 16px rgba(147, 197, 253, 0.08)',
+            }}
           >
             {t('hero.description')}
           </motion.p>
 
-          {/* CTA Buttons */}
+          {/* CTA Buttons - White cross-star style, NOT flashy */}
           <motion.div variants={fadeInUp}
             className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
             <a href={`/${locale}/products`}
-              className="group inline-flex items-center justify-center px-8 py-3 text-white font-semibold rounded-lg transition-all duration-300 hover:-translate-y-1 text-base cta-primary-btn"
+              className="group relative inline-flex items-center justify-center px-8 py-3 font-semibold rounded-lg transition-all duration-300 hover:-translate-y-1 text-base overflow-hidden cta-primary-btn"
               style={{
-                background: 'linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)',
-                boxShadow: '0 4px 18px rgba(59, 130, 246, 0.35), 0 0 28px rgba(99, 102, 241, 0.12)',
+                background: 'rgba(255, 255, 255, 0.08)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                backdropFilter: 'blur(12px)',
+                color: '#ffffff',
+                boxShadow: `
+                  0 0 20px rgba(255, 255, 255, 0.08),
+                  0 0 40px rgba(180, 200, 255, 0.06),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.15)
+                `,
+                textShadow: '0 0 10px rgba(255,255,255,0.3), 0 1px 3px rgba(0,0,0,0.5)',
+              }}
+              onMouseEnter={(e) => {
+                const el = e.currentTarget;
+                el.style.background = 'rgba(255, 255, 255, 0.15)';
+                el.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+                el.style.boxShadow = `
+                  0 0 30px rgba(255, 255, 255, 0.12),
+                  0 0 60px rgba(180, 200, 255, 0.1),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.25)
+                `;
+              }}
+              onMouseLeave={(e) => {
+                const el = e.currentTarget;
+                el.style.background = 'rgba(255, 255, 255, 0.08)';
+                el.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                el.style.boxShadow = `
+                  0 0 20px rgba(255, 255, 255, 0.08),
+                  0 0 40px rgba(180, 200, 255, 0.06),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.15)
+                `;
               }}
             >
+              {/* Subtle cross-star sparkles on button */}
+              <span className="absolute -top-1 -left-1 w-2 h-2 bg-white/60 rounded-full blur-[2px]" />
+              <span className="absolute -bottom-1 -right-1 w-1.5 h-1.5 bg-white/40 rounded-full blur-[1.5px]" />
               {t('hero.ctaProducts')}
               <svg className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform duration-300"
                 fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -354,52 +429,94 @@ export default function HeroSection() {
               </svg>
             </a>
             <a href={`/${locale}/contact`}
-              className="group inline-flex items-center justify-center px-8 py-3 font-semibold rounded-lg hover:bg-white/[0.08] transition-all duration-300 text-base text-white border border-white/20"
-              style={{ backdropFilter: 'blur(10px)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08)' }}
+              className="group inline-flex items-center justify-center px-8 py-3 font-semibold rounded-lg hover:bg-white/[0.08] transition-all duration-300 text-base text-white border border-white/15"
+              style={{
+                backdropFilter: 'blur(10px)',
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08), 0 0 20px rgba(180, 200, 255, 0.04)',
+                textShadow: '0 0 8px rgba(255,255,255,0.15)',
+              }}
             >
               {t('hero.ctaContact')}
             </a>
           </motion.div>
 
-          {/* Stats bar */}
+          {/* Stats bar - with star-like sparkle numbers */}
           <motion.div ref={statsRef} variants={fadeInUp}
             className="flex flex-wrap justify-center gap-8 md:gap-14 max-w-2xl mx-auto mt-10 pt-6"
-            style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
+            style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}
           >
             {[
-              { number: '10+', labelKey: 'hero.statModels', icon: '◆' },
-              { number: '60+', labelKey: 'hero.statCountries', icon: '◇' },
+              { number: '10+', labelKey: 'hero.statModels', icon: '✦' },
+              { number: '60+', labelKey: 'hero.statCountries', icon: '✧' },
               { number: '500+', labelKey: 'hero.statClients', icon: '○' },
             ].map((stat, i) => (
               <div key={i} className="text-center group">
-                <div className="text-3xl md:text-4xl font-bold mb-1 stat-number-glow inline-block" style={{ color: '#ffffff' }}>
-                  <span className="text-sm mr-1.5 opacity-30 group-hover:opacity-50 transition-opacity">{stat.icon}</span>
+                <div className="text-3xl md:text-4xl font-bold mb-1 stat-number-glow inline-block"
+                  style={{
+                    color: '#ffffff',
+                    textShadow: `
+                      0 0 20px rgba(180, 220, 255, 0.3),
+                      0 0 40px rgba(147, 197, 253, 0.15),
+                      0 0 80px rgba(59, 130, 246, 0.08),
+                      0 2px 8px rgba(0, 0, 0, 0.6)
+                    `,
+                  }}
+                >
+                  <span className="text-sm mr-1.5 opacity-40 group-hover:opacity-70 transition-opacity" style={{ textShadow: '0 0 6px rgba(180, 220, 255, 0.3)' }}>{stat.icon}</span>
                   {statsVisible ? <CountUp end={stat.number} /> : stat.number}
                 </div>
-                <div className="text-xs md:text-sm font-medium opacity-50" style={{ color: '#94a3b8' }}>{t(stat.labelKey)}</div>
+                <div className="text-xs md:text-sm font-medium opacity-50" style={{ color: '#94a3b8', textShadow: '0 1px 4px rgba(0,0,0,0.5)' }}>{t(stat.labelKey)}</div>
               </div>
             ))}
           </motion.div>
         </motion.div>
       </div>
 
-      {/* CSS Animations: title glow + stat pulse */}
+      {/* CSS Animations: title glow + stat pulse + button shimmer */}
       <style>{`
         @keyframes hero-title-glow {
-          0%, 100% { text-shadow: 0 0 30px rgba(147,197,253,0.12), 0 0 60px rgba(59,130,246,0.08), 0 2px 16px rgba(0,0,0,0.5); }
-          50% { text-shadow: 0 0 40px rgba(147,197,253,0.2), 0 0 80px rgba(99,102,241,0.12), 0 2px 16px rgba(0,0,0,0.5); }
+          0%, 100% {
+            text-shadow:
+              0 0 40px rgba(147,197,253,0.30),
+              0 0 80px rgba(59,130,246,0.15),
+              0 0 120px rgba(99,102,241,0.06),
+              0 2px 4px rgba(0,0,0,0.8),
+              0 4px 16px rgba(0,0,0,0.5),
+              0 0 1px rgba(200,220,255,0.5);
+          }
+          50% {
+            text-shadow:
+              0 0 50px rgba(147,197,253,0.45),
+              0 0 100px rgba(99,102,241,0.20),
+              0 0 150px rgba(139,92,246,0.08),
+              0 2px 4px rgba(0,0,0,0.8),
+              0 4px 16px rgba(0,0,0,0.5),
+              0 0 1px rgba(220,240,255,0.7);
+          }
         }
         .hero-title-glow { animation: hero-title-glow 4s ease-in-out infinite; }
 
         @keyframes subtitle-glow {
-          0%, 100% { opacity: 0.9; }
-          50% { opacity: 1; text-shadow: 0 0 24px rgba(147,197,253,0.2); }
+          0%, 100% { opacity: 0.88; }
+          50% { opacity: 1; }
         }
         .subtitle-glow { animation: subtitle-glow 5s ease-in-out infinite; }
 
         @keyframes stat-pulse {
-          0%, 100% { text-shadow: 0 0 20px rgba(125,211,252,0.2), 0 0 40px rgba(59,130,246,0.1); }
-          50% { text-shadow: 0 0 28px rgba(125,211,252,0.35), 0 0 56px rgba(59,130,246,0.15); }
+          0%, 100% {
+            text-shadow:
+              0 0 20px rgba(180, 220, 255, 0.25),
+              0 0 40px rgba(147, 197, 253, 0.12),
+              0 0 80px rgba(59, 130, 246, 0.06),
+              0 2px 8px rgba(0, 0, 0, 0.6);
+          }
+          50% {
+            text-shadow:
+              0 0 28px rgba(180, 220, 255, 0.40),
+              0 0 56px rgba(147, 197, 253, 0.22),
+              0 0 90px rgba(59, 130, 246, 0.10),
+              0 2px 8px rgba(0, 0, 0, 0.6);
+          }
         }
         .stat-number-glow { animation: stat-pulse 3.5s ease-in-out infinite; }
       `}</style>

@@ -21,56 +21,56 @@ const solutions = [
     descKey: 'solutions.items.cabinet-type.desc',
     icon: CubeIcon,
     colorFrom: '#3b82f6', colorTo: '#60a5fa', bgGlow: 'rgba(59,130,246,0.10)',
-    tags: ['RFID识别', '多柜型', '双码支持'],
+    tagKeys: ['solutions.tags.cabinetType.rfid', 'solutions.tags.cabinetType.multi', 'solutions.tags.cabinetType.dual'],
   },
   {
     nameKey: 'solutions.items.managed-items',
     descKey: 'solutions.items.managed-items.desc',
     icon: ArchiveBoxIcon,
     colorFrom: '#6366f1', colorTo: '#818cf8', bgGlow: 'rgba(99,102,241,0.10)',
-    tags: ['高值耗材', '实时追踪', '自动预警'],
+    tagKeys: ['solutions.tags.managedItems.value', 'solutions.tags.managedItems.track', 'solutions.tags.managedItems.alert'],
   },
   {
     nameKey: 'solutions.items.industry',
     descKey: 'solutions.items.industry.desc',
     icon: BuildingOfficeIcon,
     colorFrom: '#2563eb', colorTo: '#3b82f6', bgGlow: 'rgba(37,99,235,0.10)',
-    tags: ['MES对接', '汽车/航天', '产线集成'],
+    tagKeys: ['solutions.tags.industry.mes', 'solutions.tags.industry.auto', 'solutions.tags.industry.line'],
   },
   {
     nameKey: 'solutions.items.custom-solution',
     descKey: 'solutions.items.custom-solution.desc',
     icon: CogIcon,
     colorFrom: '#7c3aed', colorTo: '#a78bfa', bgGlow: 'rgba(124,58,237,0.10)',
-    tags: ['100%定制', '一站式', '场景匹配'],
+    tagKeys: ['solutions.tags.custom.full', 'solutions.tags.custom.oneStop', 'solutions.tags.custom.match'],
   },
   {
     nameKey: 'solutions.items.robots',
     descKey: 'solutions.items.robots.desc',
     icon: CpuChipIcon,
     colorFrom: '#0891b2', colorTo: '#22d3ee', bgGlow: 'rgba(8,145,178,0.10)',
-    tags: ['AGV联动', '自动配送', '无人化'],
+    tagKeys: ['solutions.tags.robots.agv', 'solutions.tags.robots.autoDelivery', 'solutions.tags.robots.unmanned'],
   },
   {
     nameKey: 'solutions.items.laboratory',
     descKey: 'solutions.items.laboratory.desc',
     icon: BeakerIcon,
     colorFrom: '#059669', colorTo: '#34d399', bgGlow: 'rgba(5,150,105,0.10)',
-    tags: ['权限分级', '全程追溯', '样品管理'],
+    tagKeys: ['solutions.tags.lab.auth', 'solutions.tags.lab.trace', 'solutions.tags.lab.sample'],
   },
   {
     nameKey: 'solutions.items.cleanroom',
     descKey: 'solutions.items.cleanroom.desc',
     icon: CloudIcon,
     colorFrom: '#0284c7', colorTo: '#38bdf8', bgGlow: 'rgba(2,132,199,0.10)',
-    tags: ['ISO洁净', '防静电', '无尘设计'],
+    tagKeys: ['solutions.tags.cleanroom.iso', 'solutions.tags.cleanroom.esd', 'solutions.tags.cleanroom.design'],
   },
   {
     nameKey: 'solutions.items.other',
     descKey: 'solutions.items.other.desc',
     icon: WrenchIcon,
     colorFrom: '#475569', colorTo: '#94a3b8', bgGlow: 'rgba(71,85,105,0.08)',
-    tags: ['文件安全', '危化品管控', '全品类'],
+    tagKeys: ['solutions.tags.other.file', 'solutions.tags.other.hazard', 'solutions.tags.other.allCat'],
   },
 ];
 
@@ -217,9 +217,9 @@ export default function SolutionsPreview() {
                 {t(solution.descKey)}
               </p>
 
-              {/* Feature Tags */}
+              {/* Feature Tags - i18n keys */}
               <div className="flex flex-wrap gap-1.5 mb-4">
-                {solution.tags.map((tag, ti) => (
+                {solution.tagKeys.map((tagKey, ti) => (
                   <span
                     key={ti}
                     className="inline-flex items-center text-xs font-medium px-2.5 py-1 rounded-md transition-all duration-300"
@@ -230,7 +230,7 @@ export default function SolutionsPreview() {
                     }}
                   >
                     <CheckCircleIcon className="w-3 h-3 mr-1 opacity-60" />
-                    {tag}
+                    {t(tagKey)}
                   </span>
                 ))}
               </div>

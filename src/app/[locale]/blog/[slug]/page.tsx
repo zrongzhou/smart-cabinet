@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { Calendar, User, ArrowLeft, ArrowRight, Facebook, Twitter, Linkedin } from 'lucide-react';
 import { useLocale } from '@/lib/i18n';
 import { fetchBlogBySlug, fetchBlogs, BlogPost } from '@/lib/api';
+// Static fallback when API has no data
+import staticBlogs from '@/data/blogs';
 
 interface BlogDetailPageProps {
   params: Promise<{ locale: string; slug: string }>;
@@ -37,17 +39,117 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
           fetchBlogs({ published: true, pageSize: 50 }),
         ]);
         if (cancelled) return;
-        setBlog(blogRes || null);
-        // Get recent blogs (exclude current)
-        if (blogsRes.data) {
+
+        // If API returned a blog, use it; otherwise fall back to static blogs.ts
+        if (blogRes) {
+          setBlog(blogRes);
+        } else {
+          // Fallback: find matching slug in static blog data
+          const staticBlog = staticBlogs.find(b => b.slug === slug);
+          if (staticBlog) {
+            const excerptObj = typeof staticBlog.excerpt === 'string'
+              ? { zh: staticBlog.excerpt, en: staticBlog.excerpt, ar: staticBlog.excerpt }
+              : (staticBlog.excerpt || { zh: '', en: '', ar: '' });
+            const contentObj = typeof staticBlog.content === 'string'
+              ? { zh: staticBlog.content, en: staticBlog.content, ar: staticBlog.content }
+              : (staticBlog.content || { zh: '', en: '', ar: '' });
+            setBlog({
+              id: staticBlog.id || staticBlog.slug,
+              slug: staticBlog.slug,
+              title: staticBlog.title,
+              excerpt: excerptObj,
+              content: contentObj,
+              author: staticBlog.author,
+              publishedAt: staticBlog.publishedAt,
+              image: staticBlog.image,
+              featured: staticBlog.featured || false,
+              tags: (staticBlog.tags || []).map(t => ({ id: t, slug: t.toLowerCase().replace(/\s+/g, '-'), name: { zh: t, en: t, ar: t } })),
+              status: 'published',
+              createdAt: staticBlog.publishedAt || new Date().toISOString(),
+              updatedAt: staticBlog.publishedAt || new Date().toISOString(),
+            });
+          }
+        }
+
+        // Get recent blogs (exclude current) - from API or static fallback
+        if (blogsRes?.data) {
           setRecentBlogs(
             blogsRes.data
               .filter((b: BlogPost) => b.slug !== slug)
               .slice(0, 3)
           );
+        } else if (!blogRes) {
+          // Fallback recent blogs from static data
+          setRecentBlogs(
+            staticBlogs
+              .filter(b => b.slug !== slug)
+              .slice(0, 3)
+              .map(b => {
+                const eObj = b.excerpt || { zh: '', en: '', ar: '' };
+                const cObj = b.content || { zh: '', en: '', ar: '' };
+                return {
+                  id: b.id || b.slug,
+                  slug: b.slug,
+                  title: b.title,
+                  excerpt: eObj,
+                  content: cObj,
+                  author: b.author,
+                  publishedAt: b.publishedAt,
+                  image: b.image,
+                  featured: b.featured || false,
+                  tags: (b.tags || []).map(t => ({ id: t, slug: t.toLowerCase().replace(/\s+/g, '-'), name: { zh: t, en: t, ar: t } })),
+                  status: 'published',
+                  createdAt: b.publishedAt || new Date().toISOString(),
+                  updatedAt: b.publishedAt || new Date().toISOString(),
+                };
+              })
+          );
         }
       } catch (e) {
         console.error('Failed to load blog:', e);
+        // On error, also try static fallback
+        if (!cancelled) {
+          const staticBlog = staticBlogs.find(b => b.slug === slug);
+          if (staticBlog) {
+            setBlog({
+              id: staticBlog.id || staticBlog.slug,
+              slug: staticBlog.slug,
+              title: staticBlog.title,
+              excerpt: staticBlog.excerpt || { zh: '', en: '', ar: '' },
+              content: staticBlog.content || { zh: '', en: '', ar: '' },
+              author: staticBlog.author,
+              publishedAt: staticBlog.publishedAt,
+              image: staticBlog.image,
+              featured: staticBlog.featured || false,
+              tags: (staticBlog.tags || []).map(t => ({ id: t, slug: t.toLowerCase().replace(/\s+/g, '-'), name: { zh: t, en: t, ar: t } })),
+              status: 'published',
+              createdAt: staticBlog.publishedAt || new Date().toISOString(),
+              updatedAt: staticBlog.publishedAt || new Date().toISOString(),
+            });
+          }
+          // Static recent blogs fallback on error
+          setRecentBlogs(
+            staticBlogs.filter(b => b.slug !== slug).slice(0,3).map(b => {
+              const eObj = b.excerpt || { zh: '', en: '', ar: '' };
+              const cObj = b.content || { zh: '', en: '', ar: '' };
+              return {
+                id: b.id || b.slug,
+                slug: b.slug,
+                title: b.title,
+                excerpt: eObj,
+                content: cObj,
+                author: b.author,
+                publishedAt: b.publishedAt,
+                image: b.image,
+                featured: false,
+                tags: (b.tags || []).map(t => ({ id: t, slug: t.toLowerCase().replace(/\s+/g, '-'), name: { zh: t, en: t, ar: t } })),
+                status: 'published',
+                createdAt: b.publishedAt || new Date().toISOString(),
+                updatedAt: b.publishedAt || new Date().toISOString(),
+              };
+            })
+          );
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }

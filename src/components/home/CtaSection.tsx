@@ -135,6 +135,57 @@ export default function CtaSection() {
         </svg>
       </div>
 
+      {/* ===== ANIMATED BIRDS ===== */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {[
+          { top: '12%', size: 18, duration: 18, delay: 0,    direction: 1,  opacity: 0.55 },
+          { top: '18%', size: 14, duration: 22, delay: -5,   direction: 1,  opacity: 0.40 },
+          { top: '8%',  size: 22, duration: 15, delay: -3,   direction: 1,  opacity: 0.65 },
+          { top: '25%', size: 12, duration: 25, delay: -8,   direction: -1, opacity: 0.35 },
+          { top: '15%', size: 16, duration: 20, delay: -12,  direction: 1,  opacity: 0.45 },
+        ].map((bird, i) => (
+          <div
+            key={`bird-${i}`}
+            className="absolute"
+            style={{
+              top: bird.top,
+              left: bird.direction > 0 ? '-60px' : 'calc(100% + 20px)',
+              animation: `${bird.direction > 0 ? 'bird-fly-right' : 'bird-fly-left'} ${bird.duration}s linear infinite`,
+              animationDelay: `${bird.delay}s`,
+              opacity: bird.opacity,
+              zIndex: 1,
+            }}
+          >
+            {/* Simple bird shape: two angled wings */}
+            <svg
+              width={bird.size}
+              height={Math.round(bird.size * 0.55)}
+              viewBox="0 0 30 16"
+              fill="none"
+              style={{
+                transform: bird.direction > 0 ? 'scaleX(1)' : 'scaleX(-1)',
+                animation: `bird-flap 0.6s ease-in-out infinite`,
+              }}
+            >
+              <path
+                d="M2 8 C8 2, 18 1, 28 7"
+                stroke="#1e3a5f"
+                strokeWidth="2.2"
+                fill="none"
+                strokeLinecap="round"
+              />
+              <path
+                d="M2 8 C8 14, 18 15, 28 9"
+                stroke="#1e3a5f"
+                strokeWidth="2.2"
+                fill="none"
+                strokeLinecap="round"
+              />
+            </svg>
+          </div>
+        ))}
+      </div>
+
       {/* ===== FLOATING LIGHT PARTICLES (dust motes in sunlight) ===== */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {[...Array(12)].map((_, i) => (
@@ -321,6 +372,22 @@ export default function CtaSection() {
             transform: translateY(-20px) translateX(3px);
             opacity: 0.8;
           }
+        }
+
+        /* Bird flight — right direction */
+        @keyframes bird-fly-right {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(calc(100vw + 80px)); }
+        }
+        /* Bird flight — left direction */
+        @keyframes bird-fly-left {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(calc(-100vw - 80px)); }
+        }
+        /* Bird wing flap */
+        @keyframes bird-flap {
+          0%, 100% { transform: scaleY(1); }
+          50%        { transform: scaleY(0.55); }
         }
 
         /* CTA container ensures proper positioning context */

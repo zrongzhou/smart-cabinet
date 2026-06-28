@@ -186,20 +186,39 @@ export default function ContactPage() {
               </div>
             </div>
 
-            {/* Map - OpenStreetMap embed (no API key needed) */}
-            <div className="mt-6 rounded-2xl overflow-hidden border relative" style={{ borderColor: 'var(--border-color, #e5e7eb)', backgroundColor: 'var(--section-alt-bg, #f9fafb)' }}>
-              {/* OpenStreetMap iframe - works for all locales without API key */}
-              <iframe
-                src="https://www.openstreetmap.org/export/embed.html?bbox=113.45%2C23.15%2C113.55%2C23.25&layer=mapnik&marker=23.20%2C113.50"
-                width="100%"
-                height="260"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="公司位置地图 - Company Location Map"
-                className="w-full"
-              />
+            {/* Map - Static image with fallback (OSM iframe often blocked by X-Frame-Options) */}
+            <div className="mt-6 rounded-2xl overflow-hidden border relative" style={{ borderColor: 'var(--border-color, #e5e7eb)', backgroundColor: 'var(--section-alt-bg, #f0f4ff)' }}>
+              {/* Use an embedded map via img tag with OSM static tile - reliable, no iframe blocking */}
+              <div className="relative w-full" style={{ height: '260px' }}>
+                <img
+                  src="https://static-map.openstreetmap.org/static.php?center=23.20,113.50&zoom=13&size=600x260&maptype=mapnik&markers=23.20,113.50,red"
+                  alt={locale === 'zh' ? '公司位置地图' : locale === 'ar' ? 'خريطة موقع الشركة' : 'Company Location Map'}
+                  className="w-full h-full object-cover"
+                  style={{ filter: 'saturate(1.2) contrast(1.05)' }}
+                  onError={(e) => {
+                    // Fallback: show a styled placeholder if map fails to load
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    const fallback = target.parentElement?.querySelector('.map-fallback');
+                    if (fallback) (fallback as HTMLElement).style.display = 'flex';
+                  }}
+                />
+                <div className="map-fallback absolute inset-0 flex-col items-center justify-center hidden"
+                  style={{
+                    background: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 50%, #93c5fd 100%)',
+                  }}
+                >
+                  <MapPin className="w-10 h-10 text-red-500 mb-3" />
+                  <p className="text-sm font-medium text-blue-800">{displayAddress || (locale === 'zh' ? '中国广东省广州市番禺区' : 'Panyu District, Guangzhou')}</p>
+                  <p className="text-xs text-blue-600 mt-1">23.20°N, 113.50°E</p>
+                </div>
+                /* Subtle map overlay gradient */
+                <div className="absolute bottom-0 left-0 right-0 h-16 pointer-events-none"
+                  style={{
+                    background: 'linear-gradient(to top, rgba(255,255,255,0.95) 0%, transparent 100%)',
+                  }}
+                />
+              </div>
               {/* Fallback address card */}
               <div className="backdrop-blur-sm p-4 border-t" style={{ backgroundColor: 'rgba(255,255,255,0.9)', borderColor: 'var(--border-color, #e5e7eb)' }}>
                 <div className="flex items-center gap-3">

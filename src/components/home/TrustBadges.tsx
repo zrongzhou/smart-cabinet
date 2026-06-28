@@ -11,11 +11,11 @@ import {
 } from '@heroicons/react/24/solid';
 
 const trustBadges = [
-  { icon: CheckCircleIcon,   titleKey: 'trustBadges.iso',         subKey: 'home.trustBadges.stats.models',  color: '#10b981', glowColor: 'rgba(16,185,129,0.15)' },
-  { icon: ShieldCheckIcon,  titleKey: 'trustBadges.patents',     subKey: 'home.trustBadges.stats.countries', color: '#3b82f6', glowColor: 'rgba(59,130,246,0.15)' },
-  { icon: GlobeAltIcon,     titleKey: 'trustBadges.export',      subKey: 'home.trustBadges.stats.clients',   color: '#6366f1', glowColor: 'rgba(99,102,241,0.15)' },
-  { icon: ClockIcon,        titleKey: 'trustBadges.experience',  subKey: 'home.trustBadges.stats.experience',color: '#f59e0b', glowColor: 'rgba(245,158,11,0.15)' },
-  { icon: UserGroupIcon,    titleKey: 'trustBadges.clients',      subKey: 'home.trustBadges.stats.uptime',    color: '#ef4444', glowColor: 'rgba(239,68,68,0.15)' },
+  { icon: CheckCircleIcon,   titleKey: 'trustBadges.iso',         subKey: 'home.trustBadges.stats.models',  descKey: 'trustBadges.iso.desc',  color: '#10b981', glowColor: 'rgba(16,185,129,0.15)', progress: 98 },
+  { icon: ShieldCheckIcon,  titleKey: 'trustBadges.patents',     subKey: 'home.trustBadges.stats.countries', color: '#3b82f6', glowColor: 'rgba(59,130,246,0.15)', progress: 95 },
+  { icon: GlobeAltIcon,     titleKey: 'trustBadges.export',      subKey: 'home.trustBadges.stats.clients',   descKey: 'trustBadges.export.desc', color: '#6366f1', glowColor: 'rgba(99,102,241,0.15)', progress: 92 },
+  { icon: ClockIcon,        titleKey: 'trustBadges.experience',  subKey: 'home.trustBadges.stats.experience',color: '#f59e0b', glowColor: 'rgba(245,158,11,0.15)', progress: 99 },
+  { icon: UserGroupIcon,    titleKey: 'trustBadges.clients',      subKey: 'home.trustBadges.stats.uptime',    descKey: 'trustBadges.clients.desc', color: '#ef4444', glowColor: 'rgba(239,68,68,0.15)', progress: 97 },
 ];
 
 const fadeInUp = {
@@ -153,7 +153,26 @@ export default function TrustBadges({ locale: propLocale }: TrustBadgesProps) {
                 >
                   {t(badge.titleKey)}
                 </h3>
-                <p className="text-xs leading-relaxed" style={{ color: '#94a3b8' }}>{t(badge.subKey)}</p>
+                <p className="text-xs leading-relaxed mb-2" style={{ color: '#64748b' }}>{t(badge.subKey)}</p>
+                {/* Description */}
+                {badge.descKey && (
+                  <p className="text-[11px] leading-relaxed mb-3 opacity-70 group-hover:opacity-100 transition-opacity duration-500" style={{ color: '#94a3b8' }}>
+                    {t(badge.descKey)}
+                  </p>
+                )}
+                {/* Animated progress bar */}
+                <div className="w-full h-1.5 rounded-full overflow-hidden mb-1" style={{ backgroundColor: 'rgba(148,163,184,0.12)' }}>
+                  <div
+                    className="h-full rounded-full progress-bar-animate"
+                    style={{
+                      background: `linear-gradient(90deg, ${badge.color}, ${badge.color}cc)`,
+                      width: '0%',
+                      animation: `progress-fill 1.8s ease-out 0.3s forwards`,
+                      ['--target-width' as any]: `${badge.progress}%`,
+                    } as any}
+                  />
+                </div>
+                <p className="text-[10px] font-semibold" style={{ color: badge.color }}>{badge.progress}% {locale === 'zh' ? '满意度' : locale === 'ar' ? 'رضا' : 'satisfaction'}</p>
               </motion.div>
             );
           })}
@@ -237,6 +256,10 @@ export default function TrustBadges({ locale: propLocale }: TrustBadgesProps) {
         @keyframes gradient-shift-3 {
           0%, 100% { background-position: 0% center; }
           50% { background-position: 200% center; }
+        }
+        @keyframes progress-fill {
+          0% { width: 0%; }
+          100% { width: var(--target-width, 90%); }
         }
       `}</style>
     </section>

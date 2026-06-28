@@ -521,7 +521,7 @@ export default function ProductsPage() {
                         <button
                           key={cat.id}
                           onClick={() => toggleCategory(cat.id)}
-                          className={`relative px-3 py-1.5 rounded-full text-[13px] transition-all duration-200 leading-none inline-flex items-center ${
+                          className={`relative px-3 py-1.5 rounded-full text-[13px] font-medium transition-all duration-200 leading-none inline-flex items-center ${
                             isSelected
                               /* Selected: solid blue background */
                               ? `text-white shadow-sm font-semibold hover:shadow-md`

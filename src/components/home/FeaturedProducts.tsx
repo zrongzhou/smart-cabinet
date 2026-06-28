@@ -251,8 +251,17 @@ export default function FeaturedProducts() {
                     {/* Glass highlight overlay on hover */}
                     <div className="absolute inset-0 rounded-2xl pointer-events-none transition-opacity duration-500 opacity-0 group-hover:opacity-100"
                       style={{
-                        background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 50%)',
-                        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.2)',
+                        background: 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.05) 40%, transparent 60%)',
+                        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.95), inset 0 -1px 0 rgba(148,163,184,0.08)',
+                      }}
+                    />
+                    
+                    {/* Glass edge highlight — always visible, stronger on hover */}
+                    <div 
+                      className="absolute top-0 left-0 right-0 h-px rounded-t-2xl transition-opacity duration-500"
+                      style={{ 
+                        background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.9) 30%, rgba(255,255,255,0.95) 50%, rgba(255,255,255,0.9) 70%, transparent 100%)',
+                        opacity: 0.6,
                       }}
                     />
                   </motion.div>

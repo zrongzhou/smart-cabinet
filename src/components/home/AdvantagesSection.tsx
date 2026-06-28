@@ -131,14 +131,14 @@ export default function AdvantagesSection() {
                   }}
                 />
 
-                {/* Icon Container */}
+                {/* Icon Container — larger, with ring + gradient background + rotate on hover */}
                 <motion.div
-                  whileHover={{ scale: 1.08, rotate: 3 }}
+                  whileHover={{ scale: 1.15, rotate: 8 }}
                   transition={{ duration: 0.3, type: 'spring' }}
-                  className="relative w-14 h-14 rounded-xl flex items-center justify-center mb-5"
+                  className="relative w-16 h-16 rounded-2xl flex items-center justify-center mb-5 shadow-lg"
                   style={{
                     background: `linear-gradient(135deg, ${adv.gradientFrom} 0%, ${adv.gradientTo} 100%)`,
-                    boxShadow: `0 6px 20px ${adv.gradientFrom}30`,
+                    boxShadow: `0 8px 24px ${adv.gradientFrom}38`,
                   }}
                 >
                   <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
@@ -157,21 +157,25 @@ export default function AdvantagesSection() {
                   {t(adv.descKey)}
                 </p>
 
-                {/* Feature Tags */}
+                {/* Feature Tags — with staggered fade-in animation */}
                 <div className="flex flex-wrap gap-1.5">
                   {adv.featureKeys.map((fkey, fi) => (
-                    <span
+                    <motion.span
                       key={fi}
-                      className="inline-flex items-center text-xs font-medium px-2 py-1 rounded-md transition-all duration-300 opacity-70 group-hover:opacity-100"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      whileInView={{ opacity: 0.85, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.3, delay: 0.1 * fi }}
+                      className="inline-flex items-center text-xs font-medium px-2.5 py-1 rounded-md transition-all duration-300 hover:opacity-100 group-hover:opacity-100"
                       style={{
-                        background: `${adv.gradientFrom}08`,
+                        background: `${adv.gradientFrom}0a`,
                         color: adv.gradientFrom,
-                        border: `1px solid ${adv.gradientFrom}12`,
+                        border: `1px solid ${adv.gradientFrom}18`,
                       }}
                     >
                       <CheckCircleIcon className="w-3 h-3 mr-1 opacity-60" />
                       {t(fkey)}
-                    </span>
+                    </motion.span>
                   ))}
                 </div>
               </motion.div>
