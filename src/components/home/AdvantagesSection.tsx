@@ -17,37 +17,37 @@ const advantages = [
     id: 1, icon: BuildingOfficeIcon,
     titleKey: 'advantages.item1.title', descKey: 'advantages.item1.description',
     gradientFrom: '#3b82f6', gradientTo: '#8b5cf6',
-    features: ['RFID自动识别', '零人工错误', '实时位置追踪', '多标签兼容'],
+    featureKeys: ['advantages.features.rfid', 'advantages.features.zeroError', 'advantages.features.realtimeTrack', 'advantages.features.multiTag'],
   },
   {
     id: 2, icon: BeakerIcon,
     titleKey: 'advantages.item2.title', descKey: 'advantages.item2.description',
     gradientFrom: '#06b6d4', gradientTo: '#3b82f6',
-    features: ['库存可视化', '自动预警补货', '缺料即时通知', '历史数据报表'],
+    featureKeys: ['advantages.features.inventoryVis', 'advantages.features.autoReorder', 'advantages.features.lowStockAlert', 'advantages.features.dataReport'],
   },
   {
     id: 3, icon: RocketLaunchIcon,
     titleKey: 'advantages.item3.title', descKey: 'advantages.item3.description',
     gradientFrom: '#8b5cf6', gradientTo: '#ec4899',
-    features: ['发放-回收闭环', '全程可追溯', '异常行为告警', '责任到人'],
+    featureKeys: ['advantages.features.closedLoop', 'advantages.features.fullTrace', 'advantages.features.anomalyAlert', 'advantages.features.responsible'],
   },
   {
     id: 4, icon: BoltIcon,
     titleKey: 'advantages.item4.title', descKey: 'advantages.item4.description',
     gradientFrom: '#f59e0b', gradientTo: '#ef4444',
-    features: ['ISO 9001认证', '5大管理体系', 'CE/FCC认证', '质量全追溯'],
+    featureKeys: ['advantages.features.isoCert', 'advantages.features.mgmtSystem', 'advantages.features.ceFcc', 'advantages.features.qualityTrace'],
   },
   {
     id: 5, icon: ClockIcon,
     titleKey: 'advantages.item5.title', descKey: 'advantages.item5.description',
     gradientFrom: '#10b981', gradientTo: '#06b6d4',
-    features: ['60+国家出口', '航空航天客户', '汽车工业应用', '全球服务网络'],
+    featureKeys: ['advantages.features.export60', 'advantages.features.aerospace', 'advantages.features.autoIndustry', 'advantages.features.globalService'],
   },
   {
     id: 6, icon: TrophyIcon,
     titleKey: 'advantages.item6.title', descKey: 'advantages.item6.description',
     gradientFrom: '#ec4899', gradientTo: '#f43f5e',
-    features: ['多项发明专利', '软件著作权', '持续技术迭代', '行业领先方案'],
+    featureKeys: ['advantages.features.patents', 'advantages.features.softwareCopyright', 'advantages.features.techIteration', 'advantages.features.industryLead'],
   },
 ];
 
@@ -159,7 +159,7 @@ export default function AdvantagesSection() {
 
                 {/* Feature Tags */}
                 <div className="flex flex-wrap gap-1.5">
-                  {adv.features.map((feat, fi) => (
+                  {adv.featureKeys.map((fkey, fi) => (
                     <span
                       key={fi}
                       className="inline-flex items-center text-xs font-medium px-2 py-1 rounded-md transition-all duration-300 opacity-70 group-hover:opacity-100"
@@ -170,7 +170,7 @@ export default function AdvantagesSection() {
                       }}
                     >
                       <CheckCircleIcon className="w-3 h-3 mr-1 opacity-60" />
-                      {feat}
+                      {t(fkey)}
                     </span>
                   ))}
                 </div>

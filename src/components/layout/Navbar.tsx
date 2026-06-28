@@ -80,35 +80,24 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
     }
   };
 
-  // ===== FIXED COLOR STRATEGY =====
-  // 用户反复反馈"看不见"，彻底放弃动态颜色切换
-  // 首页：永远深色底+白字（不管scroll状态）
+  // ===== FIXED COLOR STRATEGY (v10) =====
+  // 用户反复反馈几百次"看不见"——彻底禁用所有动态颜色切换
+  // 首页：永远固定深色底+白字，不管滚动、不管任何状态
   // 其他页面：永远白色底+深色字
   const isHomepage = typeof window !== 'undefined' && (
     window.location.pathname === `/${locale}` || window.location.pathname === `/${locale}/`
   );
 
+  // 首页背景：固定不变，永远这个值
   const getNavBg = () => {
     if (isHomepage) {
-      // 首页：固定深色背景，不透明，不模糊，不透明度变化
-      return isScrolled
-        ? 'bg-[#0c1229]/95 backdrop-blur-md shadow-lg border-b border-[#1e293b]'
-        : 'bg-[#0c1229] border-b border-white/[0.08]';
+      return 'bg-[#0c1229]/90 backdrop-blur-md border-b border-white/[0.08]';
     }
-    // 非首页：标准白色
     return isScrolled ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-100' : 'bg-white shadow-sm';
   };
 
-  // Fixed text color - no more dynamic switching per-link
-  const getNavTextColor = () => {
-    // 首页：永远是白色（带足够对比度）
-    if (isHomepage) return 'text-white/90 hover:text-white';
-    // 非首页：标准深灰
-    return 'text-gray-700 hover:text-blue-600';
-  };
-
-  const textColor = getNavTextColor();
-  const isLightBg = !isHomepage || isScrolled;
+  // 首页文字色：永远是白色（高对比度）
+  const textColor = isHomepage ? 'text-white/90 hover:text-white' : 'text-gray-700 hover:text-blue-600';
 
   return (
     <>
@@ -130,7 +119,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
                 <img src="/images/logo.svg" alt={siteName} className="h-8 w-auto object-contain" />
               )}
               {/* Always show company name, regardless of logo */}
-              <span className={`text-xl font-bold ${isHomepage && !isScrolled ? 'text-white' : 'text-gray-900'}`}>{siteName}</span>
+              <span className={`text-xl font-bold ${isHomepage ? 'text-white' : 'text-gray-900'}`}>{siteName}</span>
             </a>
 
             {/* Desktop Navigation */}
@@ -150,7 +139,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
                 <button
                   onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
                   className={`flex items-center space-x-1 px-3 py-2 rounded-lg border transition-colors duration-200 text-sm font-medium ${
-                    isHomepage && !isScrolled
+                    isHomepage
                       ? 'border-white/30 text-white hover:bg-white/10 hover:text-white'
                       : 'border-gray-300 text-gray-700 hover:border-blue-600 hover:text-blue-600'
                   }`}
@@ -234,7 +223,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
                   <a
                     href={`/${locale}/login`}
                     className={`px-4 py-2 text-sm font-medium transition-colors ${
-                      isHomepage && !isScrolled
+                      isHomepage
                         ? 'text-white/90 hover:text-white'
                         : 'text-gray-700 hover:text-blue-600'
                     }`}
@@ -254,7 +243,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
               <a
                 href={`/${locale}/contact`}
                 className={`inline-flex items-center px-5 py-2 font-semibold rounded-lg transition-all duration-200 text-sm bg-blue-600 text-white hover:bg-blue-700 ${
-                  isHomepage && !isScrolled ? 'shadow-lg shadow-blue-600/30' : ''
+                  isHomepage ? 'shadow-lg shadow-blue-600/30' : ''
                 }`}
               >
                 {t('nav.getQuote')}
@@ -265,14 +254,14 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className={`md:hidden p-3 rounded-lg transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center ${
-                isHomepage && !isScrolled ? 'hover:bg-white/10' : 'hover:bg-gray-100'
+                isHomepage ? 'hover:bg-white/10' : 'hover:bg-gray-100'
               }`}
               aria-label="Toggle menu"
             >
               {isMobileMenuOpen ? (
-                <XMarkIcon className={`w-6 h-6 ${isHomepage && !isScrolled ? 'text-white' : 'text-gray-700'}`} />
+                <XMarkIcon className={`w-6 h-6 ${isHomepage ? 'text-white' : 'text-gray-700'}`} />
               ) : (
-                <Bars3Icon className={`w-6 h-6 ${isHomepage && !isScrolled ? 'text-white' : 'text-gray-700'}`} />
+                <Bars3Icon className={`w-6 h-6 ${isHomepage ? 'text-white' : 'text-gray-700'}`} />
               )}
             </button>
           </div>

@@ -31,6 +31,7 @@ const testimonials = [
     content: {
       zh: '这家精密加工公司通过智能柜实施，将工具搜索时间减少了75%，消除了生产延误。详细的案例研究和可衡量的结果。',
       en: 'A precision machining company reduced tool search time by 75% and eliminated production delays with smart cabinet implementation. A detailed case study with measurable results.',
+      ar: 'خفضت شركة تصنيع دقيقة وقت البحث عن الأدوات بنسبة 75% وأزالت تأخيرات الإنتاج من خلال تنفيذ الخزائن الذكية. دراسة حالة مفصلة مع نتائج قابلة للقياس.',
     },
     rating: 5,
   },
@@ -41,6 +42,7 @@ const testimonials = [
     content: {
       zh: '以前找一把刀要花10分钟，现在刷一下卡就能取刀，系统自动记录。我们的工具损耗率下降了40%，管理成本大幅降低。',
       en: 'It used to take 10 minutes to find a tool. Now I just swipe a card to get the tool, and the system automatically records it. Our tool loss rate dropped by 40%, and management costs decreased significantly.',
+      ar: 'كان استرجاع أداة يستغرق 10 دقائق. الآن فقط أمر البطاقة وأستلم الأداة، والظام يسجل تلقائياً. انخفض معدل فقدان الأدوات بنسبة 40%، وتقلصت تكاليف الإدارة بشكل كبير.',
     },
     rating: 5,
   },
@@ -51,6 +53,7 @@ const testimonials = [
     content: {
       zh: '智能柜系统彻底改变了我们的工具管理方式。从入库到出库全流程可追溯，库存准确率提升到99.5%。员工满意度也大幅提升，再也不用为找工具发愁了。',
       en: 'The smart cabinet system has completely transformed our tool management. Full traceability from check-in to checkout, inventory accuracy up to 99.5%. Employee satisfaction has also improved significantly - no more struggling to find tools.',
+      ar: 'حول نظام الخزائن الذكية إدارة أدواتنا بالكامل. قابلية تتبع كاملة من الاستلام إلى الصرف، دقة المخزون وصلت إلى 99.5%. تحسن رضا الموظفين بشكل كبير - لا مزيد من المعاناة في العثور على الأدوات.',
     },
     rating: 5,
   },
@@ -61,6 +64,7 @@ const testimonials = [
     content: {
       zh: '作为IT负责人，我最看重系统的稳定性和数据安全。这套智能柜运行一年多零故障，数据实时同步到我们的ERP系统，报表功能也非常强大。',
       en: 'As an IT manager, I value system stability and data security most. This smart cabinet has run for over a year with zero downtime, real-time data sync to our ERP, and powerful reporting capabilities.',
+      ar: 'كمسؤول تقنية المعلومات، أقدر استقرار النظام وأمان البيانات أكثر من أي شيء آخر. عملت هذه الخزانة الذكية لأكثر من عام بدون توقف، مع مزامنة بيانات فورية مع نظام ERP، وقدرات تقارير قوية.',
     },
     rating: 5,
   },
@@ -71,6 +75,7 @@ const testimonials = [
     content: {
       zh: '我们集团下属5个工厂都部署了智能柜，统一管理平台让我们能实时监控所有工厂的刀具使用情况。ROI在8个月内就实现了，这是近年来最成功的数字化项目之一。',
       en: 'All 5 of our group\'s factories have deployed smart cabinets. The unified management platform lets us monitor cutting tool usage across all facilities in real time. ROI was achieved within 8 months - one of our most successful digital transformation projects.',
+      ar: 'نشرنا الخزائن الذكية في جميع مصانع مجموعتنا الخمسة. تتيح لنا المنصة الموحدة مراقبة استخدام أدوات القطع في جميع المرافق في الوقت الفعلي. تم تحقيق العائد على الاستثمار في غضون 8 أشهر - أحد أكثر مشاريع التحول الرقمي نجاحاً.',
     },
     rating: 5,
   },

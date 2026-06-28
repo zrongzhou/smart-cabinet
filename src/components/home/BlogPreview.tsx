@@ -49,36 +49,33 @@ function CrackedGlassCard({ children, className = '', href }: { children: React.
       <svg
         className="absolute inset-0 w-full h-full pointer-events-none z-10"
         xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
         style={{ mixBlendMode: 'overlay', opacity: 0.35 }}
       >
-        <defs>
-          <clipPath id={`crack-clip-${Math.random().toString(36).slice(2,8)}`}>
-            <rect width="100%" height="100%" />
-          </clipPath>
-        </defs>
-        {/* Main crack lines radiating from top-right area */}
+        {/* Main crack lines - numeric coords for viewBox 0-100 */}
         <g stroke="rgba(100,120,160,0.4)" strokeWidth="0.6" fill="none" strokeLinecap="round">
           {/* Primary crack from upper right */}
-          <path d="M100% 0 L85% 12% L92% 28% L78% 42% L86% 58% L72% 78% L82% 95% L68% 100%" />
-          <path d="M85% 12% L70% 18% L76% 32% L62% 48% L70% 65% L55% 82%" />
-          <path d="M92% 28% L80% 36% L88% 52% L74% 68% L84% 85% L68% 98%" />
-          <path d="M78% 42% L64% 50% L72% 66% L56% 84% L66% 96%" />
+          <path d="M100 0 L85 12 L92 28 L78 42 L86 58 L72 78 L82 95 L68 100" />
+          <path d="M85 12 L70 18 L76 32 L62 48 L70 65 L55 82" />
+          <path d="M92 28 L80 36 L88 52 L74 68 L84 85 L68 98" />
+          <path d="M78 42 L64 50 L72 66 L56 84 L66 96" />
           {/* Secondary micro-cracks */}
-          <path d="M70% 18% L58% 25% L66% 38% L52% 55% L60% 72% L45% 88%" strokeWidth="0.4" />
-          <path d="M80% 36% L68% 44% L76% 58% L60% 76% L70% 90%" strokeWidth="0.4" />
-          <path d="M64% 50% L52% 58% L60% 72% L46% 88%" strokeWidth="0.4" />
+          <path d="M70 18 L58 25 L66 38 L52 55 L60 72 L45 88" strokeWidth="0.4" />
+          <path d="M80 36 L68 44 L76 58 L60 76 L70 90" strokeWidth="0.4" />
+          <path d="M64 50 L52 58 L60 72 L46 88" strokeWidth="0.4" />
           {/* Tertiary fine cracks */}
-          <path d="M76% 32% L66% 38% L72% 48% L60% 60% L68% 74% L54% 88%" strokeWidth="0.25" opacity="0.6" />
-          <path d="M88% 52% L78% 60% L84% 74% L70% 88% L78% 98%" strokeWidth="0.25" opacity="0.6" />
-          <path d="M55% 82% L46% 90% L52% 100%" strokeWidth="0.3" opacity="0.5" />
+          <path d="M76 32 L66 38 L72 48 L60 60 L68 74 L54 88" strokeWidth="0.25" opacity="0.6" />
+          <path d="M88 52 L78 60 L84 74 L70 88 L78 98" strokeWidth="0.25" opacity="0.6" />
+          <path d="M55 82 L46 90 L52 100" strokeWidth="0.3" opacity="0.5" />
         </g>
         {/* Crack nodes (impact points) */}
         <g fill="rgba(150,170,200,0.25)">
-          <circle cx="85%" cy="12%" r="1.5" />
-          <circle cx="92%" cy="28%" r="1" />
-          <circle cx="78%" cy="42%" r="1.2" />
-          <circle cx="70%" cy="18%" r="0.8" />
-          <circle cx="80%" cy="36%" r="0.9" />
+          <circle cx="85" cy="12" r="1.5" />
+          <circle cx="92" cy="28" r="1" />
+          <circle cx="78" cy="42" r="1.2" />
+          <circle cx="70" cy="18" r="0.8" />
+          <circle cx="80" cy="36" r="0.9" />
         </g>
       </svg>
 

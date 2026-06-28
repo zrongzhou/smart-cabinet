@@ -96,7 +96,7 @@ const blogs: BlogPost[] = [
     publishedAt: '2024-09-15',
     category: 'industry-trends',
     tags: ['AI', 'IoT', 'Smart Storage', 'Industry 4.0', 'Future Tech'],
-    image: 'https://images.unsplash.com/photo-1581091226825-a6a2f5afce1c?w=800&q=80&auto=format&fit=crop',
+    image: '/images/blog/ai-industry-4-0.jpg',
     featured: true,
   },
   {
@@ -202,7 +202,7 @@ const blogs: BlogPost[] = [
     publishedAt: '2024-11-20',
     category: 'case-study',
     tags: ['CNC', 'Downtime', 'ROI', 'Precision Machining', 'Efficiency'],
-    image: 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=800&q=80&auto=format&fit=crop',
+    image: '/images/blog/cnc-machining-roi.jpg',
     featured: true,
   },
   {
@@ -326,7 +326,7 @@ const blogs: BlogPost[] = [
     publishedAt: '2024-07-08',
     category: 'technical-guide',
     tags: ['RFID', 'Technology', 'Tool Tracking', 'Implementation', 'Best Practices'],
-    image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80&auto=format&fit=crop',
+    image: '/images/blog/rfid-tool-tracking.jpg',
     featured: false,
   },
   {
@@ -411,7 +411,7 @@ const blogs: BlogPost[] = [
     publishedAt: '2025-01-10',
     category: 'best-practice',
     tags: ['Inventory Accuracy', 'Efficiency', 'Smart Cabinets', 'Best Practices'],
-    image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800&q=80&auto=format&fit=crop',
+    image: '/images/blog/smart-cabinet-warehouse.jpg',
     featured: true,
   },
   {
@@ -538,7 +538,7 @@ const blogs: BlogPost[] = [
     publishedAt: '2024-05-22',
     category: 'use-case',
     tags: ['PPE', 'Compliance', 'Safety', 'Vending', 'Smart Storage'],
-    image: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80&auto=format&fit=crop',
+    image: '/images/blog/ppe-safety-equipment.jpg',
     featured: false,
   },
   {
@@ -656,7 +656,7 @@ const blogs: BlogPost[] = [
     publishedAt: '2025-03-05',
     category: 'customer-story',
     tags: ['Digital Transformation', 'Case Study', 'ROI', 'Implementation', 'Best Practices'],
-    image: 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=800&q=80&auto=format&fit=crop',
+    image: '/images/blog/digital-transformation.jpg',
     featured: true,
   },
   // ========== Additional blog posts (v15 expansion) ==========
@@ -691,7 +691,7 @@ const blogs: BlogPost[] = [
     publishedAt: '2025-04-12',
     category: 'technical-guide',
     tags: ['ROI', 'Cost Analysis', 'Business Case', 'Finance', 'Smart Cabinets'],
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80&auto=format&fit=crop',
+    image: '/images/blog/roi-cost-analysis.jpg',
     featured: true,
   },
   {
@@ -727,7 +727,7 @@ const blogs: BlogPost[] = [
     publishedAt: '2025-02-28',
     category: 'technical-guide',
     tags: ['IoT', 'MES', 'Industry 4.0', 'Integration', 'Automation'],
-    image: 'https://images.unsplash.com/photo-1558346490-a72e53ae2d4f?w=800&q=80&auto=format&fit=crop',
+    image: '/images/blog/iot-mes-integration.jpg',
     featured: false,
   },
   {
@@ -778,7 +778,7 @@ const blogs: BlogPost[] = [
     publishedAt: '2025-01-22',
     category: 'best-practice',
     tags: ['Buying Guide', 'Features', 'Selection Criteria', 'Best Practices'],
-    image: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800&q=80&auto=format&fit=crop',
+    image: '/images/blog/buying-guide-smart-cabinet.jpg',
     featured: true,
   },
   {
@@ -814,7 +814,7 @@ const blogs: BlogPost[] = [
     publishedAt: '2024-12-08',
     category: 'case-study',
     tags: ['Aerospace', 'FOD Prevention', 'AS9100', 'Calibration', 'Compliance'],
-    image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80&auto=format&fit=crop',
+    image: '/images/blog/aerospace-fod-prevention.jpg',
     featured: false,
   },
   {
@@ -850,7 +850,7 @@ const blogs: BlogPost[] = [
     publishedAt: '2024-11-14',
     category: 'best-practice',
     tags: ['Security', 'Access Control', 'Audit', 'High-Value Tools', 'Loss Prevention'],
-    image: 'https://images.unsplash.com/photo-1563013548-24faaa7629a9?w=800&q=80&auto=format&fit=crop',
+    image: '/images/blog/tool-security-audit.jpg',
     featured: false,
   },
   {
@@ -886,7 +886,7 @@ const blogs: BlogPost[] = [
     publishedAt: '2024-10-20',
     category: 'industry-trends',
     tags: ['Future Tech', 'AI', 'Robotics', 'Digital Twin', 'Sustainability', 'Smart Factory'],
-    image: 'https://images.unsplash.com/photo-1565514020179-026b92b84bb6?w=800&q=80&auto=format&fit=crop',
+    image: '/images/blog/future-smart-factory.jpg',
     featured: true,
   },
 ];
