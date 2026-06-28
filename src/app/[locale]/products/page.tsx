@@ -7,90 +7,28 @@ import { useLocale } from '@/lib/i18n';
 import { Product, Category } from '@/lib/api';
 import { getBaseUrl } from '@/data/unified-data';
 
-  // Icon mapping for dimensions - matches Category.type values in DB
-  // Note: custom dimension icons are loaded from localStorage (set by admin)
-  const dimensionIcons: Record<string, any> = {
-    'cabinet-type': Layers,
-    'managed-items': Box,
-    'industry': Building2,
-    'custom-solution': Settings,
+  // Icon mapping for dimensions - using emojis for theme compatibility
+  const dimensionIcons: Record<string, string> = {
+    'cabinet-type': '🗄',
+    'managed-items': '📦',
+    'industry': '🏭',
+    'custom-solution': '⚙️',
   };
 
-  // Color mapping for each dimension type - harmonious gradient scheme
-  const dimensionColors: Record<string, { 
-    icon: string; 
-    bg: string; 
-    border: string; 
-    activeBg: string; 
-    shadowColor: string;
-    activeGradient: string;
-    inactiveGradient: string;
-    lightBg: string;
-    textColor: string;
+  // Dimension color - unified primary color (CSS variable) for theme compatibility
+  const dimensionColors: Record<string, {
+    icon: string;
+    activeBg: string;
     barColor: string;
+    textColor: string;
   }> = {
-    'cabinet-type':   { 
-      icon: 'text-blue-600', 
-      bg: 'bg-blue-50', 
-      border: 'border-blue-200', 
-      activeBg: 'bg-blue-600', 
-      shadowColor: 'rgba(59, 130, 246, 0.3)',
-      activeGradient: 'bg-gradient-to-r from-blue-500 to-indigo-600',
-      inactiveGradient: 'bg-gradient-to-r from-gray-50 to-white',
-      lightBg: 'bg-blue-50',
-      textColor: 'text-blue-700',
-      barColor: 'bg-blue-500'
-    },
-    'managed-items':  { 
-      icon: 'text-emerald-600', 
-      bg: 'bg-emerald-50', 
-      border: 'border-emerald-200', 
-      activeBg: 'bg-emerald-600', 
-      shadowColor: 'rgba(16, 185, 129, 0.3)',
-      activeGradient: 'bg-gradient-to-r from-emerald-500 to-teal-600',
-      inactiveGradient: 'bg-gradient-to-r from-gray-50 to-white',
-      lightBg: 'bg-emerald-50',
-      textColor: 'text-emerald-700',
-      barColor: 'bg-emerald-500'
-    },
-    'industry':       { 
-      icon: 'text-violet-600', 
-      bg: 'bg-violet-50', 
-      border: 'border-violet-200', 
-      activeBg: 'bg-violet-600', 
-      shadowColor: 'rgba(139, 92, 246, 0.3)',
-      activeGradient: 'bg-gradient-to-r from-violet-500 to-purple-600',
-      inactiveGradient: 'bg-gradient-to-r from-gray-50 to-white',
-      lightBg: 'bg-violet-50',
-      textColor: 'text-violet-700',
-      barColor: 'bg-violet-500'
-    },
-    'custom-solution': { 
-      icon: 'text-amber-600', 
-      bg: 'bg-amber-50', 
-      border: 'border-amber-200', 
-      activeBg: 'bg-amber-600', 
-      shadowColor: 'rgba(245, 158, 11, 0.3)',
-      activeGradient: 'bg-gradient-to-r from-amber-500 to-orange-500',
-      inactiveGradient: 'bg-gradient-to-r from-gray-50 to-white',
-      lightBg: 'bg-amber-50',
-      textColor: 'text-amber-700',
-      barColor: 'bg-amber-500'
-    },
+    'cabinet-type':   { icon: '🗄', activeBg: 'var(--primary-color)', barColor: 'var(--primary-color)', textColor: 'var(--primary-color)' },
+    'managed-items':  { icon: '📦', activeBg: 'var(--primary-color)', barColor: 'var(--primary-color)', textColor: 'var(--primary-color)' },
+    'industry':       { icon: '🏭', activeBg: 'var(--primary-color)', barColor: 'var(--primary-color)', textColor: 'var(--primary-color)' },
+    'custom-solution': { icon: '⚙️', activeBg: 'var(--primary-color)', barColor: 'var(--primary-color)', textColor: 'var(--primary-color)' },
   };
-  // Default color for unknown/custom types
-  const defaultDimColor = { 
-    icon: 'text-cyan-600', 
-    bg: 'bg-cyan-50', 
-    border: 'border-cyan-200', 
-    activeBg: 'bg-cyan-600', 
-    shadowColor: 'rgba(6, 182, 212, 0.3)',
-    activeGradient: 'bg-gradient-to-r from-cyan-500 to-sky-500',
-    inactiveGradient: 'bg-gradient-to-r from-gray-50 to-white',
-    lightBg: 'bg-cyan-50',
-    textColor: 'text-cyan-700',
-    barColor: 'bg-cyan-500'
-  };
+  // Default for unknown/custom types
+  const defaultDimColor = { icon: '⚙️', activeBg: 'var(--primary-color)', barColor: 'var(--primary-color)', textColor: 'var(--primary-color)' };
 
   // Helper to check if a string is an emoji (not a Lucide icon name)
   const isEmoji = (str: string): boolean => {
@@ -104,40 +42,53 @@ import { getBaseUrl } from '@/data/unified-data';
     return /[^\u0000-\u007F]/.test(str);
   };
 
+  // Helper to normalize dimension type keys (handles hyphen/underscore/space variations)
+  const normalizeTypeKey = (type: string): string => {
+    if (!type) return type;
+    return type.toLowerCase().replace(/[_\s]+/g, '-');
+  };
+
   // Helper to get icon for a dimension type (including custom types)
   // Returns either a React component (Lucide icon) or a string (emoji)
+  // BUILT-IN types ALWAYS use their correct emoji — localStorage can never override them
   const getDimensionIcon = (type: string): any => {
-    // 1. Check hardcoded built-in icons first
-    const builtInIcon = dimensionIcons[type];
+    const normalized = normalizeTypeKey(type);
+
+    // 1. Check normalized built-in icons first (highest priority — localStorage can NEVER override these!)
+    const builtInIcon = dimensionIcons[normalized];
     if (builtInIcon) return builtInIcon;
-    
+
+    // Also try original key in case it matches exactly
+    const exactBuiltIn = dimensionIcons[type];
+    if (exactBuiltIn) return exactBuiltIn;
+
     // 2. Check custom dimension icon from localStorage (set by admin in categories page)
+    //    Only for NON-built-in custom types like "robots", "ai-tools", etc.
     try {
       const saved = localStorage.getItem('admin_custom_dimensions');
       if (saved) {
         const dims = JSON.parse(saved);
-        if (dims[type] && dims[type].icon) {
-          const iconVal = dims[type].icon;
-          
+        // Try both normalized and original keys
+        const savedIcon = (dims[normalized] || dims[type])?.icon;
+        if (savedIcon) {
           // If it's a Lucide icon name (not emoji), look it up
-          if (typeof iconVal === 'string' && !isEmoji(iconVal)) {
+          if (typeof savedIcon === 'string' && !isEmoji(savedIcon)) {
             const lucideIcons: Record<string, any> = {
               Package, Layers, Box, Building2, Settings, Wrench, Cpu, Shield, Lock, Star,
               Heart, Truck, Factory, Zap, Clock, Globe, Database, FileText, Image
             };
-            if (lucideIcons[iconVal]) {
-              return lucideIcons[iconVal];
+            if (lucideIcons[savedIcon]) {
+              return lucideIcons[savedIcon];
             }
           }
-          
           // If it's an emoji (or unknown string), return as-is
-          if (iconVal) return iconVal;
+          if (savedIcon) return savedIcon;
         }
       }
     } catch (e) {
       console.error('Failed to load custom dimension icon:', e);
     }
-    
+
     // 3. Default to Settings icon for custom/unknown types
     return Settings;
   };
@@ -435,8 +386,8 @@ export default function ProductsPage() {
                 <div className="p-5 space-y-3">
                   <div className="h-4 w-20 bg-[var(--section-alt-bg, #f9fafb)] rounded animate-pulse" />
                   <div className="h-6 w-full bg-[var(--section-alt-bg, #f9fafb)] rounded animate-pulse" />
-                  <div className="h-4 w-16 bg-gray-100 rounded animate-pulse" />
-                  <div className="h-4 w-3/4 bg-gray-100 rounded animate-pulse" />
+                  <div className="h-4 w-16 rounded animate-pulse" style={{ backgroundColor: 'var(--section-alt-bg, #f9fafb)' }} />
+                  <div className="h-4 w-3/4 rounded animate-pulse" style={{ backgroundColor: 'var(--section-alt-bg, #f9fafb)' }} />
                 </div>
               </div>
             ))}
@@ -533,11 +484,12 @@ export default function ProductsPage() {
                     onClick={() => handleDimensionChange(type)}
                     className={`relative px-3.5 py-2 rounded-full text-[14px] font-medium transition-all duration-200 inline-flex items-center gap-1.5 ${
                       isActive
-                        /* Active: colored gradient — primary visual state */
-                        ? `${dc.activeGradient} text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 ring-1 ring-white/25`
+                        /* Active: gradient background via inline style */
+                        ? `text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 ring-1 ring-white/25`
                         /* Inactive: unified light-pill style using CSS vars */
                         : `bg-[var(--card-bg)] text-[var(--text-secondary)] border border-[var(--border-color)] hover:border-[var(--primary-color)]/30 hover:shadow-sm hover:-translate-y-0.5`
                     }`}
+                    style={isActive ? { background: 'linear-gradient(135deg, var(--primary-color), var(--primary-dark))' } : undefined}
                     title={isEmpty ? (locale === 'zh' ? '该维度暂无产品' : 'No products in this dimension') : ''}
                   >
                     {/* Left accent bar for active state */}
@@ -548,7 +500,7 @@ export default function ProductsPage() {
                     {dimensionIcon && <span className="flex-shrink-0">{dimensionIcon}</span>}
                     <span>{label}</span>
                     {/* Count badge — subtle, always visible */}
-                    <span className={`text-[11px] font-normal tabular-nums ml-0.5 ${isActive ? 'text-white/70' : 'text-gray-400'}`}>
+                    <span className={`text-[11px] font-normal tabular-nums ml-0.5 ${isActive ? 'text-white/70' : 'text-[var(--text-muted)]'}`}>
                       ({count})
                     </span>
                   </button>
@@ -564,14 +516,14 @@ export default function ProductsPage() {
               const dimLabel = getDimensionLabel(activeDimension);
 
               return (
-                <div className="mt-3 pt-3 border-t border-gray-100">
+                <div className="mt-3 pt-3 border-t" style={{ borderColor: 'var(--border-color, #e5e7eb)' }}>
                   {/* Label row - shows which dimension is active */}
                   <div className="flex items-center justify-center gap-2 mb-2.5 px-1">
                     <div className={`h-[2px] w-5 rounded-full ${dc.barColor}`} />
                     <span className={`text-[12px] font-medium uppercase tracking-wider ${dc.textColor} opacity-60`}>
                       {dimLabel}
                     </span>
-                    <span className="text-[11px] text-gray-400 font-normal">
+                    <span className="text-[11px] font-normal" style={{ color: 'var(--text-muted, #9ca3af)' }}>
                       — {locale === 'zh' ? '子分类' : locale === 'ar' ? 'تصنيفات فرعية' : 'sub-categories'}
                     </span>
                   </div>
@@ -585,11 +537,12 @@ export default function ProductsPage() {
                           onClick={() => toggleCategory(cat.id)}
                           className={`relative px-3 py-1.5 rounded-full text-[13px] transition-all duration-200 leading-none inline-flex items-center ${
                             isSelected
-                              /* Selected: soft tint of parent dimension color */
-                              ? `${dc.activeBg} text-white shadow-sm font-medium hover:shadow-md`
+                              /* Selected: primary color background */
+                              ? `text-white shadow-sm font-medium hover:shadow-md`
                               /* Unselected: clean light pill using CSS vars — consistent for ALL categories */
                               : `bg-[var(--card-bg)] text-[var(--text-secondary)] border border-[var(--border-color)] hover:border-[var(--primary-color)]/30 hover:shadow-sm`
                           }`}
+                          style={isSelected ? { backgroundColor: 'var(--primary-color)' } : undefined}
                         >
                           {isSelected && (
                             <span className="inline-block w-1.5 h-1.5 rounded-full bg-white/90 mr-1.5" />
@@ -604,7 +557,7 @@ export default function ProductsPage() {
                             return String(n || cat.slug || '');
                           })()}</span>
                           {/* Count — always visible, no dimming */}
-                          <span className={`ml-1.5 text-[11px] tabular-nums ${isSelected ? 'text-white/70' : 'text-gray-400'}`}>
+                          <span className={`ml-1.5 text-[11px] tabular-nums ${isSelected ? 'text-white/70' : 'text-[var(--text-muted)]'}`}>
                             ({count})
                           </span>
                         </button>
@@ -635,14 +588,14 @@ export default function ProductsPage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {filteredProducts.length === 0 ? (
           <div className="text-center py-20">
-            <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-2xl text-gray-400">
+                        <Package className="w-16 h-16 mx-auto mb-4" style={{ color: 'var(--text-muted)' }} />
+            <p className="text-2xl" style={{ color: 'var(--text-secondary)' }}>
               {t('products.noProducts') || 'No products found.'}
             </p>
             {(searchQuery || activeDimension !== 'all') && (
               <button
                 onClick={() => { setSearchQuery(''); handleDimensionChange('all'); }}
-                className="mt-4 px-4 py-2 text-blue-600 hover:text-blue-700 font-medium text-sm"
+                className="mt-4 px-4 py-2 text-[var(--primary-color)] hover:opacity-80 font-medium text-sm"
               >
                 {locale === 'zh' ? '清除筛选' : locale === 'ar' ? 'مسح الفلاتر' : 'Clear Filters'}
               </button>
@@ -676,14 +629,20 @@ export default function ProductsPage() {
                       </div>
                     ) : (
                       <div className="h-56 bg-gradient-to-br from-[var(--section-alt-bg, #f9fafb)] to-[var(--border-color)] flex items-center justify-center">
-                        <Package className="w-16 h-16 text-gray-400 mx-auto" />
-                        <p className="text-xs text-gray-400 absolute bottom-4">{locale === 'zh' ? '暂无图片' : 'No Image'}</p>
+                        <Package className="w-16 h-16 mx-auto" style={{ color: 'var(--text-muted)' }} />
+                        <p className="text-xs absolute bottom-4" style={{ color: 'var(--text-muted)' }}>{locale === 'zh' ? '暂无图片' : 'No Image'}</p>
                       </div>
                     )}
                     {/* Product Info */}
                     <div className="p-5 flex flex-col h-full">
                       {product.categories?.[0] && (
-                        <span className="inline-block px-2.5 py-0.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-semibold rounded-full mb-2 w-fit">
+                        <span 
+                          className="inline-block px-2.5 py-0.5 text-xs font-semibold rounded-full mb-2 w-fit"
+                          style={{ 
+                            backgroundColor: 'var(--primary-color-lightest, rgba(var(--primary-rgb, 0,0,255), 0.1))', 
+                            color: 'var(--primary-color)' 
+                          }}
+                        >
                           {(() => { 
                             const c = product.categories?.[0]; 
                             if (!c) return null;
@@ -698,21 +657,21 @@ export default function ProductsPage() {
                           })()}
                         </span>
                       )}
-                      <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1.5 line-clamp-2 group-hover:text-blue-600 leading-snug">{name}</h3>
-                      <p className="text-xs text-blue-500 dark:text-blue-400 font-mono mb-2">{product.sku}</p>
+                      <h3 className="text-lg font-bold mb-1.5 line-clamp-2 group-hover:text-[var(--primary-color)] leading-snug" style={{ color: 'var(--text-primary, #111827)' }}>{name}</h3>
+                      <p className="text-xs font-mono mb-2" style={{ color: 'var(--primary-color, #2563eb)' }}>{product.sku}</p>
                       {product.hidePrice ? (
-                        <p className="text-sm text-blue-600 dark:text-blue-400 mb-2">{locale === 'zh' ? '联系我们询价' : 'Contact for Pricing'}</p>
+                        <p className="text-sm font-medium mb-2" style={{ color: 'var(--primary-color, #2563eb)' }}>{locale === 'zh' ? '联系我们询价' : 'Contact for Pricing'}</p>
                       ) : product.price > 0 ? (
-                        <p className="text-base font-bold text-red-500 dark:text-red-400 mb-2">${typeof product.price === 'number' ? product.price.toLocaleString() : product.price}</p>
+                        <p className="text-base font-bold mb-2" style={{ color: 'var(--accent-color, #ef4444)' }}>${typeof product.price === 'number' ? product.price.toLocaleString() : product.price}</p>
                       ) : (
-                        <p className="text-xs text-gray-400 dark:text-gray-500 mb-2 italic">{locale === 'zh' ? '价格面议' : 'Contact for Price'}</p>
+                        <p className="text-xs italic mb-2" style={{ color: 'var(--text-muted, #9ca3af)' }}>{locale === 'zh' ? '价格面议' : 'Contact for Price'}</p>
                       )}
-                      <p className="text-gray-500 dark:text-gray-400 text-sm mb-3 line-clamp-2 flex-1"
+                      <p className="text-sm mb-3 line-clamp-2 flex-1" style={{ color: 'var(--text-secondary, #6b7280)' }}
                         dangerouslySetInnerHTML={{
                           __html: (locale === 'zh' ? product.description?.zh : locale === 'ar' ? product.description?.ar : product.description?.en) || ''
                         }}
                       />
-                      <span className="inline-flex items-center text-blue-600 dark:text-blue-400 font-semibold text-sm mt-auto">
+                      <span className="inline-flex items-center font-semibold text-sm mt-auto" style={{ color: 'var(--primary-color, #2563eb)' }}>
                         {t('products.viewDetails') || 'View Details'}
                         <svg className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
                       </span>
@@ -740,9 +699,10 @@ export default function ProductsPage() {
                     onClick={() => setCurrentPage(page)}
                     className={`min-w-[44px] min-h-[44px] rounded-lg text-sm font-semibold transition-all duration-200 ${
                       currentPage === page
-                        ? 'bg-blue-600 text-white shadow-md shadow-blue-200'
-                        : 'text-gray-600 hover:bg-gray-100 border border-transparent'
+                        ? 'text-white shadow-md'
+                        : 'hover:bg-[var(--section-alt-bg, #f9fafb)] border border-transparent'
                     }`}
+                    style={currentPage === page ? { backgroundColor: 'var(--primary-color, #2563eb)' } : { color: 'var(--text-secondary, #6b7280)' }}
                   >
                     {page}
                   </button>
