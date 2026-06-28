@@ -2,31 +2,46 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useLocale } from '@/lib/i18n';
-import { motion, useSpring } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 // Count-up animation component
 function CountUp({ end, duration = 2 }: { end: string; duration?: number }) {
   const [count, setCount] = useState(0);
-  const springValue = useSpring(0, { 
-    stiffness: 50, 
-    damping: 10 
-  });
+  const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
+    if (!isAnimating) return;
+    
     const numericEnd = parseInt(end.replace(/\D/g, '')) || 0;
+    const startTime = Date.now();
+    const startValue = 0;
+    
+    const animate = () => {
+      const now = Date.now();
+      const elapsed = (now - startTime) / 1000;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      // Ease out cubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = Math.floor(startValue + (numericEnd - startValue) * eased);
+      
+      setCount(current);
+      
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+    
     const timer = setTimeout(() => {
-      springValue.set(numericEnd);
+      requestAnimationFrame(animate);
     }, 300);
     
-    const unsubscribe = springValue.on('change', (value) => {
-      setCount(Math.floor(value));
-    });
+    return () => clearTimeout(timer);
+  }, [end, duration, isAnimating]);
 
-    return () => {
-      clearTimeout(timer);
-      unsubscribe();
-    };
-  }, [end, springValue]);
+  useEffect(() => {
+    setIsAnimating(true);
+  }, []);
 
   return <span>{count}{end.replace(/\d/g, '')}</span>;
 }
@@ -77,41 +92,6 @@ export default function HeroSection() {
     }
   };
 
-  // Particle options
-  const particlesOptions = {
-    particles: {
-      number: { value: 80, density: { enable: true } },
-      color: { value: ['#ffffff', '#f6ad55', '#63b3ed'] },
-      opacity: { value: 0.3, random: true },
-      size: { value: 2, random: true },
-      move: {
-        enable: true,
-        speed: 0.5,
-        direction: 'none' as const,
-        random: true,
-        straight: false,
-      },
-      links: {
-        enable: true,
-        distance: 150,
-        color: '#ffffff',
-        opacity: 0.1,
-        width: 1,
-      },
-    },
-    detectRetina: true,
-  };
-
-  // Particles init
-  const particlesInit = useCallback(async (engine: Engine) => {
-    await loadSlim(engine);
-  }, []);
-
-  useEffect(() => {
-    // Initialize particles
-    particlesInit;
-  }, [particlesInit]);
-
   return (
     <section 
       className="relative min-h-[80vh] flex items-center justify-center overflow-hidden"
@@ -120,14 +100,6 @@ export default function HeroSection() {
         minHeight: '80vh'
       }}
     >
-      {/* Particle Animation Background */}
-      <div className="absolute inset-0 z-0">
-        <Particles
-          id="tsparticles"
-          options={particlesOptions}
-        />
-      </div>
-
       {/* Subtle grid overlay */}
       <div 
         className="absolute inset-0 z-0" 
@@ -204,12 +176,6 @@ export default function HeroSection() {
               style={{ 
                 background: 'linear-gradient(135deg, #ed8936 0%, #f6ad55 100%)',
                 boxShadow: '0 4px 14px rgba(237, 137, 54, 0.4)',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.animation = 'pulse-glow 2s ease-in-out infinite';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.animation = 'none';
               }}
             >
               {t('hero.ctaProducts')}
