@@ -40,6 +40,7 @@ export default function LocaleLayout({ children, params: { locale } }: LocaleLay
 
   const handleLocaleChange = (newLocale: string) => {
     setCurrentLocale(newLocale as Locale);
+    if (typeof window === 'undefined') return;
     const currentPath = window.location.pathname;
     const newPath = currentPath.replace(/^\/[^\/]+/, `/${newLocale}`);
     window.location.href = newPath;
