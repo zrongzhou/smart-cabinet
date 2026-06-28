@@ -44,9 +44,10 @@ export default function AdvantagesSection() {
 
   return (
     <section className="py-24 px-6 relative overflow-hidden" style={{ background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 50%, #f1f5f9 100%)' }}>
-      {/* Background decorations */}
-      <div className="absolute top-20 left-0 w-80 h-80 rounded-full blur-[120px]" style={{ backgroundColor: 'rgba(59, 130, 246, 0.05)' }} />
-      <div className="absolute bottom-20 right-0 w-80 h-80 rounded-full blur-[100px]" style={{ backgroundColor: 'rgba(99, 102, 241, 0.04)' }} />
+      {/* Background decorations - enhanced */}
+      <div className="absolute top-20 left-0 w-96 h-96 rounded-full blur-[130px]" style={{ backgroundColor: 'rgba(59, 130, 246, 0.08)' }} />
+      <div className="absolute bottom-20 right-0 w-80 h-80 rounded-full blur-[110px]" style={{ backgroundColor: 'rgba(99, 102, 241, 0.06)' }} />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] rounded-full blur-[150px]" style={{ backgroundColor: 'rgba(168, 85, 247, 0.03)' }} />
 
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Section Header */}
@@ -81,27 +82,27 @@ export default function AdvantagesSection() {
                 variants={fadeInUp}
                 className="group relative rounded-2xl p-8 transition-all duration-500 hover:-translate-y-2"
                 style={{
-                  background: 'rgba(255, 255, 255, 0.82)',
-                  backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(226, 232, 240, 0.6)',
-                  boxShadow: '0 4px 20px rgba(148, 163, 184, 0.08)',
+                  background: 'rgba(255, 255, 255, 0.88)',
+                  backdropFilter: 'blur(12px)',
+                  border: '1px solid rgba(226, 232, 240, 0.7)',
+                  boxShadow: '0 4px 24px rgba(148, 163, 184, 0.1), 0 1px 3px rgba(0,0,0,0.04)',
                 }}
                 whileHover={{
-                  boxShadow: '0 12px 32px rgba(59, 130, 246, 0.10), 0 4px 12px rgba(148, 163, 184, 0.06)'
+                  boxShadow: '0 16px 40px rgba(59, 130, 246, 0.12), 0 4px 12px rgba(148, 163, 184, 0.08)',
                 }}
                 transition={{ duration: 0.35 }}
               >
-                {/* Icon Container - gradient background */}
+                {/* Icon Container - solid gradient with white icon */}
                 <motion.div
                   whileHover={{ scale: 1.08, rotate: 3 }}
                   transition={{ duration: 0.3 }}
-                  className="w-14 h-14 rounded-xl flex items-center justify-center mb-6"
+                  className="w-14 h-14 rounded-xl flex items-center justify-center mb-6 shadow-lg"
                   style={{
-                    background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%)',
-                    border: '1px solid rgba(59, 130, 246, 0.15)',
+                    background: 'linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)',
+                    boxShadow: '0 4px 14px rgba(59, 130, 246, 0.35)',
                   }}
                 >
-                  <IconComponent className="w-7 h-7" style={{ color: '#3b82f6' }} />
+                  <IconComponent className="w-7 h-7 text-white" />
                 </motion.div>
 
                 {/* Numbered badge */}
@@ -141,9 +142,9 @@ export default function AdvantagesSection() {
 
                 {/* Subtle top accent line on hover */}
                 <div
-                  className="absolute top-0 left-6 right-6 h-[2px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                  className="absolute top-0 left-6 right-6 h-[3px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                   style={{
-                    background: 'linear-gradient(90deg, transparent, #3b82f6, transparent)',
+                    background: 'linear-gradient(90deg, #3b82f6, #6366f1, #8b5cf6)',
                   }}
                 />
               </motion.div>

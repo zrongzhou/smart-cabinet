@@ -55,8 +55,9 @@ export default function SolutionsPreview({ locale: propLocale }: SolutionsPrevie
 
   return (
     <section className="relative py-20 px-6 overflow-hidden" style={{ background: 'linear-gradient(180deg, #f8fafc 0%, #eff6ff 40%, #f8fafc 100%)' }}>
-      {/* Background decoration */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[150px]" style={{ backgroundColor: 'rgba(99, 102, 241, 0.03)' }} />
+      {/* Background decoration - enhanced */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full blur-[160px]" style={{ backgroundColor: 'rgba(99, 102, 241, 0.05)' }} />
+      <div className="absolute top-10 right-10 w-60 h-60 rounded-full blur-[120px]" style={{ backgroundColor: 'rgba(59, 130, 246, 0.06)' }} />
 
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Section Header */}
@@ -97,27 +98,27 @@ export default function SolutionsPreview({ locale: propLocale }: SolutionsPrevie
               variants={fadeInUp}
               className="group relative rounded-2xl p-6 overflow-hidden transition-all duration-500"
               style={{
-                background: 'rgba(255, 255, 255, 0.78)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(226, 232, 240, 0.5)',
-                boxShadow: '0 4px 16px rgba(148, 163, 184, 0.06)',
+                background: 'rgba(255, 255, 255, 0.85)',
+                backdropFilter: 'blur(12px)',
+                border: '1px solid rgba(226, 232, 240, 0.6)',
+                boxShadow: '0 4px 20px rgba(148, 163, 184, 0.08), 0 1px 3px rgba(0,0,0,0.03)',
               }}
               whileHover={{
-                y: -6,
-                boxShadow: '0 14px 36px rgba(99, 102, 241, 0.10), 0 4px 12px rgba(148, 163, 184, 0.04)',
+                y: -8,
+                boxShadow: `0 18px 44px ${solution.colorFrom}18, 0 6px 16px rgba(148, 163, 184, 0.06)`,
               }}
               transition={{ duration: 0.3 }}
             >
-              {/* Icon Container - gradient per item */}
+              {/* Icon Container - solid gradient with white icon */}
               <div
-                className="w-14 h-14 mb-5 rounded-xl flex items-center justify-center shadow-md transition-all duration-300 group-hover:scale-110"
+                className="w-14 h-14 mb-5 rounded-xl flex items-center justify-center shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl"
                 style={{
-                  background: `linear-gradient(135deg, ${solution.colorFrom}18 0%, ${solution.colorTo}25 100%)`,
-                  border: `1px solid ${solution.colorFrom}25`,
+                  background: `linear-gradient(135deg, ${solution.colorFrom} 0%, ${solution.colorTo} 100%)`,
+                  boxShadow: `0 4px 14px ${solution.colorFrom}35`,
                 }}
               >
                 {solution.icon && (
-                  <solution.icon className="w-7 h-7" style={{ color: solution.colorFrom }} />
+                  <solution.icon className="w-7 h-7 text-white" />
                 )}
               </div>
 
@@ -138,9 +139,9 @@ export default function SolutionsPreview({ locale: propLocale }: SolutionsPrevie
 
               {/* Top gradient line on hover */}
               <div
-                className="absolute top-0 left-0 right-0 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                className="absolute top-0 left-0 right-0 h-[3px] opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                 style={{
-                  background: `linear-gradient(90deg, transparent, ${solution.colorFrom}, ${solution.colorTo}, transparent)`,
+                  background: `linear-gradient(90deg, ${solution.colorFrom}, ${solution.colorTo})`,
                 }}
               />
             </motion.a>

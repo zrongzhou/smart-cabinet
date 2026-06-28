@@ -323,8 +323,8 @@ export default function HeroSection() {
 
   return (
     <section
-      className="homepage-starry relative min-h-[80vh] flex items-center justify-center overflow-hidden"
-      style={{ minHeight: '80vh' }}
+      className="homepage-starry relative min-h-[70vh] flex items-center justify-center overflow-hidden"
+      style={{ minHeight: '70vh' }}
     >
       {/* Deep space background - multi-stop gradient for depth */}
       <div
@@ -358,7 +358,7 @@ export default function HeroSection() {
       <div className="absolute bottom-[10%] right-[5%] w-[400px] h-[400px] rounded-full blur-[100px] z-0" style={{ backgroundColor: 'rgba(168, 85, 247, 0.06)' }} />
 
       {/* Content - elevated with glass-like backdrop for foreground pop */}
-      <div className="relative z-10 text-center text-white px-6 max-w-7xl mx-auto">
+      <div className="relative z-10 text-center text-white px-6 max-w-5xl mx-auto">
         <motion.div
           variants={staggerChildren}
           initial="hidden"
@@ -367,21 +367,21 @@ export default function HeroSection() {
           {/* Badge */}
           <motion.div
             variants={fadeInUp}
-            className="inline-flex items-center space-x-3 backdrop-blur-xl border rounded-full px-6 py-2.5 mb-8 hover:bg-white/10 transition-colors duration-300"
+            className="inline-flex items-center space-x-3 backdrop-blur-xl border rounded-full px-5 py-2 mb-5 hover:bg-white/10 transition-colors duration-300"
             style={{
               backgroundColor: 'rgba(37, 99, 235, 0.25)',
               borderColor: 'rgba(96, 165, 250, 0.35)',
               boxShadow: '0 0 20px rgba(59, 130, 246, 0.1), inset 0 1px 0 rgba(255,255,255,0.08)',
             }}
           >
-            <span className="w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse" style={{ boxShadow: '0 0 8px rgba(74, 222, 128, 0.5)' }} />
+            <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" style={{ boxShadow: '0 0 8px rgba(74, 222, 128, 0.5)' }} />
             <span className="text-sm font-medium tracking-wide" style={{ color: '#93c5fd' }}>{t('hero.badge')}</span>
           </motion.div>
 
           {/* Title - elegant with subtle glow, not harsh */}
           <motion.h1
             variants={fadeInUp}
-            className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight mb-6 leading-tight"
+            className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight mb-4 leading-[1.15]"
             style={{
               color: '#ffffff',
               textShadow: '0 0 30px rgba(59, 130, 246, 0.15), 0 2px 12px rgba(0, 0, 0, 0.5)',
@@ -393,7 +393,7 @@ export default function HeroSection() {
           {/* Subtitle */}
           <motion.p
             variants={fadeInUp}
-            className="text-lg md:text-xl lg:text-2xl mb-6 font-medium max-w-2xl mx-auto"
+            className="text-base md:text-lg lg:text-xl mb-4 font-medium max-w-2xl mx-auto"
             style={{
               color: '#93c5fd',
               textShadow: '0 1px 8px rgba(0, 0, 0, 0.4)',
@@ -405,7 +405,7 @@ export default function HeroSection() {
           {/* Description */}
           <motion.p
             variants={fadeInUp}
-            className="text-base md:text-lg mb-12 max-w-3xl mx-auto leading-relaxed font-normal opacity-90"
+            className="text-sm md:text-base mb-10 max-w-2xl mx-auto leading-relaxed font-normal opacity-90"
             style={{
               color: '#cbd5e1',
               textShadow: '0 1px 6px rgba(0, 0, 0, 0.3)',
@@ -417,11 +417,11 @@ export default function HeroSection() {
           {/* CTA Buttons */}
           <motion.div
             variants={fadeInUp}
-            className="flex flex-col sm:flex-row gap-5 justify-center mb-16"
+            className="flex flex-col sm:flex-row gap-4 justify-center mb-14"
           >
             <a
               href={`/${locale}/products`}
-              className="group inline-flex items-center justify-center px-10 py-4 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 text-lg"
+              className="group inline-flex items-center justify-center px-8 py-3 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 text-base"
               style={{
                 background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
                 boxShadow: '0 4px 14px rgba(59, 130, 246, 0.4), 0 0 30px rgba(59, 130, 246, 0.1)',
@@ -434,7 +434,7 @@ export default function HeroSection() {
             </a>
             <a
               href={`/${locale}/contact`}
-              className="group inline-flex items-center justify-center px-10 py-4 font-semibold rounded-lg hover:bg-white/10 transition-all duration-300 text-lg text-white border-2 border-white/30"
+              className="group inline-flex items-center justify-center px-8 py-3 font-semibold rounded-lg hover:bg-white/10 transition-all duration-300 text-base text-white border-2 border-white/30"
               style={{
                 backdropFilter: 'blur(8px)',
                 boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1)',
@@ -448,7 +448,7 @@ export default function HeroSection() {
           <motion.div
             ref={statsRef}
             variants={fadeInUp}
-            className="grid grid-cols-3 gap-8 max-w-3xl mx-auto"
+            className="grid grid-cols-3 gap-5 max-w-2xl mx-auto"
           >
             {[
               { number: '10+', labelKey: 'hero.statModels' },
@@ -457,7 +457,7 @@ export default function HeroSection() {
             ].map((stat, i) => (
               <div
                 key={i}
-                className="text-center rounded-xl p-6 relative overflow-hidden"
+                className="text-center rounded-xl p-4 relative overflow-hidden"
                 style={{
                   backgroundColor: 'rgba(255, 255, 255, 0.07)',
                   backdropFilter: 'blur(16px)',
@@ -470,7 +470,7 @@ export default function HeroSection() {
                   background: 'radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.05) 0%, transparent 60%)',
                 }} />
                 <div className="relative z-10">
-                  <div className="text-4xl font-bold mb-2" style={{
+                  <div className="text-3xl font-bold mb-1" style={{
                     color: '#7dd3fc',
                     textShadow: '0 0 20px rgba(125, 211, 252, 0.25)',
                   }}>

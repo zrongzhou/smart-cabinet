@@ -48,13 +48,17 @@ export default function TrustBadges({ locale: propLocale }: TrustBadgesProps) {
 
   return (
     <section className="py-20 px-6 relative overflow-hidden" style={{ background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)' }}>
-      {/* Top border accent */}
+      {/* Top border accent - enhanced */}
       <div
-        className="absolute top-0 left-0 right-0 h-[3px]"
+        className="absolute top-0 left-0 right-0 h-[4px]"
         style={{
-          background: 'linear-gradient(90deg, #3b82f6 0%, #6366f1 30%, #8b5cf6 60%, #3b82f6 100%)',
+          background: 'linear-gradient(90deg, #3b82f6 0%, #6366f1 25%, #8b5cf6 50%, #06b6d4 75%, #3b82f6 100%)',
         }}
       />
+
+      {/* Background decoration */}
+      <div className="absolute top-1/3 left-10 w-72 h-72 rounded-full blur-[130px]" style={{ backgroundColor: 'rgba(99, 102, 241, 0.05)' }} />
+      <div className="absolute bottom-20 right-10 w-60 h-60 rounded-full blur-[120px]" style={{ backgroundColor: 'rgba(59, 130, 246, 0.05)' }} />
 
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
@@ -93,27 +97,27 @@ export default function TrustBadges({ locale: propLocale }: TrustBadgesProps) {
               <motion.div
                 key={index}
                 variants={fadeInUp}
-                className="group text-center p-6 rounded-2xl transition-all duration-300 hover:-translate-y-1.5"
+                className="group text-center p-6 rounded-2xl transition-all duration-300 hover:-translate-y-2"
                 style={{
-                  background: 'rgba(255, 255, 255, 0.8)',
-                  backdropFilter: 'blur(8px)',
-                  border: '1px solid rgba(226, 232, 240, 0.5)',
-                  boxShadow: '0 4px 16px rgba(148, 163, 184, 0.06)',
+                  background: 'rgba(255, 255, 255, 0.85)',
+                  backdropFilter: 'blur(12px)',
+                  border: '1px solid rgba(226, 232, 240, 0.6)',
+                  boxShadow: '0 4px 20px rgba(148, 163, 184, 0.08), 0 1px 3px rgba(0,0,0,0.03)',
                 }}
                 whileHover={{
-                  boxShadow: `0 8px 28px ${badge.color}15, 0 4px 8px rgba(148, 163, 184, 0.04)`
+                  boxShadow: `0 12px 32px ${badge.color}18, 0 4px 12px rgba(148, 163, 184, 0.06)`
                 }}
                 transition={{ duration: 0.3 }}
               >
-                {/* Icon Container */}
+                {/* Icon Container - solid gradient with white icon */}
                 <div
-                  className="w-16 h-16 mx-auto mb-4 rounded-xl flex items-center justify-center shadow-md transition-all duration-300 group-hover:scale-110"
+                  className="w-16 h-16 mx-auto mb-4 rounded-xl flex items-center justify-center shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl"
                   style={{
-                    background: `linear-gradient(135deg, ${badge.color}12 0%, ${badge.color}22 100%)`,
-                    border: `1px solid ${badge.color}20`,
+                    background: `linear-gradient(135deg, ${badge.color} 0%, ${badge.color}cc 100%)`,
+                    boxShadow: `0 4px 14px ${badge.color}35`,
                   }}
                 >
-                  <IconComponent className="w-8 h-8" style={{ color: badge.color }} />
+                  <IconComponent className="w-8 h-8 text-white" />
                 </div>
                 <h3
                   className="text-sm font-bold mb-1"
@@ -129,18 +133,21 @@ export default function TrustBadges({ locale: propLocale }: TrustBadgesProps) {
 
         {/* Company Stats */}
         <motion.div
-          className="rounded-2xl p-8 md:p-10"
+          className="rounded-2xl p-8 md:p-10 relative overflow-hidden"
           style={{
-            background: 'linear-gradient(135deg, rgba(238, 242, 255, 0.8) 0%, rgba(241, 245, 249, 0.6) 100%)',
-            backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(219, 234, 254, 0.5)',
-            boxShadow: '0 4px 20px rgba(99, 102, 241, 0.05)',
+            background: 'linear-gradient(135deg, rgba(238, 242, 255, 0.9) 0%, rgba(241, 245, 249, 0.7) 100%)',
+            backdropFilter: 'blur(12px)',
+            border: '1px solid rgba(219, 234, 254, 0.6)',
+            boxShadow: '0 4px 24px rgba(99, 102, 241, 0.08), 0 1px 3px rgba(0,0,0,0.04)',
           }}
           initial={{ opacity: 0, y: 60 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
+          {/* Subtle background glow */}
+          <div className="absolute top-0 right-0 w-48 h-48 rounded-full blur-[80px]" style={{ backgroundColor: 'rgba(139, 92, 246, 0.08)' }} />
+          <div className="absolute bottom-0 left-0 w-40 h-40 rounded-full blur-[80px]" style={{ backgroundColor: 'rgba(59, 130, 246, 0.06)' }} />
           <p
             className="text-center text-xs font-semibold uppercase tracking-wider mb-8"
             style={{ color: '#64748b' }}
@@ -157,14 +164,16 @@ export default function TrustBadges({ locale: propLocale }: TrustBadgesProps) {
               <motion.div
                 key={idx}
                 className="group"
-                whileHover={{ y: -4 }}
+                whileHover={{ y: -5, scale: 1.03 }}
                 transition={{ duration: 0.3 }}
               >
                 <div
-                  className="text-4xl md:text-5xl font-bold mb-2 bg-clip-text text-transparent"
+                  className="text-4xl md:text-5xl font-bold mb-2 bg-clip-text text-transparent relative"
                   style={{
-                    backgroundImage: 'linear-gradient(135deg, #3b82f6 0%, #6366f1 60%, #8b5cf6 100%)',
+                    backgroundImage: 'linear-gradient(135deg, #3b82f6 0%, #6366f1 50%, #8b5cf6 80%, #06b6d4 100%)',
                     WebkitBackgroundClip: 'text',
+                    backgroundSize: '200% auto',
+                    animation: 'gradient-shift 4s ease infinite',
                   }}
                 >
                   {stat.number}
@@ -175,6 +184,15 @@ export default function TrustBadges({ locale: propLocale }: TrustBadgesProps) {
           </div>
         </motion.div>
       </div>
+
+      {/* CSS for gradient animation */}
+      <style>{`
+        @keyframes gradient-shift {
+          0% { background-position: 0% center; }
+          50% { background-position: 100% center; }
+          100% { background-position: 0% center; }
+        }
+      `}</style>
     </section>
   );
 }

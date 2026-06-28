@@ -44,6 +44,36 @@ const testimonials = [
     },
     rating: 5,
   },
+  {
+    name: '李明辉',
+    role: { zh: '设备部长', en: 'Equipment Director' },
+    company: '深圳航空制造',
+    content: {
+      zh: '智能柜系统彻底改变了我们的工具管理方式。从入库到出库全流程可追溯，库存准确率提升到99.5%。员工满意度也大幅提升，再也不用为找工具发愁了。',
+      en: 'The smart cabinet system has completely transformed our tool management. Full traceability from check-in to checkout, inventory accuracy up to 99.5%. Employee satisfaction has also improved significantly - no more struggling to find tools.',
+    },
+    rating: 5,
+  },
+  {
+    name: '陈思远',
+    role: { zh: 'IT经理', en: 'IT Manager' },
+    company: '华东电子科技',
+    content: {
+      zh: '作为IT负责人，我最看重系统的稳定性和数据安全。这套智能柜运行一年多零故障，数据实时同步到我们的ERP系统，报表功能也非常强大。',
+      en: 'As an IT manager, I value system stability and data security most. This smart cabinet has run for over a year with zero downtime, real-time data sync to our ERP, and powerful reporting capabilities.',
+    },
+    rating: 5,
+  },
+  {
+    name: '王建国',
+    role: { zh: '运营副总', en: 'VP of Operations' },
+    company: '北方重工集团',
+    content: {
+      zh: '我们集团下属5个工厂都部署了智能柜，统一管理平台让我们能实时监控所有工厂的刀具使用情况。ROI在8个月内就实现了，这是近年来最成功的数字化项目之一。',
+      en: 'All 5 of our group\'s factories have deployed smart cabinets. The unified management platform lets us monitor cutting tool usage across all facilities in real time. ROI was achieved within 8 months - one of our most successful digital transformation projects.',
+    },
+    rating: 5,
+  },
 ];
 
 interface TestimonialsSectionProps {
