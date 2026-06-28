@@ -2,96 +2,85 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
-import { Package, Layers, Box, Building2, Settings, Wrench, Cpu, Shield, Lock, Star, Heart, Truck, Factory, Zap, Clock, Globe, Database, FileText, Image, ZoomIn, Search, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
+import { Package, Layers, Box, Building2, Settings, Wrench, Cpu, Shield, Lock, Star, Heart, Truck, Factory, Zap, Clock, Globe, Database, FileText, Image, ZoomIn, Search, ChevronLeft, ChevronRight, ExternalLink, Archive, Briefcase, Code, Cog, Puzzle, Bot, BrainCircuit } from 'lucide-react';
 import { useLocale } from '@/lib/i18n';
 import { Product, Category } from '@/lib/api';
 import { getBaseUrl } from '@/data/unified-data';
 
-  // Icon mapping for dimensions - using emojis for theme compatibility
-  const dimensionIcons: Record<string, string> = {
-    'cabinet-type': '🗄',
-    'managed-items': '📦',
-    'industry': '🏭',
-    'custom-solution': '⚙️',
-  };
+// ============================================================
+// DIMENSION ICON SYSTEM — Lucide React components only (v132)
+// NO emoji — emojis render inconsistently across platforms/themes
+// ============================================================
 
-  // Dimension color - unified primary color (CSS variable) for theme compatibility
-  const dimensionColors: Record<string, {
-    icon: string;
-    activeBg: string;
-    barColor: string;
-    textColor: string;
-  }> = {
-    'cabinet-type':   { icon: '🗄', activeBg: 'var(--primary-color)', barColor: 'var(--primary-color)', textColor: 'var(--primary-color)' },
-    'managed-items':  { icon: '📦', activeBg: 'var(--primary-color)', barColor: 'var(--primary-color)', textColor: 'var(--primary-color)' },
-    'industry':       { icon: '🏭', activeBg: 'var(--primary-color)', barColor: 'var(--primary-color)', textColor: 'var(--primary-color)' },
-    'custom-solution': { icon: '⚙️', activeBg: 'var(--primary-color)', barColor: 'var(--primary-color)', textColor: 'var(--primary-color)' },
-  };
-  // Default for unknown/custom types
-  const defaultDimColor = { icon: '⚙️', activeBg: 'var(--primary-color)', barColor: 'var(--primary-color)', textColor: 'var(--primary-color)' };
+/** Built-in dimension type → Lucide icon component mapping */
+const dimensionIconMap: Record<string, any> = {
+  'cabinet-type':   Archive,     // 🗄 → file cabinet icon
+  'managed-items':  Package,     // 📦 → box/package icon
+  'industry':       Factory,     // 🏭 → factory building
+  'custom-solution': Settings,    // ⚙️ → gear (already good)
+  // Common custom types
+  'robots':         Cpu,         // 🤖 → processor chip
+  'robotics':       Cpu,
+};
 
-  // Helper to check if a string is an emoji (not a Lucide icon name)
-  const isEmoji = (str: string): boolean => {
-    if (!str || typeof str !== 'string') return false;
-    // Emojis are typically 1-4 characters
-    if (str.length > 4) return false;
-    // Lucide icons are CamelCase like "Settings", "Package", etc.
-    const lucideNames = ['Package','Layers','Box','Building2','Settings','Wrench','Cpu','Shield','Lock','Star','Heart','Truck','Factory','Zap','Clock','Globe','Database','FileText','Image'];
-    if (lucideNames.includes(str)) return false;
-    // If it contains non-ASCII characters, it's likely an emoji
-    return /[^\u0000-\u007F]/.test(str);
-  };
+/** All supported Lucide icons for custom dimensions (from API/localStorage) */
+const lucideIconRegistry: Record<string, any> = {
+  Package, Archive, Box, Briefcase, Building2, Factory, Settings, Wrench, Cpu,
+  Shield, Lock, Star, Heart, Truck, Zap, Clock, Globe, Database, FileText,
+  Image, Layers, Code, Cog, Puzzle, Bot, BrainCircuit,
+};
 
-  // Helper to normalize dimension type keys (handles hyphen/underscore/space variations)
-  const normalizeTypeKey = (type: string): string => {
-    if (!type) return type;
-    return type.toLowerCase().replace(/[_\s]+/g, '-');
-  };
+/** Dimension visual config — all colors use CSS variables for theme compatibility */
+const dimensionColors: Record<string, {
+  colorClass: string;   // CSS variable class for inactive state icon color
+  activeBg: string;
+  barColor: string;
+  textColor: string;
+}> = {
+  'cabinet-type':    { colorClass: 'text-[var(--primary-color)]', activeBg: 'var(--primary-color)', barColor: 'bg-[var(--primary-color)]', textColor: 'text-[var(--primary-color)]' },
+  'managed-items':   { colorClass: 'text-[var(--primary-color)]', activeBg: 'var(--primary-color)', barColor: 'bg-[var(--primary-color)]', textColor: 'text-[var(--primary-color)]' },
+  'industry':        { colorClass: 'text-[var(--primary-color)]', activeBg: 'var(--primary-color)', barColor: 'bg-[var(--primary-color)]', textColor: 'text-[var(--primary-color)]' },
+  'custom-solution': { colorClass: 'text-[var(--primary-color)]', activeBg: 'var(--primary-color)', barColor: 'bg-[var(--primary-color)]', textColor: 'text-[var(--primary-color)]' },
+};
+/** Default for unknown/custom dimension types (e.g., "robots", "ai-tools") */
+const defaultDimColor = { colorClass: 'text-[var(--primary-color)]', activeBg: 'var(--primary-color)', barColor: 'bg-[var(--primary-color)]', textColor: 'text-[var(--primary-color)]' };
 
-  // Helper to get icon for a dimension type (including custom types)
-  // Returns either a React component (Lucide icon) or a string (emoji)
-  // BUILT-IN types ALWAYS use their correct emoji — localStorage can never override them
-  const getDimensionIcon = (type: string): any => {
-    const normalized = normalizeTypeKey(type);
+/**
+ * Get the Lucide React component for a dimension type.
+ * ALWAYS returns a Lucide component (never emoji/string).
+ *
+ * Priority:
+ * 1. Built-in mapping (dimensionIconMap) — highest priority
+ * 2. API/LocalStorage custom icon name → looked up in lucideIconRegistry
+ * 3. Fallback: Settings (gear)
+ */
+const getDimensionIcon = (type: string): any => {
+  const normalized = type.toLowerCase().replace(/[_\s]+/g, '-');
 
-    // 1. Check normalized built-in icons first (highest priority — localStorage can NEVER override these!)
-    const builtInIcon = dimensionIcons[normalized];
-    if (builtInIcon) return builtInIcon;
+  // 1. Built-in types — these can NEVER be overridden
+  if (dimensionIconMap[normalized]) return dimensionIconMap[normalized];
+  if (dimensionIconMap[type]) return dimensionIconMap[type];
 
-    // Also try original key in case it matches exactly
-    const exactBuiltIn = dimensionIcons[type];
-    if (exactBuiltIn) return exactBuiltIn;
-
-    // 2. Check custom dimension icon from localStorage (set by admin in categories page)
-    //    Only for NON-built-in custom types like "robots", "ai-tools", etc.
-    try {
-      const saved = localStorage.getItem('admin_custom_dimensions');
-      if (saved) {
-        const dims = JSON.parse(saved);
-        // Try both normalized and original keys
-        const savedIcon = (dims[normalized] || dims[type])?.icon;
-        if (savedIcon) {
-          // If it's a Lucide icon name (not emoji), look it up
-          if (typeof savedIcon === 'string' && !isEmoji(savedIcon)) {
-            const lucideIcons: Record<string, any> = {
-              Package, Layers, Box, Building2, Settings, Wrench, Cpu, Shield, Lock, Star,
-              Heart, Truck, Factory, Zap, Clock, Globe, Database, FileText, Image
-            };
-            if (lucideIcons[savedIcon]) {
-              return lucideIcons[savedIcon];
-            }
-          }
-          // If it's an emoji (or unknown string), return as-is
-          if (savedIcon) return savedIcon;
-        }
+  // 2. Custom dimension icons from API (via parseAndSetLabels) or localStorage
+  try {
+    const saved = localStorage.getItem('admin_custom_dimensions');
+    if (saved) {
+      const dims = JSON.parse(saved);
+      const iconKey = normalized;
+      const savedIconName = (dims[iconKey] || dims[type])?.icon;
+      if (savedIconName && typeof savedIconName === 'string') {
+        // Look up the Lucide component by name
+        const lucideComp = lucideIconRegistry[savedIconName];
+        if (lucideComp) return lucideComp;
       }
-    } catch (e) {
-      console.error('Failed to load custom dimension icon:', e);
     }
+  } catch (e) {
+    // Silently fail — not critical
+  }
 
-    // 3. Default to Settings icon for custom/unknown types
-    return Settings;
-  };
+  // 3. Universal fallback
+  return Settings;
+};
 
   // Label maps for dimension tabs - matches Category.type values in DB
   const labelMapZh: Record<string, string> = {
@@ -464,17 +453,16 @@ export default function ProductsPage() {
                 const count = dimensionProductCount[type] || 0;
                 const isEmpty = count === 0;
                 const dc = dimensionColors[type] || defaultDimColor;
-                let dimensionIcon: React.ReactNode = null;
-                const iconOrEmoji = getDimensionIcon(type);
+                const IconComp = getDimensionIcon(type); // Always returns a Lucide component
                 const isActive = activeDimension === type && !isEmpty;
 
-                // Handle both React components (Lucide icons) and emoji strings
-                if (iconOrEmoji && typeof iconOrEmoji === 'string') {
-                  dimensionIcon = <span className="text-[14px]">{iconOrEmoji}</span>;
-                } else if (iconOrEmoji) {
-                  const IconComp = iconOrEmoji;
-                  dimensionIcon = <IconComp className={`w-[14px] h-[14px] ${isActive ? 'text-white' : dc.icon}`} />;
-                }
+                // Render Lucide icon — white when active, primary color when inactive
+                const dimensionIcon = (
+                  <IconComp
+                    className="w-[14px] h-[14px] flex-shrink-0"
+                    style={{ color: isActive ? '#ffffff' : 'var(--primary-color, #3b82f6)' }}
+                  />
+                );
 
                 const label = getDimensionLabel(type);
 
