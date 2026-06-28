@@ -54,39 +54,23 @@ export default function SolutionsPreview({ locale: propLocale }: SolutionsPrevie
   const currentLocale = propLocale || locale;
 
   return (
-    <section className="relative py-20 px-6 overflow-hidden" style={{ backgroundColor: '#0d1b2a' }}>
-      {/* Decorative glow orbs */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 rounded-full blur-3xl" style={{ backgroundColor: 'rgba(59, 130, 246, 0.3)' }} />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 rounded-full blur-3xl" style={{ backgroundColor: 'rgba(245, 173, 85, 0.2)' }} />
-      
-      {/* Geometric pattern overlay */}
-      <div 
-        className="absolute inset-0" 
-        style={{ 
-          opacity: 0.05,
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Ccircle cx='2' cy='2' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")` 
-        }} 
-      />
-
-      <div className="max-w-7xl mx-auto relative z-10">
+    <section className="relative py-20 px-6 bg-gradient-to-b from-blue-50 to-white">
+      <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-16">
           <div 
-            className="inline-flex items-center gap-2 px-4 py-1 rounded-full text-sm font-semibold mb-4"
-            style={{ backgroundColor: 'rgba(37, 99, 235, 0.3)', color: '#93c5fd' }}
+            className="inline-flex items-center gap-2 px-4 py-1 rounded-full text-sm font-semibold mb-4 bg-blue-100 text-blue-700"
           >
             <StarIcon className="w-4 h-4" />
             {t('home.solutions.badge') || '★ Solutions'}
           </div>
           <h2 
-            className="text-3xl md:text-4xl font-bold mb-4"
-            style={{ color: '#ffffff' }}
+            className="text-3xl md:text-4xl font-bold mb-4 text-gray-900"
           >
             {t('home.solutions.title') || 'Industry Solutions'}
           </h2>
           <p 
-            className="text-lg max-w-2xl mx-auto leading-relaxed"
-            style={{ color: '#cbd5e0' }}
+            className="text-lg max-w-2xl mx-auto leading-relaxed text-gray-600"
           >
             {t('home.solutions.subtitle') || 'Tailored smart storage solutions for your industry'}
           </p>
@@ -105,36 +89,29 @@ export default function SolutionsPreview({ locale: propLocale }: SolutionsPrevie
               key={index}
               href={`/${currentLocale}/products?type=${solution.nameKey.split('.').pop()}`}
               variants={fadeInUp}
-              className="group relative rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-500 border overflow-hidden"
-              style={{ 
-                backgroundColor: 'rgba(255, 255, 255, 0.1)', 
-                backdropFilter: 'blur(4px)',
-                borderColor: 'rgba(255, 255, 255, 0.2)'
-              }}
+              className="group relative rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-500 border overflow-hidden bg-white border-blue-100 hover:border-blue-300"
               whileHover={{ y: -8 }}
               transition={{ duration: 0.3 }}
             >
               {/* Icon Container */}
               <div 
-                className="w-16 h-16 mb-5 rounded-xl flex items-center justify-center shadow-lg transition-all duration-300 group-hover:scale-110"
-                style={{ backgroundColor: '#1a365d' }}
+                className="w-16 h-16 mb-5 rounded-xl flex items-center justify-center shadow-lg transition-all duration-300 group-hover:scale-110 bg-blue-50"
               >
                 {solution.icon && (
-                  <solution.icon className="w-8 h-8" style={{ color: '#f6ad55' }} />
+                  <solution.icon className="w-8 h-8 text-blue-600" />
                 )}
               </div>
 
               {/* Title */}
               <h3 
-                className="text-lg font-bold mb-2 transition-colors duration-300"
-                style={{ color: '#ffffff' }}
+                className="text-lg font-bold mb-2 transition-colors duration-300 text-gray-900"
               >
                 {t(solution.nameKey) || solution.nameKey.split('.').pop()}
               </h3>
 
               {/* Hover arrow */}
               <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <svg className="w-5 h-5" style={{ color: '#60a5fa' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
               </div>

@@ -8,8 +8,6 @@ import JsonLd from '@/components/JsonLd';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { LocaleProvider, Locale } from '@/lib/i18n';
 import { AuthProvider } from '@/components/AuthProvider';
-import { ThemeProvider } from '@/contexts/ThemeContext';
-import ThemeSwitcher from '@/components/ThemeSwitcher';
 import enMessages from '@/messages/en.json';
 import zhMessages from '@/messages/zh.json';
 import arMessages from '@/messages/ar.json';
@@ -52,7 +50,6 @@ export default function LocaleLayout({ children, params: { locale } }: LocaleLay
 
   return (
     <ErrorBoundary>
-    <ThemeProvider>
     <LocaleProvider locale={currentLocale} messages={messages}>
       <AuthProvider>
         {/* Preconnect to external image domain for faster loading */}
@@ -87,13 +84,8 @@ export default function LocaleLayout({ children, params: { locale } }: LocaleLay
         <main className="flex-1">{children}</main>
         <Footer />
         <BackToTop />
-        {/* Theme Switcher - Fixed position in bottom-right */}
-        <div className="fixed bottom-4 right-4 z-50">
-          <ThemeSwitcher />
-        </div>
       </AuthProvider>
     </LocaleProvider>
-    </ThemeProvider>
     </ErrorBoundary>
   );
 }

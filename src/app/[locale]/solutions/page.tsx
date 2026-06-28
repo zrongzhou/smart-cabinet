@@ -5,23 +5,11 @@ import { Cog, Car, Cpu, Cable, Building, Wrench, Factory, Building2, ChevronDown
 import { useLocale } from '@/lib/i18n';
 import solutions, { Solution } from '@/data/solutions';
 
-const iconMap: Record<string, any> = {
-  Cog,
-  Car,
-  Cpu,
-  Cable,
-  Building,
-  Wrench,
-  Factory,
-  Building2,
-};
-
-// 使用网站主题色，不按 solution 分颜色
+// Fixed colors - no CSS variables
 const solutionCardStyle = {
-  gradient: '',  // 用 inline style
-  iconBg: 'var(--icon-bg)',
-  accentColor: 'var(--primary-color)',
-  accentBg: 'var(--section-alt-bg)',
+  iconBg: '#dbeafe', // blue-100
+  accentColor: '#3b82f6', // blue-500
+  accentBg: '#f0f9ff', // blue-50
 };
 
 interface SolutionsPageProps {
@@ -42,16 +30,16 @@ export default function SolutionsPage({ params: { locale } }: SolutionsPageProps
   };
 
   return (
-    <div className="min-h-screen bg-[var(--section-alt-bg)]">
+    <div className="min-h-screen bg-blue-50">
       {/* Page Header */}
-      <section className="theme-solution-header text-white py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      <section className="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
         <div className="max-w-5xl mx-auto text-center relative z-10">
-          <h1 className="text-4xl sm:text-5xl font-bold mb-4">
+          <h1 className="text-4xl sm:text-5xl font-bold mb-4 text-white">
             {t('solutions.title')}
           </h1>
-          <p className="text-xl text-white/80">
+          <p className="text-xl text-blue-100">
             {t('solutions.subtitle')}
           </p>
         </div>
@@ -77,36 +65,36 @@ export default function SolutionsPage({ params: { locale } }: SolutionsPageProps
             return (
               <div
                 key={solution.id}
-                className="group relative solution-card bg-[var(--card-bg)] rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-[var(--border-color)] hover:-translate-y-3 hover:scale-[1.03]"
+                className="group relative solution-card bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-blue-100 hover:-translate-y-3 hover:scale-[1.03]"
               >
                 {/* Icon Container with gradient bg */}
                 <div
                   className="w-20 h-20 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg"
-                  style={{ backgroundColor: 'var(--primary-color)' }}
+                  style={{ backgroundColor: '#3b82f6' }}
                 >
                   <Icon className="w-10 h-10 text-white" />
                 </div>
 
                 <div className="p-6">
                   {/* Title */}
-                  <h3 className="text-2xl font-bold text-[var(--text-primary)] mb-3">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3">
                     {title}
                   </h3>
 
                   {/* Description */}
-                  <p className="text-[var(--text-secondary)] text-sm mb-4 leading-relaxed">
+                  <p className="text-gray-600 text-sm mb-4 leading-relaxed">
                     {description}
                   </p>
 
                   {/* Pain Points */}
                   {painPoints && painPoints.length > 0 && (
                     <div className="mb-4">
-                      <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-2">
+                      <h4 className="text-sm font-semibold text-gray-900 mb-2">
                         {currentLocale === 'zh' ? '痛点' : currentLocale === 'ar' ? 'نقاط الألم' : 'Pain Points'}
                       </h4>
                       <ul className="space-y-1">
                         {painPoints.map((point: string, idx: number) => (
-                          <li key={idx} className="text-xs text-[var(--text-secondary)] flex items-start">
+                          <li key={idx} className="text-xs text-gray-600 flex items-start">
                             <span className="text-red-500 mr-2">•</span>
                             <span>{point}</span>
                           </li>
@@ -116,8 +104,8 @@ export default function SolutionsPage({ params: { locale } }: SolutionsPageProps
                   )}
 
                   {/* Solution Summary */}
-                  <div className="mb-4 p-4 bg-[var(--section-alt-bg)] rounded-xl">
-                    <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+                  <div className="mb-4 p-4 bg-blue-50 rounded-xl">
+                    <p className="text-sm text-gray-600 leading-relaxed">
                       {solutionText}
                     </p>
                   </div>
@@ -126,7 +114,7 @@ export default function SolutionsPage({ params: { locale } }: SolutionsPageProps
                   <button
                     onClick={() => toggleSolution(index)}
                     className="w-full py-2 mb-4 flex items-center justify-center space-x-2 hover:underline focus:outline-none"
-                    style={{ color: 'var(--primary-color)' }}
+                    style={{ color: '#3b82f6' }}
                   >
                     <span>{isExpanded ? (currentLocale === 'zh' ? '收起详情' : currentLocale === 'ar' ? 'إخفاء التفاصيل' : 'Show Less') : (currentLocale === 'zh' ? '查看详情' : currentLocale === 'ar' ? 'عرض التفاصيل' : 'View Details')}</span>
                     {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -137,11 +125,11 @@ export default function SolutionsPage({ params: { locale } }: SolutionsPageProps
                     <div className="space-y-6 mb-4">
                       {/* Detailed Solution */}
                       <div>
-                        <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-2">
+                        <h4 className="text-sm font-semibold text-gray-900 mb-2">
                           {currentLocale === 'zh' ? '解决方案详情' : currentLocale === 'ar' ? 'تفاصيل الحل' : 'Detailed Solution'}
                         </h4>
                         {detailedSolution.map((para: string, idx: number) => (
-                          <p key={idx} className="text-sm text-[var(--text-secondary)] mb-2 leading-relaxed">
+                          <p key={idx} className="text-sm text-gray-600 mb-2 leading-relaxed">
                             {para}
                           </p>
                         ))}
@@ -150,7 +138,7 @@ export default function SolutionsPage({ params: { locale } }: SolutionsPageProps
                       {/* Core Benefits with Metrics */}
                       {benefitsDetailed && benefitsDetailed.length > 0 && (
                         <div>
-                          <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-3">
+                          <h4 className="text-sm font-semibold text-gray-900 mb-3">
                             {currentLocale === 'zh' ? '核心收益' : currentLocale === 'ar' ? 'الفوائد الرئيسية' : 'Core Benefits'}
                           </h4>
                           <div className="space-y-3">
@@ -158,15 +146,15 @@ export default function SolutionsPage({ params: { locale } }: SolutionsPageProps
                               <div
                                 key={idx}
                                 className="flex items-center space-x-3 rounded-lg p-3"
-                                style={{ backgroundColor: 'var(--section-alt-bg)' }}
+                                style={{ backgroundColor: '#f0f9ff' }}
                               >
                                 <div
                                   className="text-2xl font-bold"
-                                  style={{ color: 'var(--primary-color)' }}
+                                  style={{ color: '#3b82f6' }}
                                 >
                                   {benefit.metric}
                                 </div>
-                                <div className="text-sm text-[var(--text-secondary)]">
+                                <div className="text-sm text-gray-600">
                                   {benefit.description}
                                 </div>
                               </div>
@@ -178,22 +166,22 @@ export default function SolutionsPage({ params: { locale } }: SolutionsPageProps
                       {/* Case Data */}
                       <div
                         className="rounded-xl p-4"
-                        style={{ backgroundColor: 'var(--section-alt-bg)' }}
+                        style={{ backgroundColor: '#f0f9ff' }}
                       >
                         <div className="flex items-center space-x-2 mb-2">
                           <TrendingUp
                             className="w-5 h-5"
-                            style={{ color: 'var(--primary-color)' }}
+                            style={{ color: '#3b82f6' }}
                           />
                           <span
                             className="text-lg font-bold"
-                            style={{ color: 'var(--primary-color)' }}
+                            style={{ color: '#3b82f6' }}
                           >{caseMetric}</span>
                         </div>
-                        <p className="text-sm text-[var(--text-secondary)] mb-2">
+                        <p className="text-sm text-gray-600 mb-2">
                           {caseDescription}
                         </p>
-                        <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+                        <p className="text-xs text-gray-500 leading-relaxed">
                           {caseDetails}
                         </p>
                       </div>
@@ -208,3 +196,15 @@ export default function SolutionsPage({ params: { locale } }: SolutionsPageProps
     </div>
   );
 }
+
+// Icon map at the top of file
+const iconMap: Record<string, any> = {
+  Cog,
+  Car,
+  Cpu,
+  Cable,
+  Building,
+  Wrench,
+  Factory,
+  Building2,
+};

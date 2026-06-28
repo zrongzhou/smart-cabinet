@@ -50,8 +50,7 @@ export default function TrustBadges({ locale: propLocale }: TrustBadgesProps) {
     <section className="py-20 px-6 bg-white relative overflow-hidden">
       {/* Top border accent */}
       <div 
-        className="absolute top-0 left-0 right-0 h-1"
-        style={{ background: 'linear-gradient(90deg, #1a365d, #2a4a7f, #1a365d)' }}
+        className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-800 via-blue-600 to-blue-800"
       />
 
       <div className="max-w-7xl mx-auto">
@@ -64,14 +63,12 @@ export default function TrustBadges({ locale: propLocale }: TrustBadgesProps) {
           transition={{ duration: 0.6 }}
         >
           <h2 
-            className="text-3xl md:text-4xl font-bold mb-4"
-            style={{ color: '#1a202c' }}
+            className="text-3xl md:text-4xl font-bold mb-4 text-gray-900"
           >
             {t('home.trustBadges.title') || 'Why Choose Us'}
           </h2>
           <p 
-            className="text-lg max-w-2xl mx-auto"
-            style={{ color: '#4a5568' }}
+            className="text-lg max-w-2xl mx-auto text-gray-600"
           >
             {t('home.trustBadges.subtitle') || 'Proven track record and industry recognition'}
           </p>
@@ -91,28 +88,22 @@ export default function TrustBadges({ locale: propLocale }: TrustBadgesProps) {
               <motion.div
                 key={index}
                 variants={fadeInUp}
-                className="group bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 text-center border-2"
-                style={{ 
-                  borderColor: '#e2e8f0',
-                  transition: 'transform 0.3s ease, box-shadow 0.3s ease'
-                }}
+                className="group bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 text-center border-2 border-gray-100 hover:border-blue-300"
                 whileHover={{ y: -4 }}
                 transition={{ duration: 0.3 }}
               >
                 {/* Icon Container */}
                 <div 
-                  className="w-20 h-20 mx-auto mb-4 rounded-xl flex items-center justify-center shadow-lg transition-all duration-300 group-hover:scale-110"
-                  style={{ backgroundColor: '#1a365d' }}
+                  className="w-20 h-20 mx-auto mb-4 rounded-xl flex items-center justify-center shadow-lg transition-all duration-300 group-hover:scale-110 bg-blue-50"
                 >
-                  <IconComponent className="w-10 h-10" style={{ color: '#f6ad55' }} />
+                  <IconComponent className="w-10 h-10 text-blue-600" />
                 </div>
                 <h3 
-                  className="text-base font-bold mb-1"
-                  style={{ color: '#1a202c' }}
+                  className="text-base font-bold mb-1 text-gray-900"
                 >
                   {t(badge.titleKey) || badge.description}
                 </h3>
-                <p className="text-sm" style={{ color: '#4a5568' }}>{badge.description}</p>
+                <p className="text-sm text-gray-600">{badge.description}</p>
               </motion.div>
             );
           })}
@@ -120,16 +111,14 @@ export default function TrustBadges({ locale: propLocale }: TrustBadgesProps) {
 
         {/* Company Stats - Different from Hero stats */}
         <motion.div 
-          className="rounded-2xl p-8 shadow-lg"
-          style={{ backgroundColor: '#f7fafc' }}
+          className="rounded-2xl p-8 shadow-lg bg-blue-50"
           initial={{ opacity: 0, y: 60 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
           <p 
-            className="text-center text-sm font-semibold uppercase tracking-wider mb-8"
-            style={{ color: '#718096' }}
+            className="text-center text-sm font-semibold uppercase tracking-wider mb-8 text-gray-500"
           >
             Guangzhou Qiuyan Technology Co., Ltd. - Established 2015
           </p>
@@ -147,12 +136,11 @@ export default function TrustBadges({ locale: propLocale }: TrustBadgesProps) {
                 transition={{ duration: 0.3 }}
               >
                 <div 
-                  className="text-4xl font-bold mb-2"
-                  style={{ color: '#1a365d' }}
+                  className="text-4xl font-bold mb-2 text-blue-800"
                 >
                   {stat.number}
                 </div>
-                <div className="text-sm font-medium" style={{ color: '#4a5568' }}>{t(stat.labelKey) || stat.labelKey.split('.').pop()}</div>
+                <div className="text-sm font-medium text-gray-600">{t(stat.labelKey) || stat.labelKey.split('.').pop()}</div>
               </motion.div>
             ))}
           </div>

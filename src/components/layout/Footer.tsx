@@ -39,7 +39,7 @@ export default function Footer() {
     locale === 'zh' ? zhVal : locale === 'ar' ? arVal : enVal;
 
   const displayName = settings ? L(settings.companyNameZh || '', settings.companyName || '', settings.companyNameAr || '') : 'WS Tool Cabinet';
-  const displayCompany = settings ? L(settings.companyNameZh || '广州秋彦科技有限公司', settings.companyName || 'Guangzhou Qiuyan Technology Co., Ltd.', settings.companyNameAr || '') : 'Guangzhou Qiuyan Technology Co., Ltd.';
+  const displayCompany = settings ? L(settings.companyNameZh || '广州秋彦科技有限公司', settings.companyName || 'Guangzhou Qiuyuan Technology Co., Ltd.', settings.companyNameAr || '') : 'Guangzhou Qiuyuan Technology Co., Ltd.';
   // Support multi-value contact info (arrays from admin settings)
   const displayEmails = (settings?.contactEmails && Array.isArray(settings.contactEmails) && settings.contactEmails.length > 0)
     ? settings.contactEmails.filter(e => e && e.trim())
@@ -51,28 +51,28 @@ export default function Footer() {
   const displayCopyright = settings?.footerCopyright?.replace('{year}', String(currentYear)) || `© ${currentYear} ${displayCompany}`;
 
   return (
-    <footer className="relative text-[var(--color-text-secondary)] overflow-hidden" style={{ backgroundColor: 'var(--color-bg-card)' }}>
+    <footer className="relative text-gray-300 overflow-hidden" style={{ backgroundColor: '#1a202c' }}>
       {/* Decorative background elements */}
-      <div className="absolute top-0 left-0 w-full h-1 bg-[var(--gradient-cta)]" />
-      <div className="absolute top-20 right-0 w-72 h-72 rounded-full blur-3xl z-0" style={{ backgroundColor: 'var(--color-accent)', opacity: 0.05 }} />
-      <div className="absolute bottom-0 left-0 w-96 h-96 rounded-full blur-3xl z-0" style={{ backgroundColor: 'var(--color-accent-alt)', opacity: 0.05 }} />
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 to-blue-400" />
+      <div className="absolute top-20 right-0 w-72 h-72 rounded-full blur-3xl z-0" style={{ backgroundColor: 'rgba(59, 130, 246, 0.05)' }} />
+      <div className="absolute bottom-0 left-0 w-96 h-96 rounded-full blur-3xl z-0" style={{ backgroundColor: 'rgba(245, 173, 85, 0.05)' }} />
 
       {/* Main Footer Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
         {/* Top section: Company info + Newsletter + Certifications */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 pb-12 border-b" style={{ borderColor: 'var(--color-border)' }}>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 pb-12 border-b border-gray-700">
           {/* Column 1: Brand & Description */}
           <div>
             <div className="flex items-center gap-3 mb-5">
               <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-xl flex items-center justify-center">
                 <span className="text-white font-bold text-lg">WS</span>
               </div>
-              <span className="text-[var(--color-text-primary)] font-bold text-xl">{displayName}</span>
+              <span className="text-white font-bold text-xl">{displayName}</span>
             </div>
-            <p className="text-sm leading-relaxed mb-6 text-[var(--color-text-secondary)]">
+            <p className="text-sm leading-relaxed mb-6 text-gray-400">
               {t('footer.companyDescription')}
             </p>
-            <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--color-text-muted)' }}>
+            <div className="flex items-center gap-2 text-sm text-gray-500">
               <Globe className="w-4 h-4" />
               <span>{displayCompany}</span>
             </div>
@@ -81,8 +81,8 @@ export default function Footer() {
           {/* Column 2: Quick Links (2 columns) */}
           <div className="grid grid-cols-2 gap-8">
             <div>
-              <h4 className="text-[var(--color-text-primary)] font-semibold mb-4 flex items-center gap-2">
-                <span className="w-8 h-0.5 bg-[var(--color-accent)] rounded" />
+              <h4 className="text-white font-semibold mb-4 flex items-center gap-2">
+                <span className="w-8 h-0.5 bg-blue-500 rounded" />
                 {t('footer.quickLinks')}
               </h4>
               <ul className="space-y-2.5">
@@ -95,7 +95,7 @@ export default function Footer() {
                   <li key={link.label}>
                     <a
                       href={link.href}
-                      className="hover:text-[var(--color-accent)] transition-colors text-sm flex items-center gap-1 group"
+                      className="hover:text-blue-400 transition-colors text-sm flex items-center gap-1 group"
                     >
                       <ArrowRight className="w-3 h-3 opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all duration-200" />
                       {link.label}
@@ -184,7 +184,7 @@ export default function Footer() {
                 )}
                 {settings?.socialYoutube && (
                   <a href={settings.socialYoutube} target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-lg bg-gray-800 hover:bg-red-600 flex items-center justify-center transition-all duration-200 hover:scale-110">
-                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.121 2.136c1.871.505 9.377.505 9.377.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
                   </a>
                 )}
                 {settings?.socialInstagram && (

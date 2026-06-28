@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLocale } from '@/lib/i18n';
 import { motion } from 'framer-motion';
-import { useTheme } from '@/contexts/ThemeContext';
 
 // Count-up animation component
 function CountUp({ end, duration = 2 }: { end: string; duration?: number }) {
@@ -49,7 +48,6 @@ function CountUp({ end, duration = 2 }: { end: string; duration?: number }) {
 
 export default function HeroSection() {
   const { locale, t } = useLocale();
-  const { theme } = useTheme();
   const [isVisible, setIsVisible] = useState(false);
   const [statsVisible, setStatsVisible] = useState(false);
   const statsRef = useRef<HTMLDivElement>(null);
@@ -75,7 +73,7 @@ export default function HeroSection() {
     return () => observer.disconnect();
   }, []);
 
-  // Particle animation (pure Canvas, no external library)
+  // Particle animation (pure Canvas, no external library) - Always show on homepage
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -201,11 +199,8 @@ export default function HeroSection() {
 
   return (
     <section 
-      className="relative min-h-[80vh] flex items-center justify-center overflow-hidden"
-      style={{ 
-        background: 'var(--gradient-hero)',
-        minHeight: '80vh'
-      }}
+      className="homepage-starry relative min-h-[80vh] flex items-center justify-center overflow-hidden"
+      style={{ minHeight: '80vh' }}
     >
       {/* Subtle grid overlay */}
       <div 
@@ -221,18 +216,16 @@ export default function HeroSection() {
         />
       </div>
 
-      {/* Particle animation canvas (only for starry theme) */}
-      {theme === 'starry' && (
-        <canvas 
-          ref={canvasRef}
-          className="absolute inset-0 z-0 pointer-events-none"
-          style={{ width: '100%', height: '100%' }}
-        />
-      )}
+      {/* Particle animation canvas - Always show on homepage */}
+      <canvas 
+        ref={canvasRef}
+        className="absolute inset-0 z-0 pointer-events-none"
+        style={{ width: '100%', height: '100%' }}
+      />
 
       {/* Glow orbs */}
       <div className="absolute top-0 left-0 w-96 h-96 rounded-full blur-3xl z-0" style={{ backgroundColor: 'rgba(59, 130, 246, 0.2)' }} />
-      <div className="absolute bottom-0 right-0 w-96 h-96 rounded-full blur-3xl z-0" style={{ backgroundColor: 'rgba(245, 173, 85, 0.2)' }} />
+      <div className="absolute bottom-0 right-0 w-96 h-96 rounded-full blur-3xl z-0" style={{ backgroundColor: 'rgba(168, 85, 247, 0.2)' }} />
 
       {/* Content */}
       <div className="relative z-10 text-center text-white px-6 max-w-7xl mx-auto">
@@ -257,8 +250,7 @@ export default function HeroSection() {
           {/* Title */}
           <motion.h1 
             variants={fadeInUp}
-            className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight mb-6 leading-tight"
-            style={{ color: '#ffffff' }}
+            className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight mb-6 leading-tight text-white"
           >
             {t('hero.title')}
           </motion.h1>
@@ -267,7 +259,7 @@ export default function HeroSection() {
           <motion.p 
             variants={fadeInUp}
             className="text-lg md:text-xl lg:text-2xl mb-6 font-medium max-w-2xl mx-auto"
-            style={{ color: '#cbd5e0' }}
+            style={{ color: '#7dd3fc' }}
           >
             {t('hero.subtitle')}
           </motion.p>
@@ -275,8 +267,7 @@ export default function HeroSection() {
           {/* Description */}
           <motion.p 
             variants={fadeInUp}
-            className="text-base md:text-lg mb-12 max-w-3xl mx-auto leading-relaxed font-medium"
-            style={{ color: '#cbd5e0' }}
+            className="text-base md:text-lg mb-12 max-w-3xl mx-auto leading-relaxed font-medium text-blue-200"
           >
             {t('hero.description')}
           </motion.p>
@@ -290,8 +281,8 @@ export default function HeroSection() {
               href={`/${locale}/products`}
               className="group inline-flex items-center justify-center px-10 py-4 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 text-lg"
               style={{ 
-                background: 'linear-gradient(135deg, #ed8936 0%, #f6ad55 100%)',
-                boxShadow: '0 4px 14px rgba(237, 137, 54, 0.4)',
+                background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
+                boxShadow: '0 4px 14px rgba(59, 130, 246, 0.4)',
               }}
             >
               {t('hero.ctaProducts')}
@@ -301,13 +292,7 @@ export default function HeroSection() {
             </a>
             <a
               href={`/${locale}/contact`}
-              className="group inline-flex items-center justify-center px-10 py-4 font-semibold rounded-lg hover:bg-white/10 transition-all duration-300 text-lg"
-              style={{ 
-                borderWidth: '2px', 
-                borderColor: 'rgba(255, 255, 255, 0.3)', 
-                color: '#ffffff',
-                borderStyle: 'solid'
-              }}
+              className="group inline-flex items-center justify-center px-10 py-4 font-semibold rounded-lg hover:bg-white/10 transition-all duration-300 text-lg text-white border-2 border-white/30"
             >
               {t('hero.ctaContact')}
             </a>
@@ -333,7 +318,7 @@ export default function HeroSection() {
                   border: '1px solid rgba(255, 255, 255, 0.1)'
                 }}
               >
-                <div className="text-4xl font-bold mb-2" style={{ color: '#f6ad55' }}>
+                <div className="text-4xl font-bold mb-2" style={{ color: '#fbbf24' }}>
                   {statsVisible ? <CountUp end={stat.number} /> : stat.number}
                 </div>
                 <div className="text-sm font-medium" style={{ color: '#cbd5e0' }}>{t(stat.labelKey)}</div>
@@ -346,8 +331,8 @@ export default function HeroSection() {
       {/* CSS for pulse glow animation */}
       <style>{`
         @keyframes pulse-glow {
-          0%, 100% { box-shadow: 0 4px 14px rgba(237, 137, 54, 0.4); }
-          50% { box-shadow: 0 4px 24px rgba(237, 137, 54, 0.7); }
+          0%, 100% { box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4); }
+          50% { box-shadow: 0 4px 24px rgba(139, 92, 246, 0.7); }
         }
       `}</style>
     </section>

@@ -4,9 +4,7 @@ import { useState, useEffect } from 'react';
 import { Bars3Icon, XMarkIcon, ChevronDownIcon, UserIcon, ArrowRightOnRectangleIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
 import { useLocale } from '@/lib/i18n';
 import { useAuth } from '@/components/AuthProvider';
-import ThemeSwitcher from '@/components/ThemeSwitcher';
 import { fetchUnifiedSettings } from '@/data/unified-data';
-import { useTheme } from '@/contexts/ThemeContext';
 
 // Touch target size for mobile (44x44px minimum as per WCAG/Apple guidelines)
 const TOUCH_TARGET_CLASSES = 'min-h-[44px] min-w-[44px]';
@@ -25,7 +23,6 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
   const [siteName, setSiteName] = useState('WS Tool Cabinet');
   const [logoUrl, setLogoUrl] = useState('');
   const [logoError, setLogoError] = useState(false);
-  const { theme } = useTheme();
   const isRTL = locale === 'ar';
 
   // Load site settings from API
@@ -82,39 +79,28 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
     }
   };
 
-  // Get theme-aware nav background
+  // Fixed nav background - transparent on homepage, white on other pages
   const getNavBg = () => {
     if (isScrolled) {
-      switch(theme) {
-        case 'starry':
-          return 'bg-[var(--color-bg-card)]/95 backdrop-blur-md shadow-lg border-b border-[var(--color-border)]';
-        case 'skyblue':
-        case 'nature':
-          return 'bg-[var(--color-bg-card)]/95 backdrop-blur-md shadow-md border-b border-[var(--color-border)]';
-        default:
-          return 'bg-[var(--color-bg-card)]/95 backdrop-blur-md shadow-md';
-      }
+      return 'bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-100';
     }
-    // Not scrolled - lighter background
-    switch(theme) {
-      case 'starry':
-        return 'bg-[var(--color-bg-primary)] shadow-sm';
-      case 'skyblue':
-      case 'nature':
-        return 'bg-[var(--color-bg-primary)] shadow-sm';
-      default:
-        return 'bg-[var(--color-bg-primary)] shadow-sm';
+    // Not scrolled - check if homepage
+    if (typeof window !== 'undefined' && window.location.pathname === `/${locale}` || window.location.pathname === `/${locale}/`) {
+      return 'bg-transparent';
     }
+    return 'bg-white shadow-sm';
   };
 
-  // Get theme-aware text color for nav links
+  // Fixed text color
   const getNavTextColor = () => {
-    return 'text-[var(--color-text-primary)] hover:text-[var(--color-accent)]';
-  };
-
-  // Get theme-aware mobile sidebar background
-  const getSidebarBg = () => {
-    return 'bg-[var(--color-bg-card)]';
+    if (isScrolled) {
+      return 'text-gray-700 hover:text-blue-600';
+    }
+    // On homepage and not scrolled - white text
+    if (typeof window !== 'undefined' && (window.location.pathname === `/${locale}` || window.location.pathname === `/${locale}/`)) {
+      return 'text-white hover:text-blue-200';
+    }
+    return 'text-gray-700 hover:text-blue-600';
   };
 
   return (
@@ -137,7 +123,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
                 <span className="text-2xl">📦</span>
               )}
               {/* Always show company name, regardless of logo */}
-              <span className="text-xl font-bold text-[var(--color-text-primary)]">{siteName}</span>
+              <span className={`text-xl font-bold ${isScrolled || (typeof window !== 'undefined' && window.location.pathname !== `/${locale}` && window.location.pathname !== `/${locale}/`) ? 'text-gray-900' : 'text-white'}`}>{siteName}</span>
             </a>
 
             {/* Desktop Navigation */}
@@ -146,7 +132,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
                 <a
                   key={link.key}
                   href={link.href}
-                  className="text-gray-600 hover:text-blue-600 transition-colors duration-200 font-medium text-sm"
+                  className={`${isScrolled || (typeof window !== 'undefined' && window.location.pathname !== `/${locale}` && window.location.pathname !== `/${locale}/`) ? 'text-gray-700 hover:text-blue-600' : 'text-white hover:text-blue-200'} transition-colors duration-200 font-medium text-sm`}
                 >
                   {link.label}
                 </a>
@@ -183,9 +169,6 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
                 )}
               </div>
 
-              {/* Theme Switcher */}
-              <ThemeSwitcher />
-
               {/* Auth UI */}
               {isAuthenticated && user ? (
                 /* User Menu */
@@ -194,7 +177,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                     className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 transition-colors"
                   >
-                    <div className="w-8 h-8 rounded-full bg-[var(--primary-color)] flex items-center justify-center text-white text-sm font-medium">
+                    <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-medium">
                       {user.avatar ? (
                         <img src={user.avatar} alt={user.name} className="w-full h-full rounded-full object-cover" />
                       ) : (
@@ -206,32 +189,32 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
                   {/* User Dropdown */}
                   {isUserMenuOpen && (
                     <>
-                      <div className="fixed inset-0 z-40" onClick={() => setIsUserMenuOpen(false)} />
-                      <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50">
-                        <div className="px-4 py-2 border-b border-gray-100">
-                          <p className="text-sm font-medium text-gray-900">{user.name}</p>
-                          <p className="text-xs text-gray-500">{user.email}</p>
+                        <div className="fixed inset-0 z-40" onClick={() => setIsUserMenuOpen(false)} />
+                        <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50">
+                          <div className="px-4 py-2 border-b border-gray-100">
+                            <p className="text-sm font-medium text-gray-900">{user.name}</p>
+                            <p className="text-xs text-gray-500">{user.email}</p>
+                          </div>
+                          <a
+                            href={`/${locale}/account`}
+                            onClick={() => setIsUserMenuOpen(false)}
+                            className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center space-x-2"
+                          >
+                            <UserIcon className="w-4 h-4" />
+                            <span>{locale === 'zh' ? '个人中心' : locale === 'ar' ? 'الملف الشخصي' : 'Account'}</span>
+                          </a>
+                          <button
+                            onClick={() => {
+                              logout();
+                              setIsUserMenuOpen(false);
+                            }}
+                            className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center space-x-2"
+                          >
+                            <ArrowRightOnRectangleIcon className="w-4 h-4" />
+                            <span>{locale === 'zh' ? '退出登录' : locale === 'ar' ? 'تسجيل الخروج' : 'Sign Out'}</span>
+                          </button>
                         </div>
-                        <a
-                          href={`/${locale}/account`}
-                          onClick={() => setIsUserMenuOpen(false)}
-                          className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center space-x-2"
-                        >
-                          <UserIcon className="w-4 h-4" />
-                          <span>{locale === 'zh' ? '个人中心' : locale === 'ar' ? 'الملف الشخصي' : 'Account'}</span>
-                        </a>
-                        <button
-                          onClick={() => {
-                            logout();
-                            setIsUserMenuOpen(false);
-                          }}
-                          className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center space-x-2"
-                        >
-                          <ArrowRightOnRectangleIcon className="w-4 h-4" />
-                          <span>{locale === 'zh' ? '退出登录' : locale === 'ar' ? 'تسجيل الخروج' : 'Sign Out'}</span>
-                        </button>
-                      </div>
-                    </>
+                      </>
                   )}
                 </div>
               ) : (
@@ -245,7 +228,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
                   </a>
                   <a
                     href={`/${locale}/register`}
-                    className="px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 btn-gradient-primary"
+                    className="px-4 py-2 text-sm font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200"
                   >
                     {locale === 'zh' ? '注册' : locale === 'ar' ? 'إنشاء حساب' : 'Sign Up'}
                   </a>
@@ -255,7 +238,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
               {/* Get a Quote Button */}
               <a
                 href={`/${locale}/contact`}
-                className="inline-flex items-center px-5 py-2 font-semibold rounded-lg transition-all duration-200 text-sm btn-gradient-primary"
+                className="inline-flex items-center px-5 py-2 font-semibold rounded-lg transition-all duration-200 text-sm bg-blue-600 text-white hover:bg-blue-700"
               >
                 {t('nav.getQuote')}
               </a>
@@ -285,10 +268,8 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
             className="fixed inset-0 bg-black/50 z-40 md:hidden"
             onClick={() => setIsMobileMenuOpen(false)}
           />
-          {/* Sidebar - theme aware background, RTL-aware positioning */}
-          <div className={`fixed top-0 ${isRTL ? 'left-0' : 'right-0'} h-full w-64 z-50 shadow-xl transform transition-transform duration-300 md:hidden ${
-            getSidebarBg()
-          }`}>
+          {/* Sidebar */}
+          <div className={`fixed top-0 ${isRTL ? 'left-0' : 'right-0'} h-full w-64 z-50 shadow-xl transform transition-transform duration-300 md:hidden bg-white`}>
             <div className="p-6">
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center space-x-2">
@@ -313,7 +294,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
                       onClick={() => handleLocaleChange(lang.code)}
                       className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                         locale === lang.code
-                          ? 'bg-[var(--primary-color)] text-white'
+                          ? 'bg-blue-600 text-white'
                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
                     >
@@ -326,11 +307,10 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
               {/* Auth UI Mobile */}
               {isAuthenticated && user ? (
                 <>
-                  {/* User Info */
-                  }
+                  {/* User Info */}
                   <div className="mb-6 p-4 bg-blue-50 rounded-lg">
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 rounded-full bg-[var(--primary-color)] flex items-center justify-center text-white font-medium">
+                      <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-medium">
                         {user.name?.charAt(0).toUpperCase() || '?'}
                       </div>
                       <div>
@@ -340,8 +320,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
                     </div>
                   </div>
 
-                  {/* Account Link */
-                  }
+                  {/* Account Link */}
                   <a
                     href={`/${locale}/account`}
                     onClick={() => setIsMobileMenuOpen(false)}
@@ -351,8 +330,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
                     <span>{locale === 'zh' ? '个人中心' : locale === 'ar' ? 'الملف الشخصي' : 'Account'}</span>
                   </a>
 
-                  {/* Logout Button */
-                  }
+                  {/* Logout Button */}
                   <button
                     onClick={() => {
                       logout();
@@ -377,7 +355,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
                   <a
                     href={`/${locale}/register`}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="block py-2.5 px-3 text-white bg-[var(--primary-color)] hover:opacity-90 rounded-lg transition-all duration-200 font-medium text-center"
+                    className="block py-2.5 px-3 text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-all duration-200 font-medium text-center"
                   >
                     {locale === 'zh' ? '注册' : locale === 'ar' ? 'إنشاء حساب' : 'Sign Up'}
                   </a>
@@ -402,7 +380,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
               <a
                 href={`/${locale}/contact`}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="block w-full text-center py-3 font-semibold rounded-lg transition-all duration-200 btn-gradient-primary"
+                className="block w-full text-center py-3 font-semibold rounded-lg transition-all duration-200 bg-blue-600 text-white hover:bg-blue-700"
               >
                 {t('nav.getQuote')}
               </a>

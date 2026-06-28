@@ -2,82 +2,75 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ===== 主题系统：CSS变量定义 ===== */
-
-/* 默认主题：星空 */
-:root {
-  --color-bg-primary: #0d1b2a;
-  --color-bg-secondary: #1a365d;
-  --color-bg-card: rgba(30, 58, 95, 0.8);
-  --color-text-primary: #f7fafc;
-  --color-text-secondary: #cbd5e0;
-  --color-accent: #f6ad55;
-  --color-accent-alt: #ed8936;
-  --color-border: #2d3748;
-  --color-shadow: rgba(0, 0, 0, 0.5);
-  --gradient-hero: linear-gradient(135deg, #0d1b2a 0%, #1a365d 100%);
-  --gradient-cta: linear-gradient(135deg, #ed8936 0%, #f6ad55 100%);
-  --radius-card: 12px;
-  --transition-fast: 150ms ease;
-  --transition-normal: 300ms ease;
-}
-
-/* 星空主题 */
-:root[data-theme="starry"] {
-  --color-bg-primary: #0d1b2a;
-  --color-bg-secondary: #1a365d;
-  --color-bg-card: rgba(30, 58, 95, 0.8);
-  --color-text-primary: #f7fafc;
-  --color-text-secondary: #cbd5e0;
-  --color-accent: #f6ad55;
-  --color-accent-alt: #ed8936;
-  --color-border: #2d3748;
-  --color-shadow: rgba(0, 0, 0, 0.5);
-  --gradient-hero: linear-gradient(135deg, #0d1b2a 0%, #1a365d 100%);
-  --gradient-cta: linear-gradient(135deg, #ed8936 0%, #f6ad55 100%);
-}
-
-/* 蓝天主题 */
-:root[data-theme="skyblue"] {
-  --color-bg-primary: #f0f9ff;
-  --color-bg-secondary: #e0f2fe;
-  --color-bg-card: #ffffff;
-  --color-text-primary: #1e293b;
-  --color-text-secondary: #475569;
-  --color-accent: #3b82f6;
-  --color-accent-alt: #f59e0b;
-  --color-border: #bae6fd;
-  --color-shadow: rgba(0, 0, 0, 0.08);
-  --gradient-hero: linear-gradient(135deg, #3b82f6 0%, #60a5fa 50%, #93c5fd 100%);
-  --gradient-cta: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
-}
-
-/* 自然主题 */
-:root[data-theme="nature"] {
-  --color-bg-primary: #fefce8;
-  --color-bg-secondary: #f5f5dc;
-  --color-bg-card: #ffffff;
-  --color-text-primary: #1c1917;
-  --color-text-secondary: #57534e;
-  --color-accent: #166534;
-  --color-accent-alt: #a16207;
-  --color-border: #d6d3d1;
-  --color-shadow: rgba(0, 0, 0, 0.06);
-  --gradient-hero: linear-gradient(135deg, #fefce8 0%, #f5f5dc 100%);
-  --gradient-cta: linear-gradient(135deg, #a16207 0%, #ca8a04 100%);
-}
-
-/* ===== 全局样式 ===== */
-
+/* ===== 全局基础样式 ===== */
 body {
-  min-height: 100vh;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  background-color: var(--color-bg-primary);
-  color: var(--color-text-primary);
-  transition: background-color var(--transition-normal), color var(--transition-normal);
+  background-color: #f0f9ff;  /* 浅蓝白 - 其他页面的默认背景 */
+  color: #1e293b;             /* 深灰文字 */
 }
 
-/* 平滑过渡动画 */
+/* ===== 首页专用：星空背景 ===== */
+.homepage-starry {
+  background: linear-gradient(175deg, #020617 0%, #070d21 20%, #0c1629 40%, #111d38 65%, #0a1528 85%, #06101f 100%);
+  color: #ffffff;
+}
+
+/* ===== 其他页面：蓝白背景 ===== */
+.page-bluewhite {
+  background: #f0f9ff;
+  color: #1e293b;
+}
+
+/* ===== 卡片样式 ===== */
+.card-bluewhite {
+  background: #ffffff;
+  border: 1px solid #e0f2fe;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.card-bluewhite:hover {
+  box-shadow: 0 8px 24px rgba(59,130,246,0.15);
+  transform: translateY(-2px);
+}
+
+/* ===== 按钮样式 ===== */
+.btn-primary-blue {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: #ffffff;
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-primary-blue:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  box-shadow: 0 4px 12px rgba(37,99,235,0.4);
+}
+
+/* ===== 标题样式 ===== */
+.heading-bluewhite h1,
+.heading-bluewhite h2,
+.heading-bluewhite h3 {
+  color: #1e293b;
+}
+
+.heading-bluewhite p {
+  color: #475569;
+}
+
+/* ===== 首页标题（白色） ===== */
+.heading-starry h1,
+.heading-starry h2,
+.heading-starry h3 {
+  color: #ffffff;
+}
+
+.heading-starry p {
+  color: #7dd3fc;
+}
+
+/* ===== 平滑过渡动画（保留必要的） ===== */
 * {
   transition-property: background-color, border-color, color, fill, stroke, box-shadow;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
@@ -86,7 +79,7 @@ body {
 
 /* 焦点可见性（无障碍） */
 *:focus-visible {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid #3b82f6;
   outline-offset: 2px;
 }
 

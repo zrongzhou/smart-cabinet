@@ -7,11 +7,11 @@ import { useLocale } from '@/lib/i18n';
 import { Product, Category } from '@/lib/api';
 import { getBaseUrl } from '@/data/unified-data';
 
-// ============================================================
+// ===========================================================
 // DIMENSION ICON SYSTEM — Lucide React components only (v133)
 // NO emoji — emojis render inconsistently across platforms/themes
 // Priority: Admin DB setting > Built-in default > Settings fallback
-// ============================================================
+// ===========================================================
 
 /** Built-in DEFAULT icons for dimension types — used ONLY when admin hasn't set a custom one */
 const dimensionDefaultIcons: Record<string, any> = {
@@ -30,19 +30,19 @@ const lucideIconRegistry: Record<string, any> = {
   Image, Layers, Code, Cog, Puzzle, Bot, BrainCircuit,
 };
 
-/** Dimension visual config — all colors use CSS variables for theme compatibility */
+/** Dimension visual config — FIXED colors (no CSS variables) */
 const dimensionColors: Record<string, {
   colorClass: string;
   activeBg: string;
   barColor: string;
   textColor: string;
 }> = {
-  'cabinet-type':    { colorClass: 'text-[var(--primary-color)]', activeBg: 'var(--primary-color)', barColor: 'bg-[var(--primary-color)]', textColor: 'text-[var(--primary-color)]' },
-  'managed-items':   { colorClass: 'text-[var(--primary-color)]', activeBg: 'var(--primary-color)', barColor: 'bg-[var(--primary-color)]', textColor: 'text-[var(--primary-color)]' },
-  'industry':        { colorClass: 'text-[var(--primary-color)]', activeBg: 'var(--primary-color)', barColor: 'bg-[var(--primary-color)]', textColor: 'text-[var(--primary-color)]' },
-  'custom-solution': { colorClass: 'text-[var(--primary-color)]', activeBg: 'var(--primary-color)', barColor: 'bg-[var(--primary-color)]', textColor: 'text-[var(--primary-color)]' },
+  'cabinet-type':    { colorClass: 'text-blue-600', activeBg: 'bg-blue-600', barColor: 'bg-blue-600', textColor: 'text-blue-600' },
+  'managed-items':   { colorClass: 'text-blue-600', activeBg: 'bg-blue-600', barColor: 'bg-blue-600', textColor: 'text-blue-600' },
+  'industry':        { colorClass: 'text-blue-600', activeBg: 'bg-blue-600', barColor: 'bg-blue-600', textColor: 'text-blue-600' },
+  'custom-solution': { colorClass: 'text-blue-600', activeBg: 'bg-blue-600', barColor: 'bg-blue-600', textColor: 'text-blue-600' },
 };
-const defaultDimColor = { colorClass: 'text-[var(--primary-color)]', activeBg: 'var(--primary-color)', barColor: 'bg-[var(--primary-color)]', textColor: 'text-[var(--primary-color)]' };
+const defaultDimColor = { colorClass: 'text-blue-600', activeBg: 'bg-blue-600', barColor: 'bg-blue-600', textColor: 'text-blue-600' };
 
 /**
  * Resolve icon for a dimension type.
@@ -322,9 +322,9 @@ export default function ProductsPage() {
   // Skeleton loading component
   if (loading) {
     return (
-      <div className="min-h-screen" style={{ backgroundColor: 'var(--tc-bg, #f9fafb)' }}>
+      <div className="min-h-screen bg-blue-50">
         {/* Header skeleton */}
-        <section className="text-white py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden theme-hero-bg">
+        <section className="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }} />
           <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full blur-3xl" style={{ backgroundColor: 'rgba(255,255,255,0.04)' }} />
           <div className="max-w-5xl mx-auto text-center relative z-10">
@@ -334,26 +334,26 @@ export default function ProductsPage() {
         </section>
 
         {/* Filter skeleton */}
-        <section className="bg-[var(--card-bg)] border-b border-[var(--border-color)] sticky top-16 z-40 shadow-sm">
+        <section className="bg-white border-b border-gray-200 sticky top-16 z-40 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             {/* Search bar skeleton */}
             <div className="relative max-w-md mx-auto mb-5">
-              <div className="w-full h-11 bg-[var(--section-alt-bg, #f9fafb)] rounded-xl animate-pulse" />
+              <div className="w-full h-11 bg-blue-50 rounded-xl animate-pulse" />
             </div>
 
             {/* Dimension tabs skeleton */}
             <div className="flex flex-wrap gap-3 justify-center mb-5">
               {[1, 2, 3, 4, 5].map(i => (
-                <div key={i} className="h-10 w-28 bg-[var(--section-alt-bg, #f9fafb)] rounded-full animate-pulse" />
+                <div key={i} className="h-10 w-28 bg-blue-50 rounded-full animate-pulse" />
               ))}
             </div>
 
             {/* Category pills skeleton */}
-            <div className="pt-3 border-t" style={{ borderColor: 'color-mix(in srgb, var(--border-color, #e5e7eb) 50%, transparent)' }}>
-              <div className="h-4 w-24 bg-[var(--section-alt-bg, #f9fafb)] rounded-full animate-pulse mb-2.5 mx-auto" />
+            <div className="pt-3 border-t border-gray-200">
+              <div className="h-4 w-24 bg-blue-50 rounded-full animate-pulse mb-2.5 mx-auto" />
               <div className="flex flex-wrap gap-[6px] justify-start">
                 {[1, 2, 3, 4, 5, 6].map(i => (
-                  <div key={i} className="h-8 w-20 bg-[var(--section-alt-bg, #f9fafb)] rounded-full animate-pulse" />
+                  <div key={i} className="h-8 w-20 bg-blue-50 rounded-full animate-pulse" />
                 ))}
               </div>
             </div>
@@ -364,13 +364,13 @@ export default function ProductsPage() {
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
             {[1, 2, 3, 4, 5, 6].map(i => (
-              <div key={i} className="bg-[var(--card-bg)] rounded-2xl shadow-md overflow-hidden">
-                <div className="h-68 bg-[var(--section-alt-bg, #f9fafb)] animate-pulse" />
+              <div key={i} className="bg-white rounded-2xl shadow-md overflow-hidden">
+                <div className="h-68 bg-blue-50 animate-pulse" />
                 <div className="p-5 space-y-3">
-                  <div className="h-4 w-20 bg-[var(--section-alt-bg, #f9fafb)] rounded animate-pulse" />
-                  <div className="h-6 w-full bg-[var(--section-alt-bg, #f9fafb)] rounded animate-pulse" />
-                  <div className="h-4 w-16 rounded animate-pulse" style={{ backgroundColor: 'var(--section-alt-bg, #f9fafb)' }} />
-                  <div className="h-4 w-3/4 rounded animate-pulse" style={{ backgroundColor: 'var(--section-alt-bg, #f9fafb)' }} />
+                  <div className="h-4 w-20 bg-blue-50 rounded animate-pulse" />
+                  <div className="h-6 w-full bg-blue-50 rounded animate-pulse" />
+                  <div className="h-4 w-16 bg-blue-50 rounded animate-pulse" />
+                  <div className="h-4 w-3/4 bg-blue-50 rounded animate-pulse" />
                 </div>
               </div>
             ))}
@@ -381,13 +381,13 @@ export default function ProductsPage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'var(--tc-bg, #f9fafb)' }}>
+    <div className="min-h-screen bg-blue-50">
       {/* Page Header */}
-      <section className="text-white py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden theme-hero-bg">
+      <section className="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }} />
         <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full blur-3xl" style={{ backgroundColor: 'rgba(255,255,255,0.04)' }} />
         <div className="max-w-5xl mx-auto text-center relative z-10">
-          <h1 className="text-4xl sm:text-5xl font-bold mb-4">
+          <h1 className="text-4xl sm:text-5xl font-bold mb-4 text-white">
             {t('products.title')}
           </h1>
           <p className="text-xl text-blue-100">
@@ -397,48 +397,45 @@ export default function ProductsPage() {
       </section>
 
       {/* Primary Dimension Filter + Search */}
-      <section className="bg-[var(--card-bg)] border-b border-[var(--border-color)] sticky top-16 z-40 shadow-sm">
+      <section className="bg-white border-b border-gray-200 sticky top-16 z-40 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           {/* Search bar */}
           <div className="relative max-w-md mx-auto mb-5">
-            <Search className="absolute left-3.5 top-1/2 transform -translate-y-1/2 w-5 h-5" style={{ color: 'var(--text-muted, #9ca3af)' }} />
+            <Search className="absolute left-3.5 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={locale === 'zh' ? '搜索产品名称、SKU...' : locale === 'ar' ? 'بحث عن المنتجات...' : 'Search products by name, SKU...'}
-              className="w-full pl-11 pr-10 py-2.5 border rounded-xl text-sm focus:ring-2 outline-none transition-all text-[var(--text-primary)]"
-              style={{ backgroundColor: 'var(--section-alt-bg, #f9fafb)', borderColor: 'var(--border-color, #e5e7eb)' }}
+              className="w-full pl-11 pr-10 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 outline-none transition-all text-gray-900 bg-blue-50"
+              style={{ borderColor: '#d1d5db' }}
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3.5 top-1/2 transform -translate-y-1/2 transition-colors"
-                style={{ color: 'var(--text-muted, #9ca3af)' }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--text-primary, #111827)'; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--text-muted, #9ca3af)'; }}
+                className="absolute right-3.5 top-1/2 transform -translate-y-1/2 transition-colors text-gray-400 hover:text-gray-900"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
             )}
           </div>
 
-          {/* Filter Panel - Themed Card Container */}
-          <div className="relative bg-[var(--card-bg)] backdrop-blur-md rounded-2xl shadow-lg px-6 py-5 border border-[var(--border-color)] overflow-visible">
+          {/* Filter Panel - Fixed Card Container */}
+          <div className="relative bg-white backdrop-blur-md rounded-2xl shadow-lg px-6 py-5 border border-gray-200 overflow-visible">
             {/* Subtle accent bar - shows under active dimension tab instead of top line */}
             <div className="h-1" />
             
-            {/* Row1: Dimension Tabs - unified design system */}
+            {/* Row 1: Dimension Tabs - unified design system */}
             <div className="flex flex-wrap items-center justify-center gap-2">
               {/* "All" button - light neutral style matching sibling pills */}
               <button
                 onClick={() => handleDimensionChange('all')}
                 className={`relative px-4 py-2 rounded-full text-[14px] font-semibold transition-all duration-200 inline-flex items-center gap-1.5 ${
                   activeDimension === 'all'
-                    /* Active: subtle primary color — visible in ALL themes */
-                    ? 'bg-[var(--primary-color)] text-white shadow-md hover:shadow-lg hover:-translate-y-0.5'
+                    /* Active: blue background */
+                    ? 'bg-blue-600 text-white shadow-md hover:shadow-lg hover:-translate-y-0.5'
                     /* Inactive: light pill same as other inactive tabs */
-                    : 'bg-[var(--card-bg)] text-[var(--text-secondary)] border border-[var(--border-color)] hover:border-[var(--primary-color)]/30 hover:shadow-sm hover:-translate-y-0.5'
+                    : 'bg-white text-gray-600 border border-gray-300 hover:border-blue-600/30 hover:shadow-sm hover:-translate-y-0.5'
                 }`}
               >
                 <span>{t('products.filterAll') || 'All'}</span>
@@ -450,11 +447,11 @@ export default function ProductsPage() {
                 const IconComp = resolveDimensionIcon(type, customDimIcons); // Admin DB > built-in default
                 const isActive = activeDimension === type && !isEmpty;
 
-                // Render Lucide icon — white when active, primary color when inactive
+                // Render Lucide icon — white when active, blue when inactive
                 const dimensionIcon = (
                   <IconComp
                     className="w-[14px] h-[14px] flex-shrink-0"
-                    style={{ color: isActive ? '#ffffff' : 'var(--primary-color, #3b82f6)' }}
+                    style={{ color: isActive ? '#ffffff' : '#2563eb' }}
                   />
                 );
 
@@ -469,11 +466,11 @@ export default function ProductsPage() {
                         /* Active: gradient background via inline style */
                         ? `text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 ring-1 ring-white/25`
                         /* Inactive: light pill — colors set via inline style below */
-                        : `border hover:border-[var(--primary-color)]/30 hover:shadow-sm hover:-translate-y-0.5`
+                        : `border hover:border-blue-600/30 hover:shadow-sm hover:-translate-y-0.5`
                     }`}
                     style={isActive
-                      ? { background: 'linear-gradient(135deg, var(--primary-color), var(--primary-dark))' }
-                      : { backgroundColor: 'var(--card-bg, #ffffff)', color: 'var(--text-secondary, #4b5563)', borderColor: 'var(--border-color, #d1d5db)' }
+                      ? { background: 'linear-gradient(135deg, #2563eb, #1d4ed8)' }
+                      : { backgroundColor: '#ffffff', color: '#4b5563', borderColor: '#d1d5db' }
                     }
                     title={isEmpty ? (locale === 'zh' ? '该维度暂无产品' : 'No products in this dimension') : ''}
                   >
@@ -488,7 +485,7 @@ export default function ProductsPage() {
                     {/* Count badge — explicit fallback color */}
                     <span
                       className={`text-[11px] font-normal tabular-nums ml-0.5`}
-                      style={{ color: isActive ? 'rgba(255,255,255,0.7)' : 'var(--text-muted, #6b7280)' }}
+                      style={{ color: isActive ? 'rgba(255,255,255,0.7)' : '#6b7280' }}
                     >
                       ({count})
                     </span>
@@ -505,14 +502,14 @@ export default function ProductsPage() {
               const dimLabel = getDimensionLabel(activeDimension);
 
               return (
-                <div className="mt-3 pt-3 border-t" style={{ borderColor: 'var(--border-color, #d1d5db)' }}>
-                  {/* Label row — BOLD and visible in ALL themes */}
+                <div className="mt-3 pt-3 border-t" style={{ borderColor: '#d1d5db' }}>
+                  {/* Label row — BOLD and visible */}
                   <div className="flex items-center justify-center gap-2 mb-2.5 px-1">
                     <div className={`h-[2px] w-5 rounded-full ${dc.barColor}`} />
                     <span className={`text-[12px] font-bold uppercase tracking-wider ${dc.textColor}`}>
                       {dimLabel}
                     </span>
-                    <span className="text-[11px] font-semibold" style={{ color: 'var(--text-secondary, #4b5563)' }}>
+                    <span className="text-[11px] font-semibold" style={{ color: '#4b5563' }}>
                       — {locale === 'zh' ? '子分类' : locale === 'ar' ? 'تصنيفات فرعية' : 'sub-categories'}
                     </span>
                   </div>
@@ -526,12 +523,12 @@ export default function ProductsPage() {
                           onClick={() => toggleCategory(cat.id)}
                           className={`relative px-3 py-1.5 rounded-full text-[13px] transition-all duration-200 leading-none inline-flex items-center ${
                             isSelected
-                              /* Selected: solid primary background */
+                              /* Selected: solid blue background */
                               ? `text-white shadow-sm font-semibold hover:shadow-md`
                               /* Unselected: HIGH contrast — readable text on light bg */
-                              : `bg-[var(--card-bg,#fff)] text-[var(--text-primary,#111827)] border border-[var(--border-color,#d1d5db)] hover:border-[var(--primary-color,#3b82f6)] hover:shadow-sm hover:bg-[var(--primary-color-lightest,rgba(59,130,246,0.06))]`
+                              : `bg-white text-gray-900 border border-gray-300 hover:border-blue-600 hover:shadow-sm hover:bg-blue-50`
                           }`}
-                          style={isSelected ? { backgroundColor: 'var(--primary-color)' } : undefined}
+                          style={isSelected ? { backgroundColor: '#2563eb' } : undefined}
                         >
                           {isSelected && (
                             <span className="inline-block w-1.5 h-1.5 rounded-full bg-white/90 mr-1.5" />
@@ -547,7 +544,7 @@ export default function ProductsPage() {
                           })()}</span>
                           {/* Count — always clearly visible */}
                           <span className={`ml-1.5 text-[11px] tabular-nums ${isSelected ? 'text-white/80' : ''}`}
-                            style={!isSelected ? { color: 'var(--text-secondary, #4b5563)' } : undefined}
+                            style={!isSelected ? { color: '#4b5563' } : undefined}
                           >
                             ({count})
                           </span>
@@ -563,7 +560,7 @@ export default function ProductsPage() {
           {/* Results count */}
           {(searchQuery || activeCategories.length > 0 || activeDimension !== 'all') && (
             <div className="text-center mt-4">
-              <span className="inline-flex items-center px-3.5 py-1 bg-[var(--section-alt-bg, #f9fafb)] text-[var(--text-secondary)] border border-[var(--border-color)] rounded-full text-[12px] font-medium">
+              <span className="inline-flex items-center px-3.5 py-1 bg-blue-50 text-gray-600 border border-gray-300 rounded-full text-[12px] font-medium">
                 {locale === 'zh'
                   ? `找到 ${filteredProducts.length} 个产品`
                   : locale === 'ar'
@@ -579,14 +576,14 @@ export default function ProductsPage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {filteredProducts.length === 0 ? (
           <div className="text-center py-20">
-                        <Package className="w-16 h-16 mx-auto mb-4" style={{ color: 'var(--text-muted)' }} />
-            <p className="text-2xl" style={{ color: 'var(--text-secondary)' }}>
+                        <Package className="w-16 h-16 mx-auto mb-4" style={{ color: '#9ca3af' }} />
+            <p className="text-2xl" style={{ color: '#4b5563' }}>
               {t('products.noProducts') || 'No products found.'}
             </p>
             {(searchQuery || activeDimension !== 'all') && (
               <button
                 onClick={() => { setSearchQuery(''); handleDimensionChange('all'); }}
-                className="mt-4 px-4 py-2 text-[var(--primary-color)] hover:opacity-80 font-medium text-sm"
+                className="mt-4 px-4 py-2 text-blue-600 hover:opacity-80 font-medium text-sm"
               >
                 {locale === 'zh' ? '清除筛选' : locale === 'ar' ? 'مسح الفلاتر' : 'Clear Filters'}
               </button>
@@ -601,27 +598,27 @@ export default function ProductsPage() {
                 const name = locale === 'zh' ? product.name.zh : locale === 'ar' ? product.name.ar : product.name.en;
                 return (
                   <Link key={product.id} href={detailHref}
-                    className="group bg-[var(--card-bg)] rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-2 border border-[var(--border-color)] hover:border-[var(--primary-color)]/30 block"
+                    className="group bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-2 border border-gray-200 hover:border-blue-600/30 block"
                   >
                     {/* Product Image */}
                     {product.images && product.images[0] ? (
-                      <div className="relative h-56 overflow-hidden bg-[var(--section-alt-bg, #f9fafb)]">
+                      <div className="relative h-56 overflow-hidden bg-blue-50">
                         <img src={product.images[0]} alt={name}
                           className="w-full h-56 object-contain p-4 transition-transform duration-500 group-hover:scale-110"
                           loading={isPriority ? 'eager' : 'lazy'}
                           onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                         />
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-center justify-center">
-                          <div className="opacity-0 group-hover:opacity-100 bg-[var(--card-bg)]/90 backdrop-blur-sm text-[var(--text-primary)] px-3 py-1.5 rounded-full flex items-center gap-1.5 text-xs font-medium shadow-lg">
+                          <div className="opacity-0 group-hover:opacity-100 bg-white/90 backdrop-blur-sm text-gray-900 px-3 py-1.5 rounded-full flex items-center gap-1.5 text-xs font-medium shadow-lg">
                             <ExternalLink className="w-3.5 h-3.5" />
                             {locale === 'zh' ? '查看详情' : 'View Details'}
                           </div>
                         </div>
                       </div>
                     ) : (
-                      <div className="h-56 bg-gradient-to-br from-[var(--section-alt-bg, #f9fafb)] to-[var(--border-color)] flex items-center justify-center">
-                        <Package className="w-16 h-16 mx-auto" style={{ color: 'var(--text-muted)' }} />
-                        <p className="text-xs absolute bottom-4" style={{ color: 'var(--text-muted)' }}>{locale === 'zh' ? '暂无图片' : 'No Image'}</p>
+                      <div className="h-56 bg-gradient-to-br from-blue-50 to-gray-200 flex items-center justify-center">
+                        <Package className="w-16 h-16 mx-auto" style={{ color: '#9ca3af' }} />
+                        <p className="text-xs absolute bottom-4" style={{ color: '#9ca3af' }}>{locale === 'zh' ? '暂无图片' : 'No Image'}</p>
                       </div>
                     )}
                     {/* Product Info */}
@@ -630,8 +627,8 @@ export default function ProductsPage() {
                         <span 
                           className="inline-block px-2.5 py-0.5 text-xs font-semibold rounded-full mb-2 w-fit"
                           style={{ 
-                            backgroundColor: 'var(--primary-color-lightest, rgba(var(--primary-rgb, 0,0,255), 0.1))', 
-                            color: 'var(--primary-color)' 
+                            backgroundColor: 'rgba(59,130,246,0.1)', 
+                            color: '#2563eb' 
                           }}
                         >
                           {(() => { 
@@ -648,21 +645,21 @@ export default function ProductsPage() {
                           })()}
                         </span>
                       )}
-                      <h3 className="text-lg font-bold mb-1.5 line-clamp-2 group-hover:text-[var(--primary-color)] leading-snug" style={{ color: 'var(--text-primary, #111827)' }}>{name}</h3>
-                      <p className="text-xs font-mono mb-2" style={{ color: 'var(--primary-color, #2563eb)' }}>{product.sku}</p>
+                      <h3 className="text-lg font-bold mb-1.5 line-clamp-2 group-hover:text-blue-600 leading-snug text-gray-900">{name}</h3>
+                      <p className="text-xs font-mono mb-2" style={{ color: '#2563eb' }}>{product.sku}</p>
                       {product.hidePrice ? (
-                        <p className="text-sm font-medium mb-2" style={{ color: 'var(--primary-color, #2563eb)' }}>{locale === 'zh' ? '联系我们询价' : 'Contact for Pricing'}</p>
+                        <p className="text-sm font-medium mb-2" style={{ color: '#2563eb' }}>{locale === 'zh' ? '联系我们询价' : 'Contact for Pricing'}</p>
                       ) : product.price > 0 ? (
-                        <p className="text-base font-bold mb-2" style={{ color: 'var(--accent-color, #ef4444)' }}>${typeof product.price === 'number' ? product.price.toLocaleString() : product.price}</p>
+                        <p className="text-base font-bold mb-2" style={{ color: '#ef4444' }}>${typeof product.price === 'number' ? product.price.toLocaleString() : product.price}</p>
                       ) : (
-                        <p className="text-xs italic mb-2" style={{ color: 'var(--text-muted, #9ca3af)' }}>{locale === 'zh' ? '价格面议' : 'Contact for Price'}</p>
+                        <p className="text-xs italic mb-2" style={{ color: '#9ca3af' }}>{locale === 'zh' ? '价格面议' : 'Contact for Price'}</p>
                       )}
-                      <p className="text-sm mb-3 line-clamp-2 flex-1" style={{ color: 'var(--text-secondary, #6b7280)' }}
+                      <p className="text-sm mb-3 line-clamp-2 flex-1" style={{ color: '#4b5563' }}
                         dangerouslySetInnerHTML={{
                           __html: (locale === 'zh' ? product.description?.zh : locale === 'ar' ? product.description?.ar : product.description?.en) || ''
                         }}
                       />
-                      <span className="inline-flex items-center font-semibold text-sm mt-auto" style={{ color: 'var(--primary-color, #2563eb)' }}>
+                      <span className="inline-flex items-center font-semibold text-sm mt-auto" style={{ color: '#2563eb' }}>
                         {t('products.viewDetails') || 'View Details'}
                         <svg className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
                       </span>
@@ -678,7 +675,7 @@ export default function ProductsPage() {
                 <button
                   onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
-                  className="flex items-center space-x-1 px-4 py-3 rounded-lg border border-[var(--border-color)] text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--section-alt-bg, #f9fafb)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors min-h-[44px]"
+                  className="flex items-center space-x-1 px-4 py-3 rounded-lg border border-gray-300 text-sm font-medium text-gray-600 hover:bg-blue-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors min-h-[44px]"
                 >
                   <ChevronLeft className="w-4 h-4" />
                   {locale === 'zh' ? '上一页' : locale === 'ar' ? 'السابق' : 'Previous'}
@@ -691,9 +688,9 @@ export default function ProductsPage() {
                     className={`min-w-[44px] min-h-[44px] rounded-lg text-sm font-semibold transition-all duration-200 ${
                       currentPage === page
                         ? 'text-white shadow-md'
-                        : 'hover:bg-[var(--section-alt-bg, #f9fafb)] border border-transparent'
+                        : 'hover:bg-blue-50 border border-transparent'
                     }`}
-                    style={currentPage === page ? { backgroundColor: 'var(--primary-color, #2563eb)' } : { color: 'var(--text-secondary, #6b7280)' }}
+                    style={currentPage === page ? { backgroundColor: '#2563eb' } : { color: '#4b5563' }}
                   >
                     {page}
                   </button>
@@ -702,7 +699,7 @@ export default function ProductsPage() {
                 <button
                   onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages}
-                  className="flex items-center space-x-1 px-4 py-3 rounded-lg border border-[var(--border-color)] text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--section-alt-bg, #f9fafb)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors min-h-[44px]"
+                  className="flex items-center space-x-1 px-4 py-3 rounded-lg border border-gray-300 text-sm font-medium text-gray-600 hover:bg-blue-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors min-h-[44px]"
                 >
                   {locale === 'zh' ? '下一页' : locale === 'ar' ? 'التالي' : 'Next'}
                   <ChevronRight className="w-4 h-4" />

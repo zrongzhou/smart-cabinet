@@ -103,12 +103,12 @@ function TimelineItem({ year, titleKey, descriptionKey, isLeft, locale, t }: { y
     >
       {/* Content side */}
       <div className={`w-5/12 ${showLeft ? 'text-right pr-8' : 'text-left pl-8'}`}>
-        <div className="bg-[var(--card-bg)] rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-[var(--border-color)]">
-          <div className="text-2xl font-bold text-[var(--primary-color)] mb-2">{year}</div>
-          <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2">
+        <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-100">
+          <div className="text-2xl font-bold text-blue-600 mb-2">{year}</div>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">
             {t(titleKey)}
           </h3>
-          <p className="text-[var(--text-secondary)]">
+          <p className="text-gray-600">
             {t(descriptionKey)}
           </p>
         </div>
@@ -116,7 +116,7 @@ function TimelineItem({ year, titleKey, descriptionKey, isLeft, locale, t }: { y
 
       {/* Center dot with pulse animation */}
       <div className="w-2/12 flex justify-center">
-        <div className={`w-4 h-4 bg-blue-600 dark:bg-blue-500 rounded-full border-4 border-blue-200 dark:border-blue-800 z-10 ${isVisible ? 'animate-pulse' : ''}`} />
+        <div className={`w-4 h-4 bg-blue-600 rounded-full border-4 border-blue-200 z-10 ${isVisible ? 'animate-pulse' : ''}`} />
       </div>
 
       {/* Empty side */}
@@ -282,9 +282,9 @@ export default function AboutPage() {
   })();
 
   return (
-    <div style={{ backgroundColor: 'var(--tc-bg, #f9fafb)' }}>
+    <div style={{ backgroundColor: '#f0f9ff' }}>
       {/* Hero Section with Breadcrumb */}
-      <section className="relative text-white py-24 px-4 sm:px-6 lg:px-8 overflow-hidden theme-hero-bg">
+      <section className="relative text-white py-24 px-4 sm:px-6 lg:px-8 overflow-hidden bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700">
         {/* Gradient glow ornaments */}
         <div className="absolute top-20 left-10 w-96 h-96 bg-blue-500/30 rounded-full blur-3xl animate-pulse" />
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
@@ -299,7 +299,7 @@ export default function AboutPage() {
             <span className="text-white">{t('about.breadcrumb.about')}</span>
           </nav>
 
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 bg-gradient-to-r from-white via-blue-100 to-blue-300 bg-clip-text text-transparent">
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 text-white">
             {t('about.hero.title')}
           </h1>
           <p className="text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
@@ -334,11 +334,11 @@ export default function AboutPage() {
 
           {/* Text Content with Icon Cards */}
           <div className={isRTL ? 'lg:order-1 text-right' : ''}>
-            <h2 className="text-4xl font-bold text-[var(--text-primary)] mb-6">{t('about.intro.title')}</h2>
-            <p className="text-[var(--text-secondary)] leading-relaxed mb-6 text-lg">
+            <h2 className="text-4xl font-bold text-gray-900 mb-6">{t('about.intro.title')}</h2>
+            <p className="text-gray-600 leading-relaxed mb-6 text-lg">
               {t('about.intro.text1')}
             </p>
-            <p className="text-[var(--text-secondary)] leading-relaxed mb-8 text-lg">
+            <p className="text-gray-600 leading-relaxed mb-8 text-lg">
               {t('about.intro.text2')}
             </p>
 
@@ -352,10 +352,10 @@ export default function AboutPage() {
               ].map((item, index) => {
                 const Icon = item.icon;
                 return (
-                  <div key={index} className="bg-[var(--card-bg)] rounded-xl p-5 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border border-[var(--border-color)]">
-                    <Icon className="w-8 h-8 text-[var(--primary-color)] mb-3" />
-                    <div className="text-2xl font-bold text-[var(--text-primary)]">{item.label}</div>
-                    <div className="text-sm text-[var(--text-secondary)]">{t(item.sublabelKey)}</div>
+                  <div key={index} className="bg-white rounded-xl p-5 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border border-gray-100">
+                    <Icon className="w-8 h-8 text-blue-600 mb-3" />
+                    <div className="text-2xl font-bold text-gray-900">{item.label}</div>
+                    <div className="text-sm text-gray-600">{t(item.sublabelKey)}</div>
                   </div>
                 );
               })}
@@ -365,18 +365,18 @@ export default function AboutPage() {
       </section>
 
       {/* Core Statistics — Premium card design with depth & color */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden" style={{ background: 'linear-gradient(180deg, var(--card-bg, #fff) 0%, var(--section-alt-bg, #f9fafb) 100%)' }}>
+      <section className="py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-white">
         {/* Subtle background pattern */}
         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, #1e40af 1px, transparent 0)', backgroundSize: '32px 32px' }} />
 
         <div className="max-w-7xl mx-auto relative z-10">
           {/* Section title with accent */}
           <div className="text-center mb-16">
-            <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider mb-4" style={{ backgroundColor: 'var(--icon-bg, #dbeafe)', color: 'var(--primary-color, #2563eb)' }}>
+            <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider mb-4 bg-blue-100 text-blue-700">
               {locale === 'zh' ? '核心数据' : locale === 'ar' ? 'بيانات أساسية' : 'Key Metrics'}
             </span>
-            <h2 className="text-4xl sm:text-5xl font-bold text-[var(--text-primary)] mb-4 tracking-tight">{t('about.stats.title')}</h2>
-            <p className="text-lg text-[var(--text-secondary)] max-w-2xl mx-auto leading-relaxed">{t('about.stats.subtitle')}</p>
+            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4 tracking-tight">{t('about.stats.title')}</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">{t('about.stats.subtitle')}</p>
           </div>
 
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-7">
@@ -384,49 +384,36 @@ export default function AboutPage() {
               const Icon = stat.icon;
               // Rich color palette per card
               const palettes = [
-                { name: 'blue',    grad: 'from-blue-600 to-indigo-600',   lightBg: 'bg-gradient-to-br from-blue-50 to-indigo-50',  iconRing: 'ring-blue-200 dark:ring-blue-800', iconBg: 'bg-blue-500', numGrad: 'from-blue-700 to-blue-800',     accent: 'text-blue-600 dark:text-blue-400', border: 'border-blue-100 dark:border-blue-800', glow: 'group-hover:shadow-blue-200/50 dark:group-hover:shadow-blue-900/50' },
-                { name: 'emerald', grad: 'from-emerald-600 to-teal-600',  lightBg: 'bg-gradient-to-br from-emerald-50 to-teal-50', iconRing: 'ring-emerald-200 dark:ring-emerald-800', iconBg: 'bg-emerald-500', numGrad: 'from-emerald-700 to-emerald-800', accent: 'text-emerald-600 dark:text-emerald-400', border: 'border-emerald-100 dark:border-emerald-800', glow: 'group-hover:shadow-emerald-200/50 dark:group-hover:shadow-emerald-900/50' },
-                { name: 'violet',  grad: 'from-violet-600 to-purple-600', lightBg: 'bg-gradient-to-br from-violet-50 to-purple-50', iconRing: 'ring-violet-200 dark:ring-violet-800', iconBg: 'bg-violet-500', numGrad: 'from-violet-700 to-violet-800',  accent: 'text-violet-600 dark:text-violet-400', border: 'border-violet-100 dark:border-violet-800', glow: 'group-hover:shadow-violet-200/50 dark:group-hover:shadow-violet-900/50' },
-                { name: 'amber',   grad: 'from-amber-500 to-orange-600',  lightBg: 'bg-gradient-to-br from-amber-50 to-orange-50', iconRing: 'ring-amber-200 dark:ring-amber-800', iconBg: 'bg-amber-500', numGrad: 'from-amber-700 to-orange-800',  accent: 'text-amber-600 dark:text-amber-400', border: 'border-amber-100 dark:border-amber-800', glow: 'group-hover:shadow-amber-200/50 dark:group-hover:shadow-amber-900/50' },
-                { name: 'rose',    grad: 'from-rose-600 to-pink-600',    lightBg: 'bg-gradient-to-br from-rose-50 to-pink-50',   iconRing: 'ring-rose-200 dark:ring-rose-800', iconBg: 'bg-rose-500', numGrad: 'from-rose-700 to-rose-800',      accent: 'text-rose-600 dark:text-rose-400', border: 'border-rose-100 dark:border-rose-800', glow: 'group-hover:shadow-rose-200/50 dark:group-hover:shadow-rose-900/50' },
-                { name: 'cyan',    grad: 'from-cyan-600 to-sky-600',    lightBg: 'bg-gradient-to-br from-cyan-50 to-sky-50',   iconRing: 'ring-cyan-200 dark:ring-cyan-800', iconBg: 'bg-cyan-500', numGrad: 'from-cyan-700 to-cyan-800',      accent: 'text-cyan-600 dark:text-cyan-400', border: 'border-cyan-100 dark:border-cyan-800', glow: 'group-hover:shadow-cyan-200/50 dark:group-hover:shadow-cyan-900/50' },
+                { name: 'blue',    grad: 'from-blue-600 to-indigo-600',   shadow: 'hover:shadow-blue-200/50', iconBg: 'bg-blue-50', ring: 'ring-blue-200', textColor: 'text-blue-600' },
+                { name: 'emerald', grad: 'from-emerald-600 to-teal-600', shadow: 'hover:shadow-emerald-200/50', iconBg: 'bg-emerald-50', ring: 'ring-emerald-200', textColor: 'text-emerald-600' },
+                { name: 'violet',  grad: 'from-violet-600 to-purple-600', shadow: 'hover:shadow-violet-200/50', iconBg: 'bg-violet-50', ring: 'ring-violet-200', textColor: 'text-violet-600' },
+                { name: 'amber',   grad: 'from-amber-500 to-orange-600',  shadow: 'hover:shadow-amber-200/50', iconBg: 'bg-amber-50', ring: 'ring-amber-200', textColor: 'text-amber-600' },
+                { name: 'rose',    grad: 'from-rose-600 to-pink-600',    shadow: 'hover:shadow-rose-200/50', iconBg: 'bg-rose-50', ring: 'ring-rose-200', textColor: 'text-rose-600' },
+                { name: 'cyan',    grad: 'from-cyan-600 to-sky-600',    shadow: 'hover:shadow-cyan-200/50', iconBg: 'bg-cyan-50', ring: 'ring-cyan-200', textColor: 'text-cyan-600' },
               ];
               const p = palettes[index % palettes.length];
               return (
                 <div key={index} className="group perspective-1000">
-                  <div className={`relative rounded-2xl p-7 lg:p-9
-                    bg-[var(--card-bg)] border ${p.border}
-                    shadow-sm ${p.glow}
-                    transition-all duration-500 ease-out
-                    group-hover:-translate-y-2 group-hover:shadow-2xl
-                    overflow-hidden`}>
+                  <div className={`relative rounded-2xl p-7 lg:p-9 bg-white border border-gray-100 shadow-sm ${p.shadow} transition-all duration-500 ease-out group-hover:-translate-y-2 group-hover:shadow-2xl overflow-hidden`}>
                     {/* Top gradient bar — thicker, more visible */}
                     <div className={`absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r ${p.grad}`} />
                     {/* Subtle corner decoration */}
-                    <div className={`absolute -right-8 -top-8 w-28 h-28 rounded-full bg-gradient-to-br ${p.grad} opacity-[0.04] dark:opacity-[0.08] blur-2xl group-hover:opacity-[0.08] dark:group-hover:opacity-[0.12] transition-opacity duration-500`} />
-                    <div className={`absolute -left-4 -bottom-4 w-20 h-20 rounded-full bg-gradient-to-tr ${p.grad} opacity-[0.04] dark:opacity-[0.08] blur-xl group-hover:opacity-[0.08] dark:group-hover:opacity-[0.12] transition-opacity duration-500`} />
+                    <div className={`absolute -right-8 -top-8 w-28 h-28 rounded-full bg-gradient-to-br ${p.grad} opacity-[0.04] blur-2xl group-hover:opacity-[0.08] transition-opacity duration-500`} />
+                    <div className={`absolute -left-4 -bottom-4 w-20 h-20 rounded-full bg-gradient-to-tr ${p.grad} opacity-[0.04] blur-xl group-hover:opacity-[0.08] transition-opacity duration-500`} />
 
                     <div className="relative z-10">
                       {/* Icon — larger, with ring + gradient background */}
-                      <div className={`w-16 h-16 mx-auto mb-5 rounded-2xl ${p.lightBg}
-                        flex items-center justify-center
-                        ring-4 ${p.iconRing}
-                        shadow-sm group-hover:scale-110 transition-transform duration-300`}>
-                        <Icon className={`w-8 h-8 text-white drop-shadow-sm`} strokeWidth={1.8}
-                          style={{
-                            filter: `drop-shadow(0 1px 2px rgba(0,0,0,0.15))`,
-                            color: index === 0 ? '#3b82f6' : index === 1 ? '#10b981' : index === 2 ? '#8b5cf6' : index === 3 ? '#f59e0b' : index === 4 ? '#f43f5e' : '#06b6d4'
-                          }}
-                        />
+                      <div className={`w-16 h-16 mx-auto mb-5 rounded-2xl ${p.iconBg} flex items-center justify-center ring-4 ${p.ring} shadow-sm group-hover:scale-110 transition-transform duration-300`}>
+                        <Icon className={`w-8 h-8 ${p.textColor} drop-shadow-sm`} strokeWidth={1.8} />
                       </div>
 
                       {/* Number — solid color for reliability across all themes (gradient text was invisible on light themes) */}
-                      <div className="text-5xl lg:text-[3.75rem] font-black mb-2 tracking-tighter text-[var(--text-primary)]" style={{ lineHeight: 1 }}>
+                      <div className="text-5xl lg:text-[3.75rem] font-black mb-2 tracking-tighter text-gray-900" style={{ lineHeight: 1 }}>
                         {stat.prefix}{stat.number}{stat.suffix}
                       </div>
 
                       {/* Label */}
-                      <p className="text-sm font-semibold uppercase tracking-wide mt-1 text-[var(--text-secondary)]">
+                      <p className="text-sm font-semibold uppercase tracking-wide mt-1 text-gray-600">
                         {t(stat.labelKey)}
                       </p>
                     </div>
@@ -441,17 +428,17 @@ export default function AboutPage() {
       {/* Development Timeline */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-4xl sm:text-5xl font-bold text-[var(--text-primary)] mb-4">
+          <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
             {t('about.timeline.title')}
           </h2>
-          <p className="text-xl text-[var(--text-secondary)] max-w-2xl mx-auto">
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             {t('about.timeline.subtitle')}
           </p>
         </div>
 
         <div className="relative">
           {/* Vertical line with gradient */}
-          <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-gradient-to-b from-blue-200 to-blue-400 dark:from-blue-800 dark:to-blue-600" />
+          <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-gradient-to-b from-blue-200 to-blue-400" />
 
           {/* Timeline items */}
           {timeline.map((item, index) => (
@@ -469,13 +456,13 @@ export default function AboutPage() {
       </section>
 
       {/* Factory Workshop with Capability Cards */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-[var(--section-alt-bg)]">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-blue-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-4xl sm:text-5xl font-bold text-[var(--text-primary)] mb-4">
+            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
               {t('about.factory.title')}
             </h2>
-            <p className="text-xl text-[var(--text-secondary)] max-w-2xl mx-auto">
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               {t('about.factory.subtitle')}
             </p>
           </div>
@@ -510,14 +497,14 @@ export default function AboutPage() {
             {capabilities.map((cap, index) => {
               const Icon = cap.icon;
               return (
-                <div key={index} className="bg-[var(--card-bg)] rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-[var(--border-color)]">
-                  <div className="w-16 h-16 bg-gradient-to-br from-[var(--primary-color)] to-[opacity-80] rounded-xl flex items-center justify-center mb-6" style={{ background: 'linear-gradient(135deg, var(--primary-color, #2563eb), color-mix(in srgb, var(--primary-color, #2563eb) 70%, #fff))' }}>
+                <div key={index} className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
+                  <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center mb-6">
                     <Icon className="w-8 h-8 text-white" />
                   </div>
-                  <h3 className="text-2xl font-bold text-[var(--text-primary)] mb-3">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3">
                     {t(cap.titleKey)}
                   </h3>
-                  <p className="text-[var(--text-secondary)] leading-relaxed">
+                  <p className="text-gray-600 leading-relaxed">
                     {t(cap.descriptionKey)}
                   </p>
                 </div>
@@ -528,13 +515,13 @@ export default function AboutPage() {
       </section>
 
       {/* Company Values - 2x2 Grid */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: 'var(--section-bg, #ffffff)' }}>
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl font-bold text-[var(--text-primary)] mb-4">
+            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
               {t('about.values.title')}
             </h2>
-            <p className="text-xl text-[var(--text-secondary)] max-w-2xl mx-auto">
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               {t('about.values.subtitle')}
             </p>
           </div>
@@ -543,14 +530,14 @@ export default function AboutPage() {
             {values.map((value, index) => {
               const Icon = value.icon;
               return (
-                <div key={index} className="bg-[var(--card-bg)] rounded-2xl p-10 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-[var(--border-color)]">
-                  <div className="w-20 h-20 rounded-2xl flex items-center justify-center mb-8" style={{ background: 'linear-gradient(135deg, var(--primary-color, #2563eb), color-mix(in srgb, var(--primary-color, #2563eb) 70%, #fff))' }}>
+                <div key={index} className="bg-white rounded-2xl p-10 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
+                  <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl flex items-center justify-center mb-8">
                     <Icon className="w-10 h-10 text-white" />
                   </div>
-                  <h3 className="text-3xl font-bold text-[var(--text-primary)] mb-4">
+                  <h3 className="text-3xl font-bold text-gray-900 mb-4">
                     {t(value.titleKey)}
                   </h3>
-                  <p className="text-[var(--text-secondary)] leading-relaxed text-lg">
+                  <p className="text-gray-600 leading-relaxed text-lg">
                     {t(value.descriptionKey)}
                   </p>
                 </div>
@@ -561,12 +548,12 @@ export default function AboutPage() {
       </section>
 
       {/* Certifications */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: 'var(--section-alt-bg, #f9fafb)' }}>
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-blue-50">
         <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-4xl sm:text-5xl font-bold text-[var(--text-primary)] mb-4">
+          <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
             {t('about.certifications')}
           </h2>
-          <p className="text-xl text-[var(--text-secondary)] max-w-2xl mx-auto mb-12">
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-12">
             {t('about.certificationsText')}
           </p>
 
@@ -576,13 +563,13 @@ export default function AboutPage() {
               return (
                 <div
                   key={index}
-                  className="bg-[var(--card-bg)] rounded-xl p-6 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-[var(--border-color)]"
+                  className="bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-100"
                 >
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, var(--primary-color, #2563eb)15%, color-mix(in srgb, var(--primary-color, #2563eb) 8%, transparent))' }}>
-                    <Icon className="w-8 h-8 text-[var(--primary-color)]" />
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #3b82f6 15%, rgba(59,130,246,0.08), transparent)' }}>
+                    <Icon className="w-8 h-8 text-blue-600" />
                   </div>
-                  <h3 className="text-lg font-bold text-[var(--text-primary)] mb-2">{cert.name}</h3>
-                  <p className="text-xs text-[var(--text-muted)]">
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">{cert.name}</h3>
+                  <p className="text-xs text-gray-500">
                     {t(cert.fullNameKey)}
                   </p>
                 </div>
@@ -593,13 +580,13 @@ export default function AboutPage() {
       </section>
 
       {/* Industries We Serve - Tag Cloud Style */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: 'var(--section-bg, #ffffff)' }}>
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl font-bold text-[var(--text-primary)] mb-4">
+            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
               {t('about.industries.title')}
             </h2>
-            <p className="text-xl text-[var(--text-secondary)] max-w-2xl mx-auto">
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               {t('about.industries.subtitle')}
             </p>
           </div>
@@ -631,10 +618,9 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* CTA Section - Theme-adaptive with CSS variables */}
+      {/* CTA Section */}
       <section
-        className="py-20 px-4 sm:px-6 lg:px-8 text-white relative overflow-hidden"
-        style={{ background: 'linear-gradient(135deg, var(--primary-color, #2563eb) 0%, color-mix(in srgb, var(--primary-color, #2563eb) 80%, black) 100%)' }}
+        className="py-20 px-4 sm:px-6 lg:px-8 text-white relative overflow-hidden bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700"
       >
         {/* Decorative elements */}
         <div className="absolute inset-0 opacity-10">
@@ -644,20 +630,17 @@ export default function AboutPage() {
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
 
         <div className="max-w-5xl mx-auto text-center relative z-10">
-          <h2 className="text-4xl sm:text-5xl font-bold mb-6">
+          <h2 className="text-4xl sm:text-5xl font-bold mb-6 text-white">
             {t('about.cta.title')}
           </h2>
-          <p className="text-xl text-white/80 mb-12 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-xl text-blue-100 mb-12 max-w-2xl mx-auto leading-relaxed">
             {t('about.cta.subtitle')}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center mb-12">
             <a
               href={`/${locale}/contact`}
-              className="group about-cta-btn inline-flex items-center justify-center px-10 py-5 font-bold rounded-2xl hover:-translate-y-2 transition-all duration-300 shadow-2xl text-lg"
-              style={{ background: 'linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%)', color: 'var(--primary-color, #2563eb)' }}
-              onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 10px 40px rgba(255,255,255,0.3)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.boxShadow = ''; }}
+              className="group inline-flex items-center justify-center px-10 py-5 font-bold rounded-2xl hover:-translate-y-2 transition-all duration-300 shadow-2xl text-lg bg-white text-blue-600"
             >
               {t('nav.contact')}
               <ChevronRight className="ml-2 w-6 h-6 group-hover:translate-x-2 transition-transform duration-300" />

@@ -135,7 +135,7 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'var(--tc-bg, #f9fafb)' }}>
       {/* Page Header */}
-      <section className="text-white py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden theme-hero-bg">
+      <section className="text-white py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-gradient-to-br from-blue-800 via-blue-700 to-blue-600">
         <div className="absolute top-0 right-0 w-80 h-80 bg-blue-400/10 rounded-full blur-3xl" />
         <div className="max-w-5xl mx-auto text-center relative z-10">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-white/10 backdrop-blur-sm rounded-2xl mb-6">
