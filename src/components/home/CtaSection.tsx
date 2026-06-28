@@ -5,18 +5,24 @@ import { useLocale } from '@/lib/i18n';
 import { fetchUnifiedSettings, SiteSettings } from '@/data/unified-data';
 import { motion } from 'framer-motion';
 
-// Reusable Bubble Button for CTA sections - 泡泡动态按钮
+// Reusable Bubble Button for CTA sections - ALWAYS ACTIVE bubble animation
 function BubbleBtn({ href, children, primary = false, light = false }: { href: string; children: React.ReactNode; primary?: boolean; light?: boolean }) {
-  const [bubbles, setBubbles] = useState<{ id: number; x: number; y: number; size: number; delay: number }[]>([]);
+  const [bubbles, setBubbles] = useState<{ id: number; x: number; size: number; delay: number; duration: number; color: string }[]>([]);
   const [hovered, setHovered] = useState(false);
 
   useEffect(() => {
-    const bbs = Array.from({ length: 5 }, (_, i) => ({
+    const colors = light
+      ? ['rgba(59,130,246,0.6)', 'rgba(96,165,250,0.5)', 'rgba(37,99,235,0.4)']
+      : primary
+        ? ['rgba(167,139,250,0.6)', 'rgba(96,165,250,0.6)', 'rgba(139,92,246,0.5)']
+        : ['rgba(200,220,255,0.5)', 'rgba(147,197,253,0.4)', 'rgba(255,255,255,0.3)'];
+    const bbs = Array.from({ length: 7 }, (_, i) => ({
       id: i,
       x: 8 + Math.random() * 84,
-      y: 55 + Math.random() * 45,
-      size: 4 + Math.random() * 9,
-      delay: Math.random() * 2,
+      size: 3 + Math.random() * 9,
+      delay: Math.random() * 2.5,
+      duration: 2 + Math.random() * 2,
+      color: colors[i % colors.length],
     }));
     setBubbles(bbs);
   }, []);
@@ -55,24 +61,24 @@ function BubbleBtn({ href, children, primary = false, light = false }: { href: s
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      {/* Rising bubbles */}
+      {/* ALWAYS ACTIVE rising bubbles */}
       {bubbles.map(b => (
         <span
           key={b.id}
           className="absolute rounded-full pointer-events-none"
           style={{
             left: `${b.x}%`,
-            bottom: '-8px',
-            width: hovered ? b.size + 4 : b.size * 0.4,
-            height: hovered ? b.size + 4 : b.size * 0.4,
+            bottom: '-10px',
+            width: hovered ? b.size * 1.8 : b.size * 0.9,
+            height: hovered ? b.size * 1.8 : b.size * 0.9,
             background: light
-              ? `radial-gradient(circle at 30% 30%, rgba(255,255,255,${hovered ? 0.9 : 0.5}), rgba(147,197,253,${hovered ? 0.4 : 0.15}) transparent)`
-              : `radial-gradient(circle at 30% 30%, rgba(255,255,255,${hovered ? 0.7 : 0.25}), rgba(147,197,253,${hovered ? 0.3 : 0.08}) transparent)`,
-            boxShadow: hovered && !light ? `0 0 ${b.size}px rgba(147,197,253,0.4)` : (hovered && light ? `0 0 ${b.size}px rgba(59,130,246,0.5)` : 'none'),
-            animation: hovered
-              ? `bubble-rise-cta ${1.6 + b.delay}s ease-in-out infinite`
-              : `bubble-idle-cta ${(2 + b.delay)}s ease-in-out infinite`,
-            animationDelay: `${b.delay * 0.5}s`,
+              ? `radial-gradient(circle at 30% 30%, rgba(255,255,255,${hovered ? 0.95 : 0.55}), ${b.color}${hovered ? '' : '00'} transparent)`
+              : `radial-gradient(circle at 30% 30%, rgba(255,255,255,${hovered ? 0.85 : 0.5}), ${b.color}${hovered ? '' : '00'} transparent)`,
+            boxShadow: hovered
+              ? `0 0 ${b.size * 2}px ${b.color}, 0 0 ${b.size * 4}px ${b.color.replace('0.', '0.0')}`
+              : `0 0 ${b.size}px ${b.color}`,
+            animation: `bubble-rise-cta-active ${b.duration}s ease-in-out infinite`,
+            animationDelay: `${b.delay}s`,
             transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
           }}
         />
@@ -116,18 +122,22 @@ function BubbleBtn({ href, children, primary = false, light = false }: { href: s
         {children}
       </span>
 
-      {/* Floating sparkle particles */}
-      {hovered && Array.from({ length: 4 }).map((_, i) => (
+      {/* ALWAYS ACTIVE floating sparkle particles */}
+      {Array.from({ length: hovered ? 5 : 3 }).map((_, i) => (
         <span
           key={i}
-          className="absolute w-1 h-1 rounded-full pointer-events-none"
+          className="absolute rounded-full pointer-events-none"
           style={{
-            left: `${18 + i * 20}%`,
-            top: `${Math.random() > 0.5 ? -2 : 100}%`,
-            background: light ? 'rgb(255,255,255)' : 'rgba(255,255,255,0.85)',
-            animation: `sparkle-float-cta ${1 + i * 0.3}s ease-out forwards`,
-            animationDelay: `${i * 0.1}s`,
-            boxShadow: light ? '0 0 6px rgba(255,255,255,0.9)' : '0 0 6px rgba(255,255,255,0.8)',
+            left: `${14 + i * 18 + Math.random() * 6}%`,
+            bottom: '8%',
+            width: hovered ? 3 : 1.5,
+            height: hovered ? 3 : 1.5,
+            background: light
+              ? 'radial-gradient(circle, rgba(255,255,255,0.95), transparent)'
+              : 'radial-gradient(circle, rgba(255,255,255,0.85), transparent)',
+            boxShadow: `0 0 ${hovered ? 8 : 4}px ${light ? 'rgba(59,130,246,0.5)' : 'rgba(167,139,250,0.35)'}`,
+            animation: `sparkle-float-cta-always ${hovered ? 1.2 : 2 + i * 0.4}s ease-out infinite`,
+            animationDelay: `${i * (hovered ? 0.15 : 0.4)}s`,
           }}
         />
       ))}
@@ -489,19 +499,18 @@ export default function CtaSection() {
           50%        { transform: scaleY(0.55); }
         }
 
-        /* ===== BUBBLE BUTTON ANIMATIONS (CTA) ===== */
-        @keyframes bubble-rise-cta {
-          0%   { transform: translateY(0) scale(1); opacity: 0.6; }
-          50%  { transform: translateY(-24px) scale(1.35); opacity: 0.9; }
-          100% { transform: translateY(-48px) scale(0.6); opacity: 0; }
+        /* ===== ALWAYS ACTIVE BUBBLE BUTTON ANIMATIONS (CTA) ===== */
+        @keyframes bubble-rise-cta-active {
+          0%   { transform: translateY(0) scale(0.5); opacity: 0; }
+          15%  { opacity: 0.65; }
+          50%  { transform: translateY(-22px) scale(1.2); opacity: 0.85; }
+          85%  { transform: translateY(-46px) scale(0.75); opacity: 0.25; }
+          100% { transform: translateY(-58px) scale(0.3); opacity: 0; }
         }
-        @keyframes bubble-idle-cta {
-          0%, 100% { transform: translateY(0) scale(1); opacity: 0.2; }
-          50%      { transform: translateY(-6px) scale(1.12); opacity: 0.4; }
-        }
-        @keyframes sparkle-float-cta {
-          0%   { transform: translateY(0) scale(1); opacity: 1; }
-          100% { transform: translateY(-18px) scale(0); opacity: 0; }
+        @keyframes sparkle-float-cta-always {
+          0%   { transform: translateY(0) translateX(0) scale(1); opacity: 0.9; }
+          40%  { opacity: 0.6; }
+          100% { transform: translateY(-26px) translateX(${Math.random() > 0.5 ? '' : '-'}6px) scale(0); opacity: 0; }
         }
 
         /* CTA container ensures proper positioning context */

@@ -658,15 +658,16 @@ export default function AboutPage() {
                     onMouseEnter={(e) => { setHovered1(true); }}
                     onMouseLeave={() => setHovered1(false)}
                   >
-                    {/* Bubbles */}
+                    {/* ALWAYS ACTIVE Bubbles */}
                     {[0,1,2,3].map(i => (
                       <span key={i} className="absolute rounded-full pointer-events-none" style={{
-                        left: `${12 + i * 20}%`, bottom: '-8px',
-                        width: hovered1 ? 6 + i * 1.5 : 3,
-                        height: hovered1 ? 6 + i * 1.5 : 3,
-                        background: `radial-gradient(circle, rgba(255,255,255,${hovered1 ? 0.9 : 0.5}), rgba(147,197,253,${hovered1 ? 0.5 : 0.15}))`,
-                        boxShadow: hovered1 ? `0 0 ${8 + i * 2}px rgba(59,130,246,0.4)` : 'none',
-                        animation: hovered1 ? `about-bubble-up ${1.5 + i * 0.2}s ease-in-out infinite` : `about-bubble-idle ${(2 + i * 0.3)}s ease-in-out infinite`,
+                        left: `${12 + i * 20}%`, bottom: '-10px',
+                        width: hovered1 ? 8 + i * 2 : 4 + i,
+                        height: hovered1 ? 8 + i * 2 : 4 + i,
+                        background: `radial-gradient(circle at 30% 30%, rgba(255,255,255,${hovered1 ? 0.9 : 0.55}), rgba(59,130,246,${hovered1 ? '0.45' : '0.15'} transparent)`,
+                        boxShadow: hovered1 ? `0 0 ${10 + i * 2}px rgba(59,130,246,0.5)` : `0 0 ${5 + i}px rgba(59,130,246,0.25)`,
+                        animation: `about-bubble-active ${1.5 + i * 0.3 + Math.random()}s ease-in-out infinite`,
+                        animationDelay: `${i * 0.35}s`,
                         transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
                       }} />
                     ))}
@@ -688,14 +689,16 @@ export default function AboutPage() {
                     onMouseEnter={() => setHovered2(true)}
                     onMouseLeave={() => setHovered2(false)}
                   >
+                    {/* ALWAYS ACTIVE Bubbles */}
                     {[0,1,2,3].map(i => (
                       <span key={i} className="absolute rounded-full pointer-events-none" style={{
-                        left: `${12 + i * 20}%`, bottom: '-8px',
-                        width: hovered2 ? 5 + i * 1.5 : 2.5,
-                        height: hovered2 ? 5 + i * 1.5 : 2.5,
-                        background: `radial-gradient(circle, rgba(255,255,255,${hovered2 ? 0.7 : 0.25}), rgba(167,139,250,${hovered2 ? 0.35 : 0.08}))`,
-                        boxShadow: hovered2 ? `0 0 ${6 + i * 2}px rgba(167,139,250,0.35)` : 'none',
-                        animation: hovered2 ? `about-bubble-up ${1.6 + i * 0.2}s ease-in-out infinite` : `about-bubble-idle ${(2.2 + i * 0.3)}s ease-in-out infinite`,
+                        left: `${12 + i * 20}%`, bottom: '-10px',
+                        width: hovered2 ? 6 + i * 2 : 3 + i,
+                        height: hovered2 ? 6 + i * 2 : 3 + i,
+                        background: `radial-gradient(circle at 30% 30%, rgba(255,255,255,${hovered2 ? 0.85 : 0.5}), rgba(167,139,250,${hovered2 ? '0.4' : '0.12'} transparent)`,
+                        boxShadow: hovered2 ? `0 0 ${8 + i * 2}px rgba(167,139,250,0.4)` : `0 0 ${4 + i}px rgba(167,139,250,0.2)`,
+                        animation: `about-bubble-active ${1.6 + i * 0.3 + Math.random()}s ease-in-out infinite`,
+                        animationDelay: `${i * 0.35}s`,
                         transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
                       }} />
                     ))}
@@ -717,14 +720,12 @@ export default function AboutPage() {
 
       {/* Bubble button animations for About CTA */}
       <style>{`
-        @keyframes about-bubble-up {
-          0%   { transform: translateY(0) scale(1); opacity: 0.6; }
-          50%  { transform: translateY(-22px) scale(1.3); opacity: 0.9; }
-          100% { transform: translateY(-44px) scale(0.6); opacity: 0; }
-        }
-        @keyframes about-bubble-idle {
-          0%, 100% { transform: translateY(0) scale(1); opacity: 0.15; }
-          50%      { transform: translateY(-5px) scale(1.1); opacity: 0.3; }
+        @keyframes about-bubble-active {
+          0%   { transform: translateY(0) scale(0.5); opacity: 0; }
+          15%  { opacity: 0.6; }
+          50%  { transform: translateY(-20px) scale(1.2); opacity: 0.85; }
+          85%  { transform: translateY(-42px) scale(0.7); opacity: 0.2; }
+          100% { transform: translateY(-54px) scale(0.3); opacity: 0; }
         }
       `}</style>
     </div>

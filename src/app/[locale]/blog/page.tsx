@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Calendar, User, ArrowRight, FileText, Newspaper, Lightbulb, TrendingUp, Shield, Award } from 'lucide-react';
 import { useLocale } from '@/lib/i18n';
 import { fetchBlogs, BlogPost } from '@/lib/api';
+import OceanHeader from '@/components/OceanHeader';
 
 // Map blog category to Lucide icon
 function getBlogIcon(category: string) {
@@ -106,20 +107,12 @@ export default function BlogPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
-      {/* Page Header */}
-      <section className="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-300/10 rounded-full blur-3xl" />
-        <div className="max-w-5xl mx-auto text-center relative z-10">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-white/10 backdrop-blur-sm rounded-2xl mb-6">
-            <Newspaper className="w-8 h-8 text-white" />
-          </div>
-          <h1 className="text-4xl sm:text-5xl font-bold mb-4">{t.title}</h1>
-          <p className="text-xl text-blue-100">
-            {t.subtitle}
-          </p>
-        </div>
-      </section>
+      {/* Page Header — Ocean Theme */}
+      <OceanHeader
+        title={t.title}
+        subtitle={t.subtitle}
+        icon={<Newspaper className="w-8 h-8 text-blue-300" />}
+      />
 
       {/* Blog Grid */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">

@@ -33,7 +33,7 @@ function CountUp({ end, duration = 2 }: { end: string; duration?: number }) {
   return <span>{count}{end.replace(/\d/g, '')}</span>;
 }
 
-// Star layer configuration - REALISTIC night sky with DEPTH
+// Star layer configuration
 interface StarLayer {
   count: number;
   sizeRange: [number, number];
@@ -50,19 +50,24 @@ const STAR_LAYERS: StarLayer[] = [
   { count: 3, sizeRange: [3.0, 4.8], opacityRange: [0.75, 1.0], color: 'rgba(240,248,255,', speedFactor: 0.004 },
 ];
 
-// Bubble Button Component - 泡泡动态按钮
+// ============================================================
+// BUBBLE BUTTON — ALWAYS ACTIVE bubble animation
+// ============================================================
 function BubbleButton({ href, children, primary }: { href: string; children: React.ReactNode; primary?: boolean }) {
-  const [bubbles, setBubbles] = useState<{ id: number; x: number; y: number; size: number; delay: number }[]>([]);
+  const [bubbles, setBubbles] = useState<{ id: number; x: number; size: number; delay: number; duration: number; color: string }[]>([]);
   const [hovered, setHovered] = useState(false);
 
-  // Generate random bubbles on mount
   useEffect(() => {
-    const bbs = Array.from({ length: 6 }, (_, i) => ({
+    const colors = primary
+      ? ['rgba(167,139,250,0.6)', 'rgba(96,165,250,0.6)', 'rgba(139,92,246,0.5)', 'rgba(192,132,252,0.5)']
+      : ['rgba(200,220,255,0.5)', 'rgba(147,197,253,0.4)', 'rgba(255,255,255,0.4)'];
+    const bbs = Array.from({ length: 8 }, (_, i) => ({
       id: i,
-      x: 10 + Math.random() * 80,
-      y: 60 + Math.random() * 40,
-      size: 4 + Math.random() * 10,
-      delay: Math.random() * 2,
+      x: 8 + Math.random() * 84,
+      size: 3 + Math.random() * 8,
+      delay: Math.random() * 2.5,
+      duration: 2 + Math.random() * 2,
+      color: colors[i % colors.length],
     }));
     setBubbles(bbs);
   }, []);
@@ -70,17 +75,17 @@ function BubbleButton({ href, children, primary }: { href: string; children: Rea
   return (
     <a
       href={href}
-      className="group relative inline-flex items-center justify-center px-9 py-3.5 font-semibold rounded-full text-base text-white overflow-hidden cursor-pointer"
+      className="group relative inline-flex items-center justify-center px-9 py-3.5 font-semibold rounded-full text-base text-white overflow-visible cursor-pointer"
       style={{
         background: primary
-          ? 'linear-gradient(135deg, rgba(99,102,241,0.25) 0%, rgba(59,130,246,0.18) 50%, rgba(139,92,246,0.22) 100%)'
-          : 'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)',
-        border: `1px solid ${primary ? 'rgba(129,140,248,0.35)' : 'rgba(255,255,255,0.15)'}`,
+          ? 'linear-gradient(135deg, rgba(99,102,241,0.28) 0%, rgba(59,130,246,0.20) 50%, rgba(139,92,246,0.25) 100%)'
+          : 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)',
+        border: `1px solid ${primary ? 'rgba(129,140,248,0.4)' : 'rgba(255,255,255,0.18)'}`,
         backdropFilter: 'blur(16px)',
         boxShadow: `
-          0 0 20px ${primary ? 'rgba(99,102,241,0.12)' : 'rgba(180,200,255,0.04)'},
-          0 0 40px ${primary ? 'rgba(59,130,246,0.06)' : 'transparent'},
-          inset 0 1px 0 rgba(255,255,255,${primary ? '0.12' : '0.06'}),
+          0 0 20px ${primary ? 'rgba(99,102,241,0.15)' : 'rgba(180,200,255,0.05)'},
+          0 0 40px ${primary ? 'rgba(59,130,246,0.08)' : 'transparent'},
+          inset 0 1px 0 rgba(255,255,255,${primary ? '0.14' : '0.07'}),
           inset 0 -1px 0 rgba(0,0,0,0.1)
         `,
         transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
@@ -88,22 +93,22 @@ function BubbleButton({ href, children, primary }: { href: string; children: Rea
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      {/* Rising bubbles */}
+      {/* ALWAYS ACTIVE rising bubbles — visible even without hover */}
       {bubbles.map(b => (
         <span
           key={b.id}
           className="absolute rounded-full pointer-events-none"
           style={{
             left: `${b.x}%`,
-            bottom: '-8px',
-            width: hovered ? b.size + 4 : b.size * 0.4,
-            height: hovered ? b.size + 4 : b.size * 0.4,
-            background: `radial-gradient(circle at 30% 30%, rgba(255,255,255,${hovered ? 0.7 : 0.25}), rgba(147,197,253,${hovered ? 0.3 : 0.08}) transparent)`,
-            boxShadow: hovered ? `0 0 ${b.size}px rgba(147,197,253,0.4)` : 'none',
-            animation: hovered
-              ? `bubble-rise ${1.8 + b.delay}s ease-in-out infinite`
-              : `bubble-idle ${2 + b.delay}s ease-in-out infinite`,
-            animationDelay: `${b.delay * 0.5}s`,
+            bottom: '-10px',
+            width: hovered ? b.size * 1.8 : b.size * 0.9,
+            height: hovered ? b.size * 1.8 : b.size * 0.9,
+            background: `radial-gradient(circle at 30% 30%, rgba(255,255,255,${hovered ? 0.85 : 0.55}), ${b.color}${hovered ? '' : '00'} transparent)`,
+            boxShadow: hovered
+              ? `0 0 ${b.size * 2}px ${b.color}, 0 0 ${b.size * 4}px ${b.color.replace('0.', '0.0')}`
+              : `0 0 ${b.size}px ${b.color}`,
+            animation: `bubble-rise-active ${b.duration}s ease-in-out infinite`,
+            animationDelay: `${b.delay}s`,
             transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
           }}
         />
@@ -114,21 +119,21 @@ function BubbleButton({ href, children, primary }: { href: string; children: Rea
         className="absolute inset-0 rounded-full pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
         style={{
           background: `radial-gradient(circle at center, ${
-            primary ? 'rgba(129,140,248,0.15)' : 'rgba(255,255,255,0.08)'
+            primary ? 'rgba(129,140,248,0.18)' : 'rgba(255,255,255,0.10)'
           } 0%, transparent 70%)`,
           transform: hovered ? 'scale(1)' : 'scale(0.5)',
           transition: 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
         }}
       />
 
-      {/* Glow border pulse on hover */}
+      {/* Glow border pulse */}
       <span
         className="absolute inset-0 rounded-full pointer-events-none"
         style={{
           border: `2px solid ${primary ? 'rgba(129,140,248,0)' : 'rgba(255,255,255,0)'}`,
           boxShadow: hovered
-            ? `0 0 20px ${primary ? 'rgba(99,102,241,0.2)' : 'rgba(200,220,255,0.1)'} inset, 0 0 30px ${primary ? 'rgba(99,102,241,0.15)' : 'rgba(180,200,255,0.08)'}`
-            : 'none',
+            ? `0 0 20px ${primary ? 'rgba(99,102,241,0.25)' : 'rgba(200,220,255,0.12)'} inset, 0 0 30px ${primary ? 'rgba(99,102,241,0.18)' : 'rgba(180,200,255,0.10)'}`
+            : `0 0 8px ${primary ? 'rgba(99,102,241,0.08)' : 'rgba(180,200,255,0.04)'} inset`,
           transition: 'all 0.4s ease',
           transform: hovered ? 'scale(1.03)' : 'scale(1)',
         }}
@@ -137,8 +142,8 @@ function BubbleButton({ href, children, primary }: { href: string; children: Rea
       {/* Text content */}
       <span className="relative z-10" style={{
         textShadow: hovered
-          ? `0 0 12px ${primary ? 'rgba(167,139,250,0.5)' : 'rgba(255,255,255,0.4)'}, 0 1px 3px rgba(0,0,0,0.5)`
-          : `0 0 8px rgba(255,255,255,0.15), 0 1px 3px rgba(0,0,0,0.5)`,
+          ? `0 0 14px ${primary ? 'rgba(167,139,250,0.55)' : 'rgba(255,255,255,0.45)'}, 0 1px 3px rgba(0,0,0,0.5)`
+          : `0 0 10px ${primary ? 'rgba(147,197,253,0.25)' : 'rgba(255,255,255,0.2)'}, 0 1px 3px rgba(0,0,0,0.5)`,
         transition: 'text-shadow 0.4s ease',
         display: 'inline-flex',
         alignItems: 'center',
@@ -147,17 +152,20 @@ function BubbleButton({ href, children, primary }: { href: string; children: Rea
         {children}
       </span>
 
-      {/* Floating sparkle particles */}
-      {hovered && Array.from({ length: 4 }).map((_, i) => (
+      {/* ALWAYS ACTIVE floating sparkles (more when hovered) */}
+      {Array.from({ length: hovered ? 6 : 3 }).map((_, i) => (
         <span
           key={i}
-          className="absolute w-1 h-1 rounded-full bg-white/80 pointer-events-none"
+          className="absolute w-1 h-1 rounded-full pointer-events-none"
           style={{
-            left: `${20 + i * 20}%`,
-            top: `${Math.random() > 0.5 ? -2 : 100}%`,
-            animation: `sparkle-float ${1 + i * 0.3}s ease-out forwards`,
-            animationDelay: `${i * 0.1}s`,
-            boxShadow: '0 0 6px rgba(255,255,255,0.8)',
+            left: `${12 + i * 16 + Math.random() * 8}%`,
+            bottom: '10%',
+            width: hovered ? 3 : 1.5,
+            height: hovered ? 3 : 1.5,
+            background: `radial-gradient(circle, rgba(255,255,255,${hovered ? 0.95 : 0.7}), transparent)`,
+            boxShadow: `0 0 ${hovered ? 8 : 4}px rgba(167,139,250,${hovered ? 0.6 : 0.3})`,
+            animation: `sparkle-float-always ${hovered ? 1.2 : 2 + i * 0.4}s ease-out infinite`,
+            animationDelay: `${i * (hovered ? 0.15 : 0.4)}s`,
           }}
         />
       ))}
@@ -165,14 +173,11 @@ function BubbleButton({ href, children, primary }: { href: string; children: Rea
   );
 }
 
-// Pulsing Light Dots Divider - 脉光点从左到右加载的分割线
+// Pulsing Light Dots Divider
 function PulsingLightDotsDivider() {
   return (
     <div className="w-full max-w-md mx-auto relative h-[3px] my-6 overflow-hidden">
-      {/* Background track */}
       <div className="absolute inset-0 rounded-full" style={{ background: 'rgba(255,255,255,0.05)' }} />
-
-      {/* Animated light dots traveling left to right */}
       <div className="absolute inset-0">
         {Array.from({ length: 12 }).map((_, i) => (
           <div
@@ -198,25 +203,19 @@ function PulsingLightDotsDivider() {
           />
         ))}
       </div>
-
-      {/* Leading bright head that travels across */}
       <div
         className="absolute top-1/2 -translate-y-1/2 rounded-full"
         style={{
-          width: 16,
-          height: 16,
+          width: 16, height: 16,
           background: 'radial-gradient(circle, rgba(255,255,255,0.95), rgba(167,139,250,0.5), transparent)',
           boxShadow: '0 0 12px rgba(167,139,250,0.7), 0 0 24px rgba(139,92,246,0.3), 0 0 40px rgba(99,102,241,0.15)',
           animation: 'light-head-travel 3s ease-in-out infinite',
         }}
       />
-
-      {/* Trailing tail glow */}
       <div
         className="absolute top-1/2 -translate-y-1/2 rounded-full"
         style={{
-          width: 80,
-          height: 3,
+          width: 80, height: 3,
           background: 'linear-gradient(90deg, transparent, rgba(167,139,250,0.2), rgba(139,92,246,0.35), rgba(96,165,250,0.2), transparent)',
           filter: 'blur(2px)',
           animation: 'tail-travel 3s ease-in-out infinite',
@@ -226,8 +225,10 @@ function PulsingLightDotsDivider() {
   );
 }
 
-// Meteor Shower Canvas for stats area - 流星群动画（数字区域专用）
-function MeteorShowerCanvas() {
+// ============================================================
+// METEOR SHOWER CANVAS — Positioned near buttons (not stats)
+// ============================================================
+function ButtonMeteorShower() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -237,57 +238,74 @@ function MeteorShowerCanvas() {
     if (!ctx) return;
 
     let animId: number;
-    let meteors: { x: number; y: number; len: number; speed: number; angle: number; opacity: number; thickness: number; color: string }[] = [];
+    interface Meteor {
+      x: number; y: number; len: number; speed: number;
+      angle: number; opacity: number; thickness: number;
+      color: string; phase: number;
+    }
+    let meteors: Meteor[] = [];
 
     const resize = () => {
       canvas.width = canvas.parentElement?.offsetWidth || 600;
-      canvas.height = 120;
+      canvas.height = 160;
     };
 
-    const createMeteor = () => ({
-      x: -20 - Math.random() * 100,
-      y: Math.random() * canvas.height * 0.5,
-      len: 30 + Math.random() * 60,
-      speed: 2 + Math.random() * 4,
-      angle: Math.PI / 5 + Math.random() * 0.3,
-      opacity: 0.4 + Math.random() * 0.5,
-      thickness: 0.8 + Math.random() * 1.5,
-      color: ['rgba(167,139,250,', 'rgba(96,165,250,', 'rgba(52,211,153,', 'rgba(251,207,232,', 'rgba(255,255,255,'][Math.floor(Math.random() * 5)],
+    const colors = [
+      'rgba(167,139,250,', 'rgba(96,165,250,', 'rgba(52,211,153,',
+      'rgba(251,207,232,', 'rgba(255,255,255,',
+      'rgba(129,140,248,', 'rgba(56,189,248,',
+    ];
+
+    const createMeteor = (): Meteor => ({
+      x: -20 - Math.random() * 80,
+      y: 10 + Math.random() * 100,
+      len: 25 + Math.random() * 50,
+      speed: 1.5 + Math.random() * 3.5,
+      angle: Math.PI / 5 + Math.random() * 0.35,
+      opacity: 0.35 + Math.random() * 0.5,
+      thickness: 0.6 + Math.random() * 1.2,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      phase: Math.random() * Math.PI * 2,
     });
 
-    // Initialize meteors
-    for (let i = 0; i < 5; i++) {
+    // Initialize
+    for (let i = 0; i < 6; i++) {
       const m = createMeteor();
-      m.x = Math.random() * canvas.width;
+      m.x = Math.random() * (canvas.width || 600);
       meteors.push(m);
     }
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Randomly spawn new meteor
-      if (Math.random() < 0.03 && meteors.length < 8) {
+      // Spawn new meteor randomly
+      if (Math.random() < 0.04 && meteors.length < 10) {
         meteors.push(createMeteor());
       }
+
+      const time = Date.now() * 0.001;
 
       meteors.forEach((m, idx) => {
         m.x += Math.cos(m.angle) * m.speed;
         m.y += Math.sin(m.angle) * m.speed;
-        m.opacity *= 0.998;
+        m.phase += 0.02;
 
-        if (m.x > canvas.width + 50 || m.y > canvas.height + 30 || m.opacity < 0.05) {
+        // Gentle opacity oscillation
+        const oscOp = m.opacity * (0.75 + 0.25 * Math.sin(m.phase));
+
+        if (m.x > canvas.width + 60 || m.y > canvas.height + 40 || m.opacity < 0.03) {
           meteors[idx] = createMeteor();
           return;
         }
 
-        // Draw meteor tail
+        // Tail gradient
         const grad = ctx.createLinearGradient(
           m.x, m.y,
           m.x - Math.cos(m.angle) * m.len,
           m.y - Math.sin(m.angle) * m.len
         );
-        grad.addColorStop(0, `${m.color}${m.opacity})`);
-        grad.addColorStop(0.3, `${m.color}${m.opacity * 0.5})`);
+        grad.addColorStop(0, `${m.color}${oscOp})`);
+        grad.addColorStop(0.3, `${m.color}${oscOp * 0.45})`);
         grad.addColorStop(1, `${m.color}0)`);
 
         ctx.strokeStyle = grad;
@@ -302,12 +320,12 @@ function MeteorShowerCanvas() {
         ctx.stroke();
 
         // Head glow
-        const headGrad = ctx.createRadialGradient(m.x, m.y, 0, m.x, m.y, 4);
-        headGrad.addColorStop(0, `${m.color}${m.opacity})`);
+        const headGrad = ctx.createRadialGradient(m.x, m.y, 0, m.x, m.y, 5);
+        headGrad.addColorStop(0, `${m.color}${oscOp})`);
         headGrad.addColorStop(1, `${m.color}0)`);
         ctx.fillStyle = headGrad;
         ctx.beginPath();
-        ctx.arc(m.x, m.y, 2.5, 0, Math.PI * 2);
+        ctx.arc(m.x, m.y, 2.8, 0, Math.PI * 2);
         ctx.fill();
       });
 
@@ -317,14 +335,10 @@ function MeteorShowerCanvas() {
     resize();
     draw();
     window.addEventListener('resize', resize);
-
-    return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener('resize', resize);
-    };
+    return () => { cancelAnimationFrame(animId); window.removeEventListener('resize', resize); };
   }, []);
 
-  return <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none w-full" style={{ height: '120px' }} />;
+  return <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none w-full" style={{ height: '160px', bottom: '-20px', left: 0 }} />;
 }
 
 export default function HeroSection() {
@@ -336,7 +350,6 @@ export default function HeroSection() {
 
   useEffect(() => setIsVisible(true), []);
 
-  // Stats visibility observer
   useEffect(() => {
     const el = statsRef.current;
     if (!el) return;
@@ -503,7 +516,7 @@ export default function HeroSection() {
         }
       });
 
-      // Shooting stars in main canvas
+      // Shooting stars
       if (Math.random() < 0.006) {
         const sx = Math.random() * canvas.width * 0.7;
         const sy = Math.random() * canvas.height * 0.25;
@@ -542,11 +555,10 @@ export default function HeroSection() {
     visible: { opacity: 1, transition: { staggerChildren: 0.18 } }
   };
 
-  // Color palette for stat number animations
   const statColors = [
-    ['#c084fc', '#818cf8', '#38bdf8'], // purple → indigo → cyan
-    ['#34d399', '#38bdf8', '#a78bfa'], // emerald → cyan → purple
-    ['#fb923c', '#f472b6', '#818cf8'], // orange → pink → indigo
+    ['#c084fc', '#818cf8', '#38bdf8'],
+    ['#34d399', '#38bdf8', '#a78bfa'],
+    ['#fb923c', '#f472b6', '#818cf8'],
   ];
 
   return (
@@ -589,7 +601,7 @@ export default function HeroSection() {
               <span className="text-xs font-medium tracking-wide" style={{ color: '#93c5fd' }}>{t('hero.badge')}</span>
             </div>
 
-            {/* Title - 3D GLOW EFFECT */}
+            {/* Title */}
             <motion.h1
               className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight leading-[1.15] hero-title-glow"
               style={{
@@ -635,9 +647,12 @@ export default function HeroSection() {
             {t('hero.description')}
           </motion.p>
 
-          {/* CTA Buttons - BUBBLE EFFECT */}
+          {/* CTA Buttons with METEOR SHOWER nearby */}
           <motion.div variants={fadeInUp}
-            className="flex flex-col sm:flex-row gap-4 justify-center mb-10">
+            className="relative flex flex-col sm:flex-row gap-4 justify-center mb-10">
+            {/* Meteor shower canvas overlaying the button area */}
+            <ButtonMeteorShower />
+
             <BubbleButton href={`/${locale}/products`} primary>
               {t('hero.ctaProducts')}
               <svg className="ml-1 w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -652,20 +667,16 @@ export default function HeroSection() {
           {/* PULSING LIGHT DOTS DIVIDER */}
           <PulsingLightDotsDivider />
 
-          {/* Stats bar - smaller numbers with color animation + meteor shower */}
+          {/* Stats bar */}
           <motion.div ref={statsRef} variants={fadeInUp}
-            className="relative flex flex-wrap justify-center gap-8 md:gap-14 max-w-2xl mx-auto pt-4"
+            className="flex flex-wrap justify-center gap-8 md:gap-14 max-w-2xl mx-auto pt-4"
           >
-            {/* Meteor shower overlay for stats area */}
-            <MeteorShowerCanvas />
-
             {[
               { number: '10+', labelKey: 'hero.statModels' },
               { number: '60+', labelKey: 'hero.statCountries' },
               { number: '500+', labelKey: 'hero.statClients' },
             ].map((stat, i) => (
               <div key={i} className="text-center relative z-10">
-                {/* Number - slightly smaller, with color cycling animation */}
                 <div
                   className="text-xl md:text-2xl font-bold mb-1 inline-block"
                   style={{
@@ -687,12 +698,8 @@ export default function HeroSection() {
                   >{['✦', '✧', '◇'][i]}</span>
                   {statsVisible ? <CountUp end={stat.number} /> : stat.number}
                 </div>
-                {/* Label */}
                 <div className="text-xs font-medium opacity-40 transition-opacity duration-500 hover:opacity-70"
-                  style={{
-                    color: '#94a3b8',
-                    textShadow: '0 1px 4px rgba(0,0,0,0.5)',
-                  }}
+                  style={{ color: '#94a3b8', textShadow: '0 1px 4px rgba(0,0,0,0.5)' }}
                 >
                   {t(stat.labelKey)}
                 </div>
@@ -733,22 +740,23 @@ export default function HeroSection() {
         }
         .subtitle-glow { animation: subtitle-glow 5s ease-in-out infinite; }
 
-        /* ===== BUBBLE BUTTON ANIMATIONS ===== */
-        @keyframes bubble-rise {
-          0% { transform: translateY(0) scale(1); opacity: 0.6; }
-          50% { transform: translateY(-28px) scale(1.3); opacity: 0.9; }
-          100% { transform: translateY(-56px) scale(0.6); opacity: 0; }
-        }
-        @keyframes bubble-idle {
-          0%, 100% { transform: translateY(0) scale(1); opacity: 0.2; }
-          50% { transform: translateY(-8px) scale(1.1); opacity: 0.4; }
-        }
-        @keyframes sparkle-float {
-          0% { transform: translateY(0) scale(1); opacity: 1; }
-          100% { transform: translateY(-20px) scale(0); opacity: 0; }
+        /* ===== ALWAYS ACTIVE BUBBLE ANIMATION ===== */
+        @keyframes bubble-rise-active {
+          0%   { transform: translateY(0) scale(0.6); opacity: 0; }
+          15%  { opacity: 0.7; }
+          50%  { transform: translateY(-22px) scale(1.2); opacity: 0.85; }
+          85%  { transform: translateY(-48px) scale(0.8); opacity: 0.3; }
+          100% { transform: translateY(-62px) scale(0.3); opacity: 0; }
         }
 
-        /* ===== PULSING LIGHT DOTS ANIMATIONS ===== */
+        /* Always active sparkles */
+        @keyframes sparkle-float-always {
+          0%   { transform: translateY(0) translateX(0) scale(1); opacity: 0.9; }
+          40%  { opacity: 0.7; }
+          100% { transform: translateY(-28px) translateX(${Math.random() > 0.5 ? '' : '-'}8px) scale(0); opacity: 0; }
+        }
+
+        /* ===== PULSING LIGHT DOTS ===== */
         @keyframes dot-pulse {
           0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; }
           50% { transform: translate(-50%, -50%) scale(1.6); opacity: 1; }
@@ -758,19 +766,19 @@ export default function HeroSection() {
           50% { box-shadow: 0 0 12px currentColor, 0 0 24px currentColor; }
         }
         @keyframes light-head-travel {
-          0% { left: -5%; opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
-          15% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
-          85% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+          0%   { left: -5%; opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+          15%  { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+          85%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
           100% { left: 105%; opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
         }
         @keyframes tail-travel {
-          0% { left: -10%; opacity: 0; }
-          15% { opacity: 1; }
-          85% { opacity: 1; }
+          0%   { left: -10%; opacity: 0; }
+          15%  { opacity: 1; }
+          85%  { opacity: 1; }
           100% { left: 105%; opacity: 0; }
         }
 
-        /* ===== STAT NUMBER COLOR CYCLING ===== */
+        /* ===== STAT COLOR CYCLING ===== */
         @keyframes stat-color-shift-0 {
           0%, 33%   { color: #ffffff; text-shadow: 0 0 16px rgba(192,132,252,0.4), 0 0 32px rgba(129,140,248,0.2), 0 2px 6px rgba(0,0,0,0.6); }
           34%, 66%  { color: #e0e7ff; text-shadow: 0 0 16px rgba(129,140,248,0.5), 0 0 32px rgba(56,189,248,0.2), 0 2px 6px rgba(0,0,0,0.6); }

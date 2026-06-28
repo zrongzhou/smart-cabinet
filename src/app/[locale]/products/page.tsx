@@ -6,6 +6,7 @@ import { Package, Layers, Box, Building2, Settings, Wrench, Cpu, Shield, Lock, S
 import { useLocale } from '@/lib/i18n';
 import { Product, Category } from '@/lib/api';
 import { getBaseUrl } from '@/data/unified-data';
+import OceanHeader from '@/components/OceanHeader';
 
 // ===========================================================
 // DIMENSION ICON SYSTEM — Lucide React components only (v133)
@@ -382,19 +383,12 @@ export default function ProductsPage() {
 
   return (
     <div className="min-h-screen bg-blue-50">
-      {/* Page Header */}
-      <section className="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }} />
-        <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full blur-3xl" style={{ backgroundColor: 'rgba(255,255,255,0.04)' }} />
-        <div className="max-w-5xl mx-auto text-center relative z-10">
-          <h1 className="text-4xl sm:text-5xl font-bold mb-4 text-white">
-            {t('products.title')}
-          </h1>
-          <p className="text-xl text-blue-100">
-            {t('products.subtitle')}
-          </p>
-        </div>
-      </section>
+      {/* Page Header — Ocean Theme */}
+      <OceanHeader
+        title={t('products.title')}
+        subtitle={t('products.subtitle')}
+        icon={<Package className="w-8 h-8 text-blue-300" />}
+      />
 
       {/* Primary Dimension Filter + Search */}
       <section className="bg-white border-b border-gray-200 sticky top-16 z-40 shadow-sm">

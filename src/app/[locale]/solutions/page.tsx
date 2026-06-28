@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Cog, Car, Cpu, Cable, Building, Wrench, Factory, Building2, ChevronDown, ChevronUp, TrendingUp, CheckCircle } from 'lucide-react';
 import { useLocale } from '@/lib/i18n';
 import solutions, { Solution } from '@/data/solutions';
+import OceanHeader from '@/components/OceanHeader';
 
 // Fixed colors - no CSS variables
 const solutionCardStyle = {
@@ -31,19 +32,12 @@ export default function SolutionsPage({ params: { locale } }: SolutionsPageProps
 
   return (
     <div className="min-h-screen bg-blue-50">
-      {/* Page Header */}
-      <section className="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
-        <div className="max-w-5xl mx-auto text-center relative z-10">
-          <h1 className="text-4xl sm:text-5xl font-bold mb-4 text-white">
-            {t('solutions.title')}
-          </h1>
-          <p className="text-xl text-blue-100">
-            {t('solutions.subtitle')}
-          </p>
-        </div>
-      </section>
+      {/* Page Header — Ocean Theme */}
+      <OceanHeader
+        title={t('solutions.title')}
+        subtitle={t('solutions.subtitle')}
+        icon={<Cog className="w-8 h-8 text-blue-300" />}
+      />
 
       {/* Solutions Grid */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">

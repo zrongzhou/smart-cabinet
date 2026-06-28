@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp, HelpCircle, Search, MessageCircle, ArrowRight } from 'lucide-react';
 import { useLocale } from '@/lib/i18n';
 import { fetchFAQs, FAQ } from '@/lib/api';
+import OceanHeader from '@/components/OceanHeader';
 
 export default function FAQPage() {
   const { locale } = useLocale();
@@ -131,24 +132,12 @@ export default function FAQPage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'var(--bg-color)' }}>
-      {/* Page Header */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
-        style={{ background: 'linear-gradient(135deg, #1e3a8a, #1e40af, #2563eb)' }}
-      >
-        <div className="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }} />
-        <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full blur-3xl" style={{ backgroundColor: 'rgba(255,255,255,0.04)' }} />
-        <div className="max-w-5xl mx-auto text-center relative z-10">
-          <div className="inline-flex items-center justify-center w-16 h-16 backdrop-blur-sm rounded-2xl mb-6" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}>
-            <HelpCircle className="w-8 h-8 text-white" />
-          </div>
-          <h1 className="text-4xl sm:text-5xl font-bold mb-4 text-white">
-            {t.title}
-          </h1>
-          <p className="text-xl text-blue-100">
-            {t.subtitle}
-          </p>
-        </div>
-      </section>
+      {/* Page Header — Ocean Theme */}
+      <OceanHeader
+        title={t.title}
+        subtitle={t.subtitle}
+        icon={<HelpCircle className="w-8 h-8 text-blue-300" />}
+      />
 
       {/* FAQ Content */}
       <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
