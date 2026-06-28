@@ -48,6 +48,7 @@
   --border-color:      #f3f4f6;
   --icon-bg:           #dbeafe;
   --primary-color:     #2563eb;
+  --primary-dark:      #1d4ed8;
   --badge-bg:         #dbeafe;
 }
 
@@ -81,6 +82,7 @@
   --border-color:      #334155;
   --icon-bg:           #1e3a5f;
   --primary-color:     #60a5fa;
+  --primary-dark:      #478ce1;
   --badge-bg:         #1e3a5f;
 }
 
@@ -114,6 +116,7 @@
   --border-color:      #bbf7d0;
   --icon-bg:           #dcfce7;
   --primary-color:     #16a34a;
+  --primary-dark:      #008a31;
   --badge-bg:         #dcfce7;
 }
 
@@ -147,6 +150,7 @@
   --border-color:      #bfdbfe;
   --icon-bg:           #dbeafe;
   --primary-color:     #2563eb;
+  --primary-dark:      #0c4ad2;
   --badge-bg:         #dbeafe;
 }
 
@@ -182,6 +186,7 @@
   --border-color:      #E8DDD0;
   --icon-bg:           #FFF0E0;
   --primary-color:     #C41E3A;
+  --primary-dark:      #ab0521;
   --badge-bg:         #FFF0E0;
 }
 
@@ -215,6 +220,7 @@
   --border-color:      #e0e0e0;
   --icon-bg:           #eeeeee;
   --primary-color:     #000000;
+  --primary-dark:      #000000;
   --badge-bg:         #eeeeee;
 }
 
@@ -248,6 +254,7 @@
   --border-color:      rgba(0, 240, 255, 0.2);
   --icon-bg:           rgba(0, 240, 255, 0.1);
   --primary-color:     #00f0ff;
+  --primary-dark:      #00d7e6;
   --badge-bg:         rgba(0, 240, 255, 0.15);
 }
 
@@ -281,6 +288,7 @@
   --border-color:      #f8bbd0;
   --icon-bg:           #fce4ec;
   --primary-color:     #E91E63;
+  --primary-dark:      #d0054a;
   --badge-bg:         #fce4ec;
 }
 
@@ -314,6 +322,7 @@
   --border-color:      transparent;
   --icon-bg:           #d1d5db;
   --primary-color:     #3b82f6;
+  --primary-dark:      #2269dd;
   --badge-bg:         #d1d5db;
 }
 
