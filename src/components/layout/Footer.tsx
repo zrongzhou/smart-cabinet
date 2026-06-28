@@ -51,28 +51,28 @@ export default function Footer() {
   const displayCopyright = settings?.footerCopyright?.replace('{year}', String(currentYear)) || `© ${currentYear} ${displayCompany}`;
 
   return (
-    <footer className="relative bg-gray-900 dark:bg-slate-950 text-gray-300 dark:text-gray-400 overflow-hidden">
+    <footer className="relative text-[var(--color-text-secondary)] overflow-hidden" style={{ backgroundColor: 'var(--color-bg-card)' }}>
       {/* Decorative background elements */}
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-600" />
-      <div className="absolute top-20 right-0 w-72 h-72 bg-blue-600/5 dark:bg-blue-900/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-cyan-500/5 dark:bg-cyan-900/10 rounded-full blur-3xl" />
+      <div className="absolute top-0 left-0 w-full h-1 bg-[var(--gradient-cta)]" />
+      <div className="absolute top-20 right-0 w-72 h-72 rounded-full blur-3xl z-0" style={{ backgroundColor: 'var(--color-accent)', opacity: 0.05 }} />
+      <div className="absolute bottom-0 left-0 w-96 h-96 rounded-full blur-3xl z-0" style={{ backgroundColor: 'var(--color-accent-alt)', opacity: 0.05 }} />
 
       {/* Main Footer Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
         {/* Top section: Company info + Newsletter + Certifications */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 pb-12 border-b border-gray-800 dark:border-slate-700">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 pb-12 border-b" style={{ borderColor: 'var(--color-border)' }}>
           {/* Column 1: Brand & Description */}
           <div>
             <div className="flex items-center gap-3 mb-5">
               <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-xl flex items-center justify-center">
                 <span className="text-white font-bold text-lg">WS</span>
               </div>
-              <span className="text-white dark:text-white font-bold text-xl">{displayName}</span>
+              <span className="text-[var(--color-text-primary)] font-bold text-xl">{displayName}</span>
             </div>
-            <p className="text-sm leading-relaxed mb-6 text-gray-300 dark:text-gray-400">
+            <p className="text-sm leading-relaxed mb-6 text-[var(--color-text-secondary)]">
               {t('footer.companyDescription')}
             </p>
-            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-600">
+            <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--color-text-muted)' }}>
               <Globe className="w-4 h-4" />
               <span>{displayCompany}</span>
             </div>
@@ -81,8 +81,8 @@ export default function Footer() {
           {/* Column 2: Quick Links (2 columns) */}
           <div className="grid grid-cols-2 gap-8">
             <div>
-              <h4 className="text-white font-semibold mb-4 flex items-center gap-2">
-                <span className="w-8 h-0.5 bg-blue-500 rounded" />
+              <h4 className="text-[var(--color-text-primary)] font-semibold mb-4 flex items-center gap-2">
+                <span className="w-8 h-0.5 bg-[var(--color-accent)] rounded" />
                 {t('footer.quickLinks')}
               </h4>
               <ul className="space-y-2.5">
@@ -95,7 +95,7 @@ export default function Footer() {
                   <li key={link.label}>
                     <a
                       href={link.href}
-                      className="hover:text-blue-400 transition-colors text-sm flex items-center gap-1 group"
+                      className="hover:text-[var(--color-accent)] transition-colors text-sm flex items-center gap-1 group"
                     >
                       <ArrowRight className="w-3 h-3 opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all duration-200" />
                       {link.label}

@@ -34,6 +34,12 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     if (mounted) {
       try {
         document.documentElement.dataset.theme = theme;
+        // 兼容旧系统：starry主题添加dark class (确保dark:前缀生效)
+        if (theme === 'starry') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
         localStorage.setItem(THEME_STORAGE_KEY, theme);
       } catch (error) {
         console.warn('Failed to save theme to localStorage:', error);
