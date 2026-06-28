@@ -6,7 +6,7 @@ import { useLocale } from '@/lib/i18n';
 import { useAuth } from '@/components/AuthProvider';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
 import { fetchUnifiedSettings } from '@/data/unified-data';
-import { useThemeContext } from '@/app/providers/ThemeProvider';
+import { useTheme } from '@/contexts/ThemeContext';
 
 // Touch target size for mobile (44x44px minimum as per WCAG/Apple guidelines)
 const TOUCH_TARGET_CLASSES = 'min-h-[44px] min-w-[44px]';
@@ -25,7 +25,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
   const [siteName, setSiteName] = useState('WS Tool Cabinet');
   const [logoUrl, setLogoUrl] = useState('');
   const [logoError, setLogoError] = useState(false);
-  const { theme } = useThemeContext();
+  const { theme } = useTheme();
   const isRTL = locale === 'ar';
 
   // Load site settings from API
@@ -86,51 +86,35 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
   const getNavBg = () => {
     if (isScrolled) {
       switch(theme) {
-        case 'dark':
-          return 'bg-slate-900/95 backdrop-blur-md shadow-lg border-b border-slate-700';
+        case 'starry':
+          return 'bg-[var(--color-bg-card)]/95 backdrop-blur-md shadow-lg border-b border-[var(--color-border)]';
+        case 'skyblue':
         case 'nature':
-          return 'bg-green-50/95 backdrop-blur-md shadow-md border-b border-green-200';
-        case 'ocean':
-          return 'bg-blue-50/95 backdrop-blur-md shadow-md border-b border-blue-200';
+          return 'bg-[var(--color-bg-card)]/95 backdrop-blur-md shadow-md border-b border-[var(--color-border)]';
         default:
-          return 'bg-white/95 backdrop-blur-md shadow-md';
+          return 'bg-[var(--color-bg-card)]/95 backdrop-blur-md shadow-md';
       }
     }
     // Not scrolled - lighter background
     switch(theme) {
-      case 'dark':
-        return 'bg-slate-900 shadow-sm';
+      case 'starry':
+        return 'bg-[var(--color-bg-primary)] shadow-sm';
+      case 'skyblue':
       case 'nature':
-        return 'bg-green-50/90 shadow-sm';
-      case 'ocean':
-        return 'bg-blue-50/90 shadow-sm';
+        return 'bg-[var(--color-bg-primary)] shadow-sm';
       default:
-        return 'bg-white shadow-sm';
+        return 'bg-[var(--color-bg-primary)] shadow-sm';
     }
   };
 
   // Get theme-aware text color for nav links
   const getNavTextColor = () => {
-    switch(theme) {
-      case 'dark':
-        return 'text-gray-200 hover:text-white';
-      default:
-        return 'text-gray-700 hover:text-blue-600';
-    }
+    return 'text-[var(--color-text-primary)] hover:text-[var(--color-accent)]';
   };
 
   // Get theme-aware mobile sidebar background
   const getSidebarBg = () => {
-    switch(theme) {
-      case 'dark':
-        return 'bg-slate-800';
-      case 'nature':
-        return 'bg-green-50';
-      case 'ocean':
-        return 'bg-blue-50';
-      default:
-        return 'bg-white';
-    }
+    return 'bg-[var(--color-bg-card)]';
   };
 
   return (
@@ -153,7 +137,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
                 <span className="text-2xl">📦</span>
               )}
               {/* Always show company name, regardless of logo */}
-              <span className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{siteName}</span>
+              <span className="text-xl font-bold text-[var(--color-text-primary)]">{siteName}</span>
             </a>
 
             {/* Desktop Navigation */}

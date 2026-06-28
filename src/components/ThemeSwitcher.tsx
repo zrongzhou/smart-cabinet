@@ -1,75 +1,67 @@
+// components/ThemeSwitcher.tsx
+
 'use client';
 
 import { useState } from 'react';
-import { Palette } from 'lucide-react';
-import { useThemeContext } from '@/app/providers/ThemeProvider';
-import { useLocale } from '@/lib/i18n';
-import { themeNames, themeColors } from '@/hooks/useTheme';
+import { useTheme } from '@/contexts/ThemeContext';
+import { themes } from '@/lib/theme-config';
+import { SunIcon, MoonIcon, SparklesIcon } from '@heroicons/react/24/solid';
+
+const themeIcons: Record<string, any> = {
+  'starry': SparklesIcon,
+  'skyblue': SunIcon,
+  'nature': MoonIcon,
+};
 
 export default function ThemeSwitcher() {
+  const { theme, setTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
-  const { theme, changeTheme } = useThemeContext();
-  const { locale, t } = useLocale();
-
-  const themes: Array<'light' | 'dark' | 'nature' | 'ocean' | 'guofeng' | 'minimal' | 'cyberpunk' | 'fashion' | 'neumorphic'> = ['light', 'dark', 'nature', 'ocean', 'guofeng', 'minimal', 'cyberpunk', 'fashion', 'neumorphic'];
-
+  
+  const currentThemeMeta = themes.find(t => t.id === theme);
+  const CurrentIcon = themeIcons[theme];
+  
   return (
     <div className="relative">
+      {/* 当前主题按钮 */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--color-bg-card)] text-[var(--color-text-primary)] border border-[var(--color-border)] hover:border-[var(--color-accent)] transition-[var(--transition-fast)]"
         aria-label="Switch theme"
       >
-        <Palette className="w-5 h-5 text-gray-600" />
+        <CurrentIcon className="w-5 h-5" />
+        <span className="hidden md:inline">{currentThemeMeta?.name}</span>
       </button>
-
+      
+      {/* 下拉菜单 */}
       {isOpen && (
-        <>
-          {/* Overlay */}
-          <div
-            className="fixed inset-0 z-40"
-            onClick={() => setIsOpen(false)}
-          />
-
-          {/* Dropdown */}
-          <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50">
-            <p className="px-4 py-2 text-xs font-medium text-gray-500 uppercase">
-              {locale === 'zh' ? '主题' : locale === 'ar' ? 'المظهر' : 'Theme'}
-            </p>
-            {themes.map((t) => (
+        <div className="absolute right-0 mt-2 w-48 rounded-[var(--radius-card)] bg-[var(--color-bg-card)] border border-[var(--color-border)] shadow-lg z-50">
+          {themes.map((t) => {
+            const Icon = themeIcons[t.id];
+            return (
               <button
-                key={t}
+                key={t.id}
                 onClick={() => {
-                  changeTheme(t);
+                  setTheme(t.id);
                   setIsOpen(false);
                 }}
-                className={`w-full text-left px-4 py-2.5 text-sm transition-colors duration-150 flex items-center space-x-3 ${
-                  theme === t
-                    ? ''
-                    : 'text-gray-700 hover:bg-gray-50'
+                className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-[var(--color-bg-secondary)] transition-[var(--transition-fast)] ${
+                  theme === t.id ? 'bg-[var(--color-bg-secondary)]' : ''
                 }`}
-                style={theme === t ? { backgroundColor: 'var(--icon-bg)', color: 'var(--primary-color)', fontWeight: 500 } : {}}
               >
-                {/* Color preview block */}
                 <div
-                  className="w-6 h-6 rounded-md border border-gray-200"
-                  style={{ backgroundColor: themeColors[t] }}
+                  className="w-6 h-6 rounded-full"
+                  style={{ backgroundColor: t.previewColor }}
                 />
-                <span>{themeNames[t][locale as 'en' | 'zh' | 'ar'] || themeNames[t].en}</span>
-                {theme === t && (
-                  <svg className="w-4 h-4 ml-auto" style={{ color: 'var(--primary-color)' }} fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                )}
+                <Icon className="w-5 h-5 text-[var(--color-text-primary)]" />
+                <div className="text-left">
+                  <div className="text-[var(--color-text-primary)] font-medium">{t.name}</div>
+                  <div className="text-[var(--color-text-secondary)] text-sm">{t.memoryPoint}</div>
+                </div>
               </button>
-            ))}
-          </div>
-        </>
+            );
+          })}
+        </div>
       )}
     </div>
   );
-}
+};

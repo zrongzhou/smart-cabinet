@@ -21,6 +21,16 @@ module.exports = {
           900: '#1e3a8a',
           950: '#172554',
         },
+        'theme': {
+          'bg-primary': 'var(--color-bg-primary)',
+          'bg-secondary': 'var(--color-bg-secondary)',
+          'bg-card': 'var(--color-bg-card)',
+          'text-primary': 'var(--color-text-primary)',
+          'text-secondary': 'var(--color-text-secondary)',
+          'accent': 'var(--color-accent)',
+          'accent-alt': 'var(--color-accent-alt)',
+          'border': 'var(--color-border)',
+        }
       },
     },
   },
