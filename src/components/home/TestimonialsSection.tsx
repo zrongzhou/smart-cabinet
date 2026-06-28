@@ -1,8 +1,6 @@
 'use client';
 
-import { Quote, Star } from 'lucide-react';
 import { useLocale } from '@/lib/i18n';
-
 
 // Helper function to safely get localized text
 function getLocalizedText(obj: { zh: string; en: string; ar?: string }, locale: string): string {
@@ -10,7 +8,6 @@ function getLocalizedText(obj: { zh: string; en: string; ar?: string }, locale: 
   if (locale === 'ar') return obj.ar || obj.en;
   return obj.en;
 }
-
 
 const testimonials = [
   {
@@ -20,7 +17,7 @@ const testimonials = [
     content: {
       zh: '我们生产线上安装了20台智能柜，结果非常出色。AI分析帮助我们预测需求模式，与WMS的物联网集成简化了整个运营。我强烈推荐智能柜给任何物流公司。',
       en: 'We installed 20 Smart Cabinets across our distribution centers, and the results have been outstanding. The AI-powered analytics help us predict demand patterns, and the IoT integration with our WMS has streamlined our entire operation. I highly recommend Smart Cabinet to any logistics company.',
-      ar: 'قمنا بتركيب 20 خزانة ذكية في مراكز التوزيع لدينا، وكانت النتائج رائعة. تساعدنا تحليلت الذكية المدعومة بالذكاء الاصطناعي في التنبؤ بأنماط الطلب، وتكامل إنترنت الأشياء مع نظام إدارة المستودعات لدينا قد بسط عمليتنا بأكملها. أوصي بشدة بخزائن الذكية لأي شركة لوجستية.',
+      ar: 'قمنا بتركيب 20 خزانة ذكية في مراكز التوزيع لدينا، وكانت النتائج رائعة. تساعدنا تحليلات الذكية المدعومة بالذكاء الاصطناعي في التنبؤ بأنماط الطلب، وتكامل إنترنت الأشياء مع نظام إدارة المستودعات لدينا قد بسط عمليتنا بأكملها. أوصي بشدة بخزائن الذكية لأي شركة لوجستية.',
     },
     rating: 5,
   },
@@ -55,21 +52,21 @@ export default function TestimonialsSection({ locale: propLocale }: Testimonials
   const currentLocale = propLocale || locale;
 
   return (
-    <section className="py-28 px-4 sm:px-6 lg:px-8 bg-[var(--section-bg)] relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl translate-x-1/3 -translate-y-1/2" style={{ backgroundColor: 'rgba(255,255,255,0.08)' }} />
-      <div className="absolute bottom-0 left-0 w-96 h-96 rounded-full blur-3xl -translate-x-1/3 translate-y-1/2" style={{ backgroundColor: 'rgba(255,255,255,0.05)', animationDelay: '1s' }} />
+    <section className="py-20 px-6 bg-gray-50 relative overflow-hidden">
+      {/* Background decoration - large decorative quote mark */}
+      <div className="absolute top-10 left-10 text-9xl text-blue-100 font-serif leading-none select-none">"</div>
+      <div className="absolute bottom-20 right-20 w-80 h-80 bg-amber-100/50 rounded-full blur-3xl" />
 
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Section Header */}
-        <div className="text-center mb-20">
-          <div className="inline-block px-4 py-1 bg-[var(--primary-color)]/10 text-[var(--primary-color)] rounded-full text-sm font-semibold mb-4">
+        <div className="text-center mb-16">
+          <div className="inline-block px-4 py-1 bg-blue-600/10 text-blue-600 rounded-full text-sm font-semibold mb-4">
             ★ {t('home.testimonials.badge')}
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[var(--text-primary)] mb-4 tracking-tight">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
             {t('home.testimonials.title')}
           </h2>
-          <p className="text-lg text-[var(--text-secondary)] max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
             {t('home.testimonials.subtitle')}
           </p>
         </div>
@@ -79,39 +76,32 @@ export default function TestimonialsSection({ locale: propLocale }: Testimonials
           {testimonials.map((testimonial, index) => (
             <div
               key={index}
-              className="group testimonial-card bg-[var(--card-bg)] rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-[var(--border-color)] hover:border-[var(--primary-color)]/30 relative overflow-hidden"
+              className="group bg-white rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 border border-gray-100 hover:border-blue-500/30 relative overflow-hidden"
             >
               {/* Hover glow effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-[var(--primary-color)]/0 via-[var(--primary-color)]/5 to-[var(--primary-color)]/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl" />
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-600/0 via-blue-600/5 to-blue-600/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl" />
 
-              {/* Quote icon */}
-              <div className="mb-6 relative z-10">
-                <div className="w-12 h-12 bg-[var(--primary-color)]/10 group-hover:bg-[var(--primary-color)] rounded-xl flex items-center justify-center group-hover:scale-110 transition-all duration-300">
-                  <Quote className="w-6 h-6 text-[var(--primary-color)] group-hover:text-white transition-colors duration-300" />
-                </div>
-              </div>
-
-              {/* Rating */}
-              <div className="flex items-center mb-4 relative z-10">
+              {/* Star Rating - using text stars instead of Lucide */}
+              <div className="flex items-center mb-6 relative z-10">
                 {[...Array(testimonial.rating)].map((_, i) => (
-                  <Star key={i} className="w-5 h-5 text-amber-400 fill-amber-400" />
+                  <span key={i} className="text-yellow-400 text-xl">★</span>
                 ))}
               </div>
 
               {/* Content */}
-              <p className="text-[var(--text-secondary)] leading-relaxed mb-8 relative z-10 italic">
+              <p className="text-gray-700 leading-relaxed mb-8 relative z-10 italic">
                 "{getLocalizedText(testimonial.content, currentLocale)}"
               </p>
 
               {/* Divider */}
-              <div className="w-12 h-1 bg-[var(--primary-color)]/20 group-hover:w-20 group-hover:bg-[var(--primary-color)] transition-all duration-500 mb-6 relative z-10" />
+              <div className="w-12 h-1 bg-blue-600/20 group-hover:w-20 group-hover:bg-blue-600 transition-all duration-500 mb-6 relative z-10" />
 
               {/* Author */}
               <div className="relative z-10">
-                <div className="font-bold text-[var(--text-primary)] group-hover:text-[var(--primary-color)] transition-colors duration-300">
+                <div className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300">
                   {testimonial.name}
                 </div>
-                <div className="text-sm text-[var(--text-secondary)]">
+                <div className="text-sm text-gray-600 mt-1">
                   {getLocalizedText(testimonial.role, currentLocale)}，{testimonial.company}
                 </div>
               </div>

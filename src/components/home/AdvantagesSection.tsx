@@ -1,96 +1,77 @@
 'use client';
 
-import { Zap, Shield, Radio, Cpu, Clock, Users, Leaf, ArrowRight } from 'lucide-react';
 import { useLocale } from '@/lib/i18n';
 
-const gradientMap: Record<string, string> = {
-  blue: 'linear-gradient(135deg, #2563eb, #60a5fa)',
-  emerald: 'linear-gradient(135deg, #059669, #34d399)',
-  violet: 'linear-gradient(135deg, #7c3aed, #a78bfa)',
-  amber: 'linear-gradient(135deg, #d97706, #fbbf24)',
-  cyan: 'linear-gradient(135deg, #0891b2, #22d3ee)',
-  pink: 'linear-gradient(135deg, #db2777, #f472b6)',
-};
-
-const shadowMap: Record<string, string> = {
-  blue: '0 8px 25px rgba(37,99,235,0.25)',
-  emerald: '0 8px 25px rgba(5,150,105,0.25)',
-  violet: '0 8px 25px rgba(124,58,237,0.25)',
-  amber: '0 8px 25px rgba(217,119,6,0.25)',
-  cyan: '0 8px 25px rgba(8,145,178,0.25)',
-  pink: '0 8px 25px rgba(219,39,119,0.25)',
-};
-
 const advantages = [
-  { id: 1, icon: Cpu, titleKey: 'advantages.item1.title', descKey: 'advantages.item1.description', color: 'blue' },
-  { id: 2, icon: Shield, titleKey: 'advantages.item2.title', descKey: 'advantages.item2.description', color: 'emerald' },
-  { id: 3, icon: Radio, titleKey: 'advantages.item3.title', descKey: 'advantages.item3.description', color: 'violet' },
-  { id: 4, icon: Zap, titleKey: 'advantages.item4.title', descKey: 'advantages.item4.description', color: 'amber' },
-  { id: 5, icon: Clock, titleKey: 'advantages.item5.title', descKey: 'advantages.item5.description', color: 'cyan' },
-  { id: 6, icon: Users, titleKey: 'advantages.item6.title', descKey: 'advantages.item6.description', color: 'pink' },
+  { id: 1, icon: '🤖', titleKey: 'advantages.item1.title', descKey: 'advantages.item1.description', bg: 'bg-blue-600', hoverBg: 'group-hover:bg-blue-700' },
+  { id: 2, icon: '🛡️', titleKey: 'advantages.item2.title', descKey: 'advantages.item2.description', bg: 'bg-emerald-600', hoverBg: 'group-hover:bg-emerald-700' },
+  { id: 3, icon: '📡', titleKey: 'advantages.item3.title', descKey: 'advantages.item3.description', bg: 'bg-violet-600', hoverBg: 'group-hover:bg-violet-700' },
+  { id: 4, icon: '⚡', titleKey: 'advantages.item4.title', descKey: 'advantages.item4.description', bg: 'bg-amber-500', hoverBg: 'group-hover:bg-amber-600' },
+  { id: 5, icon: '🕐', titleKey: 'advantages.item5.title', descKey: 'advantages.item5.description', bg: 'bg-cyan-600', hoverBg: 'group-hover:bg-cyan-700' },
+  { id: 6, icon: '👥', titleKey: 'advantages.item6.title', descKey: 'advantages.item6.description', bg: 'bg-rose-600', hoverBg: 'group-hover:bg-rose-700' },
 ];
 
 export default function AdvantagesSection() {
   const { locale, t } = useLocale();
 
   return (
-    <section className="py-28 px-4 sm:px-6 lg:px-8 bg-gray-50 relative overflow-hidden">
+    <section className="py-20 px-6 bg-white relative overflow-hidden">
       {/* Background decoration */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-200/30 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-100/20 rounded-full blur-3xl" />
+      <div className="absolute top-20 left-0 w-72 h-72 bg-blue-50 rounded-full blur-3xl" />
+      <div className="absolute bottom-20 right-0 w-72 h-72 bg-blue-50 rounded-full blur-3xl" />
+      <div className="absolute inset-0 opacity-5" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")` }} />
 
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Section Header */}
-        <div className="text-center mb-20">
-          <div className="inline-block px-4 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold mb-4">
+        <div className="text-center mb-16">
+          <div className="inline-block px-5 py-1.5 bg-blue-600 text-white rounded-full text-sm font-bold mb-5 shadow-lg">
             ★ {locale === 'zh' ? '核心优势' : 'Core Advantages'}
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4 tracking-tight">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-5">
             {t('advantages.title')}
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
             {t('advantages.subtitle')}
           </p>
         </div>
 
         {/* Advantages Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {advantages.map((adv, index) => {
-            const Icon = adv.icon;
             return (
               <div
                 key={adv.id}
-                className="group relative bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:-translate-y-3 hover:scale-[1.03]"
+                className="group relative bg-white rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:border-gray-200 hover:-translate-y-1"
               >
-                {/* Icon Container */}
+                {/* Icon Container - Large and substantial with gradient background */}
                 <div
-                  className="w-20 h-20 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500"
-                  style={{ 
-                    background: gradientMap[adv.color],
-                    boxShadow: shadowMap[adv.color]
-                  }}
+                  className={`w-16 h-16 rounded-xl flex items-center justify-center mb-6 text-3xl shadow-lg ${adv.bg} ${adv.hoverBg} transition-all duration-300 group-hover:scale-110`}
                 >
-                  <Icon className="w-10 h-10 text-white" />
+                  <span>{adv.icon}</span>
+                </div>
+
+                {/* Numbered badge */}
+                <div className="absolute top-6 right-6 w-10 h-10 rounded-xl bg-gray-100 text-gray-400 font-bold text-sm flex items-center justify-center">
+                  {String(index + 1).padStart(2, '0')}
                 </div>
 
                 {/* Title */}
-                <h3 className="text-xl font-extrabold text-gray-900 mb-4 group-hover:text-blue-600 transition-colors duration-300">
+                <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors duration-300">
                   {t(adv.titleKey)}
                 </h3>
 
                 {/* Description */}
-                <p className="text-gray-600 text-sm leading-relaxed mb-6">
+                <p className="text-gray-600 leading-relaxed">
                   {t(adv.descKey)}
                 </p>
 
-                {/* Learn More Link */}
-                <div className="flex items-center text-sm font-semibold text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                {/* Learn More link */}
+                <div className="flex items-center text-base font-semibold text-blue-600 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 mt-6">
                   <span>{locale === 'zh' ? '了解更多' : 'Learn More'}</span>
-                  <ArrowRight className="ml-1.5 w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-300" />
+                  <svg className="ml-2 w-5 h-5 group-hover:translate-x-1.5 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
                 </div>
-
-                {/* Hover border glow */}
-                <div className="absolute inset-0 rounded-3xl ring-0 group-hover:ring-2 group-hover:ring-blue-500/30 transition-all duration-500 pointer-events-none" />
               </div>
             );
           })}
