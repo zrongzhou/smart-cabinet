@@ -257,5 +257,20 @@
   "auth.login": "登录",
   "auth.register": "注册",
   "auth.logout": "退出登录",
-  "auth.account": "个人中心"
+  "auth.account": "个人中心",
+  "home.solutions.title": "行业解决方案",
+  "home.solutions.subtitle": "为各行业量身定制的智能存储解决方案",
+  "home.solutions.badge": "解决方案",
+  "solutions.items.cabinet-type": "智能柜型",
+  "solutions.items.managed-items": "耗材管理柜",
+  "solutions.items.industry": "工业方案",
+  "solutions.items.custom-solution": "定制方案",
+  "solutions.items.robots": "机器人集成",
+  "solutions.items.laboratory": "实验室管理",
+  "solutions.items.cleanroom": "无尘室方案",
+  "solutions.items.other": "其他方案",
+  "home.trustBadges.stats.uptime": "系统稳定性",
+  "home.trustBadges.stats.efficiency": "效率提升",
+  "home.trustBadges.stats.costReduction": "成本降低",
+  "home.trustBadges.stats.support": "全天候支持"
 }

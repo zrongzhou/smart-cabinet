@@ -87,7 +87,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
     }
     // Not scrolled - check if homepage
     if (typeof window !== 'undefined' && (window.location.pathname === `/${locale}` || window.location.pathname === `/${locale}/`)) {
-      return 'bg-transparent';
+      return 'bg-[rgba(3,5,20,0.75)] backdrop-blur-md border-b border-white/10';
     }
     return 'bg-white shadow-sm';
   };
@@ -248,13 +248,13 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
             {/* Mobile Menu Button - 44x44px touch target */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-3 rounded-lg hover:bg-gray-100 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+              className={`md:hidden p-3 rounded-lg transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center ${isScrolled || (typeof window !== 'undefined' && window.location.pathname !== `/${locale}` && window.location.pathname !== `/${locale}/`) ? 'hover:bg-gray-100' : 'hover:bg-white/10'}`}
               aria-label="Toggle menu"
             >
               {isMobileMenuOpen ? (
-                <XMarkIcon className="w-6 h-6 text-gray-700" />
+                <XMarkIcon className={`w-6 h-6 ${isScrolled || (typeof window !== 'undefined' && window.location.pathname !== `/${locale}` && window.location.pathname !== `/${locale}/`) ? 'text-gray-700' : 'text-white'}`} />
               ) : (
-                <Bars3Icon className="w-6 h-6 text-gray-700" />
+                <Bars3Icon className={`w-6 h-6 ${isScrolled || (typeof window !== 'undefined' && window.location.pathname !== `/${locale}` && window.location.pathname !== `/${locale}/`) ? 'text-gray-700' : 'text-white'}`} />
               )}
             </button>
           </div>

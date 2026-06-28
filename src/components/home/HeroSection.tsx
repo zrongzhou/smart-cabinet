@@ -375,16 +375,16 @@ export default function HeroSection() {
             }}
           >
             <span className="w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse" style={{ boxShadow: '0 0 8px rgba(74, 222, 128, 0.5)' }} />
-            <span className="text-sm font-bold tracking-wide" style={{ color: '#bfdbfe' }}>{t('hero.badge')}</span>
+            <span className="text-sm font-medium tracking-wide" style={{ color: '#93c5fd' }}>{t('hero.badge')}</span>
           </motion.div>
 
-          {/* Title - with text shadow for depth pop */}
+          {/* Title - elegant with subtle glow, not harsh */}
           <motion.h1
             variants={fadeInUp}
             className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight mb-6 leading-tight"
             style={{
               color: '#ffffff',
-              textShadow: '0 0 40px rgba(59, 130, 246, 0.25), 0 0 80px rgba(139, 92, 246, 0.12), 0 2px 20px rgba(0, 0, 0, 0.5)',
+              textShadow: '0 0 30px rgba(59, 130, 246, 0.15), 0 2px 12px rgba(0, 0, 0, 0.5)',
             }}
           >
             {t('hero.title')}
@@ -395,8 +395,8 @@ export default function HeroSection() {
             variants={fadeInUp}
             className="text-lg md:text-xl lg:text-2xl mb-6 font-medium max-w-2xl mx-auto"
             style={{
-              color: '#7dd3fc',
-              textShadow: '0 0 30px rgba(125, 211, 252, 0.2), 0 2px 10px rgba(0, 0, 0, 0.4)',
+              color: '#93c5fd',
+              textShadow: '0 1px 8px rgba(0, 0, 0, 0.4)',
             }}
           >
             {t('hero.subtitle')}
@@ -405,10 +405,10 @@ export default function HeroSection() {
           {/* Description */}
           <motion.p
             variants={fadeInUp}
-            className="text-base md:text-lg mb-12 max-w-3xl mx-auto leading-relaxed font-medium"
+            className="text-base md:text-lg mb-12 max-w-3xl mx-auto leading-relaxed font-normal opacity-90"
             style={{
-              color: '#93cdfd',
-              textShadow: '0 1px 8px rgba(0, 0, 0, 0.4)',
+              color: '#cbd5e1',
+              textShadow: '0 1px 6px rgba(0, 0, 0, 0.3)',
             }}
           >
             {t('hero.description')}
@@ -471,12 +471,12 @@ export default function HeroSection() {
                 }} />
                 <div className="relative z-10">
                   <div className="text-4xl font-bold mb-2" style={{
-                    color: '#fbbf24',
-                    textShadow: '0 0 20px rgba(251, 191, 36, 0.3)',
+                    color: '#7dd3fc',
+                    textShadow: '0 0 20px rgba(125, 211, 252, 0.25)',
                   }}>
                     {statsVisible ? <CountUp end={stat.number} /> : stat.number}
                   </div>
-                  <div className="text-sm font-medium" style={{ color: '#cbd5e0' }}>{t(stat.labelKey)}</div>
+                  <div className="text-sm font-medium" style={{ color: '#94a3b8' }}>{t(stat.labelKey)}</div>
                 </div>
               </div>
             ))}

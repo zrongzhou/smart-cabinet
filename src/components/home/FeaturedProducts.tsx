@@ -30,8 +30,8 @@ export default function FeaturedProducts() {
   // Framer Motion variants
   const fadeInUp = {
     hidden: { opacity: 0, y: 60 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
       transition: { duration: 0.6 }
     }
@@ -48,57 +48,57 @@ export default function FeaturedProducts() {
   };
 
   return (
-    <section className="py-20 px-6 bg-white relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute bottom-0 right-0 w-80 h-80 rounded-full blur-3xl" style={{ backgroundColor: '#eff6ff' }} />
-      <div className="absolute top-0 left-0 w-72 h-72 rounded-full blur-3xl" style={{ backgroundColor: '#f7fafc' }} />
+    <section className="py-20 px-6 relative overflow-hidden" style={{ background: 'linear-gradient(180deg, #f8fafc 0%, #eff6ff 50%, #f8fafc 100%)' }}>
+      {/* Subtle background decorations */}
+      <div className="absolute bottom-0 right-0 w-96 h-96 rounded-full blur-[120px]" style={{ backgroundColor: 'rgba(59, 130, 246, 0.06)' }} />
+      <div className="absolute top-0 left-0 w-80 h-80 rounded-full blur-[100px]" style={{ backgroundColor: 'rgba(99, 102, 241, 0.04)' }} />
 
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Section Header */}
-        <motion.div 
+        <motion.div
           className="text-center mb-16"
           initial={{ opacity: 0, y: 60 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <div 
-            className="inline-block px-4 py-1 rounded-full text-sm font-semibold mb-4 inline-flex items-center gap-2"
-            style={{ backgroundColor: 'rgba(26, 54, 93, 0.1)', color: '#1a365d' }}
+          <div
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-semibold mb-4"
+            style={{ backgroundColor: 'rgba(59, 130, 246, 0.08)', color: '#2563eb' }}
           >
             <StarIcon className="w-4 h-4" />
-            {locale === 'zh' ? '精选产品' : 'Featured Products'}
-          </div>
-          <h2 
-            className="text-3xl md:text-4xl font-bold mb-4"
-            style={{ color: '#1a202c' }}
-          >
             {t('featuredProducts.title')}
-          </h2>
-          <p 
-            className="text-lg max-w-2xl mx-auto leading-relaxed"
-            style={{ color: '#4a5568' }}
+          </div>
+          <h2
+            className="text-3xl md:text-4xl font-bold mb-4"
+            style={{ color: '#0f172a' }}
           >
             {t('featuredProducts.subtitle')}
+          </h2>
+          <p
+            className="text-lg max-w-2xl mx-auto leading-relaxed"
+            style={{ color: '#64748b' }}
+          >
+            
           </p>
         </motion.div>
 
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[1, 2, 3].map(i => (
-              <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-lg">
-                <div className="h-64 bg-gray-200 animate-pulse" />
+              <div key={i} className="bg-white/60 backdrop-blur-sm rounded-2xl overflow-hidden shadow-md border border-white/40">
+                <div className="h-64 bg-gradient-to-br from-slate-100 to-slate-200 animate-pulse" />
                 <div className="p-6 space-y-3">
-                  <div className="h-4 w-20 bg-gray-200 rounded animate-pulse" />
-                  <div className="h-6 w-full bg-gray-200 rounded animate-pulse" />
-                  <div className="h-4 w-3/4 bg-gray-200 rounded animate-pulse" />
+                  <div className="h-4 w-20 bg-slate-200 rounded animate-pulse" />
+                  <div className="h-6 w-full bg-slate-200 rounded animate-pulse" />
+                  <div className="h-4 w-3/4 bg-slate-200 rounded animate-pulse" />
                 </div>
               </div>
             ))}
           </div>
         ) : (
           <>
-            <motion.div 
+            <motion.div
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
               variants={staggerChildren}
               initial="hidden"
@@ -110,23 +110,31 @@ export default function FeaturedProducts() {
                   <motion.div
                     key={product.id}
                     variants={fadeInUp}
-                    className="group relative bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden border"
-                    style={{ borderColor: '#e2e8f0' }}
-                    whileHover={{ y: -4 }}
-                    transition={{ duration: 0.3 }}
+                    className="group relative rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2"
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.72)',
+                      backdropFilter: 'blur(12px)',
+                      border: '1px solid rgba(255, 255, 255, 0.6)',
+                      boxShadow: '0 4px 24px rgba(148, 163, 184, 0.12), 0 1px 2px rgba(148, 163, 184, 0.06)',
+                    }}
+                    whileHover={{
+                      y: -6,
+                      boxShadow: '0 16px 40px rgba(59, 130, 246, 0.15), 0 4px 12px rgba(148, 163, 184, 0.1)'
+                    }}
+                    transition={{ duration: 0.35 }}
                   >
-                    {/* Product Image with hover zoom and overlay */}
-                    <div className="relative h-64 overflow-hidden bg-gray-100">
+                    {/* Product Image with hover zoom */}
+                    <div className="relative h-64 overflow-hidden bg-gradient-to-br from-slate-50 to-blue-50/30">
                       {product.images && product.images[0] ? (
                         <>
-                          <img 
-                            src={product.images[0]} 
+                          <img
+                            src={product.images[0]}
                             alt={locale === 'zh' ? product.name.zh : locale === 'ar' ? product.name.ar : product.name.en}
                             className="w-full h-full object-cover transition-transform duration-700"
                             style={{ transform: 'scale(1)' }}
                             onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; }}
                             onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
-                            onError={(e) => { 
+                            onError={(e) => {
                               const target = e.target as HTMLImageElement;
                               target.style.display = 'none';
                               const fallback = target.nextElementSibling as HTMLElement;
@@ -136,13 +144,13 @@ export default function FeaturedProducts() {
                           />
                           <div
                             className="absolute inset-0 flex flex-col items-center justify-center"
-                            style={{ display: 'none', backgroundColor: '#1a365d' }}
+                            style={{ display: 'none', background: 'linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)' }}
                           >
-                            <span className="text-sm font-medium text-white">{locale === 'zh' ? product.name.zh : locale === 'ar' ? product.name.ar : product.name.en || product.sku || 'Product'}</span>
+                            <span className="text-sm font-medium text-white/90 relative z-10 text-center">{locale === 'zh' ? product.name.zh : locale === 'ar' ? product.name.ar : product.name.en || product.sku || 'Product'}</span>
                           </div>
                         </>
                       ) : (
-                        <div className="h-full flex flex-col items-center justify-center text-white p-8 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #1a365d 0%, #2a4a7f 100%)' }}>
+                        <div className="h-full flex flex-col items-center justify-center text-white p-8 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #1e3a5f 0%, #3b82f6 100%)' }}>
                           <div className="absolute inset-0 opacity-20">
                             <div className="absolute top-4 right-4 w-20 h-20 border-2 border-white/40 rounded-full" />
                             <div className="absolute bottom-4 left-4 w-12 h-12 border-2 border-white/40 rounded-lg rotate-12" />
@@ -151,13 +159,13 @@ export default function FeaturedProducts() {
                           <span className="text-sm font-medium text-white/90 relative z-10 text-center">{locale === 'zh' ? product.name.zh : locale === 'ar' ? product.name.ar : product.name.en || product.sku || 'Product'}</span>
                         </div>
                       )}
-                      
-                      {/* Hover Overlay with View Details button */}
-                      <div 
+
+                      {/* Hover Overlay */}
+                      <div
                         className="absolute inset-0 flex items-center justify-center transition-opacity duration-300"
-                        style={{ 
-                          backgroundColor: 'rgba(246, 173, 85, 0.9)',
-                          opacity: 0 
+                        style={{
+                          background: 'linear-gradient(135deg, rgba(37, 99, 235, 0.92) 0%, rgba(59, 130, 246, 0.88) 100%)',
+                          opacity: 0
                         }}
                         onMouseEnter={(e) => { e.currentTarget.style.opacity = '1'; }}
                         onMouseLeave={(e) => { e.currentTarget.style.opacity = '0'; }}
@@ -165,7 +173,7 @@ export default function FeaturedProducts() {
                         <a
                           href={`/${locale}/products/${product.slug}`}
                           className="px-6 py-3 rounded-lg font-semibold text-sm transition-all duration-300 hover:scale-105"
-                          style={{ backgroundColor: '#1a365d', color: '#ffffff' }}
+                          style={{ backgroundColor: '#ffffff', color: '#2563eb' }}
                         >
                           {locale === 'zh' ? '查看详情' : 'View Details'}
                         </a>
@@ -173,9 +181,9 @@ export default function FeaturedProducts() {
 
                       {/* Product badge */}
                       <div className="absolute top-4 left-4 z-20">
-                        <span 
-                          className="text-xs font-bold px-3 py-1 rounded-full shadow-lg"
-                          style={{ backgroundColor: '#ed8936', color: '#ffffff' }}
+                        <span
+                          className="text-xs font-bold px-3 py-1 rounded-full shadow-md"
+                          style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)', color: '#ffffff' }}
                         >
                           {product.sku}
                         </span>
@@ -186,9 +194,9 @@ export default function FeaturedProducts() {
                     <div className="p-6">
                       {/* Category badge */}
                       <div className="mb-3">
-                        <span 
+                        <span
                           className="inline-block px-3 py-1 rounded-full text-xs font-semibold"
-                          style={{ backgroundColor: 'rgba(26, 54, 93, 0.1)', color: '#1a365d' }}
+                          style={{ backgroundColor: 'rgba(59, 130, 246, 0.08)', color: '#3b82f6' }}
                         >
                           {(() => {
                             const cat = product.categories?.[0];
@@ -203,34 +211,34 @@ export default function FeaturedProducts() {
                         </span>
                       </div>
 
-                      <h3 
+                      <h3
                         className="text-xl font-bold mb-2 line-clamp-2 transition-colors duration-300"
-                        style={{ color: '#1a202c' }}
-                        onMouseEnter={(e) => { e.currentTarget.style.color = '#1a365d'; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.color = '#1a202c'; }}
+                        style={{ color: '#1e293b' }}
+                        onMouseEnter={(e) => { e.currentTarget.style.color = '#2563eb'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.color = '#1e293b'; }}
                       >
                         {locale === 'zh' ? product.name.zh : locale === 'ar' ? product.name.ar : product.name.en}
                       </h3>
 
-                      <p className="text-sm mb-4 line-clamp-3 leading-relaxed" style={{ color: '#718096' }}>
+                      <p className="text-sm mb-4 line-clamp-3 leading-relaxed" style={{ color: '#64748b' }}>
                         {locale === 'zh' ? product.description?.zh : locale === 'ar' ? product.description?.ar : product.description?.en}
                       </p>
 
                       {/* Price + CTA */}
-                      <div className="flex items-center justify-between pt-4" style={{ borderTop: '1px solid #e2e8f0' }}>
+                      <div className="flex items-center justify-between pt-4" style={{ borderTop: '1px solid rgba(226, 232, 240, 0.5)' }}>
                         {product.hidePrice ? (
-                          <span className="text-sm font-semibold" style={{ color: '#4a5568' }}>Contact Us for Quote</span>
+                          <span className="text-sm font-semibold" style={{ color: '#64748b' }}>Contact Us for Quote</span>
                         ) : product.price ? (
-                          <span className="text-2xl font-bold" style={{ color: '#1a365d' }}>¥{product.price}</span>
+                          <span className="text-2xl font-bold" style={{ color: '#2563eb' }}>¥{product.price}</span>
                         ) : (
-                          <span className="text-sm" style={{ color: '#a0aec0' }}>Contact for price</span>
+                          <span className="text-sm" style={{ color: '#94a3b8' }}>Contact for price</span>
                         )}
                         <a
                           href={`/${locale}/products/${product.slug}`}
                           className="inline-flex items-center font-semibold text-sm transition-colors duration-300"
-                          style={{ color: '#f6ad55' }}
-                          onMouseEnter={(e) => { e.currentTarget.style.color = '#ed8936'; }}
-                          onMouseLeave={(e) => { e.currentTarget.style.color = '#f6ad55'; }}
+                          style={{ color: '#3b82f6' }}
+                          onMouseEnter={(e) => { e.currentTarget.style.color = '#2563eb'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.color = '#3b82f6'; }}
                         >
                           {t('nav.products')}
                           <svg className="ml-1.5 w-4 h-4 transition-transform duration-300 group-hover:translate-x-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -239,13 +247,21 @@ export default function FeaturedProducts() {
                         </a>
                       </div>
                     </div>
+
+                    {/* Glass highlight overlay on hover */}
+                    <div className="absolute inset-0 rounded-2xl pointer-events-none transition-opacity duration-500 opacity-0 group-hover:opacity-100"
+                      style={{
+                        background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 50%)',
+                        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.2)',
+                      }}
+                    />
                   </motion.div>
                 );
               })}
             </motion.div>
 
             {/* View All Button */}
-            <motion.div 
+            <motion.div
               className="text-center mt-16"
               initial={{ opacity: 0, y: 60 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -255,8 +271,9 @@ export default function FeaturedProducts() {
               <motion.a
                 href={`/${locale}/products`}
                 className="group inline-flex items-center px-10 py-4 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 text-lg"
-                style={{ 
-                  background: 'linear-gradient(135deg, #ed8936 0%, #f6ad55 100%)',
+                style={{
+                  background: 'linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)',
+                  boxShadow: '0 4px 14px rgba(59, 130, 246, 0.35)',
                 }}
                 whileHover={{ y: -4 }}
                 transition={{ duration: 0.3 }}

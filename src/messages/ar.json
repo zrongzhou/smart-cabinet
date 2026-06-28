@@ -257,5 +257,20 @@
   "auth.login": "تسجيل الدخول",
   "auth.register": "إنشاء حساب",
   "auth.logout": "تسجيل الخروج",
-  "auth.account": "الملف الشخصي"
+  "auth.account": "الملف الشخصي",
+  "home.solutions.title": "حلول الصناعة",
+  "home.solutions.subtitle": "حلول تخزين ذكية مخصصة لكل صناعة",
+  "home.solutions.badge": "الحلول",
+  "solutions.items.cabinet-type": "نوع الخزانة",
+  "solutions.items.managed-items": "خزائن المواد المدارة",
+  "solutions.items.industry": "حل صناعي",
+  "solutions.items.custom-solution": "حل مخصص",
+  "solutions.items.robots": "تكامل الروبوتات",
+  "solutions.items.laboratory": "إدارة المختبرات",
+  "solutions.items.cleanroom": "حل الغرف النظيفة",
+  "solutions.items.other": "حلول أخرى",
+  "home.trustBadges.stats.uptime": "وقت التشغيل",
+  "home.trustBadges.stats.efficiency": "تحسين الكفاءة",
+  "home.trustBadges.stats.costReduction": "خفض التكاليف",
+  "home.trustBadges.stats.support": "دعم على مدار الساعة"
 }

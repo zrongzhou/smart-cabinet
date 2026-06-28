@@ -257,5 +257,20 @@
   "auth.login": "Sign In",
   "auth.register": "Sign Up",
   "auth.logout": "Sign Out",
-  "auth.account": "Account"
+  "auth.account": "Account",
+  "home.solutions.title": "Industry Solutions",
+  "home.solutions.subtitle": "Tailored smart storage solutions for every industry",
+  "home.solutions.badge": "Solutions",
+  "solutions.items.cabinet-type": "Cabinet Type",
+  "solutions.items.managed-items": "Managed Items",
+  "solutions.items.industry": "Industry Solution",
+  "solutions.items.custom-solution": "Custom Solution",
+  "solutions.items.robots": "Robot Integration",
+  "solutions.items.laboratory": "Laboratory Management",
+  "solutions.items.cleanroom": "Cleanroom Solution",
+  "solutions.items.other": "Other Solutions",
+  "home.trustBadges.stats.uptime": "System Uptime",
+  "home.trustBadges.stats.efficiency": "Efficiency Gain",
+  "home.trustBadges.stats.costReduction": "Cost Reduction",
+  "home.trustBadges.stats.support": "24/7 Support"
 }
