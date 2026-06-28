@@ -1,14 +1,42 @@
 'use client';
 
 import { useLocale } from '@/lib/i18n';
+import { motion } from 'framer-motion';
+import { 
+  CheckCircleIcon,
+  ShieldCheckIcon,
+  GlobeAltIcon,
+  ClockIcon,
+  UserGroupIcon 
+} from '@heroicons/react/24/solid';
 
 const trustBadges = [
-  { emoji: '🏆', titleKey: 'trustBadges.iso',         description: 'ISO Certified', bg: 'bg-blue-600' },
-  { emoji: '🛡️', titleKey: 'trustBadges.patents',     description: 'Patents & Copyrights', bg: 'bg-emerald-600' },
-  { emoji: '🌍', titleKey: 'trustBadges.export',      description: '60+ Countries Exported', bg: 'bg-violet-600' },
-  { emoji: '🏭', titleKey: 'trustBadges.experience',  description: 'Since 2015', bg: 'bg-amber-500' },
-  { emoji: '🤝', titleKey: 'trustBadges.clients',     description: 'Trusted Clients', bg: 'bg-cyan-600' },
+  { icon: CheckCircleIcon, titleKey: 'trustBadges.iso',         description: 'ISO Certified' },
+  { icon: ShieldCheckIcon, titleKey: 'trustBadges.patents',     description: 'Patents & Copyrights' },
+  { icon: GlobeAltIcon, titleKey: 'trustBadges.export',      description: '60+ Countries Exported' },
+  { icon: ClockIcon, titleKey: 'trustBadges.experience',  description: 'Since 2015' },
+  { icon: UserGroupIcon, titleKey: 'trustBadges.clients',     description: 'Trusted Clients' },
 ];
+
+// Framer Motion variants
+const fadeInUp = {
+  hidden: { opacity: 0, y: 60 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 0.6 }
+  }
+};
+
+const staggerChildren = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
 
 interface TrustBadgesProps {
   locale?: string;
@@ -21,55 +49,114 @@ export default function TrustBadges({ locale: propLocale }: TrustBadgesProps) {
   return (
     <section className="py-20 px-6 bg-white relative overflow-hidden">
       {/* Top border accent */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800" />
+      <div 
+        className="absolute top-0 left-0 right-0 h-1"
+        style={{ background: 'linear-gradient(90deg, #1a365d, #2a4a7f, #1a365d)' }}
+      />
 
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+        <motion.div 
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 60 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <h2 
+            className="text-3xl md:text-4xl font-bold mb-4"
+            style={{ color: '#1a202c' }}
+          >
             {t('home.trustBadges.title')}
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p 
+            className="text-lg max-w-2xl mx-auto"
+            style={{ color: '#4a5568' }}
+          >
             {t('home.trustBadges.subtitle')}
           </p>
-        </div>
+        </motion.div>
 
         {/* Badges Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 mb-16">
-          {trustBadges.map((badge, index) => (
-            <div
-              key={index}
-              className="group bg-white rounded-xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 text-center border-2 border-gray-100 hover:border-blue-500 hover:-translate-y-1"
-            >
-              {/* Emoji Icon Container - Large with colored background */}
-              <div className={`w-20 h-20 mx-auto mb-4 rounded-xl flex items-center justify-center text-4xl shadow-lg ${badge.bg} group-hover:scale-110 transition-all duration-300`}>
-                <span>{badge.emoji}</span>
-              </div>
-              <h3 className="text-base font-bold text-gray-900 mb-1">{t(badge.titleKey)}</h3>
-              <p className="text-sm text-gray-600">{badge.description}</p>
-            </div>
-          ))}
-        </div>
+        <motion.div 
+          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 mb-16"
+          variants={staggerChildren}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+        >
+          {trustBadges.map((badge, index) => {
+            const IconComponent = badge.icon;
+            return (
+              <motion.div
+                key={index}
+                variants={fadeInUp}
+                className="group bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 text-center border-2"
+                style={{ 
+                  borderColor: '#e2e8f0',
+                  transition: 'transform 0.3s ease, box-shadow 0.3s ease'
+                }}
+                whileHover={{ y: -4 }}
+                transition={{ duration: 0.3 }}
+              >
+                {/* Icon Container */}
+                <div 
+                  className="w-20 h-20 mx-auto mb-4 rounded-xl flex items-center justify-center shadow-lg transition-all duration-300 group-hover:scale-110"
+                  style={{ backgroundColor: '#1a365d' }}
+                >
+                  <IconComponent className="w-10 h-10" style={{ color: '#f6ad55' }} />
+                </div>
+                <h3 
+                  className="text-base font-bold mb-1"
+                  style={{ color: '#1a202c' }}
+                >
+                  {t(badge.titleKey)}
+                </h3>
+                <p className="text-sm" style={{ color: '#4a5568' }}>{badge.description}</p>
+              </motion.div>
+            );
+          })}
+        </motion.div>
 
-        {/* Company Stats */}
-        <div className="bg-gray-50 rounded-2xl p-8 shadow-lg">
-          <p className="text-center text-gray-500 text-sm font-semibold uppercase tracking-wider mb-8">
+        {/* Company Stats - Different from Hero stats */}
+        <motion.div 
+          className="rounded-2xl p-8 shadow-lg"
+          style={{ backgroundColor: '#f7fafc' }}
+          initial={{ opacity: 0, y: 60 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <p 
+            className="text-center text-sm font-semibold uppercase tracking-wider mb-8"
+            style={{ color: '#718096' }}
+          >
             Guangzhou Qiuyan Technology Co., Ltd. - Established 2015
           </p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
-              { number: '10+',  labelKey: 'home.trustBadges.stats.models' },
-              { number: '60+',  labelKey: 'home.trustBadges.stats.countries' },
-              { number: '500+', labelKey: 'home.trustBadges.stats.clients' },
-              { number: '10+',  labelKey: 'home.trustBadges.stats.experience' },
+              { number: '99.9%',  labelKey: 'home.trustBadges.stats.uptime' },
+              { number: '40%',   labelKey: 'home.trustBadges.stats.efficiency' },
+              { number: '30%',   labelKey: 'home.trustBadges.stats.costReduction' },
+              { number: '24/7',  labelKey: 'home.trustBadges.stats.support' },
             ].map((stat, idx) => (
-              <div key={idx} className="group hover:-translate-y-1 transition-transform duration-300">
-                <div className="text-4xl font-bold text-blue-600 mb-2">{stat.number}</div>
-                <div className="text-sm text-gray-600 font-medium">{t(stat.labelKey)}</div>
-              </div>
+              <motion.div 
+                key={idx} 
+                className="group"
+                whileHover={{ y: -4 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div 
+                  className="text-4xl font-bold mb-2"
+                  style={{ color: '#1a365d' }}
+                >
+                  {stat.number}
+                </div>
+                <div className="text-sm font-medium" style={{ color: '#4a5568' }}>{t(stat.labelKey)}</div>
+              </motion.div>
             ))}
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

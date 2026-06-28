@@ -1,6 +1,9 @@
 'use client';
 
 import { useLocale } from '@/lib/i18n';
+import { motion, AnimatePresence } from 'framer-motion';
+import { StarIcon } from '@heroicons/react/24/solid';
+import { useState, useEffect } from 'react';
 
 // Helper function to safely get localized text
 function getLocalizedText(obj: { zh: string; en: string; ar?: string }, locale: string): string {
@@ -50,63 +53,140 @@ interface TestimonialsSectionProps {
 export default function TestimonialsSection({ locale: propLocale }: TestimonialsSectionProps) {
   const { locale, t } = useLocale();
   const currentLocale = propLocale || locale;
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  // Auto-rotate testimonials
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Framer Motion variants
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 60 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }
+    }
+  };
 
   return (
-    <section className="py-20 px-6 bg-gray-50 relative overflow-hidden">
+    <section className="py-20 px-6 bg-white relative overflow-hidden">
       {/* Background decoration - large decorative quote mark */}
-      <div className="absolute top-10 left-10 text-9xl text-blue-100 font-serif leading-none select-none">"</div>
-      <div className="absolute bottom-20 right-20 w-80 h-80 bg-amber-100/50 rounded-full blur-3xl" />
+      <div 
+        className="absolute top-10 left-10 font-serif leading-none select-none pointer-events-none"
+        style={{ 
+          fontSize: '120px',
+          color: 'rgba(246, 173, 85, 0.2)'
+        }}
+      >"</div>
+      <div className="absolute bottom-20 right-20 w-80 h-80 rounded-full blur-3xl" style={{ backgroundColor: 'rgba(245, 173, 85, 0.05)' }} />
 
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Section Header */}
-        <div className="text-center mb-16">
-          <div className="inline-block px-4 py-1 bg-blue-600/10 text-blue-600 rounded-full text-sm font-semibold mb-4">
+        <motion.div 
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 60 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+        >
+          <div 
+            className="inline-block px-4 py-1 rounded-full text-sm font-semibold mb-4"
+            style={{ backgroundColor: 'rgba(26, 54, 93, 0.1)', color: '#1a365d' }}
+          >
             ★ {t('home.testimonials.badge')}
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <h2 
+            className="text-3xl md:text-4xl font-bold mb-4"
+            style={{ color: '#1a202c' }}
+          >
             {t('home.testimonials.title')}
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+          <p 
+            className="text-lg max-w-2xl mx-auto leading-relaxed"
+            style={{ color: '#4a5568' }}
+          >
             {t('home.testimonials.subtitle')}
           </p>
-        </div>
+        </motion.div>
 
-        {/* Testimonials Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {testimonials.map((testimonial, index) => (
-            <div
-              key={index}
-              className="group bg-white rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 border border-gray-100 hover:border-blue-500/30 relative overflow-hidden"
+        {/* Testimonials Carousel */}
+        <div className="max-w-4xl mx-auto">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentIndex}
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -50 }}
+              transition={{ duration: 0.5 }}
+              className="bg-white rounded-2xl p-8 md:p-12 shadow-xl border relative overflow-hidden"
+              style={{ borderColor: '#e2e8f0' }}
             >
               {/* Hover glow effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-600/0 via-blue-600/5 to-blue-600/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl" />
+              <div 
+                className="absolute inset-0 rounded-2xl"
+                style={{ 
+                  background: 'linear-gradient(90deg, rgba(26,54,93,0) 0%, rgba(26,54,93,0.05) 50%, rgba(26,54,93,0) 100%)',
+                  opacity: 0,
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.opacity = '1'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.opacity = '0'; }}
+              />
 
-              {/* Star Rating - using text stars instead of Lucide */}
+              {/* Star Rating - using Heroicons StarIcon */}
               <div className="flex items-center mb-6 relative z-10">
-                {[...Array(testimonial.rating)].map((_, i) => (
-                  <span key={i} className="text-yellow-400 text-xl">★</span>
+                {[...Array(testimonials[currentIndex].rating)].map((_, i) => (
+                  <StarIcon key={i} className="w-5 h-5 mr-1" style={{ color: '#f6ad55' }} />
                 ))}
               </div>
 
               {/* Content */}
-              <p className="text-gray-700 leading-relaxed mb-8 relative z-10 italic">
-                "{getLocalizedText(testimonial.content, currentLocale)}"
+              <p 
+                className="text-lg leading-relaxed mb-8 relative z-10 italic"
+                style={{ color: '#4a5568' }}
+              >
+                "{getLocalizedText(testimonials[currentIndex].content, currentLocale)}"
               </p>
 
               {/* Divider */}
-              <div className="w-12 h-1 bg-blue-600/20 group-hover:w-20 group-hover:bg-blue-600 transition-all duration-500 mb-6 relative z-10" />
+              <div 
+                className="w-12 h-1 rounded-full mb-6 relative z-10"
+                style={{ backgroundColor: 'rgba(26, 54, 93, 0.2)' }}
+              />
 
               {/* Author */}
               <div className="relative z-10">
-                <div className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300">
-                  {testimonial.name}
+                <div 
+                  className="font-bold text-lg"
+                  style={{ color: '#1a202c' }}
+                >
+                  {testimonials[currentIndex].name}
                 </div>
-                <div className="text-sm text-gray-600 mt-1">
-                  {getLocalizedText(testimonial.role, currentLocale)}，{testimonial.company}
+                <div className="text-sm mt-1" style={{ color: '#4a5568' }}>
+                  {getLocalizedText(testimonials[currentIndex].role, currentLocale)}，{testimonials[currentIndex].company}
                 </div>
               </div>
-            </div>
-          ))}
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Carousel Indicators */}
+          <div className="flex justify-center space-x-2 mt-8">
+            {testimonials.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrentIndex(i)}
+                className="w-3 h-3 rounded-full transition-all duration-300"
+                style={{ 
+                  backgroundColor: i === currentIndex ? '#1a365d' : 'rgba(26, 54, 93, 0.3)',
+                  transform: i === currentIndex ? 'scale(1.2)' : 'scale(1)'
+                }}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>

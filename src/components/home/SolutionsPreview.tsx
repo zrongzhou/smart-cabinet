@@ -1,17 +1,38 @@
 'use client';
 
 import { useLocale } from '@/lib/i18n';
+import { motion } from 'framer-motion';
 
 const solutions = [
-  { nameKey: 'solutions.items.cabinet-type',    emoji: '🗄', bg: 'bg-blue-600' },
-  { nameKey: 'solutions.items.managed-items',   emoji: '📦', bg: 'bg-emerald-600' },
-  { nameKey: 'solutions.items.industry',        emoji: '🏭', bg: 'bg-violet-600' },
-  { nameKey: 'solutions.items.custom-solution', emoji: '⚙️', bg: 'bg-amber-500' },
-  { nameKey: 'solutions.items.robots',          emoji: '🤖', bg: 'bg-cyan-600' },
-  { nameKey: 'solutions.items.laboratory',      emoji: '🧪', bg: 'bg-rose-600' },
-  { nameKey: 'solutions.items.cleanroom',       emoji: '💨', bg: 'bg-teal-600' },
-  { nameKey: 'solutions.items.other',           emoji: '🔧', bg: 'bg-gray-600' },
+  { nameKey: 'solutions.items.cabinet-type',   icon: '🗄' },
+  { nameKey: 'solutions.items.managed-items',  icon: '📦' },
+  { nameKey: 'solutions.items.industry',       icon: '🏭' },
+  { nameKey: 'solutions.items.custom-solution', icon: '⚙️' },
+  { nameKey: 'solutions.items.robots',         icon: '🤖' },
+  { nameKey: 'solutions.items.laboratory',     icon: '🧪' },
+  { nameKey: 'solutions.items.cleanroom',      icon: '💨' },
+  { nameKey: 'solutions.items.other',          icon: '🔧' },
 ];
+
+// Framer Motion variants
+const fadeInUp = {
+  hidden: { opacity: 0, y: 60 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 0.6 }
+  }
+};
+
+const staggerChildren = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
 
 interface SolutionsPreviewProps {
   locale?: string;
@@ -22,53 +43,92 @@ export default function SolutionsPreview({ locale: propLocale }: SolutionsPrevie
   const currentLocale = propLocale || locale;
 
   return (
-    <section className="py-20 px-6 bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 relative overflow-hidden">
+    <section className="relative py-20 px-6 overflow-hidden" style={{ backgroundColor: '#0d1b2a' }}>
       {/* Decorative glow orbs */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/30 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-amber-500/20 rounded-full blur-3xl" />
-      <div className="absolute inset-0 opacity-10" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='1' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='1'/%3E%3C/g%3E%3C/svg%3E")` }} />
+      <div className="absolute top-0 left-1/4 w-96 h-96 rounded-full blur-3xl" style={{ backgroundColor: 'rgba(59, 130, 246, 0.3)' }} />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 rounded-full blur-3xl" style={{ backgroundColor: 'rgba(245, 173, 85, 0.2)' }} />
+      
+      {/* Geometric pattern overlay */}
+      <div 
+        className="absolute inset-0" 
+        style={{ 
+          opacity: 0.05,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Ccircle cx='2' cy='2' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")` 
+        }} 
+      />
 
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <div className="inline-block px-4 py-1 bg-blue-600/30 text-blue-300 rounded-full text-sm font-semibold mb-4">
+          <div 
+            className="inline-block px-4 py-1 rounded-full text-sm font-semibold mb-4"
+            style={{ backgroundColor: 'rgba(37, 99, 235, 0.3)', color: '#93c5fd' }}
+          >
             ★ {t('home.solutions.badge') || 'Solutions'}
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+          <h2 
+            className="text-3xl md:text-4xl font-bold mb-4"
+            style={{ color: '#ffffff' }}
+          >
             {t('home.solutions.title')}
           </h2>
-          <p className="text-lg text-gray-300 max-w-2xl mx-auto leading-relaxed">
+          <p 
+            className="text-lg max-w-2xl mx-auto leading-relaxed"
+            style={{ color: '#cbd5e0' }}
+          >
             {t('home.solutions.subtitle')}
           </p>
         </div>
 
         {/* Solutions Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+          variants={staggerChildren}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+        >
           {solutions.map((solution, index) => (
-            <a
+            <motion.a
               key={index}
               href={`/${currentLocale}/products?type=${solution.nameKey.split('.').pop()}`}
-              className="group relative bg-white/10 backdrop-blur-sm rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-500 border border-white/20 hover:bg-white/20 hover:-translate-y-2 overflow-hidden"
+              variants={fadeInUp}
+              className="group relative rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-500 border overflow-hidden"
+              style={{ 
+                backgroundColor: 'rgba(255, 255, 255, 0.1)', 
+                backdropFilter: 'blur(4px)',
+                borderColor: 'rgba(255, 255, 255, 0.2)'
+              }}
+              whileHover={{ y: -8 }}
+              transition={{ duration: 0.3 }}
             >
-              {/* Emoji Icon Container - Large with colored background */}
-              <div className={`w-16 h-16 mb-5 rounded-xl flex items-center justify-center text-3xl shadow-lg ${solution.bg} group-hover:scale-110 transition-all duration-300`}>
-                {solution.emoji}
+              {/* Icon Container */}
+              <div 
+                className="w-16 h-16 mb-5 rounded-xl flex items-center justify-center shadow-lg transition-all duration-300 group-hover:scale-110"
+                style={{ backgroundColor: '#1a365d' }}
+              >
+                <svg className="w-8 h-8" style={{ color: '#f6ad55' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+                </svg>
               </div>
 
               {/* Title */}
-              <h3 className="text-lg font-bold text-white mb-2 group-hover:text-blue-300 transition-colors duration-300">
+              <h3 
+                className="text-lg font-bold mb-2 transition-colors duration-300"
+                style={{ color: '#ffffff' }}
+              >
                 {t(solution.nameKey)}
               </h3>
 
               {/* Hover arrow */}
               <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <svg className="w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <svg className="w-5 h-5" style={{ color: '#60a5fa' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
               </div>
-            </a>
+            </motion.a>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

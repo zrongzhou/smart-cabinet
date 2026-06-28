@@ -11,6 +11,7 @@
     "update-ar": "npx ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/update-ar-translations.ts"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "@prisma/client": "6.19.3",
     "@tiptap/extension-image": "^2.1.13",
     "@tiptap/extension-link": "^2.1.13",
@@ -20,12 +21,17 @@
     "@tiptap/extension-youtube": "^2.27.2",
     "@tiptap/react": "^2.1.13",
     "@tiptap/starter-kit": "^2.1.13",
+    "@tsparticles/react": "^4.3.0",
+    "@tsparticles/slim": "^4.3.0",
     "bcryptjs": "^3.0.3",
+    "framer-motion": "^12.42.0",
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^0.294.0",
     "next": "^14.0.4",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-tsparticles": "^2.12.2",
+    "tsparticles": "^4.3.0"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^14.0.4",
