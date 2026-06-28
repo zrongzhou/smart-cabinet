@@ -365,31 +365,29 @@ export default function HeroSection() {
           initial="hidden"
           animate="visible"
         >
-          {/* Badge */}
-          <motion.div
-            variants={fadeInUp}
-            className="inline-flex items-center space-x-3 backdrop-blur-xl border rounded-full px-5 py-2 mb-5 hover:bg-white/10 transition-colors duration-300"
-            style={{
-              backgroundColor: 'rgba(37, 99, 235, 0.25)',
-              borderColor: 'rgba(96, 165, 250, 0.35)',
-              boxShadow: '0 0 20px rgba(59, 130, 246, 0.1), inset 0 1px 0 rgba(255,255,255,0.08)',
-            }}
-          >
-            <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" style={{ boxShadow: '0 0 8px rgba(74, 222, 128, 0.5)' }} />
-            <span className="text-sm font-medium tracking-wide" style={{ color: '#93c5fd' }}>{t('hero.badge')}</span>
-          </motion.div>
+          {/* Title - Badge integrated inline */}
+          <motion.div variants={fadeInUp} className="mb-5">
+            {/* Badge integrated as part of title block */}
+            <div className="inline-flex items-center space-x-2 backdrop-blur-md border rounded-full px-4 py-1.5 mb-4"
+              style={{
+                backgroundColor: 'rgba(37, 99, 235, 0.2)',
+                borderColor: 'rgba(96, 165, 250, 0.25)',
+              }}
+            >
+              <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" style={{ boxShadow: '0 0 6px rgba(74, 222, 128, 0.5)' }} />
+              <span className="text-xs font-medium tracking-wide" style={{ color: '#93c5fd' }}>{t('hero.badge')}</span>
+            </div>
 
-          {/* Title - elegant with subtle glow, not harsh */}
-          <motion.h1
-            variants={fadeInUp}
-            className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight mb-4 leading-[1.15]"
-            style={{
-              color: '#ffffff',
-              textShadow: '0 0 30px rgba(59, 130, 246, 0.15), 0 2px 12px rgba(0, 0, 0, 0.5)',
-            }}
-          >
-            {t('hero.title')}
-          </motion.h1>
+            <motion.h1
+              className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight leading-[1.15]"
+              style={{
+                color: '#ffffff',
+                textShadow: '0 0 40px rgba(59, 130, 246, 0.18), 0 2px 16px rgba(0, 0, 0, 0.5)',
+              }}
+            >
+              {t('hero.title')}
+            </motion.h1>
+          </motion.div>
 
           {/* Subtitle */}
           <motion.p
@@ -445,40 +443,29 @@ export default function HeroSection() {
             </a>
           </motion.div>
 
-          {/* Stats - glass cards with enhanced depth */}
+          {/* Stats - integrated horizontal bar, not floating cards */}
           <motion.div
             ref={statsRef}
             variants={fadeInUp}
-            className="grid grid-cols-3 gap-5 max-w-2xl mx-auto"
+            className="flex flex-wrap justify-center gap-8 md:gap-14 max-w-2xl mx-auto mt-14 pt-8"
+            style={{
+              borderTop: '1px solid rgba(255,255,255,0.08)',
+            }}
           >
             {[
-              { number: '10+', labelKey: 'hero.statModels' },
-              { number: '60+', labelKey: 'hero.statCountries' },
-              { number: '500+', labelKey: 'hero.statClients' },
+              { number: '10+', labelKey: 'hero.statModels', icon: '◆' },
+              { number: '60+', labelKey: 'hero.statCountries', icon: '◇' },
+              { number: '500+', labelKey: 'hero.statClients', icon: '○' },
             ].map((stat, i) => (
-              <div
-                key={i}
-                className="text-center rounded-xl p-4 relative overflow-hidden"
-                style={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.07)',
-                  backdropFilter: 'blur(16px)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  boxShadow: '0 0 20px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255,255,255,0.08)',
-                }}
-              >
-                {/* Subtle inner glow */}
-                <div className="absolute inset-0 rounded-xl" style={{
-                  background: 'radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.05) 0%, transparent 60%)',
-                }} />
-                <div className="relative z-10">
-                  <div className="text-3xl font-bold mb-1" style={{
-                    color: '#7dd3fc',
-                    textShadow: '0 0 20px rgba(125, 211, 252, 0.25)',
-                  }}>
-                    {statsVisible ? <CountUp end={stat.number} /> : stat.number}
-                  </div>
-                  <div className="text-sm font-medium" style={{ color: '#94a3b8' }}>{t(stat.labelKey)}</div>
+              <div key={i} className="text-center group">
+                <div className="text-3xl md:text-4xl font-bold mb-1 relative inline-block" style={{
+                  color: '#ffffff',
+                  textShadow: '0 0 25px rgba(125, 211, 252, 0.35), 0 0 50px rgba(59, 130, 246, 0.15)',
+                }}>
+                  <span className="text-sm mr-1.5 opacity-40 group-hover:opacity-70 transition-opacity">{stat.icon}</span>
+                  {statsVisible ? <CountUp end={stat.number} /> : stat.number}
                 </div>
+                <div className="text-xs md:text-sm font-medium opacity-60" style={{ color: '#94a3b8' }}>{t(stat.labelKey)}</div>
               </div>
             ))}
           </motion.div>

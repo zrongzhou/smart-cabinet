@@ -11,11 +11,11 @@ import {
 } from '@heroicons/react/24/solid';
 
 const trustBadges = [
-  { icon: CheckCircleIcon,   titleKey: 'trustBadges.iso',         description: 'ISO Certified',           color: '#10b981', glowColor: 'rgba(16,185,129,0.15)' },
-  { icon: ShieldCheckIcon,  titleKey: 'trustBadges.patents',     description: 'Patents & Copyrights',     color: '#3b82f6', glowColor: 'rgba(59,130,246,0.15)' },
-  { icon: GlobeAltIcon,     titleKey: 'trustBadges.export',      description: '60+ Countries Exported',   color: '#6366f1', glowColor: 'rgba(99,102,241,0.15)' },
-  { icon: ClockIcon,        titleKey: 'trustBadges.experience',  description: 'Since 2015',               color: '#f59e0b', glowColor: 'rgba(245,158,11,0.15)' },
-  { icon: UserGroupIcon,    titleKey: 'trustBadges.clients',      description: 'Trusted Clients',          color: '#ef4444', glowColor: 'rgba(239,68,68,0.15)' },
+  { icon: CheckCircleIcon,   titleKey: 'trustBadges.iso',         subKey: 'home.trustBadges.stats.models',  color: '#10b981', glowColor: 'rgba(16,185,129,0.15)' },
+  { icon: ShieldCheckIcon,  titleKey: 'trustBadges.patents',     subKey: 'home.trustBadges.stats.countries', color: '#3b82f6', glowColor: 'rgba(59,130,246,0.15)' },
+  { icon: GlobeAltIcon,     titleKey: 'trustBadges.export',      subKey: 'home.trustBadges.stats.clients',   color: '#6366f1', glowColor: 'rgba(99,102,241,0.15)' },
+  { icon: ClockIcon,        titleKey: 'trustBadges.experience',  subKey: 'home.trustBadges.stats.experience',color: '#f59e0b', glowColor: 'rgba(245,158,11,0.15)' },
+  { icon: UserGroupIcon,    titleKey: 'trustBadges.clients',      subKey: 'home.trustBadges.stats.uptime',    color: '#ef4444', glowColor: 'rgba(239,68,68,0.15)' },
 ];
 
 const fadeInUp = {
@@ -151,9 +151,9 @@ export default function TrustBadges({ locale: propLocale }: TrustBadgesProps) {
                   className="text-sm font-bold mb-1.5 transition-colors duration-300"
                   style={{ color: '#1e293b' }}
                 >
-                  {t(badge.titleKey) || badge.description}
+                  {t(badge.titleKey)}
                 </h3>
-                <p className="text-xs leading-relaxed" style={{ color: '#94a3b8' }}>{badge.description}</p>
+                <p className="text-xs leading-relaxed" style={{ color: '#94a3b8' }}>{t(badge.subKey)}</p>
               </motion.div>
             );
           })}
