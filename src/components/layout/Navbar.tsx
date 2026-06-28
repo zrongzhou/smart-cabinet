@@ -86,7 +86,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
       return 'bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-100';
     }
     // Not scrolled - check if homepage
-    if (typeof window !== 'undefined' && window.location.pathname === `/${locale}` || window.location.pathname === `/${locale}/`) {
+    if (typeof window !== 'undefined' && (window.location.pathname === `/${locale}` || window.location.pathname === `/${locale}/`)) {
       return 'bg-transparent';
     }
     return 'bg-white shadow-sm';
