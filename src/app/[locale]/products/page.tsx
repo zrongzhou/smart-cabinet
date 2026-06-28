@@ -17,7 +17,7 @@ import { getBaseUrl } from '@/data/unified-data';
 const dimensionDefaultIcons: Record<string, any> = {
   'cabinet-type':   Archive,     // file cabinet
   'managed-items':  Package,     // box/package
-  'industry':       Factory,     // factory building
+  'industry':       Building2,   // building (v134: changed from Factory which rendered blank on some browsers)
   'custom-solution': Settings,    // gear
   'robots':         Cpu,         // processor chip
   'robotics':       Cpu,
@@ -468,21 +468,28 @@ export default function ProductsPage() {
                       isActive
                         /* Active: gradient background via inline style */
                         ? `text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 ring-1 ring-white/25`
-                        /* Inactive: unified light-pill style using CSS vars */
-                        : `bg-[var(--card-bg)] text-[var(--text-secondary)] border border-[var(--border-color)] hover:border-[var(--primary-color)]/30 hover:shadow-sm hover:-translate-y-0.5`
+                        /* Inactive: light pill — colors set via inline style below */
+                        : `border hover:border-[var(--primary-color)]/30 hover:shadow-sm hover:-translate-y-0.5`
                     }`}
-                    style={isActive ? { background: 'linear-gradient(135deg, var(--primary-color), var(--primary-dark))' } : undefined}
+                    style={isActive
+                      ? { background: 'linear-gradient(135deg, var(--primary-color), var(--primary-dark))' }
+                      : { backgroundColor: 'var(--card-bg, #ffffff)', color: 'var(--text-secondary, #4b5563)', borderColor: 'var(--border-color, #d1d5db)' }
+                    }
                     title={isEmpty ? (locale === 'zh' ? '该维度暂无产品' : 'No products in this dimension') : ''}
                   >
                     {/* Left accent bar for active state */}
                     {isActive && (
                       <div className="absolute left-0 top-1.5 bottom-1.5 w-[3px] bg-white/60 rounded-r" />
                     )}
-                    {/* Dimension icon — always show in its brand color */}
+                    {/* Dimension icon — inline style color for reliability */}
                     {dimensionIcon && <span className="flex-shrink-0">{dimensionIcon}</span>}
-                    <span>{label}</span>
-                    {/* Count badge — subtle, always visible */}
-                    <span className={`text-[11px] font-normal tabular-nums ml-0.5 ${isActive ? 'text-white/70' : 'text-[var(--text-muted)]'}`}>
+                    {/* Label — inherit from button inline style */}
+                    <span style={!isActive ? { color: 'inherit' } : undefined}>{label}</span>
+                    {/* Count badge — explicit fallback color */}
+                    <span
+                      className={`text-[11px] font-normal tabular-nums ml-0.5`}
+                      style={{ color: isActive ? 'rgba(255,255,255,0.7)' : 'var(--text-muted, #6b7280)' }}
+                    >
                       ({count})
                     </span>
                   </button>
