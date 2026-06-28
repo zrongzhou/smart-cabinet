@@ -15,8 +15,19 @@ const HeroSection = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="min-h-[80vh] flex items-center justify-center" style={{ background: 'linear-gradient(175deg, #03010a 0%, #0c1229 50%, #060e1f 100%)' }}>
-        <div className="text-white text-lg opacity-60">Loading...</div>
+      <div className="min-h-[80vh] flex flex-col items-center justify-center relative overflow-hidden" style={{ background: 'linear-gradient(175deg, #03010a 0%, #0c1229 50%, #060e1f 100%)' }}>
+        {/* Subtle animated gradient orbs */}
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full blur-3xl animate-pulse" style={{ backgroundColor: 'rgba(59,130,246,0.08)', animationDuration: '3s' }} />
+        <div className="absolute bottom-1/3 right-1/4 w-48 h-48 rounded-full blur-3xl animate-pulse" style={{ backgroundColor: 'rgba(99,102,241,0.06)', animationDuration: '4s' }} />
+        {/* Logo + Brand */}
+        <div className="relative z-10 flex flex-col items-center gap-5">
+          <img src="/images/logo.svg" alt="Qtech" className="h-12 w-auto opacity-90 animate-pulse" style={{ animationDuration: '2s' }} />
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: '0ms' }} />
+            <div className="w-2 h-2 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '150ms' }} />
+            <div className="w-2 h-2 rounded-full bg-indigo-400 animate-bounce" style={{ animationDelay: '300ms' }} />
+          </div>
+        </div>
       </div>
     ),
   }
