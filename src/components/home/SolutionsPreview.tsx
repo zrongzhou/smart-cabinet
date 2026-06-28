@@ -2,16 +2,27 @@
 
 import { useLocale } from '@/lib/i18n';
 import { motion } from 'framer-motion';
+import { 
+  CubeIcon, 
+  ArchiveBoxIcon, 
+  BuildingOfficeIcon, 
+  CogIcon, 
+  CpuChipIcon, 
+  BeakerIcon, 
+  CloudIcon, 
+  WrenchIcon,
+  StarIcon,
+} from '@heroicons/react/24/outline';
 
 const solutions = [
-  { nameKey: 'solutions.items.cabinet-type',   icon: '🗄' },
-  { nameKey: 'solutions.items.managed-items',  icon: '📦' },
-  { nameKey: 'solutions.items.industry',       icon: '🏭' },
-  { nameKey: 'solutions.items.custom-solution', icon: '⚙️' },
-  { nameKey: 'solutions.items.robots',         icon: '🤖' },
-  { nameKey: 'solutions.items.laboratory',     icon: '🧪' },
-  { nameKey: 'solutions.items.cleanroom',      icon: '💨' },
-  { nameKey: 'solutions.items.other',          icon: '🔧' },
+  { nameKey: 'solutions.items.cabinet-type',   icon: CubeIcon },
+  { nameKey: 'solutions.items.managed-items',  icon: ArchiveBoxIcon },
+  { nameKey: 'solutions.items.industry',       icon: BuildingOfficeIcon },
+  { nameKey: 'solutions.items.custom-solution', icon: CogIcon },
+  { nameKey: 'solutions.items.robots',         icon: CpuChipIcon },
+  { nameKey: 'solutions.items.laboratory',     icon: BeakerIcon },
+  { nameKey: 'solutions.items.cleanroom',      icon: CloudIcon },
+  { nameKey: 'solutions.items.other',          icon: WrenchIcon },
 ];
 
 // Framer Motion variants
@@ -61,10 +72,11 @@ export default function SolutionsPreview({ locale: propLocale }: SolutionsPrevie
         {/* Section Header */}
         <div className="text-center mb-16">
           <div 
-            className="inline-block px-4 py-1 rounded-full text-sm font-semibold mb-4"
+            className="inline-flex items-center gap-2 px-4 py-1 rounded-full text-sm font-semibold mb-4"
             style={{ backgroundColor: 'rgba(37, 99, 235, 0.3)', color: '#93c5fd' }}
           >
-            ★ {t('home.solutions.badge') || 'Solutions'}
+            <StarIcon className="w-4 h-4" />
+            {t('home.solutions.badge') || 'Solutions'}
           </div>
           <h2 
             className="text-3xl md:text-4xl font-bold mb-4"
@@ -107,9 +119,9 @@ export default function SolutionsPreview({ locale: propLocale }: SolutionsPrevie
                 className="w-16 h-16 mb-5 rounded-xl flex items-center justify-center shadow-lg transition-all duration-300 group-hover:scale-110"
                 style={{ backgroundColor: '#1a365d' }}
               >
-                <svg className="w-8 h-8" style={{ color: '#f6ad55' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
-                </svg>
+                {solution.icon && (
+                  <solution.icon className="w-8 h-8" style={{ color: '#f6ad55' }} />
+                )}
               </div>
 
               {/* Title */}

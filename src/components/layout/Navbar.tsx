@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Menu, X, ChevronDown, User, LogOut, Settings } from 'lucide-react';
+import { Bars3Icon, XMarkIcon, ChevronDownIcon, UserIcon, ArrowRightOnRectangleIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
 import { useLocale } from '@/lib/i18n';
 import { useAuth } from '@/components/AuthProvider';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
@@ -175,7 +175,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
                   className="flex items-center space-x-1 px-3 py-2 rounded-lg border border-gray-300 hover:border-blue-600 hover:text-blue-600 transition-colors duration-200 text-sm font-medium"
                 >
                   <span>{currentLang.label}</span>
-                  <ChevronDown className="w-4 h-4" />
+                  <ChevronDownIcon className="w-4 h-4" />
                 </button>
 
                 {/* Language Dropdown */}
@@ -233,7 +233,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
                           onClick={() => setIsUserMenuOpen(false)}
                           className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center space-x-2"
                         >
-                          <User className="w-4 h-4" />
+                          <UserIcon className="w-4 h-4" />
                           <span>{locale === 'zh' ? '个人中心' : locale === 'ar' ? 'الملف الشخصي' : 'Account'}</span>
                         </a>
                         <button
@@ -243,7 +243,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
                           }}
                           className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center space-x-2"
                         >
-                          <LogOut className="w-4 h-4" />
+                          <ArrowRightOnRectangleIcon className="w-4 h-4" />
                           <span>{locale === 'zh' ? '退出登录' : locale === 'ar' ? 'تسجيل الخروج' : 'Sign Out'}</span>
                         </button>
                       </div>
@@ -284,9 +284,9 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
               aria-label="Toggle menu"
             >
               {isMobileMenuOpen ? (
-                <X className="w-6 h-6 text-gray-700" />
+                <XMarkIcon className="w-6 h-6 text-gray-700" />
               ) : (
-                <Menu className="w-6 h-6 text-gray-700" />
+                <Bars3Icon className="w-6 h-6 text-gray-700" />
               )}
             </button>
           </div>
@@ -315,7 +315,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="p-1 rounded-lg hover:bg-gray-100"
                 >
-                  <X className="w-5 h-5 text-gray-700" />
+                  <XMarkIcon className="w-5 h-5 text-gray-700" />
                 </button>
               </div>
 
@@ -363,7 +363,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="flex items-center space-x-2 py-2.5 px-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors font-medium mb-2"
                   >
-                    <User className="w-5 h-5" />
+                    <UserIcon className="w-5 h-5" />
                     <span>{locale === 'zh' ? '个人中心' : locale === 'ar' ? 'الملف الشخصي' : 'Account'}</span>
                   </a>
 
@@ -376,7 +376,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
                     }}
                     className="flex items-center space-x-2 py-2.5 px-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors font-medium w-full mb-6"
                   >
-                    <LogOut className="w-5 h-5" />
+                    <ArrowRightOnRectangleIcon className="w-5 h-5" />
                     <span>{locale === 'zh' ? '退出登录' : locale === 'ar' ? 'تسجيل الخروج' : 'Sign Out'}</span>
                   </button>
                 </>
