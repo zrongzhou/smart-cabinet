@@ -57,16 +57,16 @@ interface StarLayer {
 }
 
 const STAR_LAYERS: StarLayer[] = [
-  // Layer 0: Distant galaxy background - tiny, very dim, barely moving
-  { count: 200, sizeRange: [0.2, 0.6], speedRange: [0.01, 0.04], opacityRange: [0.1, 0.3], color: 'rgba(180,190,220,' },
-  // Layer 1: Far stars - small, dim, slow
-  { count: 120, sizeRange: [0.4, 1.0], speedRange: [0.03, 0.08], opacityRange: [0.2, 0.5], color: 'rgba(200,215,255,' },
-  // Layer 2: Mid-distance stars - medium, moderate brightness
-  { count: 80, sizeRange: [0.8, 1.8], speedRange: [0.06, 0.15], opacityRange: [0.35, 0.7], color: 'rgba(224,242,254,' },
-  // Layer 3: Close bright stars - larger, brighter, faster, some with colored tints
-  { count: 35, sizeRange: [1.5, 3.0], speedRange: [0.1, 0.25], opacityRange: [0.5, 1.0], color: 'rgba(255,255,255,', glow: true },
-  // Layer 4: Foreground "dust" / very close bright specks - largest, fastest parallax feel
-  { count: 12, sizeRange: [2.0, 4.0], speedRange: [0.15, 0.35], opacityRange: [0.3, 0.6], color: 'rgba(147,197,253,' },
+  // Layer 0: Distant galaxy background - tiny, dim, numerous
+  { count: 350, sizeRange: [0.3, 0.8], speedRange: [0.01, 0.03], opacityRange: [0.15, 0.4], color: 'rgba(180,190,220,' },
+  // Layer 1: Far stars - small, visible
+  { count: 180, sizeRange: [0.5, 1.2], speedRange: [0.02, 0.06], opacityRange: [0.3, 0.6], color: 'rgba(200,215,255,' },
+  // Layer 2: Mid-distance stars - medium brightness
+  { count: 100, sizeRange: [1.0, 2.0], speedRange: [0.04, 0.12], opacityRange: [0.4, 0.8], color: 'rgba(224,242,254,' },
+  // Layer 3: Close bright stars - large, bright, colored tints
+  { count: 50, sizeRange: [1.8, 3.5], speedRange: [0.08, 0.22], opacityRange: [0.6, 1.0], color: 'rgba(255,255,255,', glow: true },
+  // Layer 4: Foreground dust - very close, fastest
+  { count: 18, sizeRange: [2.5, 5.0], speedRange: [0.12, 0.32], opacityRange: [0.4, 0.7], color: 'rgba(147,197,253,' },
 ];
 
 export default function HeroSection() {
@@ -155,39 +155,39 @@ export default function HeroSection() {
       });
     };
 
-    // Pre-draw nebula clouds (static, subtle)
+    // Pre-draw nebula clouds (visible, atmospheric)
     const drawNebulae = (time: number) => {
-      // Subtle purple-blue nebula top-left
+      // Purple-blue nebula top-left (more visible)
       const gradient1 = ctx.createRadialGradient(
         canvas.width * 0.15, canvas.height * 0.2, 0,
         canvas.width * 0.15, canvas.height * 0.2, canvas.width * 0.35
       );
-      gradient1.addColorStop(0, 'rgba(99, 102, 241, 0.06)');
-      gradient1.addColorStop(0.5, 'rgba(139, 92, 246, 0.03)');
+      gradient1.addColorStop(0, 'rgba(99, 102, 241, 0.12)');
+      gradient1.addColorStop(0.5, 'rgba(139, 92, 246, 0.06)');
       gradient1.addColorStop(1, 'rgba(0, 0, 0, 0)');
       ctx.fillStyle = gradient1;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Subtle cyan nebula bottom-right
+      // Cyan-blue nebula bottom-right (more visible)
       const gradient2 = ctx.createRadialGradient(
         canvas.width * 0.85, canvas.height * 0.75, 0,
         canvas.width * 0.85, canvas.height * 0.75, canvas.width * 0.3
       );
-      gradient2.addColorStop(0, 'rgba(6, 182, 212, 0.04)');
-      gradient2.addColorStop(0.5, 'rgba(59, 130, 246, 0.02)');
+      gradient2.addColorStop(0, 'rgba(6, 182, 212, 0.08)');
+      gradient2.addColorStop(0.5, 'rgba(59, 130, 246, 0.04)');
       gradient2.addColorStop(1, 'rgba(0, 0, 0, 0)');
       ctx.fillStyle = gradient2;
       ctx.fillRect(0, 0, canvas.height, canvas.height);
 
-      // Milky way band (subtle diagonal)
+      // Milky way band (more visible diagonal stripe)
       ctx.save();
-      ctx.globalAlpha = 0.02 + Math.sin(time * 0.1) * 0.005;
+      ctx.globalAlpha = 0.04 + Math.sin(time * 0.1) * 0.015;
       ctx.translate(canvas.width * 0.5, canvas.height * 0.5);
       ctx.rotate(-0.4); // tilted band
       ctx.scale(1, 0.25); // flatten to create band shape
       const milkyWayGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, canvas.width * 0.6);
-      milkyWayGrad.addColorStop(0, 'rgba(220, 220, 255, 0.8)');
-      milkyWayGrad.addColorStop(0.3, 'rgba(200, 210, 255, 0.4)');
+      milkyWayGrad.addColorStop(0, 'rgba(220, 220, 255, 0.9)');
+      milkyWayGrad.addColorStop(0.3, 'rgba(200, 210, 255, 0.5)');
       milkyWayGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
       ctx.fillStyle = milkyWayGrad;
       ctx.fillRect(-canvas.width, -canvas.height, canvas.width * 2, canvas.height * 2);
@@ -262,8 +262,8 @@ export default function HeroSection() {
         }
       });
 
-      // Occasional shooting star (2% chance per frame)
-      if (Math.random() < 0.008) {
+      // Occasional shooting star (4% chance per frame - more frequent)
+      if (Math.random() < 0.015) {
         const sx = Math.random() * canvas.width * 0.8;
         const sy = Math.random() * canvas.height * 0.3;
         const slen = 60 + Math.random() * 100;
@@ -353,9 +353,10 @@ export default function HeroSection() {
         }}
       />
 
-      {/* Ambient glow orbs behind content */}
-      <div className="absolute top-[10%] left-[5%] w-[500px] h-[500px] rounded-full blur-[120px] z-0" style={{ backgroundColor: 'rgba(59, 130, 246, 0.08)' }} />
-      <div className="absolute bottom-[10%] right-[5%] w-[400px] h-[400px] rounded-full blur-[100px] z-0" style={{ backgroundColor: 'rgba(168, 85, 247, 0.06)' }} />
+      {/* Ambient glow orbs behind content - enhanced visibility */}
+      <div className="absolute top-[10%] left-[5%] w-[500px] h-[500px] rounded-full blur-[120px] z-0" style={{ backgroundColor: 'rgba(59, 130, 246, 0.14)' }} />
+      <div className="absolute bottom-[10%] right-[5%] w-[400px] h-[400px] rounded-full blur-[100px] z-0" style={{ backgroundColor: 'rgba(168, 85, 247, 0.10)' }} />
+      <div className="absolute top-[40%] right-[20%] w-[300px] h-[300px] rounded-full blur-[100px] z-0" style={{ backgroundColor: 'rgba(6, 182, 212, 0.08)' }} />
 
       {/* Content - elevated with glass-like backdrop for foreground pop */}
       <div className="relative z-10 text-center text-white px-6 max-w-5xl mx-auto">

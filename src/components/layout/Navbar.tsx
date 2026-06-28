@@ -85,9 +85,9 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
     if (isScrolled) {
       return 'bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-100';
     }
-    // Not scrolled - check if homepage: gradient blend with starry sky
+    // Not scrolled - check if homepage: solid dark for readability over starry sky
     if (typeof window !== 'undefined' && (window.location.pathname === `/${locale}` || window.location.pathname === `/${locale}/`)) {
-      return 'bg-gradient-to-b from-black/40 via-black/20 to-transparent backdrop-blur-md border-b border-white/5';
+      return 'bg-[rgba(5,8,25,0.70)] backdrop-blur-xl border-b border-white/10 shadow-sm';
     }
     return 'bg-white shadow-sm';
   };
