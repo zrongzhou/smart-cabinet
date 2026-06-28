@@ -130,5 +130,17 @@
   "solutions.items.robots": "الروبوتات",
   "solutions.items.laboratory": "المختبر",
   "solutions.items.cleanroom": "غرفة نظيفة",
-  "solutions.items.other": "أخرى"
+  "solutions.items.other": "أخرى",
+
+  "home.trustBadges.title": "لماذا تختارنا",
+  "home.trustBadges.subtitle": "سجل حافل والاعتراف بالصناعة",
+  "trustBadges.iso": "معتمد ISO",
+  "trustBadges.patents": "10+ براءة اختراع",
+  "trustBadges.export": "60+ دولة",
+  "trustBadges.experience": "10+ سنة خبرة",
+  "trustBadges.clients": "500+ عميل",
+  "home.trustBadges.stats.uptime": "99.9% وقت التشغيل",
+  "home.trustBadges.stats.efficiency": "40% زيادة الكفاءة",
+  "home.trustBadges.stats.costReduction": "30% تقيليل التكلفة",
+  "home.trustBadges.stats.support": "دعم 24/7"
 }

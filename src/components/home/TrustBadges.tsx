@@ -67,13 +67,13 @@ export default function TrustBadges({ locale: propLocale }: TrustBadgesProps) {
             className="text-3xl md:text-4xl font-bold mb-4"
             style={{ color: '#1a202c' }}
           >
-            {t('home.trustBadges.title')}
+            {t('home.trustBadges.title') || 'Why Choose Us'}
           </h2>
           <p 
             className="text-lg max-w-2xl mx-auto"
             style={{ color: '#4a5568' }}
           >
-            {t('home.trustBadges.subtitle')}
+            {t('home.trustBadges.subtitle') || 'Proven track record and industry recognition'}
           </p>
         </motion.div>
 
@@ -110,7 +110,7 @@ export default function TrustBadges({ locale: propLocale }: TrustBadgesProps) {
                   className="text-base font-bold mb-1"
                   style={{ color: '#1a202c' }}
                 >
-                  {t(badge.titleKey)}
+                  {t(badge.titleKey) || badge.description}
                 </h3>
                 <p className="text-sm" style={{ color: '#4a5568' }}>{badge.description}</p>
               </motion.div>
@@ -152,7 +152,7 @@ export default function TrustBadges({ locale: propLocale }: TrustBadgesProps) {
                 >
                   {stat.number}
                 </div>
-                <div className="text-sm font-medium" style={{ color: '#4a5568' }}>{t(stat.labelKey)}</div>
+                <div className="text-sm font-medium" style={{ color: '#4a5568' }}>{t(stat.labelKey) || stat.labelKey.split('.').pop()}</div>
               </motion.div>
             ))}
           </div>

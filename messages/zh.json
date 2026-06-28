@@ -130,5 +130,17 @@
   "solutions.items.robots": "机器人集成",
   "solutions.items.laboratory": "实验室管理",
   "solutions.items.cleanroom": "洁净室方案",
-  "solutions.items.other": "其他方案"
+  "solutions.items.other": "其他方案",
+
+  "home.trustBadges.title": "为什么选择我们",
+  "home.trustBadges.subtitle": "经过验证的业绩和行业认可",
+  "trustBadges.iso": "ISO认证",
+  "trustBadges.patents": "10+ 专利",
+  "trustBadges.export": "出口60+ 国家",
+  "trustBadges.experience": "10+ 年经验",
+  "trustBadges.clients": "500+ 客户",
+  "home.trustBadges.stats.uptime": "99.9% 在线率",
+  "home.trustBadges.stats.efficiency": "40% 效率提升",
+  "home.trustBadges.stats.costReduction": "30% 成本降低",
+  "home.trustBadges.stats.support": "7×24小时支持"
 }

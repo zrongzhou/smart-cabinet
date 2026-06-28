@@ -76,19 +76,19 @@ export default function SolutionsPreview({ locale: propLocale }: SolutionsPrevie
             style={{ backgroundColor: 'rgba(37, 99, 235, 0.3)', color: '#93c5fd' }}
           >
             <StarIcon className="w-4 h-4" />
-            {t('home.solutions.badge') || 'Solutions'}
+            {t('home.solutions.badge') || '★ Solutions'}
           </div>
           <h2 
             className="text-3xl md:text-4xl font-bold mb-4"
             style={{ color: '#ffffff' }}
           >
-            {t('home.solutions.title')}
+            {t('home.solutions.title') || 'Industry Solutions'}
           </h2>
           <p 
             className="text-lg max-w-2xl mx-auto leading-relaxed"
             style={{ color: '#cbd5e0' }}
           >
-            {t('home.solutions.subtitle')}
+            {t('home.solutions.subtitle') || 'Tailored smart storage solutions for your industry'}
           </p>
         </div>
 
@@ -129,7 +129,7 @@ export default function SolutionsPreview({ locale: propLocale }: SolutionsPrevie
                 className="text-lg font-bold mb-2 transition-colors duration-300"
                 style={{ color: '#ffffff' }}
               >
-                {t(solution.nameKey)}
+                {t(solution.nameKey) || solution.nameKey.split('.').pop()}
               </h3>
 
               {/* Hover arrow */}

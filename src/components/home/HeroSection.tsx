@@ -90,9 +90,10 @@ export default function HeroSection() {
       size: number;
       opacity: number;
       color: string;
+      twinkleOffset: number;
     }> = [];
 
-    const colors = ['rgba(255,255,255,', 'rgba(246,173,85,', 'rgba(99,179,237,'];
+    const colors = ['rgba(255,255,255,', 'rgba(224,242,254,', 'rgba(254,243,199,', 'rgba(147,197,253,'];
 
     const resize = () => {
       canvas.width = window.innerWidth;
@@ -101,21 +102,23 @@ export default function HeroSection() {
 
     const createParticles = () => {
       particles = [];
-      const count = Math.min(80, Math.floor((canvas.width * canvas.height) / 15000));
+      const count = Math.min(250, Math.floor((canvas.width * canvas.height) / 8000));
       for (let i = 0; i < count; i++) {
         particles.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          vx: (Math.random() - 0.5) * 0.5,
-          vy: (Math.random() - 0.5) * 0.5,
-          size: Math.random() * 2 + 0.5,
-          opacity: Math.random() * 0.3 + 0.1,
+          vx: (Math.random() - 0.5) * 0.15,
+          vy: (Math.random() - 0.5) * 0.15,
+          size: Math.random() * 2.2 + 0.3,
+          opacity: Math.random() * 0.7 + 0.2,
           color: colors[Math.floor(Math.random() * colors.length)],
+          twinkleOffset: Math.random() * Math.PI * 2, // For twinkle effect
         });
       }
     };
 
     const draw = () => {
+      const time = Date.now() * 0.001; // Convert to seconds for smoother animation
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       particles.forEach((p, i) => {
@@ -129,10 +132,14 @@ export default function HeroSection() {
         if (p.y < 0) p.y = canvas.height;
         if (p.y > canvas.height) p.y = 0;
 
+        // Calculate twinkle effect
+        const twinkle = Math.sin(time * 2.5 + p.twinkleOffset) * 0.3 + 0.7; // Range: 0.4 to 1.0
+        const currentOpacity = Math.min(1.0, p.opacity * twinkle);
+
         // Draw particle
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = p.color + p.opacity + ')';
+        ctx.fillStyle = p.color + currentOpacity + ')';
         ctx.fill();
 
         // Draw lines between close particles
@@ -141,12 +148,12 @@ export default function HeroSection() {
           const dy = p.y - particles[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
 
-          if (dist < 150) {
+          if (dist < 120) { // Slightly reduced connection distance for performance
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = 'rgba(255,255,255,' + (0.1 * (1 - dist / 150)) + ')';
-            ctx.lineWidth = 0.5;
+            ctx.strokeStyle = 'rgba(255,255,255,' + (0.08 * (1 - dist / 120)) + ')';
+            ctx.lineWidth = 0.3;
             ctx.stroke();
           }
         }

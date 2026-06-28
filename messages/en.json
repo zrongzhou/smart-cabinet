@@ -130,5 +130,17 @@
   "solutions.items.robots": "Robots",
   "solutions.items.laboratory": "Laboratory",
   "solutions.items.cleanroom": "Cleanroom",
-  "solutions.items.other": "Other"
+  "solutions.items.other": "Other",
+
+  "home.trustBadges.title": "Why Choose Us",
+  "home.trustBadges.subtitle": "Proven track record and industry recognition",
+  "trustBadges.iso": "ISO Certified",
+  "trustBadges.patents": "10+ Patents",
+  "trustBadges.export": "60+ Countries",
+  "trustBadges.experience": "10+ Years Experience",
+  "trustBadges.clients": "500+ Clients",
+  "home.trustBadges.stats.uptime": "99.9% Uptime",
+  "home.trustBadges.stats.efficiency": "40% Efficiency Boost",
+  "home.trustBadges.stats.costReduction": "30% Cost Reduction",
+  "home.trustBadges.stats.support": "24/7 Support"
 }
