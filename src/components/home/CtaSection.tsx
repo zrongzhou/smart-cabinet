@@ -5,6 +5,136 @@ import { useLocale } from '@/lib/i18n';
 import { fetchUnifiedSettings, SiteSettings } from '@/data/unified-data';
 import { motion } from 'framer-motion';
 
+// Reusable Bubble Button for CTA sections - 泡泡动态按钮
+function BubbleBtn({ href, children, primary = false, light = false }: { href: string; children: React.ReactNode; primary?: boolean; light?: boolean }) {
+  const [bubbles, setBubbles] = useState<{ id: number; x: number; y: number; size: number; delay: number }[]>([]);
+  const [hovered, setHovered] = useState(false);
+
+  useEffect(() => {
+    const bbs = Array.from({ length: 5 }, (_, i) => ({
+      id: i,
+      x: 8 + Math.random() * 84,
+      y: 55 + Math.random() * 45,
+      size: 4 + Math.random() * 9,
+      delay: Math.random() * 2,
+    }));
+    setBubbles(bbs);
+  }, []);
+
+  return (
+    <a
+      href={href}
+      className="group relative inline-flex items-center justify-center px-10 py-4 font-bold rounded-full text-lg overflow-hidden cursor-pointer"
+      style={{
+        background: light
+          ? 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(240,248,255,0.9) 100%)'
+          : primary
+            ? `linear-gradient(135deg, ${
+                light ? '#3b82f6' : 'rgba(99,102,241,0.3)'
+              } 0%, ${
+                light ? '#2563eb' : 'rgba(59,130,246,0.22)'
+              } 50%, ${
+                light ? '#1d4ed8' : 'rgba(139,92,246,0.28)'
+              } 100%)`
+            : 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)',
+        border: light
+          ? 'none'
+          : `1px solid ${primary ? 'rgba(129,140,248,0.35)' : 'rgba(255,255,255,0.18)'}`,
+        backdropFilter: light ? 'none' : 'blur(16px)',
+        boxShadow: light
+          ? '0 6px 20px rgba(37,99,235,0.35), 0 0 40px rgba(59,130,246,0.12)'
+          : `
+              0 0 20px ${primary ? 'rgba(99,102,241,0.12)' : 'rgba(180,200,255,0.04)'},
+              0 0 40px ${primary ? 'rgba(59,130,246,0.06)' : 'transparent'},
+              inset 0 1px 0 rgba(255,255,255,${primary ? '0.12' : '0.06'}),
+              inset 0 -1px 0 rgba(0,0,0,0.08)
+            `,
+        color: light ? '#ffffff' : '#ffffff',
+        transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      {/* Rising bubbles */}
+      {bubbles.map(b => (
+        <span
+          key={b.id}
+          className="absolute rounded-full pointer-events-none"
+          style={{
+            left: `${b.x}%`,
+            bottom: '-8px',
+            width: hovered ? b.size + 4 : b.size * 0.4,
+            height: hovered ? b.size + 4 : b.size * 0.4,
+            background: light
+              ? `radial-gradient(circle at 30% 30%, rgba(255,255,255,${hovered ? 0.9 : 0.5}), rgba(147,197,253,${hovered ? 0.4 : 0.15}) transparent)`
+              : `radial-gradient(circle at 30% 30%, rgba(255,255,255,${hovered ? 0.7 : 0.25}), rgba(147,197,253,${hovered ? 0.3 : 0.08}) transparent)`,
+            boxShadow: hovered && !light ? `0 0 ${b.size}px rgba(147,197,253,0.4)` : (hovered && light ? `0 0 ${b.size}px rgba(59,130,246,0.5)` : 'none'),
+            animation: hovered
+              ? `bubble-rise-cta ${1.6 + b.delay}s ease-in-out infinite`
+              : `bubble-idle-cta ${(2 + b.delay)}s ease-in-out infinite`,
+            animationDelay: `${b.delay * 0.5}s`,
+            transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
+          }}
+        />
+      ))}
+
+      {/* Hover ripple wave */}
+      <span
+        className="absolute inset-0 rounded-full pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+        style={{
+          background: `radial-gradient(circle at center, ${
+            light ? 'rgba(255,255,255,0.2)' : (primary ? 'rgba(129,140,248,0.15)' : 'rgba(255,255,255,0.08)')
+          } 0%, transparent 70%)`,
+          transform: hovered ? 'scale(1)' : 'scale(0.5)',
+          transition: 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
+        }}
+      />
+
+      {/* Glow border pulse on hover */}
+      <span
+        className="absolute inset-0 rounded-full pointer-events-none"
+        style={{
+          border: light ? 'none' : `2px solid ${primary ? 'rgba(129,140,248,0)' : 'rgba(255,255,255,0)'}`,
+          boxShadow: hovered && !light
+            ? `0 0 20px ${primary ? 'rgba(99,102,241,0.2)' : 'rgba(200,220,255,0.1)'} inset, 0 0 30px ${primary ? 'rgba(99,102,241,0.15)' : 'rgba(180,200,255,0.08)'}`
+            : (hovered && light ? `0 0 20px rgba(59,130,246,0.25) inset` : 'none'),
+          transition: 'all 0.4s ease',
+          transform: hovered ? 'scale(1.03)' : 'scale(1)',
+        }}
+      />
+
+      {/* Text content */}
+      <span className="relative z-10" style={{
+        textShadow: hovered
+          ? (light ? '0 0 16px rgba(255,255,255,0.6), 0 1px 3px rgba(37,99,235,0.3)' : `0 0 12px ${primary ? 'rgba(167,139,250,0.5)' : 'rgba(255,255,255,0.4)'}, 0 1px 3px rgba(0,0,0,0.5)`)
+          : (light ? '0 1px 3px rgba(37,99,235,0.3)' : '0 0 8px rgba(255,255,255,0.15), 0 1px 3px rgba(0,0,0,0.5)'),
+        transition: 'text-shadow 0.4s ease',
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '6px',
+      }}>
+        {children}
+      </span>
+
+      {/* Floating sparkle particles */}
+      {hovered && Array.from({ length: 4 }).map((_, i) => (
+        <span
+          key={i}
+          className="absolute w-1 h-1 rounded-full pointer-events-none"
+          style={{
+            left: `${18 + i * 20}%`,
+            top: `${Math.random() > 0.5 ? -2 : 100}%`,
+            background: light ? 'rgb(255,255,255)' : 'rgba(255,255,255,0.85)',
+            animation: `sparkle-float-cta ${1 + i * 0.3}s ease-out forwards`,
+            animationDelay: `${i * 0.1}s`,
+            boxShadow: light ? '0 0 6px rgba(255,255,255,0.9)' : '0 0 6px rgba(255,255,255,0.8)',
+          }}
+        />
+      ))}
+    </a>
+  );
+}
+
 export default function CtaSection() {
   const { locale, t } = useLocale();
   const [settings, setSettings] = useState<SiteSettings | null>(null);
@@ -240,51 +370,20 @@ export default function CtaSection() {
           {t('cta.readyDesc')}
         </p>
 
-        {/* CTA Buttons */}
+        {/* CTA Buttons - BUBBLE EFFECT */}
         <div className="flex flex-col sm:flex-row gap-6 justify-center mb-12">
-          <a
-            href={`/${locale}/contact`}
-            className="group inline-flex items-center justify-center px-10 py-4 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 text-lg"
-            style={{
-              background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-              boxShadow: '0 4px 14px rgba(37, 99, 235, 0.35), 0 0 30px rgba(59, 130, 246, 0.1)',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow = '0 6px 20px rgba(37, 99, 235, 0.5), 0 0 40px rgba(59, 130, 246, 0.15)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow = '0 4px 14px rgba(37, 99, 235, 0.35), 0 0 30px rgba(59, 130, 246, 0.1)';
-            }}
-          >
+          <BubbleBtn href={`/${locale}/contact`} primary light>
             {t('cta.button')}
-            <svg className="ml-3 w-6 h-6 group-hover:translate-x-2 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg className="ml-2 w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>
-          </a>
-          <a
-            href={`tel:${contactPhone.replace(/\s/g, '')}`}
-            className="group inline-flex items-center justify-center px-10 py-4 font-semibold rounded-xl transition-all duration-300 text-lg border-2 text-blue-700"
-            style={{
-              borderColor: 'rgba(59, 130, 246, 0.4)',
-              backgroundColor: 'rgba(255, 255, 255, 0.6)',
-              backdropFilter: 'blur(8px)',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.85)';
-              e.currentTarget.style.borderColor = '#3b82f6';
-              e.currentTarget.style.boxShadow = '0 4px 14px rgba(59, 130, 246, 0.15)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.6)';
-              e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.4)';
-              e.currentTarget.style.boxShadow = 'none';
-            }}
-          >
-            <svg className="mr-3 w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          </BubbleBtn>
+          <BubbleBtn href={`tel:${contactPhone.replace(/\s/g, '')}`}>
+            <svg className="mr-3 w-5 h-5" style={{ opacity: 0.8 }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 011 .948l.893 7.554a1 1 0 01-.502.998L8.97 10.95a11.012 110.012 0 004.148 4.148l1.42-1.42a1 1 0 01.998-.502l7.554.893a1 1 0 01.948 1V21a2 2 0 01-2 2h-1C9.715 23 3 16.285 3 8V5z" />
             </svg>
             {contactPhone}
-          </a>
+          </BubbleBtn>
         </div>
 
         {/* Contact Info - glass card style */}
@@ -388,6 +487,21 @@ export default function CtaSection() {
         @keyframes bird-flap {
           0%, 100% { transform: scaleY(1); }
           50%        { transform: scaleY(0.55); }
+        }
+
+        /* ===== BUBBLE BUTTON ANIMATIONS (CTA) ===== */
+        @keyframes bubble-rise-cta {
+          0%   { transform: translateY(0) scale(1); opacity: 0.6; }
+          50%  { transform: translateY(-24px) scale(1.35); opacity: 0.9; }
+          100% { transform: translateY(-48px) scale(0.6); opacity: 0; }
+        }
+        @keyframes bubble-idle-cta {
+          0%, 100% { transform: translateY(0) scale(1); opacity: 0.2; }
+          50%      { transform: translateY(-6px) scale(1.12); opacity: 0.4; }
+        }
+        @keyframes sparkle-float-cta {
+          0%   { transform: translateY(0) scale(1); opacity: 1; }
+          100% { transform: translateY(-18px) scale(0); opacity: 0; }
         }
 
         /* CTA container ensures proper positioning context */
