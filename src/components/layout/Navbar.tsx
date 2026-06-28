@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Menu, X, Package, ChevronDown, User, LogOut, Settings } from 'lucide-react';
+import { Menu, X, ChevronDown, User, LogOut, Settings } from 'lucide-react';
 import { useLocale } from '@/lib/i18n';
 import { useAuth } from '@/components/AuthProvider';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
@@ -150,7 +150,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
                   onError={() => setLogoError(true)}
                 />
               ) : (
-                <Package className={`w-8 h-8 ${theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`} />
+                <span className="text-2xl">📦</span>
               )}
               {/* Always show company name, regardless of logo */}
               <span className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{siteName}</span>
@@ -308,7 +308,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
             <div className="p-6">
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center space-x-2">
-                  <Package className="w-6 h-6 text-blue-600" />
+                  <span className="text-xl">📦</span>
                   <span className="font-bold text-gray-900">WS Tool Cabinet</span>
                 </div>
                 <button

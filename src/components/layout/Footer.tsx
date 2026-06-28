@@ -69,7 +69,7 @@ export default function Footer() {
               </div>
               <span className="text-white dark:text-white font-bold text-xl">{displayName}</span>
             </div>
-            <p className="text-sm leading-relaxed mb-6 text-gray-400 dark:text-gray-500">
+            <p className="text-sm leading-relaxed mb-6 text-gray-300 dark:text-gray-400">
               {t('footer.companyDescription')}
             </p>
             <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-600">

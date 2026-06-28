@@ -49,7 +49,7 @@ export default function HeroSection() {
         </p>
 
         {/* Description */}
-        <p className="text-base md:text-lg mb-12 text-gray-400 max-w-3xl mx-auto leading-relaxed font-medium">
+        <p className="text-base md:text-lg mb-12 text-gray-300 max-w-3xl mx-auto leading-relaxed font-medium">
           {t('hero.description')}
         </p>
 
@@ -81,7 +81,7 @@ export default function HeroSection() {
           ].map((stat, i) => (
             <div key={i} className="text-center bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10">
               <div className="text-4xl font-bold text-white mb-2">{stat.number}</div>
-              <div className="text-sm text-gray-400 font-medium">{t(stat.labelKey)}</div>
+              <div className="text-sm text-gray-300 font-medium">{t(stat.labelKey)}</div>
             </div>
           ))}
         </div>
