@@ -118,5 +118,17 @@
 
   "about.cta.title": "Partner with Qiuyan for an Intelligent Future",
   "about.cta.subtitle": "No matter your industry or specific requirements, our professional team will provide you with the most suitable intelligent storage solution.",
-  "nav.contact": "Contact Us"
+  "nav.contact": "Contact Us",
+
+  "home.solutions.badge": "Solutions",
+  "home.solutions.title": "Industry Solutions",
+  "home.solutions.subtitle": "Tailored smart storage solutions for your industry",
+  "solutions.items.cabinet-type": "By Cabinet Type",
+  "solutions.items.managed-items": "By Managed Items",
+  "solutions.items.industry": "By Industry",
+  "solutions.items.custom-solution": "Custom Solution",
+  "solutions.items.robots": "Robots",
+  "solutions.items.laboratory": "Laboratory",
+  "solutions.items.cleanroom": "Cleanroom",
+  "solutions.items.other": "Other"
 }

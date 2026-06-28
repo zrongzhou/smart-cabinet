@@ -118,5 +118,17 @@
 
   "about.cta.title": "شراك مع تشيويان من أجل مستقبل ذكي",
   "about.cta.subtitle": "مها كانت صناعتك أو متطلباتك الخاصة، فريقنا المحترف سيقدم لك أنسب حل لتخزين ذكي.",
-  "nav.contact": "اتصل بنا"
+  "nav.contact": "اتصل بنا",
+
+  "home.solutions.badge": "الحلول",
+  "home.solutions.title": "حلول الصناعة",
+  "home.solutions.subtitle": "حلول التخزين الذكية المخصصة لصناعتك",
+  "solutions.items.cabinet-type": "حسب نوع الخزانة",
+  "solutions.items.managed-items": "حسب العناصر المُدارة",
+  "solutions.items.industry": "حسب الصناعة",
+  "solutions.items.custom-solution": "حل مخصص",
+  "solutions.items.robots": "الروبوتات",
+  "solutions.items.laboratory": "المختبر",
+  "solutions.items.cleanroom": "غرفة نظيفة",
+  "solutions.items.other": "أخرى"
 }

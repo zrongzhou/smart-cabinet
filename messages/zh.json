@@ -118,5 +118,17 @@
 
   "about.cta.title": "与秋彦同行，共创智能未来",
   "about.cta.subtitle": "无论您身处哪个行业、有何特殊需求，我们的专业团队都将为您提供最适合的智能存储解决方案。",
-  "nav.contact": "联系我们"
+  "nav.contact": "联系我们",
+
+  "home.solutions.badge": "解决方案",
+  "home.solutions.title": "行业解决方案",
+  "home.solutions.subtitle": "为您的行业量身定制的智能存储解决方案",
+  "solutions.items.cabinet-type": "按柜型分类",
+  "solutions.items.managed-items": "按管理物品",
+  "solutions.items.industry": "按行业应用",
+  "solutions.items.custom-solution": "定制方案",
+  "solutions.items.robots": "机器人集成",
+  "solutions.items.laboratory": "实验室管理",
+  "solutions.items.cleanroom": "洁净室方案",
+  "solutions.items.other": "其他方案"
 }
