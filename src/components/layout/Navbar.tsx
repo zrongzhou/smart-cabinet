@@ -88,16 +88,13 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
     window.location.pathname === `/${locale}` || window.location.pathname === `/${locale}/`
   );
 
-  // 首页背景：固定不变，永远这个值
+  // 首页背景：白色（与其它页面统一）
   const getNavBg = () => {
-    if (isHomepage) {
-      return 'bg-[#0c1229]/90 backdrop-blur-md border-b border-white/[0.08]';
-    }
     return isScrolled ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-100' : 'bg-white shadow-sm';
   };
 
-  // 首页文字色：永远是白色（高对比度）
-  const textColor = isHomepage ? 'text-white/90 hover:text-white' : 'text-gray-700 hover:text-blue-600';
+  // 首页文字色：深色（白色背景上用深色字）
+  const textColor = 'text-gray-700 hover:text-blue-600';
 
   return (
     <>
@@ -119,7 +116,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
                 <img src="/images/logo.svg" alt={siteName} className="h-8 w-auto object-contain" />
               )}
               {/* Always show company name, regardless of logo */}
-              <span className={`text-xl font-bold ${isHomepage ? 'text-white' : 'text-gray-900'}`}>{siteName}</span>
+              <span className={`text-xl font-bold text-gray-900`}>{siteName}</span>
             </a>
 
             {/* Desktop Navigation */}
@@ -138,11 +135,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
               <div className="relative">
                 <button
                   onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
-                  className={`flex items-center space-x-1 px-3 py-2 rounded-lg border transition-colors duration-200 text-sm font-medium ${
-                    isHomepage
-                      ? 'border-white/30 text-white hover:bg-white/10 hover:text-white'
-                      : 'border-gray-300 text-gray-700 hover:border-blue-600 hover:text-blue-600'
-                  }`}
+                  className={`flex items-center space-x-1 px-3 py-2 rounded-lg border transition-colors duration-200 text-sm font-medium border-gray-300 text-gray-700 hover:border-blue-600 hover:text-blue-600`}
                 >
                   <span>{currentLang.label}</span>
                   <ChevronDownIcon className="w-4 h-4" />
@@ -222,11 +215,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
                 <div className="flex items-center space-x-2">
                   <a
                     href={`/${locale}/login`}
-                    className={`px-4 py-2 text-sm font-medium transition-colors ${
-                      isHomepage
-                        ? 'text-white/90 hover:text-white'
-                        : 'text-gray-700 hover:text-blue-600'
-                    }`}
+                    className="px-4 py-2 text-sm font-medium transition-colors text-gray-700 hover:text-blue-600"
                   >
                     {locale === 'zh' ? '登录' : locale === 'ar' ? 'تسجيل الدخول' : 'Sign In'}
                   </a>
@@ -242,9 +231,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
               {/* Get a Quote Button */}
               <a
                 href={`/${locale}/contact`}
-                className={`inline-flex items-center px-5 py-2 font-semibold rounded-lg transition-all duration-200 text-sm bg-blue-600 text-white hover:bg-blue-700 ${
-                  isHomepage ? 'shadow-lg shadow-blue-600/30' : ''
-                }`}
+                className="inline-flex items-center px-5 py-2 font-semibold rounded-lg transition-all duration-200 text-sm bg-blue-600 text-white hover:bg-blue-700 shadow-md"
               >
                 {t('nav.getQuote')}
               </a>
@@ -253,16 +240,14 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
             {/* Mobile Menu Button - 44x44px touch target */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className={`md:hidden p-3 rounded-lg transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center ${
-                isHomepage ? 'hover:bg-white/10' : 'hover:bg-gray-100'
-              }`}
+              className="md:hidden p-3 rounded-lg transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-gray-100"
               aria-label="Toggle menu"
             >
-              {isMobileMenuOpen ? (
-                <XMarkIcon className={`w-6 h-6 ${isHomepage ? 'text-white' : 'text-gray-700'}`} />
-              ) : (
-                <Bars3Icon className={`w-6 h-6 ${isHomepage ? 'text-white' : 'text-gray-700'}`} />
-              )}
+                {isMobileMenuOpen ? (
+                  <XMarkIcon className="w-6 h-6 text-gray-700" />
+                ) : (
+                  <Bars3Icon className="w-6 h-6 text-gray-700" />
+                )}
             </button>
           </div>
         </div>

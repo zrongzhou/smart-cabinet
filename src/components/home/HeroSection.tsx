@@ -176,8 +176,8 @@ function BubbleButton({ href, children, primary }: { href: string; children: Rea
 // Pulsing Light Dots Divider
 function PulsingLightDotsDivider() {
   return (
-    <div className="w-full max-w-md mx-auto relative h-[3px] my-6 overflow-hidden">
-      <div className="absolute inset-0 rounded-full" style={{ background: 'rgba(255,255,255,0.05)' }} />
+    <div className="w-full max-w-md mx-auto relative h-[1px] my-6 overflow-hidden">
+      <div className="absolute inset-0 rounded-full" style={{ background: 'rgba(255,255,255,0.04)' }} />
       <div className="absolute inset-0">
         {Array.from({ length: 12 }).map((_, i) => (
           <div
@@ -185,8 +185,8 @@ function PulsingLightDotsDivider() {
             className="absolute top-1/2 -translate-y-1/2 rounded-full"
             style={{
               left: `${i * 8}%`,
-              width: i % 3 === 0 ? 6 : (i % 3 === 1 ? 4 : 3),
-              height: i % 3 === 0 ? 6 : (i % 3 === 1 ? 4 : 3),
+              width: i % 3 === 0 ? 4 : (i % 3 === 1 ? 2.5 : 1.5),
+              height: i % 3 === 0 ? 4 : (i % 3 === 1 ? 2.5 : 1.5),
               background: i % 3 === 0
                 ? 'radial-gradient(circle, rgba(167,139,250,0.95), rgba(139,92,246,0.4))'
                 : i % 3 === 1
@@ -206,16 +206,16 @@ function PulsingLightDotsDivider() {
       <div
         className="absolute top-1/2 -translate-y-1/2 rounded-full"
         style={{
-          width: 16, height: 16,
+          width: 10, height: 10,
           background: 'radial-gradient(circle, rgba(255,255,255,0.95), rgba(167,139,250,0.5), transparent)',
-          boxShadow: '0 0 12px rgba(167,139,250,0.7), 0 0 24px rgba(139,92,246,0.3), 0 0 40px rgba(99,102,241,0.15)',
+          boxShadow: '0 0 8px rgba(167,139,250,0.6), 0 0 16px rgba(139,92,246,0.2), 0 0 28px rgba(99,102,241,0.1)',
           animation: 'light-head-travel 3s ease-in-out infinite',
         }}
       />
       <div
         className="absolute top-1/2 -translate-y-1/2 rounded-full"
         style={{
-          width: 80, height: 3,
+          width: 80, height: 1.5,
           background: 'linear-gradient(90deg, transparent, rgba(167,139,250,0.2), rgba(139,92,246,0.35), rgba(96,165,250,0.2), transparent)',
           filter: 'blur(2px)',
           animation: 'tail-travel 3s ease-in-out infinite',

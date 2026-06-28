@@ -281,10 +281,12 @@ export default function OceanHeader({
   title,
   subtitle,
   icon,
+  children,
 }: {
   title: string;
   subtitle?: string;
   icon?: React.ReactNode;
+  children?: React.ReactNode;
 }) {
   return (
     <section
@@ -389,6 +391,7 @@ export default function OceanHeader({
             {subtitle}
           </motion.p>
         )}
+        {children}
       </div>
 
       {/* All CSS Animations for Ocean Theme */}

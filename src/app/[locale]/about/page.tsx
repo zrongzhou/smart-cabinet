@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { useLocale } from '@/lib/i18n';
 import { fetchUnifiedSettings, SiteSettings } from '@/data/unified-data';
+import OceanHeader from '@/components/OceanHeader';
 
 // Page data type (from API or localStorage)
 interface PageData {
@@ -283,30 +284,25 @@ export default function AboutPage() {
 
   return (
     <div style={{ backgroundColor: '#f0f9ff' }}>
-      {/* Hero Section with Breadcrumb */}
-      <section className="relative text-white py-24 px-4 sm:px-6 lg:px-8 overflow-hidden bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700">
-        {/* Gradient glow ornaments */}
-        <div className="absolute top-20 left-10 w-96 h-96 bg-blue-500/30 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-        
-        <div className="max-w-5xl mx-auto relative z-10">
-          {/* Breadcrumb */}
-          <nav className="mb-8 flex items-center space-x-2 text-sm text-blue-200">
-            <a href={`/${locale}`} className="hover:text-white transition-colors">
-              {t('about.breadcrumb.home')}
-            </a>
-            <ChevronRight className="w-4 h-4" />
-            <span className="text-white">{t('about.breadcrumb.about')}</span>
-          </nav>
-
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 text-white">
-            {t('about.hero.title')}
-          </h1>
-          <p className="text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
-            {t('about.hero.description')}
-          </p>
-        </div>
-      </section>
+      {/* Hero Section — Ocean Header */}
+      <OceanHeader
+        title={t('about.hero.title')}
+        subtitle={t('about.hero.description')}
+        icon={
+          <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+          </svg>
+        }
+      >
+        {/* Breadcrumb inside OceanHeader */}
+        <nav className="flex items-center space-x-2 text-sm text-blue-200/80 mb-4">
+          <a href={`/${locale}`} className="hover:text-white transition-colors">
+            {t('about.breadcrumb.home')}
+          </a>
+          <ChevronRight className="w-4 h-4" />
+          <span className="text-white">{t('about.breadcrumb.about')}</span>
+        </nav>
+      </OceanHeader>
 
       {/* Company Introduction with Icon Cards */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
