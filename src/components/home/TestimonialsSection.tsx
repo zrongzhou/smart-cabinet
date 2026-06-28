@@ -95,10 +95,11 @@ export default function TestimonialsSection({ locale: propLocale }: Testimonials
           transition={{ duration: 0.6, ease: 'easeOut' }}
         >
           <div 
-            className="inline-block px-4 py-1 rounded-full text-sm font-semibold mb-4"
+            className="inline-flex items-center gap-2 px-4 py-1 rounded-full text-sm font-semibold mb-4"
             style={{ backgroundColor: 'rgba(26, 54, 93, 0.1)', color: '#1a365d' }}
           >
-            ★ {t('home.testimonials.badge')}
+            <StarIcon className="w-4 h-4 text-amber-500" />
+            {t('home.testimonials.badge')}
           </div>
           <h2 
             className="text-3xl md:text-4xl font-bold mb-4"

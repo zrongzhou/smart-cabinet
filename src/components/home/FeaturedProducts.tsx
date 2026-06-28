@@ -5,6 +5,7 @@ import { useLocale } from '@/lib/i18n';
 import { Product } from '@/data/unified-data';
 import { fetchUnifiedProducts } from '@/data/unified-data';
 import { motion } from 'framer-motion';
+import { StarIcon } from '@heroicons/react/24/solid';
 
 export default function FeaturedProducts() {
   const { locale, t } = useLocale();
@@ -62,10 +63,11 @@ export default function FeaturedProducts() {
           transition={{ duration: 0.6 }}
         >
           <div 
-            className="inline-block px-4 py-1 rounded-full text-sm font-semibold mb-4"
+            className="inline-block px-4 py-1 rounded-full text-sm font-semibold mb-4 inline-flex items-center gap-2"
             style={{ backgroundColor: 'rgba(26, 54, 93, 0.1)', color: '#1a365d' }}
           >
-            ★ {locale === 'zh' ? '精选产品' : 'Featured Products'}
+            <StarIcon className="w-4 h-4" />
+            {locale === 'zh' ? '精选产品' : 'Featured Products'}
           </div>
           <h2 
             className="text-3xl md:text-4xl font-bold mb-4"
