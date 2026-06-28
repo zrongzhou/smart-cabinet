@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLocale } from '@/lib/i18n';
 import { motion } from 'framer-motion';
+import { useTheme } from '@/contexts/ThemeContext';
 
 // Count-up animation component
 function CountUp({ end, duration = 2 }: { end: string; duration?: number }) {
@@ -48,6 +49,7 @@ function CountUp({ end, duration = 2 }: { end: string; duration?: number }) {
 
 export default function HeroSection() {
   const { locale, t } = useLocale();
+  const { theme } = useTheme();
   const [isVisible, setIsVisible] = useState(false);
   const [statsVisible, setStatsVisible] = useState(false);
   const statsRef = useRef<HTMLDivElement>(null);
@@ -201,7 +203,7 @@ export default function HeroSection() {
     <section 
       className="relative min-h-[80vh] flex items-center justify-center overflow-hidden"
       style={{ 
-        background: 'linear-gradient(135deg, #0d1b2a 0%, #1a365d 50%, #2a4a7f 100%)',
+        background: 'var(--gradient-hero)',
         minHeight: '80vh'
       }}
     >
@@ -219,12 +221,14 @@ export default function HeroSection() {
         />
       </div>
 
-      {/* Particle animation canvas */}
-      <canvas 
-        ref={canvasRef}
-        className="absolute inset-0 z-0 pointer-events-none"
-        style={{ width: '100%', height: '100%' }}
-      />
+      {/* Particle animation canvas (only for starry theme) */}
+      {theme === 'starry' && (
+        <canvas 
+          ref={canvasRef}
+          className="absolute inset-0 z-0 pointer-events-none"
+          style={{ width: '100%', height: '100%' }}
+        />
+      )}
 
       {/* Glow orbs */}
       <div className="absolute top-0 left-0 w-96 h-96 rounded-full blur-3xl z-0" style={{ backgroundColor: 'rgba(59, 130, 246, 0.2)' }} />
