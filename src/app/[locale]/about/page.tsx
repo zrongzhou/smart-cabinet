@@ -20,11 +20,12 @@ interface PageData {
   updatedAt?: string;
 }
 
-// Animated counter component
+// Animated counter component — enhanced with entrance animation
 function CountUp({ target, suffix = '', prefix = '', locale = 'en' }: { target: number; suffix?: string; prefix?: string; locale?: string }) {
   const [count, setCount] = useState(0);
   const elementRef = useRef<HTMLDivElement>(null);
   const [hasAnimated, setHasAnimated] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     const element = elementRef.current;
@@ -33,12 +34,13 @@ function CountUp({ target, suffix = '', prefix = '', locale = 'en' }: { target: 
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && !hasAnimated) {
-          animateCount();
+          setIsVisible(true);
+          setTimeout(() => animateCount(), 200);
           setHasAnimated(true);
           observer.disconnect();
         }
       },
-      { threshold: 0.5 }
+      { threshold: 0.3 }
     );
 
     observer.observe(element);
@@ -47,7 +49,7 @@ function CountUp({ target, suffix = '', prefix = '', locale = 'en' }: { target: 
   }, [hasAnimated]);
 
   const animateCount = () => {
-    const duration = 2000;
+    const duration = 2200;
     let startTime: number | null = null;
 
     const step = (timestamp: number) => {
@@ -65,20 +67,34 @@ function CountUp({ target, suffix = '', prefix = '', locale = 'en' }: { target: 
   };
 
   return (
-    <div ref={elementRef} className="text-center">
-      <div className="text-5xl font-bold text-white mb-2">
-        {prefix}{count}{suffix}
+    <div ref={elementRef} className={`text-center transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+      <div className="text-5xl lg:text-[4.5rem] font-black mb-2 tracking-tighter text-gray-900" style={{ lineHeight: 1.05 }}>
+        {prefix}{count.toLocaleString(locale === 'zh' ? 'zh-Hans' : locale === 'ar' ? 'ar-SA' : 'en-US')}{suffix}
       </div>
     </div>
   );
 }
 
-// Timeline item component with connection line animation
-function TimelineItem({ year, titleKey, descriptionKey, isLeft, locale, t }: { year: string; titleKey: string; descriptionKey: string; isLeft: boolean; locale: string; t: (key: string) => string }) {
+// Timeline item component with connection line animation — enhanced with per-item colors
+function TimelineItem({ year, titleKey, descriptionKey, isLeft, locale, t, index = 0 }: { year: string; titleKey: string; descriptionKey: string; isLeft: boolean; locale: string; t: (key: string) => string; index?: number }) {
   const isRTL = locale === 'ar';
   const showLeft = isRTL ? !isLeft : isLeft;
   const itemRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
+
+  // Per-item color palette for visual variety
+  const timelineColors = [
+    { accent: '#3b82f6', bgGrad: 'from-blue-50 to-indigo-50', borderGlow: 'shadow-blue-100/40', dotColor: 'bg-blue-500', ringColor: 'ring-blue-200' },
+    { accent: '#10b981', bgGrad: 'from-emerald-50 to-teal-50', borderGlow: 'shadow-emerald-100/40', dotColor: 'bg-emerald-500', ringColor: 'ring-emerald-200' },
+    { accent: '#8b5cf6', bgGrad: 'from-violet-50 to-purple-50', borderGlow: 'shadow-violet-100/40', dotColor: 'bg-violet-500', ringColor: 'ring-violet-200' },
+    { accent: '#f59e0b', bgGrad: 'from-amber-50 to-orange-50', borderGlow: 'shadow-amber-100/40', dotColor: 'bg-amber-500', ringColor: 'ring-amber-200' },
+    { accent: '#ec4899', bgGrad: 'from-pink-50 to-rose-50', borderGlow: 'shadow-pink-100/40', dotColor: 'bg-pink-500', ringColor: 'ring-pink-200' },
+    { accent: '#06b6d4', bgGrad: 'from-cyan-50 to-sky-50', borderGlow: 'shadow-cyan-100/40', dotColor: 'bg-cyan-500', ringColor: 'ring-cyan-200' },
+    { accent: '#ef4444', bgGrad: 'from-red-50 to-rose-50', borderGlow: 'shadow-red-100/40', dotColor: 'bg-red-500', ringColor: 'ring-red-200' },
+    { accent: '#84cc16', bgGrad: 'from-lime-50 to-green-50', borderGlow: 'shadow-lime-100/40', dotColor: 'bg-lime-500', ringColor: 'ring-lime-200' },
+    { accent: '#a855f7', bgGrad: 'from-fuchsia-50 to-purple-50', borderGlow: 'shadow-fuchsia-100/40', dotColor: 'bg-fuchsia-500', ringColor: 'ring-fuchsia-200' },
+  ];
+  const tc = timelineColors[index % timelineColors.length];
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -87,7 +103,7 @@ function TimelineItem({ year, titleKey, descriptionKey, isLeft, locale, t }: { y
           setIsVisible(true);
         }
       },
-      { threshold: 0.3 }
+      { threshold: 0.25 }
     );
 
     if (itemRef.current) {
@@ -104,12 +120,19 @@ function TimelineItem({ year, titleKey, descriptionKey, isLeft, locale, t }: { y
     >
       {/* Content side */}
       <div className={`w-5/12 ${showLeft ? 'text-right pr-8' : 'text-left pl-8'}`}>
-        <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-100">
-          <div className="text-2xl font-bold text-blue-600 mb-2">{year}</div>
-          <h3 className="text-xl font-bold text-gray-900 mb-2">
+        <div className={`rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-100/80 bg-gradient-to-br ${tc.bgGrad} group overflow-hidden`}>
+          {/* Top colored accent bar */}
+          <div className="absolute top-0 left-0 right-0 h-[3px] rounded-t-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            style={{ background: `linear-gradient(90deg, ${tc.accent}, transparent)` }}
+          />
+          
+          <div className="text-2xl font-bold mb-2" style={{ color: tc.accent }}>{year}</div>
+          <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-transparent group-hover:bg-clip-text transition-all duration-300"
+            style={{ backgroundImage: `linear-gradient(135deg, ${tc.accent}, #475569)`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
+          >
             {t(titleKey)}
           </h3>
-          <p className="text-gray-600">
+          <p className="text-gray-600 leading-relaxed text-[15px]">
             {t(descriptionKey)}
           </p>
         </div>
@@ -117,7 +140,9 @@ function TimelineItem({ year, titleKey, descriptionKey, isLeft, locale, t }: { y
 
       {/* Center dot with pulse animation */}
       <div className="w-2/12 flex justify-center">
-        <div className={`w-4 h-4 bg-blue-600 rounded-full border-4 border-blue-200 z-10 ${isVisible ? 'animate-pulse' : ''}`} />
+        <div className={`w-5 h-5 ${tc.dotColor} rounded-full border-4 z-10 shadow-md ${isVisible ? 'animate-pulse' : ''}`} 
+          style={{ borderColor: `${tc.accent}33` }}
+        />
       </div>
 
       {/* Empty side */}
@@ -396,40 +421,48 @@ export default function AboutPage() {
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-7">
             {stats.map((stat, index) => {
               const Icon = stat.icon;
-              // Rich color palette per card
+              // Rich color palette per card — enhanced
               const palettes = [
-                { name: 'blue',    grad: 'from-blue-600 to-indigo-600',   shadow: 'hover:shadow-blue-200/50', iconBg: 'bg-blue-50', ring: 'ring-blue-200', textColor: 'text-blue-600' },
-                { name: 'emerald', grad: 'from-emerald-600 to-teal-600', shadow: 'hover:shadow-emerald-200/50', iconBg: 'bg-emerald-50', ring: 'ring-emerald-200', textColor: 'text-emerald-600' },
-                { name: 'violet',  grad: 'from-violet-600 to-purple-600', shadow: 'hover:shadow-violet-200/50', iconBg: 'bg-violet-50', ring: 'ring-violet-200', textColor: 'text-violet-600' },
-                { name: 'amber',   grad: 'from-amber-500 to-orange-600',  shadow: 'hover:shadow-amber-200/50', iconBg: 'bg-amber-50', ring: 'ring-amber-200', textColor: 'text-amber-600' },
-                { name: 'rose',    grad: 'from-rose-600 to-pink-600',    shadow: 'hover:shadow-rose-200/50', iconBg: 'bg-rose-50', ring: 'ring-rose-200', textColor: 'text-rose-600' },
-                { name: 'cyan',    grad: 'from-cyan-600 to-sky-600',    shadow: 'hover:shadow-cyan-200/50', iconBg: 'bg-cyan-50', ring: 'ring-cyan-200', textColor: 'text-cyan-600' },
+                { name: 'blue',    grad: 'from-blue-600 to-indigo-600',   shadow: 'hover:shadow-blue-200/50', iconBg: 'bg-blue-50', ring: 'ring-blue-200', textColor: 'text-blue-600', barColor: '#3b82f6' },
+                { name: 'emerald', grad: 'from-emerald-600 to-teal-600', shadow: 'hover:shadow-emerald-200/50', iconBg: 'bg-emerald-50', ring: 'ring-emerald-200', textColor: 'text-emerald-600', barColor: '#10b981' },
+                { name: 'violet',  grad: 'from-violet-600 to-purple-600', shadow: 'hover:shadow-violet-200/50', iconBg: 'bg-violet-50', ring: 'ring-violet-200', textColor: 'text-violet-600', barColor: '#8b5cf6' },
+                { name: 'amber',   grad: 'from-amber-500 to-orange-600',  shadow: 'hover:shadow-amber-200/50', iconBg: 'bg-amber-50', ring: 'ring-amber-200', textColor: 'text-amber-600', barColor: '#f59e0b' },
+                { name: 'rose',    grad: 'from-rose-600 to-pink-600',    shadow: 'hover:shadow-rose-200/50', iconBg: 'bg-rose-50', ring: 'ring-rose-200', textColor: 'text-rose-600', barColor: '#e11d48' },
+                { name: 'cyan',    grad: 'from-cyan-600 to-sky-600',    shadow: 'hover:shadow-cyan-200/50', iconBg: 'bg-cyan-50', ring: 'ring-cyan-200', textColor: 'text-cyan-600', barColor: '#06b6d4' },
               ];
               const p = palettes[index % palettes.length];
               return (
                 <div key={index} className="group perspective-1000">
-                  <div className={`relative rounded-2xl p-7 lg:p-9 bg-white border border-gray-100 shadow-sm ${p.shadow} transition-all duration-500 ease-out group-hover:-translate-y-2 group-hover:shadow-2xl overflow-hidden`}>
-                    {/* Top gradient bar — thicker, more visible */}
-                    <div className={`absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r ${p.grad}`} />
-                    {/* Subtle corner decoration */}
-                    <div className={`absolute -right-8 -top-8 w-28 h-28 rounded-full bg-gradient-to-br ${p.grad} opacity-[0.04] blur-2xl group-hover:opacity-[0.08] transition-opacity duration-500`} />
-                    <div className={`absolute -left-4 -bottom-4 w-20 h-20 rounded-full bg-gradient-to-tr ${p.grad} opacity-[0.04] blur-xl group-hover:opacity-[0.08] transition-opacity duration-500`} />
+                  <div ref={useRef<HTMLDivElement>(null)} className={`relative rounded-2xl p-7 lg:p-8 bg-white border border-gray-100/90 shadow-sm ${p.shadow} transition-all duration-500 ease-out group-hover:-translate-y-2.5 group-hover:shadow-2xl overflow-hidden`}
+                    style={{ animation: `statFadeIn 0.6s ease-out ${index * 0.1}s both` }}
+                  >
+                    {/* Top gradient bar */}
+                    <div className={`absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r ${p.grad}`} />
+                    
+                    {/* Animated corner decorations */}
+                    <div className={`absolute -right-10 -top-10 w-32 h-32 rounded-full bg-gradient-to-br ${p.grad} opacity-[0.05] blur-2xl group-hover:opacity-[0.1] transition-opacity duration-500`} style={{ animation: `cornerFloat ${4 + index * 0.5}s ease-in-out infinite alternate` }} />
+                    <div className={`absolute -left-6 -bottom-6 w-24 h-24 rounded-full bg-gradient-to-tr ${p.grad} opacity-[0.04] blur-xl group-hover:opacity-[0.08] transition-opacity duration-500`} />
 
                     <div className="relative z-10">
-                      {/* Icon — larger, with ring + gradient background */}
-                      <div className={`w-16 h-16 mx-auto mb-5 rounded-2xl ${p.iconBg} flex items-center justify-center ring-4 ${p.ring} shadow-sm group-hover:scale-110 transition-transform duration-300`}>
-                        <Icon className={`w-8 h-8 ${p.textColor} drop-shadow-sm`} strokeWidth={1.8} />
+                      {/* Icon — larger, animated */}
+                      <div className={`w-18 h-18 mx-auto mb-5 rounded-2xl ${p.iconBg} flex items-center justify-center ring-4 ${p.ring} shadow-md group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300`} style={{ animation: `iconBounce ${2 + index * 0.15}s ease-in-out infinite` }}>
+                        <Icon className={`w-9 h-9 ${p.textColor} drop-shadow-sm`} strokeWidth={1.8} />
                       </div>
 
-                      {/* Number — Animated CountUp for visual impact */}
-                      <div className="text-5xl lg:text-[3.75rem] font-black mb-2 tracking-tighter text-gray-900" style={{ lineHeight: 1 }}>
+                      {/* Number — Animated CountUp */}
+                      <div className="text-5xl lg:text-[4.25rem] font-black mb-2 tracking-tighter text-gray-900" style={{ lineHeight: 1.05 }}>
                         <CountUp target={stat.number} suffix={stat.suffix} prefix={stat.prefix} locale={locale === 'zh' ? 'zh' : locale} />
                       </div>
 
-                      {/* Label */}
-                      <p className="text-sm font-semibold uppercase tracking-wide mt-1 text-gray-600">
+                      {/* Label — larger and bolder */}
+                      <p className="text-[15px] font-bold uppercase tracking-wide mt-1 text-gray-700">
                         {t(stat.labelKey)}
                       </p>
+
+                      {/* Mini progress bar decoration */}
+                      <div className="mt-4 mx-auto rounded-full h-1 w-16 opacity-30 transition-all duration-500 group-hover:w-24 group-hover:opacity-60"
+                        style={{ background: `linear-gradient(90deg, ${p.barColor}, transparent)` }}
+                      />
                     </div>
                   </div>
                 </div>
@@ -451,8 +484,10 @@ export default function AboutPage() {
         </div>
 
         <div className="relative">
-          {/* Vertical line with gradient */}
-          <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-gradient-to-b from-blue-200 to-blue-400" />
+          {/* Vertical line with gradient — enhanced */}
+          <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-[3px] rounded-full bg-gradient-to-b from-blue-400 via-purple-400 to-emerald-400 opacity-60"
+            style={{ boxShadow: '0 0 12px rgba(59,130,246,0.15)' }}
+          />
 
           {/* Timeline items */}
           {timeline.map((item, index) => (
@@ -464,6 +499,7 @@ export default function AboutPage() {
               isLeft={item.isLeft}
               locale={locale}
               t={t}
+              index={index}
             />
           ))}
         </div>
@@ -485,62 +521,126 @@ export default function AboutPage() {
             </p>
           </div>
 
-          {/* Factory Images Grid */}
+          {/* Factory Images Grid — Real Photos with Glass Effect */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
             {[
-              { src: '/images/about/workshop-design.svg', altKey: 'about.factory.design' },
-              { src: '/images/about/workshop-cutting.svg', altKey: 'about.factory.cutting' },
-              { src: '/images/about/workshop-bending.svg', altKey: 'about.factory.bending' },
-              { src: '/images/about/workshop-assembly.svg', altKey: 'about.factory.assembly' },
-              { src: '/images/about/workshop-welding.svg', altKey: 'about.factory.welding' },
-              { src: '/images/about/workshop-quality.svg', altKey: 'about.factory.quality' },
+              { src: 'https://images.unsplash.com/photo-1581092918056-0c4c72acd1df?w=600&q=80', altKey: 'about.factory.design', label: 'DESIGN', color: '#3b82f6' },
+              { src: 'https://images.unsplash.com/photo-1565688534245-bf750a49812?w=600&q=80', altKey: 'about.factory.cutting', label: 'CUTTING', color: '#ef4444' },
+              { src: 'https://images.unsplash.com/photo-1565193566173-7a0e3b8b9e89?w=600&q=80', altKey: 'about.factory.bending', label: 'BENDING', color: '#10b981' },
+              { src: 'https://images.unsplash.com/photo-1504328345606-7b079b47e57a?w=600&q=80', altKey: 'about.factory.assembly', label: 'ASSEMBLY', color: '#f59e0b' },
+              { src: 'https://images.unsplash.com/photo-1614950397376-07d784aae2bc?w=600&q=80', altKey: 'about.factory.welding', label: 'WELDING', color: '#dc2626' },
+              { src: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=600&q=80', altKey: 'about.factory.quality', label: 'QUALITY CONTROL', color: '#06b6d4' },
             ].map((item, index) => (
-              <div key={index} className="relative group overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300">
+              <div key={index} className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2" style={{ height: '280px' }}>
+                {/* Image with zoom on hover */}
                 <img
                   src={item.src}
                   alt={t(item.altKey)}
-                  className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  loading="lazy"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-blue-900/80 via-transparent to-transparent flex items-end">
-                  <div className="p-6 text-white">
-                    <h3 className="text-xl font-bold">{t(item.altKey)}</h3>
+                
+                {/* Glass overlay at bottom */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex items-end">
+                  {/* Glass card content area */}
+                  <div className="p-6 w-full backdrop-blur-sm" style={{
+                    background: 'linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.06) 100%)',
+                    borderTop: '1px solid rgba(255,255,255,0.15)',
+                  }}>
+                    {/* Category label badge */}
+                    <span className="inline-block px-3 py-1 rounded-full text-xs font-bold tracking-wider mb-2 text-white/90"
+                      style={{ background: `${item.color}25`, border: `1px solid ${item.color}40` }}
+                    >
+                      {item.label}
+                    </span>
+                    <h3 className="text-xl font-bold text-white drop-shadow-md">{t(item.altKey)}</h3>
+                    
+                    {/* Decorative glass shimmer line */}
+                    <div className="mt-3 h-[2px] rounded-full opacity-50 transition-all duration-500 group-hover:w-full group-hover:opacity-80 w-16"
+                      style={{ background: `linear-gradient(90deg, ${item.color}, transparent)` }}
+                    />
                   </div>
                 </div>
+
+                {/* Hover glass reflection effect */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                  style={{
+                    background: 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1) 0%, transparent 60%)',
+                  }}
+                />
               </div>
             ))}
           </div>
 
-          {/* Capability Cards — Each with unique gradient color */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Capability Cards — Enhanced with richer content & glass effect */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-7">
             {capabilities.map((cap, index) => {
               const Icon = cap.icon;
               const cardColors = [
-                { grad: 'from-blue-600 to-indigo-700', iconBg: 'from-blue-500 to-blue-600', accent: '#3b82f6', lightBg: 'rgba(59,130,246,0.06)' },
-                { grad: 'from-emerald-600 to-teal-700', iconBg: 'from-emerald-500 to-teal-600', accent: '#059669', lightBg: 'rgba(5,150,105,0.06)' },
-                { grad: 'from-violet-600 to-purple-700', iconBg: 'from-violet-500 to-purple-600', accent: '#7c3aed', lightBg: 'rgba(124,58,237,0.06)' },
+                { grad: 'from-blue-600 to-indigo-700', iconBg: 'from-blue-500 to-blue-600', accent: '#3b82f6', lightBg: 'rgba(59,130,246,0.08)', descColor: '#1e40af' },
+                { grad: 'from-emerald-600 to-teal-700', iconBg: 'from-emerald-500 to-teal-600', accent: '#059669', lightBg: 'rgba(5,150,105,0.08)', descColor: '#047857' },
+                { grad: 'from-violet-600 to-purple-700', iconBg: 'from-violet-500 to-purple-600', accent: '#7c3aed', lightBg: 'rgba(124,58,237,0.08)', descColor: '#5b21b6' },
               ];
-              const cc = cardColors[index];
+              const cc = cardColors[index % cardColors.length];
+              
+              // Feature list per capability for richer content
+              const features = [
+                ['Custom CAD/CAM design', 'Rapid prototyping', 'DFM analysis'],
+                ['CNC machining center', 'Precision ±0.01mm', 'Multi-axis capability'],
+                ['ISO 9001 certified', '100% inspection rate', 'Traceability system'],
+              ];
+              
               return (
-                <div key={index} className="group rounded-2xl p-8 border border-gray-100/80 transition-all duration-400 hover:-translate-y-2 hover:shadow-2xl relative overflow-hidden"
-                  style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(248,250,252,0.8) 100%)' }}
+                <div key={index} className="group rounded-2xl p-8 lg:p-10 border transition-all duration-400 hover:-translate-y-2.5 hover:shadow-2xl relative overflow-hidden"
+                  style={{ 
+                    background: 'linear-gradient(135deg, rgba(255,255,255,0.88) 0%, rgba(248,250,252,0.75) 100%)',
+                    borderColor: `${cc.accent}20`,
+                    borderWidth: '1px',
+                    backdropFilter: 'blur(10px)',
+                  }}
                 >
-                  {/* Hover glow overlay */}
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400" style={{
+                  {/* Glass shimmer overlay on hover */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{
                     background: `radial-gradient(circle at 50% 0%, ${cc.lightBg} 0%, transparent 70%)`,
                   }} />
-                  <div className={`w-16 h-16 bg-gradient-to-br ${cc.iconBg} rounded-xl flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
-                    <Icon className="w-8 h-8 text-white drop-shadow-md" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r transition-all duration-300"
-                    style={{ backgroundImage: `linear-gradient(90deg, ${cc.accent}, ${index === 1 ? '#14b8a6' : index === 2 ? '#a855f7' : '#6366f1'})`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
-                  >
-                    {t(cap.titleKey)}
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed">{t(cap.descriptionKey)}</p>
-                  {/* Top accent bar on hover */}
-                  <div className="absolute top-0 left-0 right-0 h-[3px] rounded-t-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-400"
-                    style={{ background: `linear-gradient(90deg, ${cc.accent}, ${index === 1 ? '#14b8a6' : index === 2 ? '#a855f7' : '#6366f1'})` }}
+                  
+                  {/* Top gradient bar — always visible but subtle */}
+                  <div className="absolute top-0 left-0 right-0 h-[4px] rounded-t-2xl opacity-60"
+                    style={{ background: `linear-gradient(90deg, ${cc.accent}, transparent)` }}
                   />
+
+                  <div className="relative z-10">
+                    {/* Icon — larger with glow */}
+                    <div className={`w-20 h-20 bg-gradient-to-br ${cc.iconBg} rounded-2xl flex items-center justify-center mb-7 shadow-xl group-hover:scale-110 group-hover:-rotate-6 transition-all duration-400`}
+                      style={{ boxShadow: `0 8px 24px ${cc.lightBg}` }}
+                    >
+                      <Icon className="w-10 h-10 text-white drop-shadow-lg" strokeWidth={1.8} />
+                    </div>
+                    
+                    <h3 className="text-2xl font-black text-gray-900 mb-4 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r transition-all duration-300"
+                      style={{ backgroundImage: `linear-gradient(90deg, ${cc.accent}, ${index === 1 ? '#14b8a6' : index === 2 ? '#a855f7' : '#6366f1'})`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
+                    >
+                      {t(cap.titleKey)}
+                    </h3>
+                    
+                    {/* Description — larger and bolder */}
+                    <p className="text-gray-600 leading-relaxed text-base font-medium mb-5">{t(cap.descriptionKey)}</p>
+                    
+                    {/* Feature tags for richer content */}
+                    <div className="space-y-2.5">
+                      {features[index].map((feat, fi) => (
+                        <div key={fi} className="flex items-center gap-2.5 text-sm" style={{ color: cc.descColor }}>
+                          <CheckCircle className="w-4 h-4 flex-shrink-0" strokeWidth={2.5} />
+                          <span className="font-medium">{feat}</span>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    {/* Bottom accent bar */}
+                    <div className="mt-6 h-[3px] rounded-full opacity-20 transition-all duration-400 group-hover:w-full group-hover:opacity-50 w-12"
+                      style={{ background: `linear-gradient(90deg, ${cc.accent}, transparent)` }}
+                    />
+                  </div>
                 </div>
               );
             })}
@@ -567,33 +667,56 @@ export default function AboutPage() {
             {values.map((value, index) => {
               const Icon = value.icon;
               const vColors = [
-                { grad: 'from-blue-600 to-cyan-600', accent: '#0ea5e9', lightBg: 'rgba(14,165,233,0.07)', ringColor: 'ring-blue-100' },
-                { grad: 'from-emerald-600 to-green-600', accent: '#10b981', lightBg: 'rgba(16,185,129,0.07)', ringColor: 'ring-emerald-100' },
-                { grad: 'from-violet-600 to-purple-600', accent: '#8b5cf6', lightBg: 'rgba(139,92,246,0.07)', ringColor: 'ring-violet-100' },
-                { grad: 'from-orange-500 to-amber-500', accent: '#f59e0b', lightBg: 'rgba(245,158,11,0.07)', ringColor: 'ring-amber-100' },
+                { grad: 'from-blue-600 to-cyan-600', accent: '#0ea5e9', lightBg: 'rgba(14,165,233,0.09)', ringColor: 'ring-blue-100', textColor: '#0369a1', descText: '#0c4a6e' },
+                { grad: 'from-emerald-600 to-green-600', accent: '#10b981', lightBg: 'rgba(16,185,129,0.09)', ringColor: 'ring-emerald-100', textColor: '#047857', descText: '#065f46' },
+                { grad: 'from-violet-600 to-purple-600', accent: '#8b5cf6', lightBg: 'rgba(139,92,246,0.09)', ringColor: 'ring-violet-100', textColor: '#6d28d9', descText: '#4c1d95' },
+                { grad: 'from-orange-500 to-amber-500', accent: '#f59e0b', lightBg: 'rgba(245,158,11,0.09)', ringColor: 'ring-amber-100', textColor: '#b45309', descText: '#78350f' },
+                { grad: 'from-rose-500 to-pink-600', accent: '#ec4899', lightBg: 'rgba(236,72,153,0.08)', ringColor: 'ring-rose-100', textColor: '#be185d', descText: '#831843' },
               ];
-              const vc = vColors[index];
+              const vc = vColors[index % vColors.length];
+              
               return (
-                <div key={index} className="group rounded-2xl p-10 border border-gray-100/80 transition-all duration-400 hover:-translate-y-2 hover:shadow-2xl relative overflow-hidden"
-                  style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(250,252,255,0.85) 100%)' }}
+                <div key={index} className="group rounded-2xl p-10 lg:p-12 border transition-all duration-400 hover:-translate-y-2.5 hover:shadow-2xl relative overflow-hidden"
+                  style={{ 
+                    background: `linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(250,252,255,0.88) 100%)`,
+                    borderColor: `${vc.accent}25`,
+                    borderWidth: '1px',
+                  }}
                 >
-                  {/* Hover glow */}
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{
-                    background: `radial-gradient(circle at 30% 30%, ${vc.lightBg} 0%, transparent 70%)`,
-                  }} />
-                  <div className={`w-20 h-20 bg-gradient-to-br ${vc.grad} rounded-2xl flex items-center justify-center mb-8 shadow-lg ring-4 ${vc.ringColor} group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300`}>
-                    <Icon className="w-10 h-10 text-white drop-shadow-md" />
-                  </div>
-                  <h3 className="text-3xl font-bold text-gray-900 mb-4 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r transition-all duration-300"
-                    style={{ backgroundImage: `linear-gradient(90deg, ${vc.accent}, ${index === 1 ? '#34d399' : index === 2 ? '#a78bfa' : '#fbbf24'})`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
-                  >
-                    {t(value.titleKey)}
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed text-lg">{t(value.descriptionKey)}</p>
-                  {/* Decorative corner */}
-                  <div className={`absolute top-4 right-4 w-12 h-12 rounded-full opacity-[0.04] group-hover:opacity-[0.08] transition-opacity duration-500`}
-                    style={{ background: vc.accent }}
+                  {/* Animated background glow */}
+                  <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+                    style={{
+                      background: `radial-gradient(circle at 20% 20%, ${vc.lightBg} 0%, transparent 65%)`,
+                    }}
                   />
+                  {/* Corner decorative dot */}
+                  <div className={`absolute top-5 right-5 w-3 h-3 rounded-full transition-all duration-500 group-hover:scale-150`}
+                    style={{ background: vc.accent, opacity: 0.4 }}
+                  />
+                  
+                  <div className="relative z-10">
+                    {/* Icon — larger with enhanced glow */}
+                    <div className={`w-24 h-24 bg-gradient-to-br ${vc.grad} rounded-2xl flex items-center justify-center mb-8 shadow-lg ring-4 ${vc.ringColor} group-hover:scale-110 group-hover:-rotate-6 transition-all duration-400`}
+                      style={{ boxShadow: `0 8px 24px ${vc.lightBg}` }}
+                    >
+                      <Icon className="w-12 h-12 text-white drop-shadow-md" strokeWidth={1.8} />
+                    </div>
+                    
+                    {/* Title — larger and bolder */}
+                    <h3 className="text-[28px] font-black text-gray-900 mb-4 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r transition-all duration-300"
+                      style={{ backgroundImage: `linear-gradient(90deg, ${vc.accent}, ${index === 1 ? '#34d399' : index === 2 ? '#a78bfa' : index === 3 ? '#fbbf24' : '#f472b6'})`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
+                    >
+                      {t(value.titleKey)}
+                    </h3>
+                    
+                    {/* Description — larger font */}
+                    <p className="leading-relaxed text-lg mb-5" style={{ color: vc.descText }}>{t(value.descriptionKey)}</p>
+                    
+                    {/* Decorative animated line */}
+                    <div className={`h-[3px] rounded-full transition-all duration-500 group-hover:w-full opacity-30 group-hover:opacity-70 w-14`}
+                      style={{ background: `linear-gradient(90deg, ${vc.accent}, transparent)` }}
+                    />
+                  </div>
                 </div>
               );
             })}
@@ -708,91 +831,107 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ===== BEACH-THEMED CTA SECTION — 沙滩主题 ===== */}
+      {/* ===== SUNRISE BEACH CTA — 日出沙滩主题 ===== */}
       <section
-        className="py-20 px-4 sm:px-6 lg:px-8 text-white relative overflow-hidden"
+        className="py-24 px-4 sm:px-6 lg:px-8 text-white relative overflow-hidden"
         style={{
-          background: 'linear-gradient(180deg, #0c4a6e 0%, #075985 20%, #0369a1 40%, #fcd34d 78%, #fbbf24 88%, #f59e0b 100%)',
+          background: 'linear-gradient(180deg, #0c4a6e 0%, #075985 15%, #0369a1 30%, #fef3c7 65%, #fde68a 78%, #fcd34d 90%, #fbbf24 100%)',
         }}
       >
-        {/* === SUN with rotating rays === */}
-        <div className="absolute -top-16 right-[8%] sm:right-[12%] w-32 h-32 sm:w-44 sm:h-44 rounded-full" style={{
-          background: 'radial-gradient(circle at 35% 35%, #fef3c7, #fcd34d 40%, #f59e0b 70%, #d97706 100%)',
-          boxShadow: '0 0 80px rgba(251,191,36,0.5), 0 0 160px rgba(245,158,11,0.25), inset 0 -8px 20px rgba(217,119,6,0.3)',
-          animation: 'sun-pulse 4s ease-in-out infinite alternate',
+        {/* === SUNRISE SUN — 日出质感太阳 (left side, horizon level) === */}
+        <div className="absolute top-[32%] left-[4%] sm:left-[8%] w-44 h-44 sm:w-56 sm:h-56 rounded-full" style={{
+          background: 'radial-gradient(circle at 50% 58%, #fef9c3 0%, #fef08a 20%, #facc15 45%, #eab308 65%, #ca8a04 100%)',
+          boxShadow: '0 0 120px rgba(250,204,21,0.65), 0 0 240px rgba(234,179,8,0.4), 0 30px 80px rgba(202,138,4,0.5), inset 0 -15px 35px rgba(180,120,0,0.4)',
+          animation: 'sunrise-glow 5s ease-in-out infinite alternate',
         }}>
-          {[...Array(10)].map((_, i) => (
-            <div key={i} className="absolute top-1/2 left-1/2 origin-left" style={{
-              width: `${3 + i * 1.8}px`, height: `${24 + i * 4}px`,
-              background: `linear-gradient(to bottom, rgba(255,251,235,0.85) 0%, rgba(251,191,36,0.25) 70%, transparent)`,
-              transform: `rotate(${i * 36}deg) translateY(-50%)`,
+          {/* Sun surface texture — 太阳质感 */}
+          <div className="absolute inset-[8%] rounded-full" style={{
+            background: 'radial-gradient(ellipse at 45% 40%, rgba(254,249,195,0.7) 0%, transparent 50%), radial-gradient(ellipse at 55% 65%, rgba(234,179,8,0.4) 0%, transparent 40%)',
+          }} />
+          {/* Sun rays — 光芒 */}
+          {[...Array(12)].map((_, i) => (
+            <div key={i} className="absolute top-1/2 left-1/2 origin-center" style={{
+              width: `${2.5 + i * 1.2}px`, height: `${18 + i * 5}px`,
+              background: `linear-gradient(to bottom, rgba(255,251,235,0.9) 0%, rgba(250,204,21,0.3) 60%, transparent)`,
+              transform: `rotate(${i * 30}deg) translateY(-50%)`,
               borderRadius: '50%',
-              animation: `sun-ray-sway ${2 + i * 0.12}s ease-in-out infinite alternate`,
-              animationDelay: `${i * 0.1}s`,
+              animation: `sun-ray-pulse ${2.5 + i * 0.15}s ease-in-out infinite alternate`,
+              animationDelay: `${i * 0.12}s`,
             }} />
           ))}
-          <div className="absolute inset-[18%] rounded-full bg-gradient-to-br from-yellow-200/60 to-transparent opacity-80" />
+          {/* Inner glow */}
+          <div className="absolute inset-[22%] rounded-full bg-gradient-to-br from-yellow-100/50 to-transparent opacity-70" />
+        </div>
+
+        {/* === CURVED SAND BEACH — 圆形弧形沙滩 === */}
+        <div className="absolute bottom-0 left-0 right-0 h-[38%] overflow-hidden">
+          {/* Main curved sand using SVG */}
+          <svg className="absolute bottom-0 left-0 w-full" style={{ height: '100%' }} viewBox="0 0 1440 400" preserveAspectRatio="none">
+            {/* Curved sand dune shape */}
+            <path d="M0,400 L0,180 Q180,80 360,140 Q540,60 720,120 Q900,50 1080,130 Q1260,90 1440,160 L1440,400 Z" fill="#fde68a" />
+            <path d="M0,400 L0,200 Q200,120 400,170 Q600,90 800,150 Q1000,80 1200,160 Q1350,130 1440,190 L1440,400 Z" fill="#fcd34d" />
+            <path d="M0,400 L0,240 Q240,170 480,210 Q720,150 960,200 Q1200,160 1440,220 L1440,400 Z" fill="#fbbf24" />
+            {/* Sand texture lines */}
+            <path d="M0,320 Q360,290 720,310 Q1080,290 1440,320" stroke="rgba(255,255,255,0.15)" strokeWidth="2" fill="none" />
+            <path d="M0,350 Q360,330 720,345 Q1080,325 1440,350" stroke="rgba(255,255,255,0.1)" strokeWidth="1.5" fill="none" />
+          </svg>
+
+          {/* Sand sparkle particles */}
+          {[...Array(18)].map((_, i) => (
+            <div key={i} className="absolute rounded-full pointer-events-none" style={{
+              left: `${5 + i * 5.2}%`,
+              bottom: `${8 + Math.sin(i * 0.8) * 12}%`,
+              width: 2 + (i % 3) * 1.5,
+              height: 2 + (i % 3) * 1.5,
+              background: i % 2 ? 'rgba(255,255,255,0.7)' : 'rgba(254,243,199,0.8)',
+              boxShadow: `0 0 ${3 + i % 3}px rgba(255,255,255,0.4)`,
+              animation: `sand-sparkle ${2 + (i % 4) * 0.5}s ease-in-out infinite`,
+              animationDelay: `${i * 0.2}s`,
+            }} />
+          ))}
         </div>
 
         {/* === OCEAN WAVES at top of sand === */}
-        <div className="absolute top-[45%] left-0 right-0 h-24 overflow-hidden pointer-events-none">
+        <div className="absolute top-[42%] left-0 right-0 h-28 overflow-hidden pointer-events-none">
           <svg className="absolute w-[250%] h-full" viewBox="0 0 1200 100" preserveAspectRatio="none">
-            <path d="M0,30 Q150,10 300,30 T600,30 T900,30 T1200,30 T1500,30 T1800,30 L1800,100 L0,100 Z" fill="rgba(14,116,144,0.35)" style={{ animation: 'bw1 7s linear infinite' }} />
-            <path d="M0,45 Q200,65 400,42 T800,48 T1200,38 T1600,50 L1600,100 L0,100 Z" fill="rgba(8,145,178,0.25)" style={{ animation: 'bw2 9s linear infinite reverse' }} />
-            <path d="M0,58 Q180,42 360,58 T720,55 T1080,62 T1440,52 L1440,100 L0,100 Z" fill="rgba(56,189,248,0.15)" style={{ animation: 'bw3 11s linear infinite' }} />
+            <path d="M0,35 Q150,15 300,35 T600,35 T900,35 T1200,35 T1500,35 T1800,35 L1800,100 L0,100 Z" fill="rgba(14,116,144,0.3)" style={{ animation: 'bw1 8s linear infinite' }} />
+            <path d="M0,50 Q200,68 400,48 T800,52 T1200,45 T1600,55 L1600,100 L0,100 Z" fill="rgba(8,145,178,0.22)" style={{ animation: 'bw2 10s linear infinite reverse' }} />
+            <path d="M0,62 Q180,48 360,62 T720,58 T1080,65 T1440,55 L1440,100 L0,100 Z" fill="rgba(56,189,248,0.13)" style={{ animation: 'bw3 12s linear infinite' }} />
           </svg>
         </div>
 
-        {/* === SMALL FISH in ocean === */}
-        <div className="absolute top-[48%] left-[3%]" style={{ animation: 'fish-beach 14s ease-in-out infinite' }}>
-          <svg width="26" height="13" viewBox="0 0 26 13"><ellipse cx="12" cy="6.5" rx="10" ry="5.5" fill="#7dd3fc" opacity=".8"/><polygon points="24,6.5 26,2 26,11" fill="#7dd3fc"/><circle cx="7" cy="4.5" r="1.4" fill="#0c4a6e"/></svg>
-        </div>
-        <div className="absolute top-[54%] right-[18%]" style={{ animation: 'fish-beach-rev 18s ease-in-out infinite', animationDelay: '-5s', transform: 'scaleX(-1)' }}>
-          <svg width="20" height="10" viewBox="0 0 20 10"><ellipse cx="9" cy="5" rx="8" ry="4.5" fill="#a5f3fc" opacity=".7"/><polygon points="0,5 -2,2 -2,8" fill="#a5f3fc"/><circle cx="13" cy="3.5" r="1.1" fill="#0c4a6e"/></svg>
-        </div>
-
         {/* === SEASHELLS on sand === */}
-        <div className="absolute bottom-[12%] left-[8%] opacity-70" style={{ animation: 'shell-glow 5s ease-in-out infinite alternate' }}>
-          <svg width="26" height="20" viewBox="0 0 26 20"><path d="M2,16 Q13,-2 24,16 Q13,22 2,16Z" fill="#fde68a" stroke="#d97706" strokeWidth=".8"/><path d="M5,15 Q13,3 21,15" stroke="#d97706" strokeWidth=".6" fill="none"/></svg>
+        <div className="absolute bottom-[22%] left-[15%] opacity-60" style={{ animation: 'shell-glow 5s ease-in-out infinite alternate' }}>
+          <svg width="28" height="22" viewBox="0 0 28 22"><path d="M3,18 Q14,-3 25,18 Q14,24 3,18Z" fill="#fde68a" stroke="#d97706" strokeWidth="0.7"/><path d="M6,17 Q14,5 22,17" stroke="#d97706" strokeWidth="0.5" fill="none"/></svg>
         </div>
-        <div className="absolute bottom-[18%] right-[14%] opacity-60" style={{ animation: 'shell-glow 6s ease-in-out infinite alternate-reverse' }}>
-          <svg width="22" height="17" viewBox="0 0 22 17"><ellipse cx="11" cy="9" rx="9" ry="6.5" fill="#fef3c7" stroke="#d97706" strokeWidth=".7"/></svg>
+        <div className="absolute bottom-[28%] right-[18%] opacity-55" style={{ animation: 'shell-glow 6s ease-in-out infinite alternate-reverse' }}>
+          <svg width="24" height="19" viewBox="0 0 24 19"><ellipse cx="12" cy="10" rx="10" ry="7" fill="#fef3c7" stroke="#d97706" strokeWidth="0.6"/></svg>
         </div>
-        {/* STARFISH */}
-        <div className="absolute bottom-[14%] right-[7%] opacity-65" style={{ animation: 'star-wiggle 4s ease-in-out infinite alternate' }}>
-          <svg width="32" height="32" viewBox="0 0 32 32"><path d="M16,2 L18.5,11 L27,9 L20,16 L26,23 L17,19 L13,29 L15,19 L5,21 L12,15 Z" fill="#fb923c" stroke="#ea580c" strokeWidth=".8"/><circle cx="16" cy="16" r="2.8" fill="#fde68a" opacity=".6"/></svg>
+        <div className="absolute bottom-[25%] right-[8%] opacity-60" style={{ animation: 'star-wiggle 4s ease-in-out infinite alternate' }}>
+          <svg width="30" height="30" viewBox="0 0 30 30"><path d="M15,2 L17.5,10 L25,9 L20,15 L23,23 L15,18 L7,21 L10,14 Z" fill="#fb923c" stroke="#ea580c" strokeWidth="0.7"/><circle cx="15" cy="15" r="2.5" fill="#fde68a" opacity="0.55"/></svg>
         </div>
-
-        {/* Sand bubbles rising */}
-        {[...Array(7)].map((_, i) => (
-          <span key={i} className="absolute rounded-full pointer-events-none" style={{
-            left: `${8 + i * 13}%`, bottom: `${4 + Math.random() * 7}%`, width: 2 + Math.random() * 3.5, height: 2 + Math.random() * 3.5,
-            background: i % 2 ? 'rgba(186,230,253,.55)' : 'rgba(253,224,175,.45)',
-            boxShadow: `0 0 ${3 + i}px ${i % 2 ? 'rgba(125,211,252,.25)' : 'rgba(251,191,36,.18)'}`,
-            animation: `sand-bubble ${3 + Math.random() * 3.5}s ease-in-out infinite`, animationDelay: `${i * 0.55}s`,
-          }} />
-        ))}
 
         {/* Content */}
         <div className="max-w-5xl mx-auto text-center relative z-10">
-          <h2 className="text-4xl sm:text-5xl font-bold mb-6 text-white drop-shadow-lg" style={{ textShadow: '0 2px 8px rgba(0,0,0,.2)' }}>{t('about.cta.title')}</h2>
-          <p className="text-xl mb-12 max-w-2xl mx-auto leading-relaxed" style={{ color: '#e0f2fe', textShadow: '0 1px 4px rgba(0,0,0,.15)' }}>{t('about.cta.subtitle')}</p>
+          <h2 className="text-4xl sm:text-5xl font-bold mb-6 text-white drop-shadow-lg" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>{t('about.cta.title')}</h2>
+          <p className="text-xl mb-12 max-w-2xl mx-auto leading-relaxed" style={{ color: '#e0f2fe', textShadow: '0 1px 4px rgba(0,0,0,0.15)' }}>{t('about.cta.subtitle')}</p>
 
-          {/* Buttons — Beach themed */}
+          {/* Buttons — Sunrise themed (yellow-white) */}
           <div className="flex flex-col sm:flex-row gap-6 justify-center mb-12">
             <a href={`/${locale}/contact`} className="group relative inline-flex items-center justify-center px-10 py-5 font-bold rounded-full overflow-hidden cursor-pointer text-lg transition-all duration-400 hover:-translate-y-1"
-              style={{ background: 'linear-gradient(135deg,#fff 0%,#fefce8 100%)', color: '#0369a1', boxShadow: '0 6px 24px rgba(3,105,161,.3), 0 0 0 1px rgba(255,255,255,.3)' }}
+              style={{ background: 'linear-gradient(135deg,#fffbeb 0%,#fef3c7 50%,#fde68a 100%)', color: '#92400e', boxShadow: '0 6px 24px rgba(146,64,14,0.25), 0 0 0 1px rgba(255,255,255,0.4)' }}
             >
-              {[...Array(4)].map((_, i) => (
+              {/* Sparkle particles on hover */}
+              {[...Array(5)].map((_, i) => (
                 <span key={i} className="absolute w-1 h-1 rounded-full pointer-events-none opacity-0 group-hover:opacity-80" style={{
-                  left: `${15 + i * 18}%`, top: `${20 + (i % 2) * 30}%`, background: '#f59e0b', boxShadow: '0 0 4px #fbbf24',
-                  animation: `sand-spark ${.8 + i * .2}s ease-in-out infinite`, animationDelay: `${i * .1}s`
+                  left: `${12 + i * 16}%`, top: `${18 + (i % 2) * 28}%`, background: '#f59e0b', boxShadow: '0 0 4px #fbbf24',
+                  animation: `sand-sparkle ${0.7 + i * 0.15}s ease-in-out infinite`, animationDelay: `${i * 0.08}s`
                 }} />
               ))}
               <span style={{ position:'relative',zIndex:10,display:'inline-flex',alignItems:'center',gap:'6px' }}>{t('nav.contact')}<ChevronRight className="ml-1 w-6 h-6" /></span>
             </a>
             <a href={`tel:${contactPhone.replace(/\s/g,'')}`} className="group relative inline-flex items-center justify-center px-10 py-5 font-bold rounded-full overflow-hidden cursor-pointer text-lg text-white transition-all duration-400 hover:-translate-y-1"
-              style={{ background: 'linear-gradient(135deg,rgba(255,255,255,.18),rgba(255,255,255,.08))', border: '1.5px solid rgba(255,255,255,.35)', backdropFilter: 'blur(12px)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.15),0 4px 20px rgba(0,0,0,.15)' }}
+              style={{ background: 'linear-gradient(135deg,rgba(255,255,255,0.2),rgba(255,255,255,0.08))', border: '1.5px solid rgba(255,255,255,0.38)', backdropFilter: 'blur(12px)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.18),0 4px 20px rgba(0,0,0,0.12)' }}
             ><ChevronRight className="mr-2 w-5 h-5" />{contactPhone}</a>
           </div>
 
@@ -802,27 +941,42 @@ export default function AboutPage() {
 
       {/* ===== ALL ANIMATION KEYFRAMES ===== */}
       <style>{`
+        @keyframes statFadeIn {
+          0%{opacity:0;transform:translateY(28px) scale(.96)}
+          60%{opacity:1;transform:translateY(-4px) scale(1.01)}
+          100%{opacity:1;transform:translateY(0) scale(1)}
+        }
+        @keyframes iconBounce {
+          0%,100%{transform:translateY(0) scale(1)}
+          25%{transform:translateY(-6px) scale(1.08)}
+          50%{transform:translateY(0) scale(1)}
+          75%{transform:translateY(-3px) scale(1.04)}
+        }
+        @keyframes cornerFloat {
+          0%{transform:translate(0,0) scale(1);opacity:.05}
+          100%{transform:translate(-18px,14px) scale(1.15);opacity:.1}
+        }
+        @keyframes about-intro-bg-pulse { 0%{opacity:.03;transform:scale(1)} 100%{opacity:.07;transform:scale(1.05)} }
         @keyframes about-bubble-active {
           0%{transform:translateY(0) scale(.5);opacity:0} 15%{opacity:.6}
           50%{transform:translateY(-20px) scale(1.2);opacity:.85}
           85%{transform:translateY(-42px) scale(.7);opacity:.2}
           100%{transform:translateY(-54px) scale(.3);opacity:0}
         }
-        @keyframes about-intro-bg-pulse { 0%{opacity:.03;transform:scale(1)} 100%{opacity:.07;transform:scale(1.05)} }
-        @keyframes sun-pulse {
-          0%{box-shadow:0 0 60px rgba(251,191,36,.4),0 0 140px rgba(245,158,11,.2);transform:scale(1)}
-          100%{box-shadow:0 0 100px rgba(251,191,36,.6),0 0 200px rgba(245,158,11,.35);transform:scale(1.04)}
+        @keyframes sunrise-glow {
+          0%{box-shadow:0 0 80px rgba(250,204,21,0.5),0 0 160px rgba(234,179,8,0.3),0 15px 50px rgba(202,138,4,0.35);transform:scale(1)}
+          100%{box-shadow:0 0 120px rgba(250,204,21,0.7),0 0 240px rgba(234,179,8,0.45),0 25px 80px rgba(202,138,4,0.5);transform:scale(1.06)}
         }
-        @keyframes sun-ray-sway { 0%{opacity:.4;transform:rotate(var(--r,0)) translateY(-50%) scaleX(1)} 100%{opacity:.8;transform:rotate(var(--r,0)) translateY(-50%) scaleX(1.15)} }
+        @keyframes sun-ray-pulse {
+          0%{opacity:0.5;transform:rotate(var(--r,0)) translateY(-50%) scaleX(1)}
+          100%{opacity:0.9;transform:rotate(var(--r,0)) translateY(-50%) scaleX(1.2)}
+        }
         @keyframes bw1 { 0%{transform:translateX(0)} 100%{transform:translateX(-33.33%)} }
         @keyframes bw2 { 0%{transform:translateX(0)} 100%{transform:translateX(-33.33%)} }
         @keyframes bw3 { 0%{transform:translateX(0)} 100%{transform:translateX(-33.33%)} }
-        @keyframes fish-beach { 0%{transform:translateX(-30px);opacity:0} 10%{opacity:.8} 90%{opacity:.8} 100%{transform:translateX(calc(90vw)) translateY(-15px);opacity:0} }
-        @keyframes fish-beach-rev { 0%{transform:translateX(calc(90vw)) scaleX(-1);opacity:0} 10%{opacity:.7} 90%{opacity:.7} 100%{transform:translateX(-50px) translateY(12px) scaleX(-1);opacity:0} }
-        @keyframes shell-glow { 0%{filter:brightness(1)} 100%{filter:brightness(1.15) drop-shadow(0 0 5px rgba(251,191,36,.35))} }
-        @keyframes star-wiggle { 0%{transform:rotate(-5deg) scale(1)} 100%{transform:rotate(8deg) scale(1.08)} }
-        @keyframes sand-bubble { 0%{transform:translateY(0) scale(.5);opacity:0} 20%{opacity:.7} 80%{opacity:.3} 100%{transform:translateY(-75px) scale(1.2);opacity:0} }
-        @keyframes sand-sparkle { 0%{transform:translateY(0) scale(0);opacity:0} 50%{transform:translateY(-8px) scale(1);opacity:1} 100%{transform:translateY(-16px) scale(0);opacity:0} }
+        @keyframes shell-glow { 0%{filter:brightness(1)} 100%{filter:brightness(1.18) drop-shadow(0 0 6px rgba(251,191,36,0.4))} }
+        @keyframes star-wiggle { 0%{transform:rotate(-6deg) scale(1)} 100%{transform:rotate(9deg) scale(1.1)} }
+        @keyframes sand-sparkle { 0%{transform:translateY(0) scale(0);opacity:0} 50%{transform:translateY(-10px) scale(1.1);opacity:1} 100%{transform:translateY(-20px) scale(0);opacity:0} }
       `}</style>
     </div>
   );

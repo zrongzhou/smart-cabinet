@@ -6,7 +6,7 @@ import { useLocale } from '@/lib/i18n';
 import { fetchBlogs, BlogPost } from '@/lib/api';
 import OceanHeader from '@/components/OceanHeader';
 
-// Map blog category to Lucide icon
+// Map blog category to Lucide icon + i18n label
 function getBlogIcon(category: string) {
   const iconMap: Record<string, any> = {
     'Industry Trends': TrendingUp,
@@ -19,10 +19,29 @@ function getBlogIcon(category: string) {
   return iconMap[category] || FileText;
 }
 
+// Translate blog category name
+function getCategoryLabel(category: string, locale: string): string {
+  const catLabels: Record<string, Record<string, string>> = {
+    'Industry Trends': { en: 'Industry Trends', zh: '行业趋势', ar: 'اتجاهات الصناعة' },
+    'Case Study': { en: 'Case Study', zh: '案例研究', ar: 'دراسة حالة' },
+    'Technical Guide': { en: 'Technical Guide', zh: '技术指南', ar: 'دليل تقني' },
+    'Best Practice': { en: 'Best Practice', zh: '最佳实践', ar: 'أفضل الممارسات' },
+    'Use Case': { en: 'Use Case', zh: '应用场景', ar: 'حالة استخدام' },
+    'Customer Story': { en: 'Customer Story', zh: '客户故事', ar: 'قصة عميل' },
+    'General': { en: 'General', zh: '综合', ar: 'عام' },
+  };
+  return (catLabels[category] || catLabels['General'])[locale] || category;
+}
+
 function formatDate(dateString: string, locale: string = 'en'): string {
   const date = new Date(dateString);
   if (locale === 'zh') {
     return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+  }
+  if (locale === 'ar') {
+    const arMonths = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
+      'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+    return `${date.getDate()} ${arMonths[date.getMonth()]} ${date.getFullYear()}`;
   }
   return date.toLocaleDateString('en-US', {
     year: 'numeric',
@@ -161,7 +180,7 @@ export default function BlogPage() {
                     <div className="flex items-center gap-2 mb-3">
                       <span className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-semibold rounded-full">
                         <BlogIcon className="w-3 h-3" />
-                        {category}
+                        {getCategoryLabel(category, locale)}
                       </span>
                       <span className="text-xs text-gray-500 dark:text-gray-400">
                         {formatDate(post.publishedAt || post.createdAt || new Date().toISOString(), locale)}

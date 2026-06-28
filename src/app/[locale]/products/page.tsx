@@ -390,12 +390,13 @@ export default function ProductsPage() {
         icon={<Package className="w-8 h-8 text-blue-300" />}
       />
 
-      {/* Primary Dimension Filter + Search — Glass Effect */}
-      <section className="sticky top-16 z-40 border-b border-gray-200/60" style={{
-        background: 'linear-gradient(180deg, rgba(255,255,255,0.85) 0%, rgba(248,250,252,0.78) 100%)',
-        backdropFilter: 'blur(20px) saturate(1.8)',
-        WebkitBackdropFilter: 'blur(20px) saturate(1.8)',
-        boxShadow: '0 4px 30px rgba(148,163,184,0.08), inset 0 -1px 0 rgba(226,232,240,0.5)',
+      {/* Primary Dimension Filter + Search — Enhanced Glass Effect */}
+      <section className="sticky top-16 z-40" style={{
+        background: 'linear-gradient(180deg, rgba(255,255,255,0.72) 0%, rgba(248,250,252,0.65) 100%)',
+        backdropFilter: 'blur(24px) saturate(1.9)',
+        WebkitBackdropFilter: 'blur(24px) saturate(1.9)',
+        borderBottom: '1px solid rgba(226,232,240,0.5)',
+        boxShadow: '0 4px 32px rgba(148,163,184,0.1), 0 1px 3px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6)',
       }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           {/* Search bar */}
@@ -419,29 +420,28 @@ export default function ProductsPage() {
             )}
           </div>
 
-          {/* Filter Panel — Glass Card Container */}
+          {/* Filter Panel — Enhanced Glass Card Container */}
           <div className="relative rounded-2xl px-6 py-5 overflow-visible" style={{
-            background: 'linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(241,245,249,0.5) 100%)',
-            backdropFilter: 'blur(12px) saturate(1.6)',
-            WebkitBackdropFilter: 'blur(12px) saturate(1.6)',
-            border: '1px solid rgba(226,232,240,0.6)',
-            boxShadow: '0 4px 20px rgba(148,163,184,0.08), inset 0 1px 0 rgba(255,255,255,0.7)',
+            background: 'linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(241,245,249,0.4) 100%)',
+            backdropFilter: 'blur(18px) saturate(1.8)',
+            WebkitBackdropFilter: 'blur(18px) saturate(1.8)',
+            border: '1px solid rgba(226,232,240,0.5)',
+            boxShadow: '0 8px 32px rgba(148,163,184,0.12), inset 0 2px 0 rgba(255,255,255,0.7), inset 0 -1px 0 rgba(226,232,240,0.4)',
           }}>
             {/* Subtle accent bar - shows under active dimension tab instead of top line */}
             <div className="h-1" />
             
             {/* Row 1: Dimension Tabs - unified design system */}
             <div className="flex flex-wrap items-center justify-center gap-2">
-              {/* "All" button - light neutral style matching sibling pills */}
+              {/* "All" button */}
               <button
                 onClick={() => handleDimensionChange('all')}
-                className={`relative px-4 py-2 rounded-full text-[13px] font-semibold transition-all duration-200 inline-flex items-center gap-1.5 ${
+                className={`relative px-5 py-2.5 rounded-full text-[14px] font-bold transition-all duration-200 inline-flex items-center gap-1.5 ${
                   activeDimension === 'all'
-                    /* Active: blue background */
-                    ? 'bg-blue-600 text-white shadow-md hover:shadow-lg hover:-translate-y-0.5'
-                    /* Inactive: light pill same as other inactive tabs */
-                    : 'bg-white text-gray-600 border border-gray-300 hover:border-blue-600/30 hover:shadow-sm hover:-translate-y-0.5'
+                    ? 'bg-blue-600 text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5'
+                    : 'text-gray-600 border backdrop-blur-md bg-white/40 hover:bg-white/70 hover:border-blue-400/50 hover:shadow-sm hover:-translate-y-0.5'
                 }`}
+                style={activeDimension !== 'all' ? { borderColor: 'rgba(209,213,219,0.6)', borderWidth: '1px' } : undefined}
               >
                 <span>{t('products.filterAll') || 'All'}</span>
               </button>
@@ -466,16 +466,14 @@ export default function ProductsPage() {
                   <button
                     key={type}
                     onClick={() => handleDimensionChange(type)}
-                    className={`relative px-3.5 py-2 rounded-full text-[13px] font-medium transition-all duration-200 inline-flex items-center gap-1.5 ${
+                    className={`relative px-4 py-2.5 rounded-full text-[14px] font-bold transition-all duration-200 inline-flex items-center gap-1.5 ${
                       isActive
-                        /* Active: gradient background via inline style */
-                        ? `text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 ring-1 ring-white/25`
-                        /* Inactive: light pill — colors set via inline style below */
-                        : `border hover:border-blue-600/30 hover:shadow-sm hover:-translate-y-0.5`
+                        ? `text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5 ring-1 ring-white/30`
+                        : `border backdrop-blur-md bg-white/40 text-gray-600 hover:bg-white/70 hover:border-blue-400/50 hover:shadow-sm hover:-translate-y-0.5`
                     }`}
                     style={isActive
                       ? { background: 'linear-gradient(135deg, #2563eb, #1d4ed8)' }
-                      : { backgroundColor: '#ffffff', color: '#4b5563', borderColor: '#d1d5db' }
+                      : { borderColor: 'rgba(209,213,219,0.6)', borderWidth: '1px' }
                     }
                     title={isEmpty ? (locale === 'zh' ? '该维度暂无产品' : 'No products in this dimension') : ''}
                   >
@@ -526,16 +524,14 @@ export default function ProductsPage() {
                         <button
                           key={cat.id}
                           onClick={() => toggleCategory(cat.id)}
-                          className={`relative px-3.5 py-[7px] rounded-full text-[12.5px] transition-all duration-200 leading-none inline-flex items-center ${
+                          className={`relative px-4 py-[9px] rounded-full text-[13.5px] font-semibold transition-all duration-200 leading-none inline-flex items-center ${
                             isSelected
-                              /* Selected: solid blue background */
-                              ? `text-white shadow-sm font-semibold hover:shadow-md`
-                              /* Unselected: glass pill with subtle border */
-                              : `text-gray-700 border backdrop-blur-sm hover:border-blue-400/60 hover:shadow-sm`
+                              ? `text-white shadow-md hover:shadow-lg`
+                              : `text-gray-700 border backdrop-blur-md bg-white/35 hover:bg-white/60 hover:border-blue-400/50 hover:shadow-sm`
                           }`}
                           style={isSelected ? { backgroundColor: '#2563eb' } : {
-                            backgroundColor: 'rgba(255,255,255,0.55)',
-                            borderColor: 'rgba(203,213,225,0.75)',
+                            borderColor: 'rgba(209,213,219,0.5)',
+                            borderWidth: '1px',
                           }}
                         >
                           {isSelected && (
