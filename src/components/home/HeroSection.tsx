@@ -11,31 +11,31 @@ function CountUp({ end, duration = 2 }: { end: string; duration?: number }) {
 
   useEffect(() => {
     if (!isAnimating) return;
-    
+
     const numericEnd = parseInt(end.replace(/\D/g, '')) || 0;
     const startTime = Date.now();
     const startValue = 0;
-    
+
     const animate = () => {
       const now = Date.now();
       const elapsed = (now - startTime) / 1000;
       const progress = Math.min(elapsed / duration, 1);
-      
+
       // Ease out cubic
       const eased = 1 - Math.pow(1 - progress, 3);
       const current = Math.floor(startValue + (numericEnd - startValue) * eased);
-      
+
       setCount(current);
-      
+
       if (progress < 1) {
         requestAnimationFrame(animate);
       }
     };
-    
+
     const timer = setTimeout(() => {
       requestAnimationFrame(animate);
     }, 300);
-    
+
     return () => clearTimeout(timer);
   }, [end, duration, isAnimating]);
 
@@ -46,6 +46,29 @@ function CountUp({ end, duration = 2 }: { end: string; duration?: number }) {
   return <span>{count}{end.replace(/\d/g, '')}</span>;
 }
 
+// Star layer configuration for depth effect
+interface StarLayer {
+  count: number;        // number of stars in this layer
+  sizeRange: [number, number];   // min/max size
+  speedRange: [number, number];  // min/max velocity
+  opacityRange: [number, number]; // min/max base opacity
+  color: string;         // fill color
+  glow?: boolean;        // whether to add glow effect
+}
+
+const STAR_LAYERS: StarLayer[] = [
+  // Layer 0: Distant galaxy background - tiny, very dim, barely moving
+  { count: 200, sizeRange: [0.2, 0.6], speedRange: [0.01, 0.04], opacityRange: [0.1, 0.3], color: 'rgba(180,190,220,' },
+  // Layer 1: Far stars - small, dim, slow
+  { count: 120, sizeRange: [0.4, 1.0], speedRange: [0.03, 0.08], opacityRange: [0.2, 0.5], color: 'rgba(200,215,255,' },
+  // Layer 2: Mid-distance stars - medium, moderate brightness
+  { count: 80, sizeRange: [0.8, 1.8], speedRange: [0.06, 0.15], opacityRange: [0.35, 0.7], color: 'rgba(224,242,254,' },
+  // Layer 3: Close bright stars - larger, brighter, faster, some with colored tints
+  { count: 35, sizeRange: [1.5, 3.0], speedRange: [0.1, 0.25], opacityRange: [0.5, 1.0], color: 'rgba(255,255,255,', glow: true },
+  // Layer 4: Foreground "dust" / very close bright specks - largest, fastest parallax feel
+  { count: 12, sizeRange: [2.0, 4.0], speedRange: [0.15, 0.35], opacityRange: [0.3, 0.6], color: 'rgba(147,197,253,' },
+];
+
 export default function HeroSection() {
   const { locale, t } = useLocale();
   const [isVisible, setIsVisible] = useState(false);
@@ -55,7 +78,7 @@ export default function HeroSection() {
 
   useEffect(() => {
     setIsVisible(true);
-    
+
     // Intersection observer for stats
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -65,15 +88,15 @@ export default function HeroSection() {
       },
       { threshold: 0.1 }
     );
-    
+
     if (statsRef.current) {
       observer.observe(statsRef.current);
     }
-    
+
     return () => observer.disconnect();
   }, []);
 
-  // Particle animation (pure Canvas, no external library) - Always show on homepage
+  // Multi-layer depth star field with parallax
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -82,93 +105,194 @@ export default function HeroSection() {
     if (!ctx) return;
 
     let animationId: number;
-    let particles: Array<{
+
+    interface Star {
       x: number;
       y: number;
       vx: number;
       vy: number;
       size: number;
-      opacity: number;
+      baseOpacity: number;
       color: string;
       twinkleOffset: number;
-    }> = [];
+      twinkleSpeed: number;
+      layer: number;
+      hasGlow: boolean;
+      hue?: number; // for colored tint on bright stars
+    }
 
-    const colors = ['rgba(255,255,255,', 'rgba(224,242,254,', 'rgba(254,243,199,', 'rgba(147,197,253,'];
+    let stars: Star[] = [];
 
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
 
-    const createParticles = () => {
-      particles = [];
-      const count = Math.min(250, Math.floor((canvas.width * canvas.height) / 8000));
-      for (let i = 0; i < count; i++) {
-        particles.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          vx: (Math.random() - 0.5) * 0.15,
-          vy: (Math.random() - 0.5) * 0.15,
-          size: Math.random() * 2.2 + 0.3,
-          opacity: Math.random() * 0.7 + 0.2,
-          color: colors[Math.floor(Math.random() * colors.length)],
-          twinkleOffset: Math.random() * Math.PI * 2, // For twinkle effect
-        });
-      }
+    const createStars = () => {
+      stars = [];
+      STAR_LAYERS.forEach((layer, layerIndex) => {
+        for (let i = 0; i < layer.count; i++) {
+          const size = layer.sizeRange[0] + Math.random() * (layer.sizeRange[1] - layer.sizeRange[0]);
+          const speed = layer.speedRange[0] + Math.random() * (layer.speedRange[1] - layer.speedRange[0]);
+          const angle = Math.random() * Math.PI * 2;
+          const hue = layer.glow ? (Math.random() > 0.7 ? 200 + Math.random() * 60 : undefined) : undefined; // blue-ish tints
+
+          stars.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            size,
+            baseOpacity: layer.opacityRange[0] + Math.random() * (layer.opacityRange[1] - layer.opacityRange[0]),
+            color: layer.color,
+            twinkleOffset: Math.random() * Math.PI * 2,
+            twinkleSpeed: 1.5 + Math.random() * 2.5,
+            layer: layerIndex,
+            hasGlow: layer.glow || false,
+            hue,
+          });
+        }
+      });
+    };
+
+    // Pre-draw nebula clouds (static, subtle)
+    const drawNebulae = (time: number) => {
+      // Subtle purple-blue nebula top-left
+      const gradient1 = ctx.createRadialGradient(
+        canvas.width * 0.15, canvas.height * 0.2, 0,
+        canvas.width * 0.15, canvas.height * 0.2, canvas.width * 0.35
+      );
+      gradient1.addColorStop(0, 'rgba(99, 102, 241, 0.06)');
+      gradient1.addColorStop(0.5, 'rgba(139, 92, 246, 0.03)');
+      gradient1.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = gradient1;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Subtle cyan nebula bottom-right
+      const gradient2 = ctx.createRadialGradient(
+        canvas.width * 0.85, canvas.height * 0.75, 0,
+        canvas.width * 0.85, canvas.height * 0.75, canvas.width * 0.3
+      );
+      gradient2.addColorStop(0, 'rgba(6, 182, 212, 0.04)');
+      gradient2.addColorStop(0.5, 'rgba(59, 130, 246, 0.02)');
+      gradient2.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = gradient2;
+      ctx.fillRect(0, 0, canvas.height, canvas.height);
+
+      // Milky way band (subtle diagonal)
+      ctx.save();
+      ctx.globalAlpha = 0.02 + Math.sin(time * 0.1) * 0.005;
+      ctx.translate(canvas.width * 0.5, canvas.height * 0.5);
+      ctx.rotate(-0.4); // tilted band
+      ctx.scale(1, 0.25); // flatten to create band shape
+      const milkyWayGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, canvas.width * 0.6);
+      milkyWayGrad.addColorStop(0, 'rgba(220, 220, 255, 0.8)');
+      milkyWayGrad.addColorStop(0.3, 'rgba(200, 210, 255, 0.4)');
+      milkyWayGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = milkyWayGrad;
+      ctx.fillRect(-canvas.width, -canvas.height, canvas.width * 2, canvas.height * 2);
+      ctx.restore();
     };
 
     const draw = () => {
-      const time = Date.now() * 0.001; // Convert to seconds for smoother animation
+      const time = Date.now() * 0.001;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      particles.forEach((p, i) => {
-        // Update position
-        p.x += p.vx;
-        p.y += p.vy;
+      // Draw static nebulae (very subtle)
+      drawNebulae(time);
+
+      // Sort by layer so distant stars are drawn first (painter's algorithm)
+      const sortedStars = [...stars].sort((a, b) => a.layer - b.layer);
+
+      sortedStars.forEach((star) => {
+        // Update position - closer layers move faster (parallax)
+        const parallaxFactor = 0.5 + star.layer * 0.25;
+        star.x += star.vx * parallaxFactor;
+        star.y += star.vy * parallaxFactor;
 
         // Wrap around edges
-        if (p.x < 0) p.x = canvas.width;
-        if (p.x > canvas.width) p.x = 0;
-        if (p.y < 0) p.y = canvas.height;
-        if (p.y > canvas.height) p.y = 0;
+        if (star.x < -10) star.x = canvas.width + 10;
+        if (star.x > canvas.width + 10) star.x = -10;
+        if (star.y < -10) star.y = canvas.height + 10;
+        if (star.y > canvas.height + 10) star.y = -10;
 
-        // Calculate twinkle effect
-        const twinkle = Math.sin(time * 2.5 + p.twinkleOffset) * 0.3 + 0.7; // Range: 0.4 to 1.0
-        const currentOpacity = Math.min(1.0, p.opacity * twinkle);
+        // Twinkle effect - each star twinkles independently
+        const twinkle = Math.sin(time * star.twinkleSpeed + star.twinkleOffset) * 0.3 + 0.7;
+        const currentOpacity = Math.min(1.0, star.baseOpacity * twinkle);
 
-        // Draw particle
+        // Glow effect for bright close stars
+        if (star.hasGlow && currentOpacity > 0.6 && star.size > 2) {
+          const glowGrad = ctx.createRadialGradient(star.x, star.y, 0, star.x, star.y, star.size * 4);
+          if (star.hue !== undefined) {
+            glowGrad.addColorStop(0, `hsla(${star.hue}, 80%, 70%, ${currentOpacity * 0.15})`);
+          } else {
+            glowGrad.addColorStop(0, `rgba(200, 220, 255, ${currentOpacity * 0.12})`);
+          }
+          glowGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+          ctx.fillStyle = glowGrad;
+          ctx.beginPath();
+          ctx.arc(star.x, star.y, star.size * 4, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        // Draw the star core
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = p.color + currentOpacity + ')';
+        ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+
+        if (star.hue !== undefined && currentOpacity > 0.7) {
+          // Colored bright star
+          ctx.fillStyle = `hsla(${star.hue}, 85%, 75%, ${currentOpacity})`;
+        } else {
+          ctx.fillStyle = star.color + currentOpacity + ')';
+        }
         ctx.fill();
 
-        // Draw lines between close particles
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = p.x - particles[j].x;
-          const dy = p.y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-
-          if (dist < 120) { // Slightly reduced connection distance for performance
-            ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = 'rgba(255,255,255,' + (0.08 * (1 - dist / 120)) + ')';
-            ctx.lineWidth = 0.3;
-            ctx.stroke();
-          }
+        // Cross-shaped sparkle for the brightest stars
+        if (star.hasGlow && star.size > 2.2 && currentOpacity > 0.75) {
+          const sparkleLen = star.size * 2;
+          const sparkleOpacity = (currentOpacity - 0.75) * 2.5; // 0 to ~0.6
+          ctx.strokeStyle = `rgba(255, 255, 255, ${sparkleOpacity * 0.4})`;
+          ctx.lineWidth = 0.5;
+          ctx.beginPath();
+          ctx.moveTo(star.x - sparkleLen, star.y);
+          ctx.lineTo(star.x + sparkleLen, star.y);
+          ctx.moveTo(star.x, star.y - sparkleLen);
+          ctx.lineTo(star.x, star.y + sparkleLen);
+          ctx.stroke();
         }
       });
+
+      // Occasional shooting star (2% chance per frame)
+      if (Math.random() < 0.008) {
+        const sx = Math.random() * canvas.width * 0.8;
+        const sy = Math.random() * canvas.height * 0.3;
+        const slen = 60 + Math.random() * 100;
+        const sangle = Math.PI / 4 + Math.random() * 0.3;
+
+        const shootGrad = ctx.createLinearGradient(sx, sy, sx + Math.cos(sangle) * slen, sy + Math.sin(sangle) * slen);
+        shootGrad.addColorStop(0, 'rgba(255, 255, 255, 0)');
+        shootGrad.addColorStop(0.5, 'rgba(255, 255, 255, 0.6)');
+        shootGrad.addColorStop(1, 'rgba(200, 220, 255, 0)');
+
+        ctx.strokeStyle = shootGrad;
+        ctx.lineWidth = 1.5;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(sx, sy);
+        ctx.lineTo(sx + Math.cos(sangle) * slen, sy + Math.sin(sangle) * slen);
+        ctx.stroke();
+      }
 
       animationId = requestAnimationFrame(draw);
     };
 
     resize();
-    createParticles();
+    createStars();
     draw();
 
     window.addEventListener('resize', () => {
       resize();
-      createParticles();
+      createStars();
     });
 
     return () => {
@@ -180,8 +304,8 @@ export default function HeroSection() {
   // Framer Motion variants
   const fadeInUp = {
     hidden: { opacity: 0, y: 60 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
       transition: { duration: 0.6 }
     }
@@ -198,36 +322,42 @@ export default function HeroSection() {
   };
 
   return (
-    <section 
+    <section
       className="homepage-starry relative min-h-[80vh] flex items-center justify-center overflow-hidden"
       style={{ minHeight: '80vh' }}
     >
-      {/* Subtle grid overlay */}
-      <div 
-        className="absolute inset-0 z-0" 
-        style={{ opacity: 0.05 }}
-      >
-        <div
-          className="w-full h-full"
-          style={{
-            backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
-            backgroundSize: '60px 60px',
-          }}
-        />
-      </div>
+      {/* Deep space background - multi-stop gradient for depth */}
+      <div
+        className="absolute inset-0 z-0"
+        style={{
+          background: `radial-gradient(ellipse at 50% 40%, rgba(30, 41, 82, 0.4) 0%, transparent 65%),
+                       radial-gradient(ellipse at 20% 80%, rgba(55, 48, 107, 0.2) 0%, transparent 50%),
+                       radial-gradient(ellipse at 80% 20%, rgba(30, 64, 95, 0.25) 0%, transparent 50%),
+                       linear-gradient(175deg, #03010a 0%, #070b1c 18%, #0c1229 36%, #101a38 56%, #0b1530 76%, #060e1f 100%)`,
+        }}
+      />
 
-      {/* Particle animation canvas - Always show on homepage */}
-      <canvas 
+      {/* Particle animation canvas - multi-layer depth starfield */}
+      <canvas
         ref={canvasRef}
         className="absolute inset-0 z-0 pointer-events-none"
         style={{ width: '100%', height: '100%' }}
       />
 
-      {/* Glow orbs */}
-      <div className="absolute top-0 left-0 w-96 h-96 rounded-full blur-3xl z-0" style={{ backgroundColor: 'rgba(59, 130, 246, 0.2)' }} />
-      <div className="absolute bottom-0 right-0 w-96 h-96 rounded-full blur-3xl z-0" style={{ backgroundColor: 'rgba(168, 85, 247, 0.2)' }} />
+      {/* Atmospheric fog overlay - creates depth separation between bg and text */}
+      <div
+        className="absolute inset-0 z-[1]"
+        style={{
+          background: `radial-gradient(ellipse 80% 60% at 50% 45%, transparent 0%, rgba(3, 5, 15, 0.35) 70%, rgba(3, 5, 15, 0.55) 100%)`,
+          pointerEvents: 'none',
+        }}
+      />
 
-      {/* Content */}
+      {/* Ambient glow orbs behind content */}
+      <div className="absolute top-[10%] left-[5%] w-[500px] h-[500px] rounded-full blur-[120px] z-0" style={{ backgroundColor: 'rgba(59, 130, 246, 0.08)' }} />
+      <div className="absolute bottom-[10%] right-[5%] w-[400px] h-[400px] rounded-full blur-[100px] z-0" style={{ backgroundColor: 'rgba(168, 85, 247, 0.06)' }} />
+
+      {/* Content - elevated with glass-like backdrop for foreground pop */}
       <div className="relative z-10 text-center text-white px-6 max-w-7xl mx-auto">
         <motion.div
           variants={staggerChildren}
@@ -235,54 +365,66 @@ export default function HeroSection() {
           animate="visible"
         >
           {/* Badge */}
-          <motion.div 
+          <motion.div
             variants={fadeInUp}
-            className="inline-flex items-center space-x-3 backdrop-blur-md border rounded-full px-6 py-2.5 mb-8 hover:bg-white/10 transition-colors duration-300"
-            style={{ 
-              backgroundColor: 'rgba(37, 99, 235, 0.3)', 
-              borderColor: 'rgba(96, 165, 250, 0.4)' 
+            className="inline-flex items-center space-x-3 backdrop-blur-xl border rounded-full px-6 py-2.5 mb-8 hover:bg-white/10 transition-colors duration-300"
+            style={{
+              backgroundColor: 'rgba(37, 99, 235, 0.25)',
+              borderColor: 'rgba(96, 165, 250, 0.35)',
+              boxShadow: '0 0 20px rgba(59, 130, 246, 0.1), inset 0 1px 0 rgba(255,255,255,0.08)',
             }}
           >
             <span className="w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse" style={{ boxShadow: '0 0 8px rgba(74, 222, 128, 0.5)' }} />
             <span className="text-sm font-bold tracking-wide" style={{ color: '#bfdbfe' }}>{t('hero.badge')}</span>
           </motion.div>
 
-          {/* Title */}
-          <motion.h1 
+          {/* Title - with text shadow for depth pop */}
+          <motion.h1
             variants={fadeInUp}
-            className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight mb-6 leading-tight text-white"
+            className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight mb-6 leading-tight"
+            style={{
+              color: '#ffffff',
+              textShadow: '0 0 40px rgba(59, 130, 246, 0.25), 0 0 80px rgba(139, 92, 246, 0.12), 0 2px 20px rgba(0, 0, 0, 0.5)',
+            }}
           >
             {t('hero.title')}
           </motion.h1>
 
           {/* Subtitle */}
-          <motion.p 
+          <motion.p
             variants={fadeInUp}
             className="text-lg md:text-xl lg:text-2xl mb-6 font-medium max-w-2xl mx-auto"
-            style={{ color: '#7dd3fc' }}
+            style={{
+              color: '#7dd3fc',
+              textShadow: '0 0 30px rgba(125, 211, 252, 0.2), 0 2px 10px rgba(0, 0, 0, 0.4)',
+            }}
           >
             {t('hero.subtitle')}
           </motion.p>
 
           {/* Description */}
-          <motion.p 
+          <motion.p
             variants={fadeInUp}
-            className="text-base md:text-lg mb-12 max-w-3xl mx-auto leading-relaxed font-medium text-blue-200"
+            className="text-base md:text-lg mb-12 max-w-3xl mx-auto leading-relaxed font-medium"
+            style={{
+              color: '#93cdfd',
+              textShadow: '0 1px 8px rgba(0, 0, 0, 0.4)',
+            }}
           >
             {t('hero.description')}
           </motion.p>
 
           {/* CTA Buttons */}
-          <motion.div 
+          <motion.div
             variants={fadeInUp}
             className="flex flex-col sm:flex-row gap-5 justify-center mb-16"
           >
             <a
               href={`/${locale}/products`}
               className="group inline-flex items-center justify-center px-10 py-4 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 text-lg"
-              style={{ 
+              style={{
                 background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
-                boxShadow: '0 4px 14px rgba(59, 130, 246, 0.4)',
+                boxShadow: '0 4px 14px rgba(59, 130, 246, 0.4), 0 0 30px rgba(59, 130, 246, 0.1)',
               }}
             >
               {t('hero.ctaProducts')}
@@ -293,13 +435,17 @@ export default function HeroSection() {
             <a
               href={`/${locale}/contact`}
               className="group inline-flex items-center justify-center px-10 py-4 font-semibold rounded-lg hover:bg-white/10 transition-all duration-300 text-lg text-white border-2 border-white/30"
+              style={{
+                backdropFilter: 'blur(8px)',
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1)',
+              }}
             >
               {t('hero.ctaContact')}
             </a>
           </motion.div>
 
-          {/* Stats */}
-          <motion.div 
+          {/* Stats - glass cards with enhanced depth */}
+          <motion.div
             ref={statsRef}
             variants={fadeInUp}
             className="grid grid-cols-3 gap-8 max-w-3xl mx-auto"
@@ -309,19 +455,29 @@ export default function HeroSection() {
               { number: '60+', labelKey: 'hero.statCountries' },
               { number: '500+', labelKey: 'hero.statClients' },
             ].map((stat, i) => (
-              <div 
-                key={i} 
-                className="text-center rounded-xl p-6"
-                style={{ 
-                  backgroundColor: 'rgba(255, 255, 255, 0.1)', 
-                  backdropFilter: 'blur(12px)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)'
+              <div
+                key={i}
+                className="text-center rounded-xl p-6 relative overflow-hidden"
+                style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.07)',
+                  backdropFilter: 'blur(16px)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  boxShadow: '0 0 20px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255,255,255,0.08)',
                 }}
               >
-                <div className="text-4xl font-bold mb-2" style={{ color: '#fbbf24' }}>
-                  {statsVisible ? <CountUp end={stat.number} /> : stat.number}
+                {/* Subtle inner glow */}
+                <div className="absolute inset-0 rounded-xl" style={{
+                  background: 'radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.05) 0%, transparent 60%)',
+                }} />
+                <div className="relative z-10">
+                  <div className="text-4xl font-bold mb-2" style={{
+                    color: '#fbbf24',
+                    textShadow: '0 0 20px rgba(251, 191, 36, 0.3)',
+                  }}>
+                    {statsVisible ? <CountUp end={stat.number} /> : stat.number}
+                  </div>
+                  <div className="text-sm font-medium" style={{ color: '#cbd5e0' }}>{t(stat.labelKey)}</div>
                 </div>
-                <div className="text-sm font-medium" style={{ color: '#cbd5e0' }}>{t(stat.labelKey)}</div>
               </div>
             ))}
           </motion.div>

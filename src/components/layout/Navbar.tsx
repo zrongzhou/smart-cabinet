@@ -20,8 +20,8 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const { locale, t } = useLocale();
   const { user, isAuthenticated, logout } = useAuth();
-  const [siteName, setSiteName] = useState('WS Tool Cabinet');
-  const [logoUrl, setLogoUrl] = useState('');
+  const [siteName, setSiteName] = useState('Qtech Tool Cabinet');
+  const [logoUrl, setLogoUrl] = useState('/images/logo.svg');
   const [logoError, setLogoError] = useState(false);
   const isRTL = locale === 'ar';
 
@@ -73,6 +73,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
       onLocaleChange(newLocale);
     } else {
       // Simple client-side navigation with locale change
+      if (typeof window === 'undefined') return;
       const currentPath = window.location.pathname;
       const newPath = currentPath.replace(/^\/[^\/]+/, `/${newLocale}`);
       window.location.href = newPath;
@@ -120,7 +121,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
                   onError={() => setLogoError(true)}
                 />
               ) : (
-                <span className="text-2xl">📦</span>
+                <img src="/images/logo.svg" alt={siteName} className="h-8 w-auto object-contain" />
               )}
               {/* Always show company name, regardless of logo */}
               <span className={`text-xl font-bold ${isScrolled || (typeof window !== 'undefined' && window.location.pathname !== `/${locale}` && window.location.pathname !== `/${locale}/`) ? 'text-gray-900' : 'text-white'}`}>{siteName}</span>
@@ -273,8 +274,8 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
             <div className="p-6">
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center space-x-2">
-                  <span className="text-xl">📦</span>
-                  <span className="font-bold text-gray-900">WS Tool Cabinet</span>
+                  <img src="/images/logo.svg" alt="" className="h-7 w-auto object-contain" />
+                  <span className="font-bold text-gray-900">Qtech</span>
                 </div>
                 <button
                   onClick={() => setIsMobileMenuOpen(false)}
