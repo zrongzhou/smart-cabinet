@@ -39,7 +39,7 @@ export default function Footer() {
     locale === 'zh' ? zhVal : locale === 'ar' ? arVal : enVal;
 
   const displayName = settings ? L(settings.companyNameZh || '', settings.companyName || '', settings.companyNameAr || '') : 'WS Tool Cabinet';
-  const displayCompany = settings ? L(settings.companyNameZh || '广州秋彦科技有限公司', settings.companyName || 'Guangzhou Qiuyuan Technology Co., Ltd.', settings.companyNameAr || '') : 'Guangzhou Qiuyuan Technology Co., Ltd.';
+  const displayCompany = settings ? L(settings.companyNameZh || '广州秋彦科技有限公司', settings.companyName || 'Guangzhou Qiuyan Technology Co., Ltd.', settings.companyNameAr || '') : 'Guangzhou Qiuyan Technology Co., Ltd.';
   // Support multi-value contact info (arrays from admin settings)
   const displayEmails = (settings?.contactEmails && Array.isArray(settings.contactEmails) && settings.contactEmails.length > 0)
     ? settings.contactEmails.filter(e => e && e.trim())
@@ -51,11 +51,70 @@ export default function Footer() {
   const displayCopyright = settings?.footerCopyright?.replace('{year}', String(currentYear)) || `© ${currentYear} ${displayCompany}`;
 
   return (
-    <footer className="relative text-gray-300 overflow-hidden" style={{ backgroundColor: '#1a202c' }}>
-      {/* Decorative background elements */}
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 to-blue-400" />
-      <div className="absolute top-20 right-0 w-72 h-72 rounded-full blur-3xl z-0" style={{ backgroundColor: 'rgba(59, 130, 246, 0.05)' }} />
-      <div className="absolute bottom-0 left-0 w-96 h-96 rounded-full blur-3xl z-0" style={{ backgroundColor: 'rgba(245, 173, 85, 0.05)' }} />
+    <footer className="relative text-gray-300 overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
+      {/* ===== DYNAMIC BACKGROUND EFFECTS ===== */}
+      {/* Animated gradient mesh that slowly shifts colors */}
+      <div className="absolute inset-0 opacity-[0.15]" style={{
+        background: `
+          radial-gradient(ellipse at 20% 50%, rgba(59,130,246,0.3) 0%, transparent 50%),
+          radial-gradient(ellipse at 80% 20%, rgba(139,92,246,0.25) 0%, transparent 50%),
+          radial-gradient(ellipse at 60% 80%, rgba(6,182,212,0.2) 0%, transparent 50%),
+          radial-gradient(ellipse at 10% 90%, rgba(245,158,11,0.12) 0%, transparent 40%)
+        `,
+        animation: 'footer-bg-drift 12s ease-in-out infinite alternate',
+        filter: 'blur(60px)',
+      }} />
+
+      {/* Floating particles — tiny glowing dots drifting upward */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(18)].map((_, i) => (
+          <span
+            key={i}
+            className="absolute rounded-full"
+            style={{
+              left: `${5 + Math.random() * 90}%`,
+              bottom: '-6px',
+              width: 1 + Math.random() * 2.5,
+              height: 1 + Math.random() * 2.5,
+              background: i % 3 === 0 ? 'rgba(96,165,250,0.7)' : i % 3 === 1 ? 'rgba(167,139,250,0.55)' : 'rgba(34,211,238,0.5)',
+              boxShadow: `0 0 ${4 + Math.random() * 6}px ${i % 3 === 0 ? 'rgba(96,165,250,0.4)' : i % 3 === 1 ? 'rgba(167,139,250,0.3)' : 'rgba(34,211,238,0.25)'}`,
+              animation: `footer-particle-rise ${5 + Math.random() * 8}s ease-in-out infinite`,
+              animationDelay: `${Math.random() * 8}s`,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Top accent line — animated gradient sweep */}
+      <div className="absolute top-0 left-0 right-0 h-[2px] overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-400/60 to-transparent"
+          style={{ animation: 'footer-line-sweep 4s ease-in-out infinite' }}
+        />
+      </div>
+
+      {/* Subtle wave lines at the very bottom */}
+      <div className="absolute bottom-0 left-0 right-0 h-16 overflow-hidden pointer-events-none opacity-[0.07]">
+        <svg className="absolute bottom-0 w-[200%] h-full" viewBox="0 0 1200 80" preserveAspectRatio="none">
+          <path d="M0,40 C200,70 400,10 600,45 C800,75 1000,20 1200,50 L1200,80 L0,80 Z" fill="url(#fw1)" style={{ animation: 'footer-wave-move 14s linear infinite' }} />
+          <path d="M0,55 C300,30 500,65 750,42 C1000,18 1100,58 1200,48 L1200,80 L0,80 Z" fill="url(#fw2)" style={{ animation: 'footer-wave-move 11s linear infinite reverse' }} />
+          <defs>
+            <linearGradient id="fw1" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#3b82f6" stopOpacity="1" />
+              <stop offset="50%" stopColor="#8b5cf6" stopOpacity="1" />
+              <stop offset="100%" stopColor="#06b6d4" stopOpacity="1" />
+            </linearGradient>
+            <linearGradient id="fw2" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#06b6d4" stopOpacity="1" />
+              <stop offset="50%" stopColor="#3b82f6" stopOpacity="1" />
+              <stop offset="100%" stopColor="#f59e0b" stopOpacity="1" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+
+      {/* Ambient glow orbs — slow pulse */}
+      <div className="absolute top-20 right-0 w-72 h-72 rounded-full blur-3xl z-0" style={{ backgroundColor: 'rgba(59, 130, 246, 0.06)', animation: 'footer-glow-pulse 6s ease-in-out infinite alternate' }} />
+      <div className="absolute bottom-32 left-0 w-96 h-96 rounded-full blur-3xl z-0" style={{ backgroundColor: 'rgba(245, 158, 11, 0.04)', animation: 'footer-glow-pulse 8s ease-in-out infinite alternate-reverse' }} />
 
       {/* Main Footer Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
@@ -64,7 +123,7 @@ export default function Footer() {
           {/* Column 1: Brand & Description */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-3 mb-5">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-xl flex items-center justify-center flex-shrink-0">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/20">
                 <span className="text-white font-bold text-lg">WS</span>
               </div>
               <span className="text-white font-bold text-lg">{displayName}</span>
@@ -215,6 +274,32 @@ export default function Footer() {
           </div>
         </div>
       </div>
+
+      {/* ===== FOOTER ANIMATION KEYFRAMES ===== */}
+      <style>{`
+        @keyframes footer-bg-drift {
+          0%   { transform: scale(1) translateX(0); }
+          100% { transform: scale(1.08) translateX(-2%); }
+        }
+        @keyframes footer-particle-rise {
+          0%   { transform: translateY(0) translateX(0); opacity: 0; }
+          10%  { opacity: 0.8; }
+          90%  { opacity: 0.3; }
+          100% { transform: translateY(-180px) translateX(${Math.random() > 0.5 ? '' : '-'}${15 + Math.random() * 20}px); opacity: 0; }
+        }
+        @keyframes footer-line-sweep {
+          0%   { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+        @keyframes footer-wave-move {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        @keyframes footer-glow-pulse {
+          0%   { opacity: 0.04; transform: scale(1); }
+          100% { opacity: 0.1; transform: scale(1.15); }
+        }
+      `}</style>
     </footer>
   );
 }

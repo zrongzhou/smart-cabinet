@@ -390,8 +390,13 @@ export default function ProductsPage() {
         icon={<Package className="w-8 h-8 text-blue-300" />}
       />
 
-      {/* Primary Dimension Filter + Search */}
-      <section className="bg-white border-b border-gray-200 sticky top-16 z-40 shadow-sm">
+      {/* Primary Dimension Filter + Search — Glass Effect */}
+      <section className="sticky top-16 z-40 border-b border-gray-200/60" style={{
+        background: 'linear-gradient(180deg, rgba(255,255,255,0.85) 0%, rgba(248,250,252,0.78) 100%)',
+        backdropFilter: 'blur(20px) saturate(1.8)',
+        WebkitBackdropFilter: 'blur(20px) saturate(1.8)',
+        boxShadow: '0 4px 30px rgba(148,163,184,0.08), inset 0 -1px 0 rgba(226,232,240,0.5)',
+      }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           {/* Search bar */}
           <div className="relative max-w-md mx-auto mb-5">
@@ -414,8 +419,14 @@ export default function ProductsPage() {
             )}
           </div>
 
-          {/* Filter Panel - Fixed Card Container */}
-          <div className="relative bg-white backdrop-blur-md rounded-2xl shadow-lg px-6 py-5 border border-gray-200 overflow-visible">
+          {/* Filter Panel — Glass Card Container */}
+          <div className="relative rounded-2xl px-6 py-5 overflow-visible" style={{
+            background: 'linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(241,245,249,0.5) 100%)',
+            backdropFilter: 'blur(12px) saturate(1.6)',
+            WebkitBackdropFilter: 'blur(12px) saturate(1.6)',
+            border: '1px solid rgba(226,232,240,0.6)',
+            boxShadow: '0 4px 20px rgba(148,163,184,0.08), inset 0 1px 0 rgba(255,255,255,0.7)',
+          }}>
             {/* Subtle accent bar - shows under active dimension tab instead of top line */}
             <div className="h-1" />
             
@@ -424,7 +435,7 @@ export default function ProductsPage() {
               {/* "All" button - light neutral style matching sibling pills */}
               <button
                 onClick={() => handleDimensionChange('all')}
-                className={`relative px-4 py-2 rounded-full text-[14px] font-semibold transition-all duration-200 inline-flex items-center gap-1.5 ${
+                className={`relative px-4 py-2 rounded-full text-[13px] font-semibold transition-all duration-200 inline-flex items-center gap-1.5 ${
                   activeDimension === 'all'
                     /* Active: blue background */
                     ? 'bg-blue-600 text-white shadow-md hover:shadow-lg hover:-translate-y-0.5'
@@ -455,7 +466,7 @@ export default function ProductsPage() {
                   <button
                     key={type}
                     onClick={() => handleDimensionChange(type)}
-                    className={`relative px-3.5 py-2 rounded-full text-[14px] font-medium transition-all duration-200 inline-flex items-center gap-1.5 ${
+                    className={`relative px-3.5 py-2 rounded-full text-[13px] font-medium transition-all duration-200 inline-flex items-center gap-1.5 ${
                       isActive
                         /* Active: gradient background via inline style */
                         ? `text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 ring-1 ring-white/25`
@@ -515,14 +526,17 @@ export default function ProductsPage() {
                         <button
                           key={cat.id}
                           onClick={() => toggleCategory(cat.id)}
-                          className={`relative px-3 py-1.5 rounded-full text-[13px] font-medium transition-all duration-200 leading-none inline-flex items-center ${
+                          className={`relative px-3.5 py-[7px] rounded-full text-[12.5px] transition-all duration-200 leading-none inline-flex items-center ${
                             isSelected
                               /* Selected: solid blue background */
                               ? `text-white shadow-sm font-semibold hover:shadow-md`
-                              /* Unselected: HIGH contrast — readable text on light bg */
-                              : `bg-white text-gray-900 border border-gray-300 hover:border-blue-600 hover:shadow-sm hover:bg-blue-50`
+                              /* Unselected: glass pill with subtle border */
+                              : `text-gray-700 border backdrop-blur-sm hover:border-blue-400/60 hover:shadow-sm`
                           }`}
-                          style={isSelected ? { backgroundColor: '#2563eb' } : undefined}
+                          style={isSelected ? { backgroundColor: '#2563eb' } : {
+                            backgroundColor: 'rgba(255,255,255,0.55)',
+                            borderColor: 'rgba(203,213,225,0.75)',
+                          }}
                         >
                           {isSelected && (
                             <span className="inline-block w-1.5 h-1.5 rounded-full bg-white/90 mr-1.5" />

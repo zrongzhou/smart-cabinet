@@ -304,9 +304,14 @@ export default function AboutPage() {
         </nav>
       </OceanHeader>
 
-      {/* Company Introduction with Icon Cards */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      {/* Company Introduction with Icon Cards — Enhanced with gradient bg */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative overflow-hidden">
+        {/* Subtle animated background gradient */}
+        <div className="absolute inset-0 opacity-[0.04]" style={{
+          background: 'radial-gradient(ellipse at 30% 50%, #3b82f6 0%, transparent 60%), radial-gradient(ellipse at 70% 30%, #8b5cf6 0%, transparent 55%)',
+          animation: 'about-intro-bg-pulse 10s ease-in-out infinite alternate',
+        }} />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
           {/* Company Image */}
           <div className={`relative h-96 rounded-2xl overflow-hidden shadow-2xl ${isRTL ? 'lg:order-2' : ''}`}>
             <img
@@ -338,20 +343,28 @@ export default function AboutPage() {
               {t('about.intro.text2')}
             </p>
 
-            {/* Icon Cards for Key Metrics */}
+            {/* Icon Cards for Key Metrics — Enhanced with gradient colors */}
             <div className="grid grid-cols-2 gap-4">
               {[
-                { icon: Clock, label: '2015', sublabelKey: 'about.stat.founded' },
-                { icon: Globe, label: '60+', sublabelKey: 'about.stat.countries' },
-                { icon: Award, label: '500+', sublabelKey: 'about.stat.clients' },
-                { icon: Cpu, label: '10+', sublabelKey: 'about.stat.patents' },
+                { icon: Clock, label: '2015', sublabelKey: 'about.stat.founded', grad: 'from-blue-500 to-indigo-600', iconBg: 'bg-blue-50 ring-blue-200' },
+                { icon: Globe, label: '60+', sublabelKey: 'about.stat.countries', grad: 'from-emerald-500 to-teal-600', iconBg: 'bg-emerald-50 ring-emerald-200' },
+                { icon: Award, label: '500+', sublabelKey: 'about.stat.clients', grad: 'from-violet-500 to-purple-600', iconBg: 'bg-violet-50 ring-violet-200' },
+                { icon: Cpu, label: '10+', sublabelKey: 'about.stat.patents', grad: 'from-amber-500 to-orange-600', iconBg: 'bg-amber-50 ring-amber-200' },
               ].map((item, index) => {
                 const Icon = item.icon;
                 return (
-                  <div key={index} className="bg-white rounded-xl p-5 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border border-gray-100">
-                    <Icon className="w-8 h-8 text-blue-600 mb-3" />
-                    <div className="text-2xl font-bold text-gray-900">{item.label}</div>
-                    <div className="text-sm text-gray-600">{t(item.sublabelKey)}</div>
+                  <div key={index} className="group rounded-xl p-5 border border-gray-100/80 transition-all duration-400 hover:-translate-y-1.5 hover:shadow-xl" style={{
+                    background: 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,250,252,0.7) 100%)',
+                  }}>
+                    <div className={`w-11 h-11 mx-auto mb-3 rounded-xl ${item.iconBg} flex items-center justify-center ring-3 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300`}>
+                      <Icon className={`w-5 h-5`} style={{ color: item.grad.includes('blue') ? '#2563eb' : item.grad.includes('emerald') ? '#059669' : item.grad.includes('violet') ? '#7c3aed' : '#d97706' }} strokeWidth={1.8} />
+                    </div>
+                    <div className="text-2xl font-black text-gray-900 tracking-tight">{item.label}</div>
+                    <div className="text-xs text-gray-500 mt-0.5 font-medium">{t(item.sublabelKey)}</div>
+                    {/* Subtle top accent line */}
+                    <div className="absolute top-0 left-4 right-4 h-[2px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      style={{ background: `linear-gradient(90deg, transparent, ${item.grad.split(' ')[0].replace('from-', '')}, transparent)` }}
+                    />
                   </div>
                 );
               })}
@@ -360,10 +373,15 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Core Statistics — Premium card design with depth & color */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-white">
-        {/* Subtle background pattern */}
-        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, #1e40af 1px, transparent 0)', backgroundSize: '32px 32px' }} />
+      {/* Core Statistics — Premium card design with depth, color & animation */}
+      <section className="py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden" style={{
+        background: 'linear-gradient(180deg, #ffffff 0%, #f0f9ff 50%, #eef2ff 100%)',
+      }}>
+        {/* Animated background pattern */}
+        <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, #1e40af 1px, transparent 0)', backgroundSize: '32px 32px' }} />
+        {/* Floating gradient orbs */}
+        <div className="absolute top-10 left-[10%] w-64 h-64 rounded-full blur-3xl opacity-[0.07]" style={{ background: 'radial-gradient(circle, #3b82f6, transparent)' }} />
+        <div className="absolute bottom-10 right-[10%] w-72 h-72 rounded-full blur-3xl opacity-[0.06]" style={{ background: 'radial-gradient(circle, #8b5cf6, transparent)' }} />
 
         <div className="max-w-7xl mx-auto relative z-10">
           {/* Section title with accent */}
@@ -403,9 +421,9 @@ export default function AboutPage() {
                         <Icon className={`w-8 h-8 ${p.textColor} drop-shadow-sm`} strokeWidth={1.8} />
                       </div>
 
-                      {/* Number — solid color for reliability across all themes (gradient text was invisible on light themes) */}
+                      {/* Number — Animated CountUp for visual impact */}
                       <div className="text-5xl lg:text-[3.75rem] font-black mb-2 tracking-tighter text-gray-900" style={{ lineHeight: 1 }}>
-                        {stat.prefix}{stat.number}{stat.suffix}
+                        <CountUp target={stat.number} suffix={stat.suffix} prefix={stat.prefix} locale={locale === 'zh' ? 'zh' : locale} />
                       </div>
 
                       {/* Label */}
@@ -451,9 +469,13 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Factory Workshop with Capability Cards */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-blue-50">
-        <div className="max-w-7xl mx-auto">
+      {/* Factory Workshop with Capability Cards — Enhanced */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden" style={{
+        background: 'linear-gradient(180deg, #f0fdfa 0%, #eff6ff 50%, #faf5ff 100%)',
+      }}>
+        {/* Subtle animated background */}
+        <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, #0d9488 1px, transparent 0)', backgroundSize: '28px 28px' }} />
+        <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center mb-12">
             <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
               {t('about.factory.title')}
@@ -488,21 +510,37 @@ export default function AboutPage() {
             ))}
           </div>
 
-          {/* Capability Cards */}
+          {/* Capability Cards — Each with unique gradient color */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {capabilities.map((cap, index) => {
               const Icon = cap.icon;
+              const cardColors = [
+                { grad: 'from-blue-600 to-indigo-700', iconBg: 'from-blue-500 to-blue-600', accent: '#3b82f6', lightBg: 'rgba(59,130,246,0.06)' },
+                { grad: 'from-emerald-600 to-teal-700', iconBg: 'from-emerald-500 to-teal-600', accent: '#059669', lightBg: 'rgba(5,150,105,0.06)' },
+                { grad: 'from-violet-600 to-purple-700', iconBg: 'from-violet-500 to-purple-600', accent: '#7c3aed', lightBg: 'rgba(124,58,237,0.06)' },
+              ];
+              const cc = cardColors[index];
               return (
-                <div key={index} className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
-                  <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center mb-6">
-                    <Icon className="w-8 h-8 text-white" />
+                <div key={index} className="group rounded-2xl p-8 border border-gray-100/80 transition-all duration-400 hover:-translate-y-2 hover:shadow-2xl relative overflow-hidden"
+                  style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(248,250,252,0.8) 100%)' }}
+                >
+                  {/* Hover glow overlay */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400" style={{
+                    background: `radial-gradient(circle at 50% 0%, ${cc.lightBg} 0%, transparent 70%)`,
+                  }} />
+                  <div className={`w-16 h-16 bg-gradient-to-br ${cc.iconBg} rounded-xl flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
+                    <Icon className="w-8 h-8 text-white drop-shadow-md" />
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r transition-all duration-300"
+                    style={{ backgroundImage: `linear-gradient(90deg, ${cc.accent}, ${index === 1 ? '#14b8a6' : index === 2 ? '#a855f7' : '#6366f1'})`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
+                  >
                     {t(cap.titleKey)}
                   </h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    {t(cap.descriptionKey)}
-                  </p>
+                  <p className="text-gray-600 leading-relaxed">{t(cap.descriptionKey)}</p>
+                  {/* Top accent bar on hover */}
+                  <div className="absolute top-0 left-0 right-0 h-[3px] rounded-t-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-400"
+                    style={{ background: `linear-gradient(90deg, ${cc.accent}, ${index === 1 ? '#14b8a6' : index === 2 ? '#a855f7' : '#6366f1'})` }}
+                  />
                 </div>
               );
             })}
@@ -510,9 +548,12 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Company Values - 2x2 Grid */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
-        <div className="max-w-7xl mx-auto">
+      {/* Company Values - 2x2 Grid — Each card unique color */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden" style={{
+        background: 'linear-gradient(180deg, #ffffff 0%, #fefce8 50%, #fdf4ff 100%)',
+      }}>
+        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, #b45309 1px, transparent 0)', backgroundSize: '30px 30px' }} />
+        <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center mb-16">
             <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
               {t('about.values.title')}
@@ -525,17 +566,34 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {values.map((value, index) => {
               const Icon = value.icon;
+              const vColors = [
+                { grad: 'from-blue-600 to-cyan-600', accent: '#0ea5e9', lightBg: 'rgba(14,165,233,0.07)', ringColor: 'ring-blue-100' },
+                { grad: 'from-emerald-600 to-green-600', accent: '#10b981', lightBg: 'rgba(16,185,129,0.07)', ringColor: 'ring-emerald-100' },
+                { grad: 'from-violet-600 to-purple-600', accent: '#8b5cf6', lightBg: 'rgba(139,92,246,0.07)', ringColor: 'ring-violet-100' },
+                { grad: 'from-orange-500 to-amber-500', accent: '#f59e0b', lightBg: 'rgba(245,158,11,0.07)', ringColor: 'ring-amber-100' },
+              ];
+              const vc = vColors[index];
               return (
-                <div key={index} className="bg-white rounded-2xl p-10 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
-                  <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl flex items-center justify-center mb-8">
-                    <Icon className="w-10 h-10 text-white" />
+                <div key={index} className="group rounded-2xl p-10 border border-gray-100/80 transition-all duration-400 hover:-translate-y-2 hover:shadow-2xl relative overflow-hidden"
+                  style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(250,252,255,0.85) 100%)' }}
+                >
+                  {/* Hover glow */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{
+                    background: `radial-gradient(circle at 30% 30%, ${vc.lightBg} 0%, transparent 70%)`,
+                  }} />
+                  <div className={`w-20 h-20 bg-gradient-to-br ${vc.grad} rounded-2xl flex items-center justify-center mb-8 shadow-lg ring-4 ${vc.ringColor} group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300`}>
+                    <Icon className="w-10 h-10 text-white drop-shadow-md" />
                   </div>
-                  <h3 className="text-3xl font-bold text-gray-900 mb-4">
+                  <h3 className="text-3xl font-bold text-gray-900 mb-4 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r transition-all duration-300"
+                    style={{ backgroundImage: `linear-gradient(90deg, ${vc.accent}, ${index === 1 ? '#34d399' : index === 2 ? '#a78bfa' : '#fbbf24'})`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
+                  >
                     {t(value.titleKey)}
                   </h3>
-                  <p className="text-gray-600 leading-relaxed text-lg">
-                    {t(value.descriptionKey)}
-                  </p>
+                  <p className="text-gray-600 leading-relaxed text-lg">{t(value.descriptionKey)}</p>
+                  {/* Decorative corner */}
+                  <div className={`absolute top-4 right-4 w-12 h-12 rounded-full opacity-[0.04] group-hover:opacity-[0.08] transition-opacity duration-500`}
+                    style={{ background: vc.accent }}
+                  />
                 </div>
               );
             })}
@@ -543,9 +601,12 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Certifications */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-blue-50">
-        <div className="max-w-7xl mx-auto text-center">
+      {/* Certifications — Enhanced with shimmer and color */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden" style={{
+        background: 'linear-gradient(180deg, #eff6ff 0%, #f0fdf4 50%, #fefce8 100%)',
+      }}>
+        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, #2563eb 1px, transparent 0)', backgroundSize: '28px 28px' }} />
+        <div className="max-w-7xl mx-auto text-center relative z-10">
           <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
             {t('about.certifications')}
           </h2>
@@ -556,18 +617,51 @@ export default function AboutPage() {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6">
             {certifications.map((cert, index) => {
               const Icon = cert.icon;
+              // Each cert gets a subtle different color
+              const certColors = [
+                'rgba(59,130,246,0.12)',   // blue
+                'rgba(139,92,246,0.11)',    // violet
+                'rgba(16,185,129,0.11)',    // emerald
+                'rgba(6,182,212,0.12)',     // cyan
+                'rgba(245,158,11,0.11)',    // amber
+                'rgba(236,72,153,0.10)',    // pink
+              ];
+              const iconGradients = [
+                'linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)',
+                'linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%)',
+                'linear-gradient(135deg, #34d399 0%, #10b981 100%)',
+                'linear-gradient(135deg, #22d3ee 0%, #06b6d4 100%)',
+                'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
+                'linear-gradient(135deg, #f472b6 0%, #ec4899 100%)',
+              ];
               return (
                 <div
                   key={index}
-                  className="bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-100"
+                  className="group rounded-xl p-6 border border-gray-100/80 transition-all duration-400 hover:-translate-y-1.5 hover:shadow-xl relative overflow-hidden"
+                  style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(248,250,252,0.85) 100%)' }}
                 >
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #3b82f6 15%, rgba(59,130,246,0.08), transparent)' }}>
-                    <Icon className="w-8 h-8 text-blue-600" />
+                  {/* Shimmer overlay on hover */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{
+                    background: `radial-gradient(circle at 50% -20%, ${certColors[index]} 0%, transparent 65%)`,
+                  }} />
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center relative group-hover:scale-110 transition-transform duration-300" style={{
+                    background: certColors[index],
+                    boxShadow: `inset 0 -2px 4px rgba(0,0,0,0.04), 0 4px 14px ${certColors[index]}`,
+                  }}>
+                    <Icon className="w-7 h-7" style={{ color: index === 0 ? '#2563eb' : index === 1 ? '#7c3aed' : index === 2 ? '#059669' : index === 3 ? '#0891b2' : index === 4 ? '#d97706' : '#db2777' }} />
+                    {/* Subtle ring pulse on hover */}
+                    <div className={`absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+                      style={{ boxShadow: `0 0 0 3px ${certColors[index]}` }}
+                    />
                   </div>
                   <h3 className="text-lg font-bold text-gray-900 mb-2">{cert.name}</h3>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-500 leading-relaxed">
                     {t(cert.fullNameKey)}
                   </p>
+                  {/* Bottom accent dot */}
+                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 w-6 h-[2px] rounded-full opacity-40 transition-opacity duration-300 group-hover:opacity-80"
+                    style={{ background: iconGradients[index] }}
+                  />
                 </div>
               );
             })}
@@ -614,115 +708,121 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* ===== BEACH-THEMED CTA SECTION — 沙滩主题 ===== */}
       <section
-        className="py-20 px-4 sm:px-6 lg:px-8 text-white relative overflow-hidden bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700"
+        className="py-20 px-4 sm:px-6 lg:px-8 text-white relative overflow-hidden"
+        style={{
+          background: 'linear-gradient(180deg, #0c4a6e 0%, #075985 20%, #0369a1 40%, #fcd34d 78%, #fbbf24 88%, #f59e0b 100%)',
+        }}
       >
-        {/* Decorative elements */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="w-full h-full" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} />
+        {/* === SUN with rotating rays === */}
+        <div className="absolute -top-16 right-[8%] sm:right-[12%] w-32 h-32 sm:w-44 sm:h-44 rounded-full" style={{
+          background: 'radial-gradient(circle at 35% 35%, #fef3c7, #fcd34d 40%, #f59e0b 70%, #d97706 100%)',
+          boxShadow: '0 0 80px rgba(251,191,36,0.5), 0 0 160px rgba(245,158,11,0.25), inset 0 -8px 20px rgba(217,119,6,0.3)',
+          animation: 'sun-pulse 4s ease-in-out infinite alternate',
+        }}>
+          {[...Array(10)].map((_, i) => (
+            <div key={i} className="absolute top-1/2 left-1/2 origin-left" style={{
+              width: `${3 + i * 1.8}px`, height: `${24 + i * 4}px`,
+              background: `linear-gradient(to bottom, rgba(255,251,235,0.85) 0%, rgba(251,191,36,0.25) 70%, transparent)`,
+              transform: `rotate(${i * 36}deg) translateY(-50%)`,
+              borderRadius: '50%',
+              animation: `sun-ray-sway ${2 + i * 0.12}s ease-in-out infinite alternate`,
+              animationDelay: `${i * 0.1}s`,
+            }} />
+          ))}
+          <div className="absolute inset-[18%] rounded-full bg-gradient-to-br from-yellow-200/60 to-transparent opacity-80" />
         </div>
-        <div className="absolute top-0 left-1/4 w-72 h-72 bg-white/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
 
+        {/* === OCEAN WAVES at top of sand === */}
+        <div className="absolute top-[45%] left-0 right-0 h-24 overflow-hidden pointer-events-none">
+          <svg className="absolute w-[250%] h-full" viewBox="0 0 1200 100" preserveAspectRatio="none">
+            <path d="M0,30 Q150,10 300,30 T600,30 T900,30 T1200,30 T1500,30 T1800,30 L1800,100 L0,100 Z" fill="rgba(14,116,144,0.35)" style={{ animation: 'bw1 7s linear infinite' }} />
+            <path d="M0,45 Q200,65 400,42 T800,48 T1200,38 T1600,50 L1600,100 L0,100 Z" fill="rgba(8,145,178,0.25)" style={{ animation: 'bw2 9s linear infinite reverse' }} />
+            <path d="M0,58 Q180,42 360,58 T720,55 T1080,62 T1440,52 L1440,100 L0,100 Z" fill="rgba(56,189,248,0.15)" style={{ animation: 'bw3 11s linear infinite' }} />
+          </svg>
+        </div>
+
+        {/* === SMALL FISH in ocean === */}
+        <div className="absolute top-[48%] left-[3%]" style={{ animation: 'fish-beach 14s ease-in-out infinite' }}>
+          <svg width="26" height="13" viewBox="0 0 26 13"><ellipse cx="12" cy="6.5" rx="10" ry="5.5" fill="#7dd3fc" opacity=".8"/><polygon points="24,6.5 26,2 26,11" fill="#7dd3fc"/><circle cx="7" cy="4.5" r="1.4" fill="#0c4a6e"/></svg>
+        </div>
+        <div className="absolute top-[54%] right-[18%]" style={{ animation: 'fish-beach-rev 18s ease-in-out infinite', animationDelay: '-5s', transform: 'scaleX(-1)' }}>
+          <svg width="20" height="10" viewBox="0 0 20 10"><ellipse cx="9" cy="5" rx="8" ry="4.5" fill="#a5f3fc" opacity=".7"/><polygon points="0,5 -2,2 -2,8" fill="#a5f3fc"/><circle cx="13" cy="3.5" r="1.1" fill="#0c4a6e"/></svg>
+        </div>
+
+        {/* === SEASHELLS on sand === */}
+        <div className="absolute bottom-[12%] left-[8%] opacity-70" style={{ animation: 'shell-glow 5s ease-in-out infinite alternate' }}>
+          <svg width="26" height="20" viewBox="0 0 26 20"><path d="M2,16 Q13,-2 24,16 Q13,22 2,16Z" fill="#fde68a" stroke="#d97706" strokeWidth=".8"/><path d="M5,15 Q13,3 21,15" stroke="#d97706" strokeWidth=".6" fill="none"/></svg>
+        </div>
+        <div className="absolute bottom-[18%] right-[14%] opacity-60" style={{ animation: 'shell-glow 6s ease-in-out infinite alternate-reverse' }}>
+          <svg width="22" height="17" viewBox="0 0 22 17"><ellipse cx="11" cy="9" rx="9" ry="6.5" fill="#fef3c7" stroke="#d97706" strokeWidth=".7"/></svg>
+        </div>
+        {/* STARFISH */}
+        <div className="absolute bottom-[14%] right-[7%] opacity-65" style={{ animation: 'star-wiggle 4s ease-in-out infinite alternate' }}>
+          <svg width="32" height="32" viewBox="0 0 32 32"><path d="M16,2 L18.5,11 L27,9 L20,16 L26,23 L17,19 L13,29 L15,19 L5,21 L12,15 Z" fill="#fb923c" stroke="#ea580c" strokeWidth=".8"/><circle cx="16" cy="16" r="2.8" fill="#fde68a" opacity=".6"/></svg>
+        </div>
+
+        {/* Sand bubbles rising */}
+        {[...Array(7)].map((_, i) => (
+          <span key={i} className="absolute rounded-full pointer-events-none" style={{
+            left: `${8 + i * 13}%`, bottom: `${4 + Math.random() * 7}%`, width: 2 + Math.random() * 3.5, height: 2 + Math.random() * 3.5,
+            background: i % 2 ? 'rgba(186,230,253,.55)' : 'rgba(253,224,175,.45)',
+            boxShadow: `0 0 ${3 + i}px ${i % 2 ? 'rgba(125,211,252,.25)' : 'rgba(251,191,36,.18)'}`,
+            animation: `sand-bubble ${3 + Math.random() * 3.5}s ease-in-out infinite`, animationDelay: `${i * 0.55}s`,
+          }} />
+        ))}
+
+        {/* Content */}
         <div className="max-w-5xl mx-auto text-center relative z-10">
-          <h2 className="text-4xl sm:text-5xl font-bold mb-6 text-white">
-            {t('about.cta.title')}
-          </h2>
-          <p className="text-xl text-blue-100 mb-12 max-w-2xl mx-auto leading-relaxed">
-            {t('about.cta.subtitle')}
-          </p>
+          <h2 className="text-4xl sm:text-5xl font-bold mb-6 text-white drop-shadow-lg" style={{ textShadow: '0 2px 8px rgba(0,0,0,.2)' }}>{t('about.cta.title')}</h2>
+          <p className="text-xl mb-12 max-w-2xl mx-auto leading-relaxed" style={{ color: '#e0f2fe', textShadow: '0 1px 4px rgba(0,0,0,.15)' }}>{t('about.cta.subtitle')}</p>
 
-          {/* CTA Buttons - Bubble Effect */}
+          {/* Buttons — Beach themed */}
           <div className="flex flex-col sm:flex-row gap-6 justify-center mb-12">
-            {(() => {
-              // Inline bubble button component for About page
-              const [hovered1, setHovered1] = useState(false);
-              const [hovered2, setHovered2] = useState(false);
-              return (
-                <>
-                  <a
-                    href={`/${locale}/contact`}
-                    className="group relative inline-flex items-center justify-center px-10 py-5 font-bold rounded-full overflow-hidden cursor-pointer text-lg"
-                    style={{
-                      background: 'linear-gradient(135deg, #ffffff 0%, #e0f2fe 100%)',
-                      border: 'none',
-                      boxShadow: hovered1 ? '0 8px 25px rgba(37,99,235,0.4), 0 0 50px rgba(59,130,246,0.15)' : '0 6px 20px rgba(37,99,235,0.35), 0 0 40px rgba(59,130,246,0.12)',
-                      color: '#2563eb',
-                      transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                    }}
-                    onMouseEnter={(e) => { setHovered1(true); }}
-                    onMouseLeave={() => setHovered1(false)}
-                  >
-                    {/* ALWAYS ACTIVE Bubbles */}
-                    {[0,1,2,3].map(i => (
-                      <span key={i} className="absolute rounded-full pointer-events-none" style={{
-                        left: `${12 + i * 20}%`, bottom: '-10px',
-                        width: hovered1 ? 8 + i * 2 : 4 + i,
-                        height: hovered1 ? 8 + i * 2 : 4 + i,
-                        background: `radial-gradient(circle at 30% 30%, rgba(255,255,255,${hovered1 ? 0.9 : 0.55}), rgba(59,130,246,${hovered1 ? '0.45' : '0.15'} transparent)`,
-                        boxShadow: hovered1 ? `0 0 ${10 + i * 2}px rgba(59,130,246,0.5)` : `0 0 ${5 + i}px rgba(59,130,246,0.25)`,
-                        animation: `about-bubble-active ${1.5 + i * 0.3 + Math.random()}s ease-in-out infinite`,
-                        animationDelay: `${i * 0.35}s`,
-                        transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                      }} />
-                    ))}
-                    <span style={{ position: 'relative', zIndex: 10, display: 'inline-flex', alignItems: 'center', gap: '6px', textShadow: hovered1 ? '0 0 16px rgba(255,255,255,0.6)' : 'none', transition: 'text-shadow 0.3s' }}>
-                      {t('nav.contact')}
-                      <ChevronRight className="ml-1 w-6 h-6" style={{ transform: hovered1 ? 'translateX(4px)' : 'none', transition: 'transform 0.3s' }} />
-                    </span>
-                  </a>
-                  <a
-                    href={`tel:${contactPhone.replace(/\s/g, '')}`}
-                    className="group relative inline-flex items-center justify-center px-10 py-5 font-bold rounded-full overflow-hidden cursor-pointer text-lg text-white"
-                    style={{
-                      background: 'linear-gradient(135deg, rgba(99,102,241,0.28) 0%, rgba(59,130,246,0.2) 50%, rgba(139,92,246,0.26) 100%)',
-                      border: '1px solid rgba(129,140,248,0.35)',
-                      backdropFilter: 'blur(16px)',
-                      boxShadow: hovered2 ? '0 0 30px rgba(99,102,241,0.18) inset, 0 0 40px rgba(139,92,246,0.12)' : '0 0 20px rgba(99,102,241,0.08), inset 0 1px 0 rgba(255,255,255,0.12)',
-                      transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                    }}
-                    onMouseEnter={() => setHovered2(true)}
-                    onMouseLeave={() => setHovered2(false)}
-                  >
-                    {/* ALWAYS ACTIVE Bubbles */}
-                    {[0,1,2,3].map(i => (
-                      <span key={i} className="absolute rounded-full pointer-events-none" style={{
-                        left: `${12 + i * 20}%`, bottom: '-10px',
-                        width: hovered2 ? 6 + i * 2 : 3 + i,
-                        height: hovered2 ? 6 + i * 2 : 3 + i,
-                        background: `radial-gradient(circle at 30% 30%, rgba(255,255,255,${hovered2 ? 0.85 : 0.5}), rgba(167,139,250,${hovered2 ? '0.4' : '0.12'} transparent)`,
-                        boxShadow: hovered2 ? `0 0 ${8 + i * 2}px rgba(167,139,250,0.4)` : `0 0 ${4 + i}px rgba(167,139,250,0.2)`,
-                        animation: `about-bubble-active ${1.6 + i * 0.3 + Math.random()}s ease-in-out infinite`,
-                        animationDelay: `${i * 0.35}s`,
-                        transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                      }} />
-                    ))}
-                    <span style={{ position: 'relative', zIndex: 10, display: 'inline-flex', alignItems: 'center', gap: '6px', textShadow: hovered2 ? '0 0 14px rgba(167,139,250,0.5)' : '0 0 8px rgba(255,255,255,0.12)', transition: 'text-shadow 0.3s' }}>
-                      <ChevronRight className="mr-2 w-5 h-5" />
-                      {contactPhone}
-                    </span>
-                  </a>
-                </>
-              );
-            })()}
+            <a href={`/${locale}/contact`} className="group relative inline-flex items-center justify-center px-10 py-5 font-bold rounded-full overflow-hidden cursor-pointer text-lg transition-all duration-400 hover:-translate-y-1"
+              style={{ background: 'linear-gradient(135deg,#fff 0%,#fefce8 100%)', color: '#0369a1', boxShadow: '0 6px 24px rgba(3,105,161,.3), 0 0 0 1px rgba(255,255,255,.3)' }}
+            >
+              {[...Array(4)].map((_, i) => (
+                <span key={i} className="absolute w-1 h-1 rounded-full pointer-events-none opacity-0 group-hover:opacity-80" style={{
+                  left: `${15 + i * 18}%`, top: `${20 + (i % 2) * 30}%`, background: '#f59e0b', boxShadow: '0 0 4px #fbbf24',
+                  animation: `sand-spark ${.8 + i * .2}s ease-in-out infinite`, animationDelay: `${i * .1}s`
+                }} />
+              ))}
+              <span style={{ position:'relative',zIndex:10,display:'inline-flex',alignItems:'center',gap:'6px' }}>{t('nav.contact')}<ChevronRight className="ml-1 w-6 h-6" /></span>
+            </a>
+            <a href={`tel:${contactPhone.replace(/\s/g,'')}`} className="group relative inline-flex items-center justify-center px-10 py-5 font-bold rounded-full overflow-hidden cursor-pointer text-lg text-white transition-all duration-400 hover:-translate-y-1"
+              style={{ background: 'linear-gradient(135deg,rgba(255,255,255,.18),rgba(255,255,255,.08))', border: '1.5px solid rgba(255,255,255,.35)', backdropFilter: 'blur(12px)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.15),0 4px 20px rgba(0,0,0,.15)' }}
+            ><ChevronRight className="mr-2 w-5 h-5" />{contactPhone}</a>
           </div>
 
-          <div className="flex items-center justify-center space-x-2 text-white/60">
-            <span>{contactEmail}</span>
-          </div>
+          <div className="flex items-center justify-center space-x-2 drop-shadow-sm" style={{ color:'#bae6fd' }}><span>{contactEmail}</span></div>
         </div>
       </section>
 
-      {/* Bubble button animations for About CTA */}
+      {/* ===== ALL ANIMATION KEYFRAMES ===== */}
       <style>{`
         @keyframes about-bubble-active {
-          0%   { transform: translateY(0) scale(0.5); opacity: 0; }
-          15%  { opacity: 0.6; }
-          50%  { transform: translateY(-20px) scale(1.2); opacity: 0.85; }
-          85%  { transform: translateY(-42px) scale(0.7); opacity: 0.2; }
-          100% { transform: translateY(-54px) scale(0.3); opacity: 0; }
+          0%{transform:translateY(0) scale(.5);opacity:0} 15%{opacity:.6}
+          50%{transform:translateY(-20px) scale(1.2);opacity:.85}
+          85%{transform:translateY(-42px) scale(.7);opacity:.2}
+          100%{transform:translateY(-54px) scale(.3);opacity:0}
         }
+        @keyframes about-intro-bg-pulse { 0%{opacity:.03;transform:scale(1)} 100%{opacity:.07;transform:scale(1.05)} }
+        @keyframes sun-pulse {
+          0%{box-shadow:0 0 60px rgba(251,191,36,.4),0 0 140px rgba(245,158,11,.2);transform:scale(1)}
+          100%{box-shadow:0 0 100px rgba(251,191,36,.6),0 0 200px rgba(245,158,11,.35);transform:scale(1.04)}
+        }
+        @keyframes sun-ray-sway { 0%{opacity:.4;transform:rotate(var(--r,0)) translateY(-50%) scaleX(1)} 100%{opacity:.8;transform:rotate(var(--r,0)) translateY(-50%) scaleX(1.15)} }
+        @keyframes bw1 { 0%{transform:translateX(0)} 100%{transform:translateX(-33.33%)} }
+        @keyframes bw2 { 0%{transform:translateX(0)} 100%{transform:translateX(-33.33%)} }
+        @keyframes bw3 { 0%{transform:translateX(0)} 100%{transform:translateX(-33.33%)} }
+        @keyframes fish-beach { 0%{transform:translateX(-30px);opacity:0} 10%{opacity:.8} 90%{opacity:.8} 100%{transform:translateX(calc(90vw)) translateY(-15px);opacity:0} }
+        @keyframes fish-beach-rev { 0%{transform:translateX(calc(90vw)) scaleX(-1);opacity:0} 10%{opacity:.7} 90%{opacity:.7} 100%{transform:translateX(-50px) translateY(12px) scaleX(-1);opacity:0} }
+        @keyframes shell-glow { 0%{filter:brightness(1)} 100%{filter:brightness(1.15) drop-shadow(0 0 5px rgba(251,191,36,.35))} }
+        @keyframes star-wiggle { 0%{transform:rotate(-5deg) scale(1)} 100%{transform:rotate(8deg) scale(1.08)} }
+        @keyframes sand-bubble { 0%{transform:translateY(0) scale(.5);opacity:0} 20%{opacity:.7} 80%{opacity:.3} 100%{transform:translateY(-75px) scale(1.2);opacity:0} }
+        @keyframes sand-sparkle { 0%{transform:translateY(0) scale(0);opacity:0} 50%{transform:translateY(-8px) scale(1);opacity:1} 100%{transform:translateY(-16px) scale(0);opacity:0} }
       `}</style>
     </div>
   );
