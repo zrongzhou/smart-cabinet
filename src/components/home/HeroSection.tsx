@@ -13,7 +13,7 @@ export default function HeroSection() {
     setIsVisible(true);
   }, []);
 
-  // Particle animation (lightweight)
+  // Particle animation
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -60,7 +60,7 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden theme-hero-bg">
+    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800">
       {/* Particle Canvas */}
       <canvas
         ref={canvasRef}
@@ -69,12 +69,9 @@ export default function HeroSection() {
       />
 
       {/* Gradient Orbs */}
-      <div className="absolute top-20 left-10 w-72 h-72 rounded-full blur-3xl animate-pulse"
-             style={{ backgroundColor: 'rgba(255,255,255,0.08)' }} />
-      <div className="absolute bottom-20 right-10 w-96 h-96 rounded-full blur-3xl animate-pulse"
-             style={{ backgroundColor: 'rgba(255,255,255,0.05)', animationDelay: '1s' }} />
-      <div className="absolute top-40 right-20 w-40 h-40 rounded-full blur-2xl animate-bounce"
-             style={{ animationDuration: '3s', backgroundColor: 'rgba(255,255,255,0.05)' }} />
+      <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl animate-pulse" />
+      <div className="absolute bottom-20 right-10 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+      <div className="absolute top-40 right-20 w-40 h-40 bg-blue-400/10 rounded-full blur-2xl animate-bounce" style={{ animationDuration: '3s' }} />
 
       {/* Grid Pattern Overlay */}
       <div className="absolute inset-0 opacity-[0.03] z-0">
@@ -95,27 +92,27 @@ export default function HeroSection() {
         {/* Badge */}
         <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-5 py-2 mb-8 hover:bg-white/15 transition-colors duration-300">
           <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-          <span className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.9)' }}>{t('hero.badge')}</span>
+          <span className="text-sm font-medium text-blue-100">{t('hero.badge')}</span>
         </div>
 
         {/* Icon + Title */}
         <div className="flex items-center justify-center mb-6">
           <div className="relative">
-            <div style={{ backgroundColor: 'rgba(255,255,255,0.1)' }} className="absolute inset-0 rounded-2xl blur-xl animate-pulse" />
-            <Package className="relative z-10 w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20" style={{ color: 'rgba(255,255,255,0.9)' }} />
+            <div className="absolute inset-0 bg-blue-500/30 rounded-2xl blur-xl animate-pulse" />
+            <Package className="relative z-10 w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 text-blue-300" />
           </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-[4.5rem] font-extrabold tracking-tight ml-4 text-white">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-[4.5rem] font-extrabold tracking-tight ml-4 bg-gradient-to-r from-white via-blue-100 to-blue-300 bg-clip-text text-transparent">
             {t('hero.title')}
           </h1>
         </div>
 
-        {/* Subtitle with gradient text */}
-        <p className="text-xl sm:text-2xl lg:text-3xl mb-6 font-light tracking-wide" style={{ color: 'rgba(255,255,255,0.8)' }}>
+        {/* Subtitle */}
+        <p className="text-xl sm:text-2xl lg:text-3xl mb-6 text-blue-200 font-light tracking-wide">
           {t('hero.subtitle')}
         </p>
 
         {/* Description */}
-        <p className="text-base sm:text-lg mb-12 max-w-2xl mx-auto leading-relaxed" style={{ color: 'rgba(255,255,255,0.6)' }}>
+        <p className="text-base sm:text-lg mb-12 text-blue-300/80 max-w-2xl mx-auto leading-relaxed">
           {t('hero.description')}
         </p>
 
@@ -123,30 +120,20 @@ export default function HeroSection() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <a
             href={`/${locale}/products`}
-            className="group inline-flex items-center justify-center px-10 py-4 font-bold rounded-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
-            style={{
-              backgroundColor: '#ffffff',
-              color: 'var(--primary-color)',
-              boxShadow: '0 10px 40px rgba(0,0,0,0.15)'
-            }}
+            className="group inline-flex items-center justify-center px-10 py-4 bg-white text-blue-900 font-bold rounded-xl hover:bg-blue-50 transition-all duration-300 shadow-2xl hover:shadow-blue-500/25 hover:-translate-y-1"
           >
             {t('hero.ctaProducts')}
             <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </a>
           <a
             href={`/${locale}/contact`}
-            className="group inline-flex items-center justify-center px-10 py-4 border-2 font-bold rounded-xl hover:-translate-y-1 transition-all duration-300 backdrop-blur-sm"
-            style={{
-              borderColor: 'rgba(255,255,255,0.4)',
-              color: '#ffffff',
-              backgroundColor: 'rgba(255,255,255,0.08)'
-            }}
+            className="group inline-flex items-center justify-center px-10 py-4 border-2 border-white/30 text-white font-bold rounded-xl hover:bg-white/10 hover:border-white/50 transition-all duration-300 backdrop-blur-sm"
           >
             {t('hero.ctaContact')}
           </a>
         </div>
 
-        {/* Stats - responsive wrap on mobile */}
+        {/* Stats */}
         <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 mt-14 px-4">
           {[
             { number: '10+', labelKey: 'hero.statModels' },
@@ -155,7 +142,7 @@ export default function HeroSection() {
           ].map((stat, i) => (
             <div key={i} className="text-center flex-shrink-0">
               <div className="text-2xl sm:text-3xl font-bold text-white">{stat.number}</div>
-              <div className="text-xs sm:text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>{t(stat.labelKey)}</div>
+              <div className="text-xs sm:text-sm text-blue-300">{t(stat.labelKey)}</div>
             </div>
           ))}
         </div>
