@@ -41,6 +41,36 @@ const categoryImageMap: Record<string, string> = {
   'General': '/images/blog/general.jpg',
 };
 
+// Topic-specific local images (matched by slug keywords for more precise visuals)
+const topicImageMap: Record<string, string> = {
+  'smart-cabinet-warehouse': '/images/blog/smart-cabinet-warehouse.jpg',
+  'roi-cost-analysis': '/images/blog/roi-cost-analysis.jpg',
+  'rfid-tool-tracking': '/images/blog/rfid-tool-tracking.jpg',
+  'iot-mes-integration': '/images/blog/iot-mes-integration.jpg',
+  'cnc-machining-roi': '/images/blog/cnc-machining-roi.jpg',
+  'aerospace-fod-prevention': '/images/blog/aerospace-fod-prevention.jpg',
+  'ai-industry-4-0': '/images/blog/ai-industry-4-0.jpg',
+  'digital-transformation': '/images/blog/digital-transformation.jpg',
+  'future-smart-factory': '/images/blog/future-smart-factory.jpg',
+  'ppe-safety-equipment': '/images/blog/ppe-safety-equipment.jpg',
+  'buying-guide': '/images/blog/buying-guide-smart-cabinet.jpg',
+  'tool-security-audit': '/images/blog/tool-security-audit.jpg',
+};
+
+// Helper: get the best local image for a blog post
+function getBlogImage(post: BlogPost): string {
+  // 1. Try topic-specific image match by slug
+  const slug = post.slug || '';
+  for (const [key, img] of Object.entries(topicImageMap)) {
+    if (slug.includes(key)) {
+      return img;
+    }
+  }
+  // 2. Fall back to category image
+  const category = post.category || 'General';
+  return categoryImageMap[category] || categoryImageMap['General'];
+}
+
 // Translate blog category name
 function getCategoryLabel(category: string, locale: string): string {
   const catLabels: Record<string, Record<string, string>> = {
@@ -195,28 +225,25 @@ export default function BlogPage() {
                   className="group bg-white dark:bg-slate-800 rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-2 border border-gray-100 dark:border-slate-700 block blog-card"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
-                  {/* Blog Image — always show an image (real post image or category-specific Unsplash photo) */}
+                  {/* Blog Image — always use local images (reliable, no CDN/issues) */}
                   <div className="relative h-56 overflow-hidden bg-gray-100 dark:bg-slate-700">
-                    <img 
-                      src={post.image || categoryImageMap[category] || categoryImageMap['General']}
+                    <img
+                      src={getBlogImage(post)}
                       alt={title}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       loading={isPriority ? 'eager' : 'lazy'}
                       onError={(e) => {
+                        // If local image fails, try category fallback (should rarely happen)
                         const target = e.target as HTMLImageElement;
-                        target.style.display = 'none';
-                        const parent = target.parentElement;
-                        if (parent && !parent.querySelector('.img-fallback')) {
-                          const fallback = document.createElement('div');
-                          fallback.className = 'img-fallback absolute inset-0 flex flex-col items-center justify-center';
-                          fallback.style.background = categoryColorMap[category] || categoryColorMap['General'];
-                          fallback.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white/70"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>`;
-                          parent.appendChild(fallback);
+                        const fallbackSrc = categoryImageMap['General'];
+                        if (target.src !== window.location.origin + fallbackSrc) {
+                          console.warn(`Blog image load failed, using fallback: ${target.src}`);
+                          target.src = fallbackSrc;
                         }
                       }}
                     />
-                    {/* Gradient overlay for text readability */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                    {/* Gradient overlay for text readability - reduced opacity to better show image */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
                     {/* Category badge overlay on image */}
                     <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
                       <span 
