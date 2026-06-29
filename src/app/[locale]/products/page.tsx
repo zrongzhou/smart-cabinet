@@ -439,7 +439,7 @@ export default function ProductsPage() {
                 className={`relative px-5 py-2.5 rounded-full text-[14px] font-bold transition-all duration-200 inline-flex items-center gap-1.5 ${
                   activeDimension === 'all'
                     ? 'bg-blue-600 text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5'
-                    : 'text-gray-600 border backdrop-blur-md bg-white/40 hover:bg-white/70 hover:border-blue-400/50 hover:shadow-sm hover:-translate-y-0.5'
+                    : 'text-gray-700 border backdrop-blur-md bg-white/50 hover:bg-white/75 hover:border-blue-400/50 hover:shadow-sm hover:-translate-y-0.5'
                 }`}
                 style={activeDimension !== 'all' ? { borderColor: 'rgba(209,213,219,0.6)', borderWidth: '1px' } : undefined}
               >
@@ -469,7 +469,7 @@ export default function ProductsPage() {
                     className={`relative px-4 py-2.5 rounded-full text-[14px] font-bold transition-all duration-200 inline-flex items-center gap-1.5 ${
                       isActive
                         ? `text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5 ring-1 ring-white/30`
-                        : `border backdrop-blur-md bg-white/40 text-gray-600 hover:bg-white/70 hover:border-blue-400/50 hover:shadow-sm hover:-translate-y-0.5`
+                        : `border backdrop-blur-md bg-white/50 text-gray-700 hover:bg-white/75 hover:border-blue-400/50 hover:shadow-sm hover:-translate-y-0.5`
                     }`}
                     style={isActive
                       ? { background: 'linear-gradient(135deg, #2563eb, #1d4ed8)' }
@@ -524,16 +524,23 @@ export default function ProductsPage() {
                         <button
                           key={cat.id}
                           onClick={() => toggleCategory(cat.id)}
-                          className={`relative px-4 py-[9px] rounded-full text-[13.5px] font-semibold transition-all duration-200 leading-none inline-flex items-center ${
+                          className={`relative px-3.5 py-[7px] rounded-full text-[12px] font-medium transition-all duration-200 leading-none inline-flex items-center ${
                             isSelected
                               ? `text-white shadow-md hover:shadow-lg`
-                              : `text-gray-700 border backdrop-blur-md bg-white/35 hover:bg-white/60 hover:border-blue-400/50 hover:shadow-sm`
+                              : `text-gray-600 border backdrop-blur-md bg-white/40 hover:bg-white/60 hover:border-blue-400/50 hover:shadow-sm`
                           }`}
                           style={isSelected ? { backgroundColor: '#2563eb' } : {
                             borderColor: 'rgba(209,213,219,0.5)',
                             borderWidth: '1px',
                           }}
                         >
+                          {/* Subtle pulse ring for unselected items */}
+                          {!isSelected && (
+                            <span className="absolute inset-0 rounded-full animate-ping" style={{
+                              background: 'rgba(59,130,246,0.08)',
+                              animationDuration: '2.5s',
+                            }} />
+                          )}
                           {isSelected && (
                             <span className="inline-block w-1.5 h-1.5 rounded-full bg-white/90 mr-1.5" />
                           )}

@@ -421,48 +421,106 @@ export default function AboutPage() {
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-7">
             {stats.map((stat, index) => {
               const Icon = stat.icon;
-              // Rich color palette per card — enhanced
+              // Premium color palettes with shimmer accents
               const palettes = [
-                { name: 'blue',    grad: 'from-blue-600 to-indigo-600',   shadow: 'hover:shadow-blue-200/50', iconBg: 'bg-blue-50', ring: 'ring-blue-200', textColor: 'text-blue-600', barColor: '#3b82f6' },
-                { name: 'emerald', grad: 'from-emerald-600 to-teal-600', shadow: 'hover:shadow-emerald-200/50', iconBg: 'bg-emerald-50', ring: 'ring-emerald-200', textColor: 'text-emerald-600', barColor: '#10b981' },
-                { name: 'violet',  grad: 'from-violet-600 to-purple-600', shadow: 'hover:shadow-violet-200/50', iconBg: 'bg-violet-50', ring: 'ring-violet-200', textColor: 'text-violet-600', barColor: '#8b5cf6' },
-                { name: 'amber',   grad: 'from-amber-500 to-orange-600',  shadow: 'hover:shadow-amber-200/50', iconBg: 'bg-amber-50', ring: 'ring-amber-200', textColor: 'text-amber-600', barColor: '#f59e0b' },
-                { name: 'rose',    grad: 'from-rose-600 to-pink-600',    shadow: 'hover:shadow-rose-200/50', iconBg: 'bg-rose-50', ring: 'ring-rose-200', textColor: 'text-rose-600', barColor: '#e11d48' },
-                { name: 'cyan',    grad: 'from-cyan-600 to-sky-600',    shadow: 'hover:shadow-cyan-200/50', iconBg: 'bg-cyan-50', ring: 'ring-cyan-200', textColor: 'text-cyan-600', barColor: '#06b6d4' },
+                { name: 'blue',    grad: 'from-blue-600 to-indigo-600',   shadowColor: 'rgba(59,130,246,0.15)', iconBg: '#eff6ff', ringColor: 'rgba(59,130,246,0.2)', textColor: '#2563eb', barColor: '#3b82f6', glowColor: 'rgba(59,130,246,0.25)' },
+                { name: 'emerald', grad: 'from-emerald-600 to-teal-600', shadowColor: 'rgba(16,185,129,0.15)', iconBg: '#ecfdf5', ringColor: 'rgba(16,185,129,0.2)', textColor: '#059669', barColor: '#10b981', glowColor: 'rgba(16,185,129,0.25)' },
+                { name: 'violet',  grad: 'from-violet-600 to-purple-600', shadowColor: 'rgba(139,92,246,0.15)', iconBg: '#f5f3ff', ringColor: 'rgba(139,92,246,0.2)', textColor: '#7c3aed', barColor: '#8b5cf6', glowColor: 'rgba(139,92,246,0.25)' },
+                { name: 'amber',   grad: 'from-amber-500 to-orange-600',  shadowColor: 'rgba(245,158,11,0.15)', iconBg: '#fffbeb', ringColor: 'rgba(245,158,11,0.2)', textColor: '#d97706', barColor: '#f59e0b', glowColor: 'rgba(245,158,11,0.25)' },
+                { name: 'rose',    grad: 'from-rose-600 to-pink-600',    shadowColor: 'rgba(225,29,72,0.15)', iconBg: '#fff1f2', ringColor: 'rgba(225,29,72,0.2)', textColor: '#e11d48', barColor: '#f43f5e', glowColor: 'rgba(225,29,72,0.25)' },
+                { name: 'cyan',    grad: 'from-cyan-600 to-sky-600',    shadowColor: 'rgba(6,182,212,0.15)', iconBg: '#ecfeff', ringColor: 'rgba(6,182,212,0.2)', textColor: '#0891b2', barColor: '#06b6d4', glowColor: 'rgba(6,182,212,0.25)' },
               ];
               const p = palettes[index % palettes.length];
               return (
                 <div key={index} className="group perspective-1000">
-                  <div ref={useRef<HTMLDivElement>(null)} className={`relative rounded-2xl p-7 lg:p-8 bg-white border border-gray-100/90 shadow-sm ${p.shadow} transition-all duration-500 ease-out group-hover:-translate-y-2.5 group-hover:shadow-2xl overflow-hidden`}
-                    style={{ animation: `statFadeIn 0.6s ease-out ${index * 0.1}s both` }}
+                  <div ref={useRef<HTMLDivElement>(null)} className={`relative rounded-2xl p-6 lg:p-8 bg-white/90 backdrop-blur-sm border border-gray-100/80 transition-all duration-700 ease-out group-hover:-translate-y-3 group-hover:shadow-2xl overflow-hidden`}
+                    style={{
+                      boxShadow: `0 4px 24px ${p.shadowColor}, 0 1px 3px rgba(0,0,0,0.04)`,
+                      animation: `statCardEnter 0.8s cubic-bezier(0.22, 1, 0.36, 1) ${index * 0.12}s both`,
+                    }}
                   >
-                    {/* Top gradient bar */}
-                    <div className={`absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r ${p.grad}`} />
-                    
-                    {/* Animated corner decorations */}
-                    <div className={`absolute -right-10 -top-10 w-32 h-32 rounded-full bg-gradient-to-br ${p.grad} opacity-[0.05] blur-2xl group-hover:opacity-[0.1] transition-opacity duration-500`} style={{ animation: `cornerFloat ${4 + index * 0.5}s ease-in-out infinite alternate` }} />
-                    <div className={`absolute -left-6 -bottom-6 w-24 h-24 rounded-full bg-gradient-to-tr ${p.grad} opacity-[0.04] blur-xl group-hover:opacity-[0.08] transition-opacity duration-500`} />
+                    {/* Top gradient line with shimmer */}
+                    <div className="absolute top-0 left-0 right-0 h-[3px] overflow-hidden">
+                      <div className={`h-full bg-gradient-to-r ${p.grad} w-full animate-shimmer-bar`} />
+                    </div>
+
+                    {/* Rotating gradient border glow on hover */}
+                    <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" style={{
+                      background: `conic-gradient(from 0deg at 50% 50%, transparent 0%, ${p.glowColor} 10%, transparent 20%, transparent 80%, ${p.glowColor} 90%, transparent)`,
+                      padding: '1px',
+                      WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                      WebkitMaskComposite: 'xor',
+                      maskComposite: 'exclude',
+                    }} />
+
+                    {/* Subtle floating particles */}
+                    <div className="absolute top-6 right-6 w-2 h-2 rounded-full opacity-20" style={{
+                      background: p.barColor,
+                      animation: `floatParticle ${3 + index * 0.4}s ease-in-out infinite`,
+                    }} />
+                    <div className="absolute bottom-10 left-8 w-1.5 h-1.5 rounded-full opacity-15" style={{
+                      background: p.barColor,
+                      animation: `floatParticle ${3.5 + index * 0.3}s ease-in-out infinite reverse`,
+                      animationDelay: '1s',
+                    }} />
 
                     <div className="relative z-10">
-                      {/* Icon — larger, animated */}
-                      <div className={`w-18 h-18 mx-auto mb-5 rounded-2xl ${p.iconBg} flex items-center justify-center ring-4 ${p.ring} shadow-md group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300`} style={{ animation: `iconBounce ${2 + index * 0.15}s ease-in-out infinite` }}>
-                        <Icon className={`w-9 h-9 ${p.textColor} drop-shadow-sm`} strokeWidth={1.8} />
+                      {/* Icon — premium glassmorphic container */}
+                      <div className="w-[72px] h-[72px] mx-auto mb-5 relative">
+                        {/* Outer rotating ring */}
+                        <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{
+                          background: `conic-gradient(from 0deg, ${p.ringColor}, transparent 60%, ${p.ringColor})`,
+                          animation: 'iconRingSpin 4s linear infinite',
+                          padding: '2px',
+                        }}>
+                          <div className="w-full h-full rounded-2xl bg-white" />
+                        </div>
+                        {/* Main icon container with glass effect */}
+                        <div className={`w-full h-full rounded-2xl flex items-center justify-center relative overflow-hidden`}
+                          style={{
+                            background: `linear-gradient(135deg, ${p.iconBg} 0%, white 100%)`,
+                            boxShadow: `inset 0 -2px 6px ${p.shadowColor}, 0 4px 16px ${p.shadowColor}`,
+                            border: `1px solid ${p.ringColor}`,
+                          }}
+                        >
+                          {/* Shimmer overlay */}
+                          <div className="absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity duration-500"
+                            style={{ background: `linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.8) 50%, transparent 60%)` }}
+                          />
+                          <Icon className={`w-8 h-8 ${p.textColor}`} strokeWidth={1.6}
+                            style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.08))' }}
+                          />
+                        </div>
+                        {/* Pulse ring on hover */}
+                        <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" style={{
+                          boxShadow: `0 0 0 0 ${p.glowColor}`,
+                          animation: 'iconPulse 2s ease-in-out infinite',
+                        }} />
                       </div>
 
-                      {/* Number — Animated CountUp */}
-                      <div className="text-5xl lg:text-[4.25rem] font-black mb-2 tracking-tighter text-gray-900" style={{ lineHeight: 1.05 }}>
+                      {/* Number — Animated CountUp with subtle glow */}
+                      <div className="text-5xl lg:text-[4.25rem] font-black mb-1.5 tracking-tighter text-center relative" style={{ lineHeight: 1.05, color: '#111827' }}>
                         <CountUp target={stat.number} suffix={stat.suffix} prefix={stat.prefix} locale={locale === 'zh' ? 'zh' : locale} />
+                        {/* Number underline accent */}
+                        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-12 h-[2px] rounded-full opacity-0 group-hover:opacity-40 transition-opacity duration-500 group-hover:w-20"
+                          style={{ background: `linear-gradient(90deg, ${p.barColor}, transparent)` }}
+                        />
                       </div>
 
-                      {/* Label — larger and bolder */}
-                      <p className="text-[15px] font-bold uppercase tracking-wide mt-1 text-gray-700">
+                      {/* Label */}
+                      <p className="text-[14px] font-bold uppercase tracking-wider mt-1 text-center text-gray-600">
                         {t(stat.labelKey)}
                       </p>
 
-                      {/* Mini progress bar decoration */}
-                      <div className="mt-4 mx-auto rounded-full h-1 w-16 opacity-30 transition-all duration-500 group-hover:w-24 group-hover:opacity-60"
-                        style={{ background: `linear-gradient(90deg, ${p.barColor}, transparent)` }}
-                      />
+                      {/* Bottom decorative dots */}
+                      <div className="flex justify-center gap-1.5 mt-4 opacity-25 group-hover:opacity-50 transition-opacity duration-500">
+                        {[...Array(3)].map((_, di) => (
+                          <div key={di} className="w-1.5 h-1.5 rounded-full" style={{
+                            background: p.barColor,
+                            animationDelay: `${di * 0.15}s`,
+                          }} />
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -521,15 +579,15 @@ export default function AboutPage() {
             </p>
           </div>
 
-          {/* Factory Images Grid — Real Photos with Glass Effect */}
+          {/* Factory Images Grid — Local images with Glass Effect */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
             {[
-              { src: 'https://images.unsplash.com/photo-1581092918056-0c4c72acd1df?w=600&q=80', altKey: 'about.factory.design', label: 'DESIGN', color: '#3b82f6' },
-              { src: 'https://images.unsplash.com/photo-1565688534245-bf750a49812?w=600&q=80', altKey: 'about.factory.cutting', label: 'CUTTING', color: '#ef4444' },
-              { src: 'https://images.unsplash.com/photo-1565193566173-7a0e3b8b9e89?w=600&q=80', altKey: 'about.factory.bending', label: 'BENDING', color: '#10b981' },
-              { src: 'https://images.unsplash.com/photo-1504328345606-7b079b47e57a?w=600&q=80', altKey: 'about.factory.assembly', label: 'ASSEMBLY', color: '#f59e0b' },
-              { src: 'https://images.unsplash.com/photo-1614950397376-07d784aae2bc?w=600&q=80', altKey: 'about.factory.welding', label: 'WELDING', color: '#dc2626' },
-              { src: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=600&q=80', altKey: 'about.factory.quality', label: 'QUALITY CONTROL', color: '#06b6d4' },
+              { src: '/images/about/factory-design.jpg', altKey: 'about.factory.design', label: 'DESIGN', color: '#3b82f6' },
+              { src: '/images/about/factory-cutting.jpg', altKey: 'about.factory.cutting', label: 'CUTTING', color: '#ef4444' },
+              { src: '/images/about/factory-bending.jpg', altKey: 'about.factory.bending', label: 'BENDING', color: '#10b981' },
+              { src: '/images/about/factory-assembly.jpg', altKey: 'about.factory.assembly', label: 'ASSEMBLY', color: '#f59e0b' },
+              { src: '/images/about/factory-welding.jpg', altKey: 'about.factory.welding', label: 'WELDING', color: '#dc2626' },
+              { src: '/images/about/factory-quality.jpg', altKey: 'about.factory.quality', label: 'QUALITY CONTROL', color: '#06b6d4' },
             ].map((item, index) => (
               <div key={index} className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2" style={{ height: '280px' }}>
                 {/* Image with zoom on hover */}
@@ -831,130 +889,148 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ===== SUNRISE BEACH CTA — 日出沙滩主题 ===== */}
+      {/* ===== SUNRISE BEACH CTA — 精致日出沙滩 (v133) ===== */}
       <section
-        className="py-24 px-4 sm:px-6 lg:px-8 text-white relative overflow-hidden"
+        className="py-20 px-4 sm:px-6 lg:px-8 text-white relative overflow-hidden"
         style={{
-          background: 'linear-gradient(180deg, #0c4a6e 0%, #075985 15%, #0369a1 30%, #fef3c7 65%, #fde68a 78%, #fcd34d 90%, #fbbf24 100%)',
+          background: 'linear-gradient(180deg, #0c4a6e 0%, #075985 12%, #0369a1 24%, #0ea5e9 40%, #7dd3fc 52%, #fef3c7 68%, #fde68a 78%, #fcd34d 88%, #fbbf24 100%)',
         }}
       >
-        {/* === SUNRISE SUN — 日出质感太阳 (left side, horizon level) === */}
-        <div className="absolute top-[32%] left-[4%] sm:left-[8%] w-44 h-44 sm:w-56 sm:h-56 rounded-full" style={{
-          background: 'radial-gradient(circle at 50% 58%, #fef9c3 0%, #fef08a 20%, #facc15 45%, #eab308 65%, #ca8a04 100%)',
-          boxShadow: '0 0 120px rgba(250,204,21,0.65), 0 0 240px rgba(234,179,8,0.4), 0 30px 80px rgba(202,138,4,0.5), inset 0 -15px 35px rgba(180,120,0,0.4)',
-          animation: 'sunrise-glow 5s ease-in-out infinite alternate',
+        {/* === OCEAN HORIZON LINE (where sun sits) === */}
+        <div className="absolute top-[58%] left-0 right-0 h-[2px] opacity-30"
+          style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent)' }}
+        />
+
+        {/* === HALF-SUN RISING — 半遮面初生太阳 === */}
+        <div className="absolute top-[55%] left-[8%] sm:left-[12%] w-28 h-28 sm:w-36 sm:h-36 overflow-hidden rounded-full" style={{
+          // Clip bottom half for "half-rising" effect via positioning inside parent
         }}>
-          {/* Sun surface texture — 太阳质感 */}
-          <div className="absolute inset-[8%] rounded-full" style={{
-            background: 'radial-gradient(ellipse at 45% 40%, rgba(254,249,195,0.7) 0%, transparent 50%), radial-gradient(ellipse at 55% 65%, rgba(234,179,8,0.4) 0%, transparent 40%)',
-          }} />
-          {/* Sun rays — 光芒 */}
-          {[...Array(12)].map((_, i) => (
-            <div key={i} className="absolute top-1/2 left-1/2 origin-center" style={{
-              width: `${2.5 + i * 1.2}px`, height: `${18 + i * 5}px`,
-              background: `linear-gradient(to bottom, rgba(255,251,235,0.9) 0%, rgba(250,204,21,0.3) 60%, transparent)`,
-              transform: `rotate(${i * 30}deg) translateY(-50%)`,
-              borderRadius: '50%',
-              animation: `sun-ray-pulse ${2.5 + i * 0.15}s ease-in-out infinite alternate`,
-              animationDelay: `${i * 0.12}s`,
+          {/* Sun body — positioned so only top half shows above horizon */}
+          <div className="absolute -bottom-[50%] left-0 w-full h-full rounded-full" style={{
+            background: 'radial-gradient(circle at 50% 45%, #fffbeb 0%, #fef08a 15%, #fde047 35%, #facc15 55%, #eab308 75%, #ca8a04 95%)',
+            boxShadow: '0 0 60px rgba(250,204,21,0.5), 0 0 120px rgba(234,179,8,0.25), 0 10px 40px rgba(202,138,4,0.3), inset 2px 2px 8px rgba(255,255,255,0.3)',
+            animation: 'sunrise-glow 6s ease-in-out infinite alternate',
+          }}>
+            {/* Sun surface detail — inner texture for realism */}
+            <div className="absolute inset-[12%] rounded-full" style={{
+              background: 'radial-gradient(ellipse at 40% 35%, rgba(255,255,240,0.6) 0%, transparent 50%), radial-gradient(ellipse at 60% 60%, rgba(234,179,8,0.3) 0%, transparent 40%)',
             }} />
-          ))}
-          {/* Inner glow */}
-          <div className="absolute inset-[22%] rounded-full bg-gradient-to-br from-yellow-100/50 to-transparent opacity-70" />
+            {/* Soft corona glow around sun edge */}
+            <div className="absolute -inset-[15%] rounded-full" style={{
+              background: 'radial-gradient(circle, rgba(251,191,36,0.15) 0%, transparent 70%)',
+              animation: 'sunCorona 4s ease-in-out infinite alternate',
+            }} />
+          </div>
         </div>
 
-        {/* === CURVED SAND BEACH — 圆形弧形沙滩 === */}
-        <div className="absolute bottom-0 left-0 right-0 h-[38%] overflow-hidden">
-          {/* Main curved sand using SVG */}
-          <svg className="absolute bottom-0 left-0 w-full" style={{ height: '100%' }} viewBox="0 0 1440 400" preserveAspectRatio="none">
-            {/* Curved sand dune shape */}
-            <path d="M0,400 L0,180 Q180,80 360,140 Q540,60 720,120 Q900,50 1080,130 Q1260,90 1440,160 L1440,400 Z" fill="#fde68a" />
-            <path d="M0,400 L0,200 Q200,120 400,170 Q600,90 800,150 Q1000,80 1200,160 Q1350,130 1440,190 L1440,400 Z" fill="#fcd34d" />
-            <path d="M0,400 L0,240 Q240,170 480,210 Q720,150 960,200 Q1200,160 1440,220 L1440,400 Z" fill="#fbbf24" />
-            {/* Sand texture lines */}
-            <path d="M0,320 Q360,290 720,310 Q1080,290 1440,320" stroke="rgba(255,255,255,0.15)" strokeWidth="2" fill="none" />
-            <path d="M0,350 Q360,330 720,345 Q1080,325 1440,350" stroke="rgba(255,255,255,0.1)" strokeWidth="1.5" fill="none" />
-          </svg>
-
-          {/* Sand sparkle particles */}
-          {[...Array(18)].map((_, i) => (
-            <div key={i} className="absolute rounded-full pointer-events-none" style={{
-              left: `${5 + i * 5.2}%`,
-              bottom: `${8 + Math.sin(i * 0.8) * 12}%`,
-              width: 2 + (i % 3) * 1.5,
-              height: 2 + (i % 3) * 1.5,
-              background: i % 2 ? 'rgba(255,255,255,0.7)' : 'rgba(254,243,199,0.8)',
-              boxShadow: `0 0 ${3 + i % 3}px rgba(255,255,255,0.4)`,
-              animation: `sand-sparkle ${2 + (i % 4) * 0.5}s ease-in-out infinite`,
+        {/* === SUBTLE SUN RAYS (fewer, softer) === */}
+        <div className="absolute top-[54%] left-[6%] sm:left-[10%] w-36 h-36 sm:w-44 sm:h-44 pointer-events-none">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="absolute top-1/2 left-1/2 origin-center" style={{
+              width: `${1 + i * 0.6}px`, height: `${14 + i * 4}px`,
+              background: `linear-gradient(to bottom, rgba(255,251,235,0.5) 0%, rgba(250,204,21,0.15) 50%, transparent)`,
+              transform: `rotate(${i * 30}deg) translateY(-50%)`,
+              borderRadius: '50%',
+              animation: `sunRaySoft ${3 + i * 0.3}s ease-in-out infinite alternate`,
               animationDelay: `${i * 0.2}s`,
             }} />
           ))}
         </div>
 
-        {/* === OCEAN WAVES at top of sand === */}
-        <div className="absolute top-[42%] left-0 right-0 h-28 overflow-hidden pointer-events-none">
-          <svg className="absolute w-[250%] h-full" viewBox="0 0 1200 100" preserveAspectRatio="none">
-            <path d="M0,35 Q150,15 300,35 T600,35 T900,35 T1200,35 T1500,35 T1800,35 L1800,100 L0,100 Z" fill="rgba(14,116,144,0.3)" style={{ animation: 'bw1 8s linear infinite' }} />
-            <path d="M0,50 Q200,68 400,48 T800,52 T1200,45 T1600,55 L1600,100 L0,100 Z" fill="rgba(8,145,178,0.22)" style={{ animation: 'bw2 10s linear infinite reverse' }} />
-            <path d="M0,62 Q180,48 360,62 T720,58 T1080,65 T1440,55 L1440,100 L0,100 Z" fill="rgba(56,189,248,0.13)" style={{ animation: 'bw3 12s linear infinite' }} />
+        {/* === TEXTURED CURVED SAND BEACH — 沙粒感弧形沙滩 (smaller, detailed) === */}
+        <div className="absolute bottom-0 left-0 right-0 h-[22%] overflow-hidden">
+          <svg className="absolute bottom-0 left-0 w-full" style={{ height: '100%' }} viewBox="0 0 1440 280" preserveAspectRatio="none">
+            <defs>
+              <filter id="sandGrain" x="0%" y="0%" width="100%" height="100%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="4" result="noise" />
+                <feColorMatrix type="matrix" values="1 0 0 0 0  0 0.95 0 0 0  0 0.7 0 0 0  0 0 0 0.25 0" in="noise" result="coloredNoise" />
+                <feBlend in="SourceGraphic" in2="coloredNoise" mode="multiply" />
+              </filter>
+            </defs>
+            {/* Far sand layer (lightest, atmospheric perspective) */}
+            <path d="M0,280 L0,140 Q200,90 400,130 Q720,70 1040,120 Q1280,85 1440,135 L1440,280Z"
+              fill="#fef9c3" opacity="0.6" />
+            {/* Mid sand layer */}
+            <path d="M0,280 L0,170 Q180,125 360,160 Q540,110 720,155 Q900,115 1080,150 Q1260,120 1440,165 L1440,280Z"
+              fill="#fef08a" opacity="0.8" />
+            {/* Near sand layer with grain texture */}
+            <path d="M0,280 L0,200 Q220,165 440,195 Q660,150 880,190 Q1100,158 1320,185 L1440,195 L1440,280Z"
+              fill="#fde68a" filter="url(#sandGrain)" />
+            {/* Frontmost sand (deepest) */}
+            <path d="M0,280 L0,230 Q260,200 520,228 Q780,190 1040,225 Q1280,198 1440,230 L1440,280Z"
+              fill="#fcd34d" />
+
+            {/* Sand ripples / texture lines */}
+            <path d="M0,245 Q360,230 720,242 Q1080,228 1440,245" stroke="rgba(217,119,6,0.12)" strokeWidth="1.5" fill="none" />
+            <path d="M0,262 Q360,250 720,258 Q1080,248 1440,262" stroke="rgba(217,119,6,0.08)" strokeWidth="1" fill="none" />
+            {/* Subtle highlight on sand crest */}
+            <path d="M0,205 Q360,185 720,198 Q1080,182 1440,202" stroke="rgba(255,255,255,0.15)" strokeWidth="1" fill="none" />
           </svg>
+
+          {/* Sand grain particles (sparse, subtle) */}
+          {[...Array(12)].map((_, i) => (
+            <div key={i} className="absolute rounded-sm pointer-events-none" style={{
+              left: `${4 + i * 7.5}%`,
+              bottom: `${5 + (i % 4) * 4 + Math.random() * 6}%`,
+              width: 1.5 + (i % 3),
+              height: 1.5 + (i % 3),
+              background: i % 3 === 0 ? 'rgba(254,240,138,0.9)' : i % 3 === 1 ? 'rgba(253,224,71,0.7)' : 'rgba(255,255,255,0.5)',
+              animation: `sandGrainFloat ${4 + (i % 3) * 1.5}s ease-in-out infinite`,
+              animationDelay: `${i * 0.3}s`,
+            }} />
+          ))}
         </div>
 
-        {/* === SEASHELLS on sand === */}
-        <div className="absolute bottom-[22%] left-[15%] opacity-60" style={{ animation: 'shell-glow 5s ease-in-out infinite alternate' }}>
-          <svg width="28" height="22" viewBox="0 0 28 22"><path d="M3,18 Q14,-3 25,18 Q14,24 3,18Z" fill="#fde68a" stroke="#d97706" strokeWidth="0.7"/><path d="M6,17 Q14,5 22,17" stroke="#d97706" strokeWidth="0.5" fill="none"/></svg>
+        {/* Small seashell decoration */}
+        <div className="absolute bottom-[8%] left-[18%] opacity-50" style={{ animation: 'shell-glow 5s ease-in-out infinite alternate' }}>
+          <svg width="20" height="16" viewBox="0 0 20 16"><path d="M2,13 Q10,-2 18,13 Q10,18 2,13Z" fill="#fde68a" stroke="#d97706" strokeWidth="0.5"/><path d="M4,12 Q10,3 16,12" stroke="#d97706" strokeWidth="0.35" fill="none"/></svg>
         </div>
-        <div className="absolute bottom-[28%] right-[18%] opacity-55" style={{ animation: 'shell-glow 6s ease-in-out infinite alternate-reverse' }}>
-          <svg width="24" height="19" viewBox="0 0 24 19"><ellipse cx="12" cy="10" rx="10" ry="7" fill="#fef3c7" stroke="#d97706" strokeWidth="0.6"/></svg>
-        </div>
-        <div className="absolute bottom-[25%] right-[8%] opacity-60" style={{ animation: 'star-wiggle 4s ease-in-out infinite alternate' }}>
-          <svg width="30" height="30" viewBox="0 0 30 30"><path d="M15,2 L17.5,10 L25,9 L20,15 L23,23 L15,18 L7,21 L10,14 Z" fill="#fb923c" stroke="#ea580c" strokeWidth="0.7"/><circle cx="15" cy="15" r="2.5" fill="#fde68a" opacity="0.55"/></svg>
+        <div className="absolute bottom-[11%] right-[22%] opacity-40" style={{ animation: 'star-wiggle 5s ease-in-out infinite alternate' }}>
+          <svg width="22" height="22" viewBox="0 0 22 22"><path d="M11,2 L13,8 L19,8 L14,12 L16,18 L11,14 L6,18 L8,12 L3,8 L9,8 Z" fill="#fb923c" stroke="#ea580c" strokeWidth="0.5"/><circle cx="11" cy="11" r="2" fill="#fde68a" opacity="0.5"/></svg>
         </div>
 
-        {/* Content */}
-        <div className="max-w-5xl mx-auto text-center relative z-10">
-          <h2 className="text-4xl sm:text-5xl font-bold mb-6 text-white drop-shadow-lg" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>{t('about.cta.title')}</h2>
-          <p className="text-xl mb-12 max-w-2xl mx-auto leading-relaxed" style={{ color: '#e0f2fe', textShadow: '0 1px 4px rgba(0,0,0,0.15)' }}>{t('about.cta.subtitle')}</p>
+        {/* Content — centered, elevated */}
+        <div className="max-w-4xl mx-auto text-center relative z-10 pt-4 pb-32">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-5 text-white drop-shadow-lg" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.2)' }}>{t('about.cta.title')}</h2>
+          <p className="text-lg sm:text-xl mb-10 max-w-2xl mx-auto leading-relaxed" style={{ color: '#e0f2fe', textShadow: '0 1px 4px rgba(0,0,0,0.12)' }}>{t('about.cta.subtitle')}</p>
 
-          {/* Buttons — Sunrise themed (yellow-white) */}
-          <div className="flex flex-col sm:flex-row gap-6 justify-center mb-12">
-            <a href={`/${locale}/contact`} className="group relative inline-flex items-center justify-center px-10 py-5 font-bold rounded-full overflow-hidden cursor-pointer text-lg transition-all duration-400 hover:-translate-y-1"
+          {/* Buttons — Warm sunrise themed */}
+          <div className="flex flex-col sm:flex-row gap-5 justify-center mb-8">
+            <a href={`/${locale}/contact`} className="group relative inline-flex items-center justify-center px-9 py-4 font-bold rounded-full overflow-hidden cursor-pointer text-base transition-all duration-400 hover:-translate-y-1"
               style={{ background: 'linear-gradient(135deg,#fffbeb 0%,#fef3c7 50%,#fde68a 100%)', color: '#92400e', boxShadow: '0 6px 24px rgba(146,64,14,0.25), 0 0 0 1px rgba(255,255,255,0.4)' }}
             >
-              {/* Sparkle particles on hover */}
-              {[...Array(5)].map((_, i) => (
-                <span key={i} className="absolute w-1 h-1 rounded-full pointer-events-none opacity-0 group-hover:opacity-80" style={{
-                  left: `${12 + i * 16}%`, top: `${18 + (i % 2) * 28}%`, background: '#f59e0b', boxShadow: '0 0 4px #fbbf24',
-                  animation: `sand-sparkle ${0.7 + i * 0.15}s ease-in-out infinite`, animationDelay: `${i * 0.08}s`
-                }} />
-              ))}
-              <span style={{ position:'relative',zIndex:10,display:'inline-flex',alignItems:'center',gap:'6px' }}>{t('nav.contact')}<ChevronRight className="ml-1 w-6 h-6" /></span>
+              <span style={{ position:'relative',zIndex:10,display:'inline-flex',alignItems:'center',gap:'5px' }}>{t('nav.contact')}<ChevronRight className="ml-1 w-5 h-5" /></span>
             </a>
-            <a href={`tel:${contactPhone.replace(/\s/g,'')}`} className="group relative inline-flex items-center justify-center px-10 py-5 font-bold rounded-full overflow-hidden cursor-pointer text-lg text-white transition-all duration-400 hover:-translate-y-1"
-              style={{ background: 'linear-gradient(135deg,rgba(255,255,255,0.2),rgba(255,255,255,0.08))', border: '1.5px solid rgba(255,255,255,0.38)', backdropFilter: 'blur(12px)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.18),0 4px 20px rgba(0,0,0,0.12)' }}
-            ><ChevronRight className="mr-2 w-5 h-5" />{contactPhone}</a>
+            <a href={`tel:${contactPhone.replace(/\s/g,'')}`} className="group relative inline-flex items-center justify-center px-9 py-4 font-bold rounded-full overflow-hidden cursor-pointer text-base text-white transition-all duration-400 hover:-translate-y-1"
+              style={{ background: 'linear-gradient(135deg,rgba(255,255,255,0.22),rgba(255,255,255,0.1))', border: '1.5px solid rgba(255,255,255,0.35)', backdropFilter: 'blur(12px)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.15),0 4px 16px rgba(0,0,0,0.1)' }}
+            ><ChevronRight className="mr-2 w-4 h-4" />{contactPhone}</a>
           </div>
 
-          <div className="flex items-center justify-center space-x-2 drop-shadow-sm" style={{ color:'#bae6fd' }}><span>{contactEmail}</span></div>
+          <div className="flex items-center justify-center drop-shadow-sm" style={{ color:'#bae6fd', fontSize: '14px' }}><span>{contactEmail}</span></div>
         </div>
       </section>
 
       {/* ===== ALL ANIMATION KEYFRAMES ===== */}
       <style>{`
-        @keyframes statFadeIn {
-          0%{opacity:0;transform:translateY(28px) scale(.96)}
-          60%{opacity:1;transform:translateY(-4px) scale(1.01)}
-          100%{opacity:1;transform:translateY(0) scale(1)}
+        /* ===== Premium stat card animations (v133) ===== */
+        @keyframes statCardEnter {
+          0%{opacity:0;transform:translateY(40px) scale(0.92);filter:blur(4px)}
+          60%{opacity:1;transform:translateY(-6px) scale(1.02);filter:blur(0)}
+          100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
         }
-        @keyframes iconBounce {
-          0%,100%{transform:translateY(0) scale(1)}
-          25%{transform:translateY(-6px) scale(1.08)}
-          50%{transform:translateY(0) scale(1)}
-          75%{transform:translateY(-3px) scale(1.04)}
+        @keyframes floatParticle {
+          0%,100%{transform:translate(0,0) scale(1);opacity:0.2}
+          33%{transform:translate(6px,-10px) scale(1.3);opacity:0.35}
+          66%{transform:translate(-4px,6px) scale(0.8);opacity:0.15}
         }
-        @keyframes cornerFloat {
-          0%{transform:translate(0,0) scale(1);opacity:.05}
-          100%{transform:translate(-18px,14px) scale(1.15);opacity:.1}
+        @keyframes iconRingSpin { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
+        @keyframes iconPulse {
+          0%{box-shadow:0 0 0 0 var(--glow, rgba(59,130,246,0.25))}
+          50%{box-shadow:0 0 0 12px transparent}
+          100%{box-shadow:0 0 0 0 transparent}
+        }
+        @keyframes shimmer-bar {
+          0%{transform:translateX(-100%)} 100%{transform:translateX(200%)}
         }
         @keyframes about-intro-bg-pulse { 0%{opacity:.03;transform:scale(1)} 100%{opacity:.07;transform:scale(1.05)} }
         @keyframes about-bubble-active {
@@ -964,12 +1040,21 @@ export default function AboutPage() {
           100%{transform:translateY(-54px) scale(.3);opacity:0}
         }
         @keyframes sunrise-glow {
-          0%{box-shadow:0 0 80px rgba(250,204,21,0.5),0 0 160px rgba(234,179,8,0.3),0 15px 50px rgba(202,138,4,0.35);transform:scale(1)}
-          100%{box-shadow:0 0 120px rgba(250,204,21,0.7),0 0 240px rgba(234,179,8,0.45),0 25px 80px rgba(202,138,4,0.5);transform:scale(1.06)}
+          0%{box-shadow:0 0 50px rgba(250,204,21,0.4),0 0 100px rgba(234,179,8,0.2);transform:scale(1)}
+          100%{box-shadow:0 0 80px rgba(250,204,21,0.6),0 0 160px rgba(234,179,8,0.35);transform:scale(1.04)}
         }
-        @keyframes sun-ray-pulse {
-          0%{opacity:0.5;transform:rotate(var(--r,0)) translateY(-50%) scaleX(1)}
-          100%{opacity:0.9;transform:rotate(var(--r,0)) translateY(-50%) scaleX(1.2)}
+        @keyframes sunCorona {
+          0%{opacity:0.3;transform:scale(1)}
+          100%{opacity:0.6;transform:scale(1.08)}
+        }
+        @keyframes sunRaySoft {
+          0%{opacity:0.3;transform:rotate(var(--r,0)) translateY(-50%) scaleX(1)}
+          100%{opacity:0.7;transform:rotate(var(--r,0)) translateY(-50%) scaleX(1.15)}
+        }
+        @keyframes sandGrainFloat {
+          0%{transform:translateY(0) translateX(0);opacity:0.5}
+          50%{transform:translateY(-4px) translateX(2px);opacity:0.9}
+          100%{transform:translateY(0) translateX(-1px);opacity:0.5}
         }
         @keyframes bw1 { 0%{transform:translateX(0)} 100%{transform:translateX(-33.33%)} }
         @keyframes bw2 { 0%{transform:translateX(0)} 100%{transform:translateX(-33.33%)} }

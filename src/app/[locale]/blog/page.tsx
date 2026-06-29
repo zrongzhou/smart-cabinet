@@ -147,8 +147,14 @@ export default function BlogPage() {
             {blogs.map((post, index) => {
               const isPriority = index < 3;
               const detailHref = `/${locale}/blog/${post.slug}`;
-              const title = locale === 'zh' ? post.title.zh : locale === 'ar' ? post.title.ar : post.title.en;
-              const excerpt = locale === 'zh' ? post.excerpt?.zh : locale === 'ar' ? post.excerpt?.ar : post.excerpt?.en;
+              // Safe i18n access with fallback chain: current locale → en → raw string
+              const resolveI18n = (field: Record<string, any> | string | undefined, defaultKey: string = 'en'): string => {
+                if (!field) return '';
+                if (typeof field === 'string') return field;
+                return field[locale] || field[defaultKey] || field.en || field.zh || Object.values(field).find(v => typeof v === 'string' && v) || '';
+              };
+              const title = resolveI18n(post.title);
+              const excerpt = resolveI18n(post.excerpt);
               const category = post.category || 'General';
               const BlogIcon = getBlogIcon(category);
 
