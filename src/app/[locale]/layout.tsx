@@ -64,7 +64,7 @@ export default function LocaleLayout({ children, params: { locale } }: LocaleLay
           '@context': 'https://schema.org',
           '@type': 'WebSite',
           name: 'WS Tool Cabinet',
-          url: 'https://test.wstoolcabinet.com',
+
           description: 'Professional smart tool cabinet and vending machine manufacturer.',
         }} />
         <JsonLd data={{
@@ -72,7 +72,7 @@ export default function LocaleLayout({ children, params: { locale } }: LocaleLay
           '@type': 'Organization',
           name: 'Guangzhou Qiuyuan Technology Co., Ltd.',
           alternateName: '广州秋彦科技有限公司 / WS Tool Cabinet',
-          url: 'https://test.wstoolcabinet.com',
+
           contactPoint: {
             '@type': 'ContactPoint',
             telephone: '+86-156-2216-0659',

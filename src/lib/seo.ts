@@ -3,18 +3,45 @@
  *
  * Provides helpers for generating consistent SEO metadata across all pages,
  * including Open Graph, Twitter Cards, JSON-LD structured data, and multilingual support.
+ *
+ * NOTE: All absolute URLs are generated dynamically using getBaseUrl()
+ * which reads from request headers (in Server Components) or uses relative URLs (in Client Components).
  */
 
 import { Metadata } from 'next';
+import { headers } from 'next/headers';
+
+// ============================================================
+// Dynamic Base URL Helper
+// ============================================================
+
+/**
+ * Get the base URL dynamically from request headers (Server Component)
+ * Falls back to relative URL (empty string) for client components
+ */
+export function getBaseUrl(): string {
+  try {
+    const headersList = headers();
+    const host = headersList.get('host');
+    if (host) {
+      const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
+      return `${protocol}://${host}`;
+    }
+  } catch {
+    // headers() throws if called in Client Component or during build
+  }
+  // Fallback: use relative URL (empty string = same origin)
+  return '';
+}
 
 // ============================================================
 // Default Site Configuration (can be overridden by admin settings)
+// NOTE: url is no longer hardcoded - use getBaseUrl() for absolute URLs
 // ============================================================
 
 export const SITE_CONFIG = {
   name: 'WS Tool Cabinet',
   nameZh: '智能工具柜',
-  url: 'https://test.wstoolcabinet.com',
   locale: 'en_US',
   alternateLocale: 'zh_CN,ar_SA',
   defaultTitle: 'Smart Cabinet - Intelligent Tool Management Solutions',
@@ -68,6 +95,7 @@ interface PageSEOOptions {
 
 /**
  * Generate full Metadata object for a page
+ * Uses dynamic base URL from request headers (Server Component) or relative URL (Client Component)
  */
 export function generatePageMetadata(options: PageSEOOptions): Metadata {
   const {
@@ -84,10 +112,13 @@ export function generatePageMetadata(options: PageSEOOptions): Metadata {
     noindex = false,
   } = options;
 
+  // Dynamically get base URL (works in Server Components; returns '' in Client Components)
+  const baseUrl = getBaseUrl();
+
   const fullTitle = title ? `${title} | ${SITE_CONFIG.name}` : SITE_CONFIG.defaultTitle;
   const fullDescription = description || SITE_CONFIG.defaultDescription;
-  const ogImageUrl = image ? (image.startsWith('http') ? image : `${SITE_CONFIG.url}${image}`) : `${SITE_CONFIG.url}${SITE_CONFIG.ogImage}`;
-  const pageUrl = `${SITE_CONFIG.url}${path}`;
+  const ogImageUrl = image ? (image.startsWith('http') ? image : `${baseUrl}${image.startsWith('/') ? '' : '/'}${image}`) : `${baseUrl}${SITE_CONFIG.ogImage}`;
+  const pageUrl = path.startsWith('http') ? path : `${baseUrl}${path}`;
 
   return {
     title: fullTitle,
@@ -136,22 +167,25 @@ export function generatePageMetadata(options: PageSEOOptions): Metadata {
  * Generate WebSite schema
  */
 export function jsonLdWebsite() {
+  const baseUrl = getBaseUrl();
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: SITE_CONFIG.name,
-    url: SITE_CONFIG.url,
+    ...(baseUrl && { url: baseUrl }),
     description: SITE_CONFIG.defaultDescription,
     inLanguage: ['en', 'zh', 'ar'],
-    potentialAction: {
-      '@type': 'SearchAction',
-      target: `${SITE_CONFIG.url}/en/products?search={search_term_input}`,
-      'query-input': 'required name=search_term_input',
-    },
+    ...(baseUrl && {
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: `${baseUrl}/en/products?search={search_term_input}`,
+        'query-input': 'required name=search_term_input',
+      },
+    }),
     publisher: {
       '@type': 'Organization',
       name: 'Guangzhou Qiuyan Technology Co., Ltd.',
-      url: SITE_CONFIG.url,
+      ...(baseUrl && { url: baseUrl }),
     },
   };
 }
@@ -160,13 +194,14 @@ export function jsonLdWebsite() {
  * Generate Organization schema
  */
 export function jsonLdOrganization() {
+  const baseUrl = getBaseUrl();
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'Guangzhou Qiuyan Technology Co., Ltd.',
     alternateName: '广州秋彦科技有限公司 / WS Tool Cabinet',
-    url: SITE_CONFIG.url,
-    logo: `${SITE_CONFIG.url}/images/logo.png`,
+    ...(baseUrl && { url: baseUrl }),
+    ...(baseUrl && { logo: `${baseUrl}/images/logo.png` }),
     contactPoint: {
       '@type': 'ContactPoint',
       telephone: '+86-156-2216-0659',
@@ -182,10 +217,7 @@ export function jsonLdOrganization() {
       postalCode: '511494',
       addressCountry: 'CN',
     },
-    sameAs: [
-      'https://www.facebook.com/profile.php?id=61574959611170',
-      'https://x.com/merinzhou',
-    ],
+    sameAs: SITE_CONFIG.sameAs || [],
   };
 }
 
@@ -202,13 +234,15 @@ export function jsonLdProduct(product: {
   availability?: 'InStock' | 'OutOfStock';
   category?: string;
 }) {
+  const baseUrl = getBaseUrl();
+  const imageUrl = product.image.startsWith('http') ? product.image : `${baseUrl}${product.image.startsWith('/') ? '' : '/'}${product.image}`;
   return {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.name,
     description: product.description,
-    image: product.image.startsWith('http') ? product.image : `${SITE_CONFIG.url}${product.image}`,
-    url: `${SITE_CONFIG.url}/en/products/${product.slug}`,
+    image: imageUrl,
+    ...(baseUrl && { url: `${baseUrl}/en/products/${product.slug}` }),
     brand: {
       '@type': 'Brand',
       name: SITE_CONFIG.name,
@@ -253,6 +287,7 @@ export function jsonLdFAQ(faqs: { question: string; answer: string }[]) {
  * Generate BreadcrumbList schema
  */
 export function jsonLdBreadcrumb(items: { name: string; url: string }[]) {
+  const baseUrl = getBaseUrl();
   return {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -260,7 +295,7 @@ export function jsonLdBreadcrumb(items: { name: string; url: string }[]) {
       '@type': 'ListItem',
       position: index + 1,
       name: item.name,
-      item: item.url.startsWith('http') ? item.url : `${SITE_CONFIG.url}${item.url}`,
+      item: item.url.startsWith('http') ? item.url : `${baseUrl}${item.url}`,
     })),
   };
 }
@@ -277,13 +312,15 @@ export function jsonLdArticle(post: {
   dateModified?: string;
   author?: string;
 }) {
+  const baseUrl = getBaseUrl();
+  const imageUrl = post.image.startsWith('http') ? post.image : `${baseUrl}${post.image.startsWith('/') ? '' : '/'}${post.image}`;
   return {
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: post.title,
     description: post.description,
-    image: post.image.startsWith('http') ? post.image : `${SITE_CONFIG.url}${post.image}`,
-    url: `${SITE_CONFIG.url}/en/blog/${post.slug}`,
+    image: imageUrl,
+    ...(baseUrl && { url: `${baseUrl}/en/blog/${post.slug}` }),
     datePublished: post.datePublished,
     dateModified: post.dateModified || post.datePublished,
     author: {
@@ -293,10 +330,7 @@ export function jsonLdArticle(post: {
     publisher: {
       '@type': 'Organization',
       name: 'Guangzhou Qiuyan Technology Co., Ltd.',
-      logo: {
-        '@type': 'ImageObject',
-        url: `${SITE_CONFIG.url}/images/logo.png`,
-      },
+      ...(baseUrl && { logo: { '@type': 'ImageObject', url: `${baseUrl}/images/logo.png` } }),
     },
   };
 }
@@ -305,15 +339,16 @@ export function jsonLdArticle(post: {
  * Generate LocalBusiness schema (critical for local SEO)
  */
 export function jsonLdLocalBusiness() {
+  const baseUrl = getBaseUrl();
   return {
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
-    '@id': `${SITE_CONFIG.url}/#organization`,
+    ...(baseUrl && { '@id': `${baseUrl}/#organization` }),
     name: 'Guangzhou Qiuyan Technology Co., Ltd.',
     alternateName: ['广州秋彦科技有限公司', 'WS Tool Cabinet', 'Qiuyan Technology'],
     description: SITE_CONFIG.defaultDescription,
-    url: SITE_CONFIG.url,
-    logo: `${SITE_CONFIG.url}/images/about/company-logo.png`,
+    ...(baseUrl && { url: baseUrl }),
+    ...(baseUrl && { logo: `${baseUrl}/images/about/company-logo.png` }),
     telephone: '+86-156-2216-0659',
     email: 'sabrina@wstoolcabinet.com',
     address: {
@@ -363,16 +398,17 @@ export function jsonLdService(service: {
   url: string;
   category?: string;
 }) {
+  const baseUrl = getBaseUrl();
   return {
     '@context': 'https://schema.org',
     '@type': 'Service',
     name: service.name,
     description: service.description,
-    url: `${SITE_CONFIG.url}${service.url}`,
+    ...(baseUrl && { url: `${baseUrl}${service.url}` }),
     provider: {
       '@type': 'Organization',
       name: 'Guangzhou Qiuyan Technology Co., Ltd.',
-      url: SITE_CONFIG.url,
+      ...(baseUrl && { url: baseUrl }),
     },
     serviceType: service.category || 'Manufacturing Support Service',
     areaServed: { '@type': 'Country', name: 'Worldwide' },
@@ -423,29 +459,33 @@ export function generateI18nMetadata(locale: string, options: PageSEOOptions): M
  * Generate product-listing page JSON-LD (ItemList with Products)
  */
 export function jsonLdProductList(products: Array<{ name: string; image: string; slug: string; description: string; price?: number }>) {
+  const baseUrl = getBaseUrl();
   return {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
     numberOfItems: products.length,
-    itemListElement: products.map((p, idx) => ({
-      '@type': 'ListItem',
-      position: idx + 1,
-      item: {
-        '@type': 'Product',
-        name: p.name,
-        image: p.image.startsWith('http') ? p.image : `${SITE_CONFIG.url}${p.image}`,
-        url: `${SITE_CONFIG.url}/en/products/${p.slug}`,
-        description: p.description,
-        ...(p.price && {
-          offers: {
-            '@type': 'Offer',
-            price: p.price,
-            priceCurrency: 'CNY',
-            availability: 'https://schema.org/InStock',
-          },
-        }),
-      },
-    })),
+    itemListElement: products.map((p, idx) => {
+      const imageUrl = p.image.startsWith('http') ? p.image : `${baseUrl}${p.image.startsWith('/') ? '' : '/'}${p.image}`;
+      return {
+        '@type': 'ListItem',
+        position: idx + 1,
+        item: {
+          '@type': 'Product',
+          name: p.name,
+          image: imageUrl,
+          ...(baseUrl && { url: `${baseUrl}/en/products/${p.slug}` }),
+          description: p.description,
+          ...(p.price && {
+            offers: {
+              '@type': 'Offer',
+              price: p.price,
+              priceCurrency: 'CNY',
+              availability: 'https://schema.org/InStock',
+            },
+          }),
+        },
+      };
+    }),
   };
 }
 
@@ -459,20 +499,21 @@ export function jsonLdWebPage(page: {
   datePublished?: string;
   dateModified?: string;
 }) {
+  const baseUrl = getBaseUrl();
   return {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
     name: page.name,
     description: page.description,
-    url: `${SITE_CONFIG.url}${page.path}`,
-    isPartOf: { '@type': 'WebSite', name: SITE_CONFIG.name, url: SITE_CONFIG.url },
+    ...(baseUrl && { url: `${baseUrl}${page.path}` }),
+    ...(baseUrl && { isPartOf: { '@type': 'WebSite', name: SITE_CONFIG.name, url: baseUrl } }),
     about: { '@type': 'Thing', name: 'Smart Tool Cabinet Manufacturing' },
     ...(page.datePublished && { datePublished: page.datePublished }),
     ...(page.dateModified && { dateModified: page.dateModified }),
     publisher: {
       '@type': 'Organization',
       name: 'Guangzhou Qiuyan Technology Co., Ltd.',
-      logo: { '@type': 'ImageObject', url: `${SITE_CONFIG.url}/images/about/company-logo.png` },
+      ...(baseUrl && { logo: { '@type': 'ImageObject', url: `${baseUrl}/images/about/company-logo.png` } }),
     },
   };
 }

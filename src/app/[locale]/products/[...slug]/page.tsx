@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { headers } from 'next/headers';
 import ProductDetailClient from '@/components/products/ProductDetailClient';
 import { Product } from '@/lib/api';
 import { prisma } from '@/lib/prisma';
@@ -54,20 +55,31 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const description = productAny.seoDescription?.[locale] || translate(product.description, locale) || '';
     const image = product.images?.[0] || '';
 
+    // Dynamically determine the base URL from the request headers
+    // This ensures og:image and other absolute URLs use the correct domain
+    const headersList = await headers();
+    const host = headersList.get('host') || 'www.wstoolcabinet.com';
+    const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
+    const baseUrl = `${protocol}://${host}`;
+
+    // Construct absolute URL for og:image
+    const ogImageUrl = image ? (image.startsWith('http') ? image : `${baseUrl}${image.startsWith('/') ? '' : '/'}${image}`) : '';
+
     return {
       title,
       description,
       openGraph: {
         title,
         description,
-        images: image ? [{ url: image }] : [],
+        url: `${baseUrl}/${locale}/products/${slug}`,
+        images: ogImageUrl ? [{ url: ogImageUrl }] : [],
         type: 'website',
       },
       twitter: {
         card: 'summary_large_image',
         title,
         description,
-        images: image ? [image] : [],
+        images: ogImageUrl ? [ogImageUrl] : [],
       },
     };
   } catch (error) {
