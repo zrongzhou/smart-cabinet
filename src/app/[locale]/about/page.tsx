@@ -1968,7 +1968,7 @@ export default function AboutPage() {
         @keyframes v141-cloudFloatB {
           0%,100%{transform:translate(0,0) scale(1); opacity:1}
           33%{transform:translate(-6px,2px) scale(1.03); opacity:0.88}
-          66%{transform:translate(7px,-3px) scale(0.98; opacity:0.9)}
+          66%{transform:translate(7px,-3px) scale(0.98); opacity:0.9}
         }
         @keyframes v141-cloudFloatC {
           0%,100%{transform:translate(0,0); opacity:0.8}
