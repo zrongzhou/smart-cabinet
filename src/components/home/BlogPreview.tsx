@@ -139,6 +139,12 @@ export default function BlogPreview({ locale: propLocale }: BlogPreviewProps) {
     tags: blog.tags || [],
   }));
 
+  // Helper: get localized string from {en,zh,ar} object (fixes Arabic always showing English)
+  const localized = (obj: Record<string, string> | undefined, fallback = ''): string => {
+    if (!obj || typeof obj !== 'object') return fallback;
+    return obj[currentLocale] || obj.en || fallback;
+  };
+
   return (
     <section className="py-24 px-6 relative overflow-hidden" style={{
       background: 'linear-gradient(180deg, #f8fafc 0%, #eff6ff 50%, #f0f4ff 100%)',
@@ -179,7 +185,7 @@ export default function BlogPreview({ locale: propLocale }: BlogPreviewProps) {
                 <div className="relative h-48 overflow-hidden">
                   <img
                     src={post.image}
-                    alt={currentLocale === 'zh' ? post.title.zh : post.title.en}
+                    alt={localized(post.title, 'Blog post')}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     onError={(e) => {
                       const target = e.target as HTMLElement;
@@ -195,7 +201,7 @@ export default function BlogPreview({ locale: propLocale }: BlogPreviewProps) {
                     style={{ display: 'none', background: 'linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)' }}
                   >
                     <span className="text-white font-bold text-lg text-center px-4">
-                      {currentLocale === 'zh' ? post.title.zh : post.title.en}
+                      {localized(post.title, 'Blog')}
                     </span>
                   </div>
                   {/* Image overlay for glass integration */}
@@ -211,7 +217,7 @@ export default function BlogPreview({ locale: propLocale }: BlogPreviewProps) {
                     <div className="absolute bottom-4 left-4 w-12 h-12 border-2 border-white/30 rounded-lg rotate-12" />
                   </div>
                   <span className="relative z-10 text-white font-bold text-lg text-center px-4">
-                    {currentLocale === 'zh' ? post.title.zh : post.title.en}
+                    {localized(post.title, 'Article')}
                   </span>
                 </div>
               )}
@@ -235,19 +241,19 @@ export default function BlogPreview({ locale: propLocale }: BlogPreviewProps) {
 
                 {/* Title */}
                 <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-blue-700 transition-colors duration-300 leading-tight">
-                  {currentLocale === 'zh' ? post.title.zh : post.title.en}
+                  {localized(post.title, 'Untitled')}
                 </h3>
 
                 {/* Summary */}
                 <p className="text-sm text-gray-600 mb-4 line-clamp-3 leading-relaxed">
-                  {currentLocale === 'zh' ? post.summary.zh : post.summary.en}
+                  {localized(post.summary, '')}
                 </p>
 
                 {/* Meta info */}
                 <div className="flex items-center space-x-4 mb-4 text-sm text-gray-500">
                   <div className="flex items-center space-x-1.5">
                     <CalendarIcon className="w-4 h-4 text-blue-400" />
-                    <span>{new Date(post.date).toLocaleDateString(currentLocale === 'zh' ? 'zh-CN' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                    <span>{new Date(post.date).toLocaleDateString(currentLocale === 'zh' ? 'zh-CN' : currentLocale === 'ar' ? 'ar-EG' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
                   </div>
                   <div className="flex items-center space-x-1.5">
                     <UserIcon className="w-4 h-4 text-blue-400" />

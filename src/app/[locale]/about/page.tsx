@@ -163,6 +163,75 @@ function ValuesBookFlip({ values, t, locale }: { values: ValueItem[]; t: (key: s
   const [currentPage, setCurrentPage] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
+  // === v140: Sci-fi text scramble/assemble animation ===
+  const [scrambleTitle, setScrambleTitle] = useState('');
+  const [scrambleDesc, setScrambleDesc] = useState('');
+  const scrambleRef = useRef({ frame: 0, animId: 0 });
+  // Scramble charset — mix of tech-looking glyphs
+  const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%&*+=<>[]{}|/\\~';
+
+  const runScramble = (targetTitle: string, targetDesc: string) => {
+    // Cancel previous
+    if (scrambleRef.current.animId) cancelAnimationFrame(scrambleRef.current.animId);
+    const maxLen = Math.max(targetTitle.length, targetDesc.length);
+    let frame = 0;
+    const totalFrames = 35; // ~0.6s at 60fps
+
+    const tick = () => {
+      frame++;
+      const progress = frame / totalFrames;
+
+      // Title: resolve characters from left to right with easing
+      let newTitle = '';
+      for (let i = 0; i < targetTitle.length; i++) {
+        const charProgress = Math.min(1, Math.max(0, (progress * 1.4 - (i / targetTitle.length) * 0.5)));
+        if (charProgress >= 1 || Math.random() > (1 - charProgress) * 1.5) {
+          newTitle += targetTitle[i];
+        } else {
+          newTitle += CHARS[Math.floor(Math.random() * CHARS.length)];
+        }
+      }
+
+      // Description: slightly delayed, faster resolve
+      let newDesc = '';
+      for (let i = 0; i < targetDesc.length; i++) {
+        const charProgress = Math.min(1, Math.max(0, (progress * 1.2 - (i / targetDesc.length) * 0.3)));
+        if (charProgress >= 0.95 || Math.random() > (1 - charProgress) * 1.8) {
+          newDesc += targetDesc[i];
+        } else {
+          newDesc += CHARS[Math.floor(Math.random() * CHARS.length)];
+        }
+      }
+
+      setScrambleTitle(newTitle);
+      setScrambleDesc(newDesc);
+
+      if (frame < totalFrames) {
+        scrambleRef.current.animId = requestAnimationFrame(tick);
+      } else {
+        setScrambleTitle(targetTitle);
+        setScrambleDesc(targetDesc);
+      }
+    };
+    scrambleRef.current.animId = requestAnimationFrame(tick);
+  };
+
+  // Trigger scramble on page change
+  useEffect(() => {
+    const current = values[currentPage];
+    if (!current) return;
+    const titleText = t(current.titleKey);
+    const descText = t(current.descriptionKey);
+    // Immediate show on first render, scramble on transition
+    if (scrambleTitle === '') {
+      setScrambleTitle(titleText);
+      setScrambleDesc(descText);
+    } else {
+      runScramble(titleText, descText);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage]);
+
   // Auto-transition every 5 seconds
   useEffect(() => {
     const timer = setInterval(() => {
@@ -421,7 +490,7 @@ function ValuesBookFlip({ values, t, locale }: { values: ValueItem[]; t: (key: s
               </div>
             </div>
 
-            {/* Title — premium glowing typography */}
+            {/* Title — premium glowing typography with v140 scramble animation */}
             <h3 className="text-2xl sm:text-3xl font-black mb-4 leading-tight tracking-wide"
               style={{
                 color: '#ffffff',
@@ -431,16 +500,22 @@ function ValuesBookFlip({ values, t, locale }: { values: ValueItem[]; t: (key: s
                   0 0 60px ${ht.accent}20
                 `,
                 letterSpacing: '0.02em',
+                minHeight: '2.8rem',
+                fontFamily: "'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif",
               }}
             >
-              {t(current.titleKey)}
+              {scrambleTitle || t(current.titleKey)}
             </h3>
 
-            {/* Description */}
+            {/* Description — v140 scramble effect */}
             <p className="text-base sm:text-lg leading-relaxed max-w-lg mx-auto mb-6"
-              style={{ color: 'rgba(210,225,255,0.85)' }}
+              style={{
+                color: 'rgba(210,225,255,0.85)',
+                minHeight: '4.5rem',
+                fontFamily: "'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif",
+              }}
             >
-              {t(current.descriptionKey)}
+              {scrambleDesc || t(current.descriptionKey)}
             </p>
 
             {/* Animated data visualization bars */}
@@ -1247,47 +1322,61 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ===== SUNRISE BEACH CTA v135 — 真实圆形太阳 + 海浪 + 沙滩日出 ===== */}
+      {/* ===== SUNRISE BEACH CTA v140 — 清晨日出：亮粉天际 + 金色阳光 + 活力海洋 ===== */}
       <section
         className="py-20 px-4 sm:px-6 lg:px-8 text-white relative overflow-hidden"
         style={{
-          background: 'linear-gradient(180deg, #0a0e1a 0%, #1a1035 8%, #2d1b4e 15%, #5c3d6e 22%, #a85c52 32%, #e87a50 42%, #f4a261 50%, #fbbf58 58%, #fcd34d 66%, #fde68a 76%, #fef3c7 88%, #fffbeb 96%, #fffaeb 100%)',
+          /* v140: Sunrise palette — top=soft dawn pink/cyan → mid=warm peach → bottom=bright gold horizon */
+          background: 'linear-gradient(180deg, #e8f4fc 0%, #c9e4f6 6%, #b8d4ed 12%, #f2dbe3 18%, #fad4cf 25%, #ffcbb8 32%, #ffb49a 40%, #ffa06a 48%, #ff8c47 56%, #ff7a30 64%, #f59e0b 74%, #fbbf24 82%, #fcd34d 90%, #fde68a 96%, #fef9c3 100%)',
         }}
       >
-        {/* === Atmospheric cloud layer near horizon (v138) === */}
-        <div className="absolute top-[6%] left-[3%] sm:left-[5%] pointer-events-none">
-          {/* Outer glow layers */}
-          <div className="absolute -inset-[55px] rounded-full" style={{
-            background: 'radial-gradient(circle, rgba(253,224,71,0.22) 0%, rgba(255,180,60,0.10) 35%, transparent 70%)',
+        {/* === v140: SUN near horizon — 日出太阳贴近海平面，更亮更温暖 === */}
+        <div className="absolute bottom-[38%] left-[3%] sm:left-[5%] pointer-events-none">
+          {/* Outer glow layers — brighter for sunrise (v140) */}
+          <div className="absolute -inset-[70px] rounded-full" style={{
+            background: 'radial-gradient(circle, rgba(255,248,220,0.35) 0%, rgba(251,191,36,0.18) 30%, rgba(251,146,60,0.08) 55%, transparent 75%)',
             animation: 'v135-sunGlow 4s ease-in-out infinite alternate',
           }} />
-          {/* Sun rays — radiating lines */}
-          <div className="absolute w-40 h-40 sm:w-52 sm:h-52 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-            {[...Array(12)].map((_, i) => (
-              <div key={i} className="absolute top-1/2 left-1/2 origin-left" style={{
-                width: `${28 + i * 3}px`,
-                height: `${2 + (i % 3) * 0.5}px`,
-                background: `linear-gradient(90deg, rgba(255,248,220,0.5) 0%, rgba(251,191,36,0.15) 40%, transparent 100%)`,
-                transform: `rotate(${i * 30}deg) translateY(-50%)`,
-                borderRadius: '2px',
-                animation: `v135-rayPulse ${2.5 + i * 0.15}s ease-in-out infinite alternate`,
-                animationDelay: `${i * 0.12}s`,
-              }} />
-            ))}
+          {/* Dawn light rays — 14 rays, upward ones brighter for sunrise feel */}
+          <div className="absolute w-44 h-44 sm:w-56 sm:h-56 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+            {[...Array(14)].map((_, i) => {
+              const angle = (i * 360 / 14);
+              const isUpward = angle > 50 && angle < 130;
+              return (
+                <div key={i} className="absolute top-1/2 left-1/2 origin-left" style={{
+                  width: `${30 + i * 4}px`,
+                  height: `${2 + (i % 3) * 0.6}px`,
+                  background: `linear-gradient(90deg,
+                    ${isUpward ? 'rgba(255,250,220,0.6)' : 'rgba(255,248,220,0.3)'} 0%,
+                    rgba(251,191,36,${isUpward ? '0.2' : '0.1'}) 40%,
+                    transparent 100%)`,
+                  transform: `rotate(${angle}deg) translateY(-50%)`,
+                  borderRadius: '2px',
+                  animation: `v135-rayPulse ${2 + i * 0.12}s ease-in-out infinite alternate`,
+                  animationDelay: `${i * 0.1}s`,
+                }} />
+              );
+            })}
           </div>
-          {/* Main sun body — perfect circle */}
-          <div className="relative w-36 h-36 sm:w-48 sm:h-48 rounded-full" style={{
-            background: 'radial-gradient(circle at 45% 42%, #ffffff 0%, #fffbeb 8%, #fef08a 22%, #fde047 38%, #facc15 55%, #f59e0b 72%, #d97706 90%, #b45309 100%)',
-            boxShadow: '0 0 60px rgba(253,224,71,0.6), 0 0 120px rgba(245,158,11,0.35), 0 0 200px rgba(217,119,6,0.15), inset 3px 3px 10px rgba(255,255,255,0.4), inset -3px -2px 8px rgba(180,83,9,0.25)',
-            animation: 'v135-sunBreath 5s ease-in-out infinite alternate',
+          {/* Main sun body — v40: larger, brighter center, stronger glow */}
+          <div className="relative w-40 h-40 sm:w-52 sm:h-52 rounded-full" style={{
+            background: 'radial-gradient(circle at 42% 40%, #ffffff 0%, #fffbeb 6%, #fef9c3 16%, #fde047 32%, #facc15 50%, #f59e0b 68%, #d97706 85%, #b45309 100%)',
+            boxShadow: `
+              0 0 80px rgba(253,224,71,0.7),
+              0 0 160px rgba(245,158,11,0.45),
+              0 0 260px rgba(217,119,6,0.18),
+              inset 4px 4px 14px rgba(255,255,255,0.5),
+              inset -4px -3px 10px rgba(180,83,9,0.2)
+            `,
+            animation: 'v138-sunBreath 5s ease-in-out infinite alternate',
           }}>
-            {/* Inner bright spot */}
+            {/* Inner bright core */}
             <div className="absolute rounded-full" style={{
-              width: '35%', height: '30%', top: '22%', left: '20%',
-              background: 'radial-gradient(ellipse, rgba(255,255,250,0.95) 0%, rgba(255,255,240,0.4) 50%, transparent 75%)',
+              width: '38%', height: '32%', top: '20%', left: '19%',
+              background: 'radial-gradient(ellipse, rgba(255,255,252,0.98) 0%, rgba(255,255,245,0.5) 45%, transparent 78%)',
             }} />
-            {/* Surface detail — subtle sunspots */}
-            <div className="absolute rounded-full opacity-15" style={{ width: '12%', height: '10%', bottom: '28%', right: '22%', background: 'rgba(180,83,9,0.4)' }} />
+            {/* Surface sunspot */}
+            <div className="absolute rounded-full opacity-12" style={{ width: '13%', height: '10%', bottom: '26%', right: '20%', background: 'rgba(180,83,9,0.35)' }} />
           </div>
         </div>
 
@@ -1456,13 +1545,16 @@ export default function AboutPage() {
           ))}
         </div>
 
-        {/* Content — centered, elevated above waves */}
+        {/* Content — centered, elevated above waves (v140: dark text for bright sky) */}
         <div className="max-w-4xl mx-auto text-center relative z-10 pt-4 pb-36">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-5 text-white drop-shadow-lg"
-            style={{ textShadow: '0 2px 12px rgba(0,0,0,0.25), 0 0 40px rgba(251,191,36,0.12)' }}
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-5 drop-shadow-lg"
+            style={{
+              color: '#1e293b',
+              textShadow: '0 2px 8px rgba(255,255,255,0.6), 0 0 30px rgba(251,191,36,0.15)',
+            }}
           >{t('about.cta.title')}</h2>
           <p className="text-lg sm:text-xl mb-10 max-w-2xl mx-auto leading-relaxed"
-            style={{ color: '#e0f2fe', textShadow: '0 1px 6px rgba(0,0,0,0.15)' }}
+            style={{ color: '#334155', textShadow: '0 1px 4px rgba(255,255,255,0.4)' }}
           >{t('about.cta.subtitle')}</p>
 
           {/* Buttons — sunrise themed with enhanced glow (v139) */}
