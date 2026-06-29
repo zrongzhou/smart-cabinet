@@ -46,14 +46,14 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
             (which is an object like <code>{'{ zh, en, ar }'}</code>) was rendered directly instead of accessing its language property.
           </p>
 
-          <div style={{ marginTop: 20, padding: 15, background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 8 }}>
-            <strong style={{ color: '#dc2626' }}>Error:</strong>
-            <pre style={{ marginTop: 8, fontSize: 13, color: '#991b1b', whiteSpace: 'pre-wrap', overflow: 'auto' }}>{errMsg}</pre>
+          <div className="mt-5 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <strong className="text-red-600">Error:</strong>
+            <pre className="mt-2 text-sm text-red-800 whitespace-pre-wrap overflow-auto">{errMsg}</pre>
           </div>
 
           {objectKeys && (
-            <div style={{ marginTop: 15, padding: 15, background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 8 }}>
-              <strong style={{ color: '#1d4ed8' }}>🔍 Offending object keys:</strong>
+            <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <strong className="text-blue-600">🔍 Offending object keys:</strong>
               <code style={{ display: 'block', marginTop: 8, padding: 8, background: '#fff', borderRadius: 4, fontSize: 13 }}>{objectKeys}</code>
               <p style={{ fontSize: 12, color: '#666', marginTop: 8 }}>
                 These keys tell us what kind of object was incorrectly rendered. Search for code that renders this object without accessing a specific property.

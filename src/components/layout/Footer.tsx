@@ -5,6 +5,42 @@ import { Facebook, Twitter, Linkedin, Mail, Phone, MapPin, Globe, ArrowRight } f
 import { useLocale } from '@/lib/i18n';
 import { fetchUnifiedSettings } from '@/data/unified-data';
 
+// Firefly component - separated to avoid hydration mismatch
+function Firefly({ index }: { index: number }) {
+  const [style, setStyle] = useState<React.CSSProperties | null>(null);
+
+  useEffect(() => {
+    // Generate random values ONLY on client side (after hydration)
+    const fireflyColors = [
+      { core: '#fef08a', glow: 'rgba(254,240,138,0.7)', outer: 'rgba(253,224,71,0.25)' },
+      { core: '#d9f99d', glow: 'rgba(217,249,157,0.65)', outer: 'rgba(163,230,53,0.2)' },
+      { core: '#a5f3fc', glow: 'rgba(165,243,252,0.55)', outer: 'rgba(34,211,238,0.18)' },
+    ];
+    const fc = fireflyColors[index % 3];
+    const fSize = 3 + (index % 4) * 1.5;
+    
+    setStyle({
+      left: `${2 + Math.random() * 95}%`,
+      bottom: `${Math.random() * 70}%`,
+      width: `${fSize}px`,
+      height: `${fSize}px`,
+      background: `radial-gradient(circle, ${fc.core} 0%, ${fc.glow} 40%, transparent 75%)`,
+      boxShadow: `0 0 ${fSize * 2}px ${fc.glow}, 0 0 ${fSize * 4}px ${fc.outer}`,
+      animation: `firefly-drift ${6 + Math.random() * 10}s ease-in-out infinite, firefly-flicker ${1.5 + Math.random() * 2}s ease-in-out infinite`,
+      animationDelay: `${Math.random() * 10}s`,
+    });
+  }, [index]);
+
+  if (!style) return null;
+
+  return (
+    <span
+      className="absolute rounded-full"
+      style={style}
+    />
+  );
+}
+
 export default function Footer() {
   const currentYear = new Date().getFullYear();
   const { locale, t } = useLocale();
@@ -67,31 +103,9 @@ export default function Footer() {
 
       {/* Fireflies — glowing warm particles with random drift & flicker (v135) */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(22)].map((_, i) => {
-          const fireflyColors = [
-            { core: '#fef08a', glow: 'rgba(254,240,138,0.7)', outer: 'rgba(253,224,71,0.25)' },  // warm yellow
-            { core: '#d9f99d', glow: 'rgba(217,249,157,0.65)', outer: 'rgba(163,230,53,0.2)' },   // lime green
-            { core: '#a5f3fc', glow: 'rgba(165,243,252,0.55)', outer: 'rgba(34,211,238,0.18)' },    // cyan
-          ];
-          const fc = fireflyColors[i % 3];
-          const fSize = 3 + (i % 4) * 1.5; // 3-8px
-          return (
-            <span
-              key={i}
-              className="absolute rounded-full"
-              style={{
-                left: `${2 + Math.random() * 95}%`,
-                bottom: `${Math.random() * 70}%`,
-                width: `${fSize}px`,
-                height: `${fSize}px`,
-                background: `radial-gradient(circle, ${fc.core} 0%, ${fc.glow} 40%, transparent 75%)`,
-                boxShadow: `0 0 ${fSize * 2}px ${fc.glow}, 0 0 ${fSize * 4}px ${fc.outer}`,
-                animation: `firefly-drift ${6 + Math.random() * 10}s ease-in-out infinite, firefly-flicker ${1.5 + Math.random() * 2}s ease-in-out infinite`,
-                animationDelay: `${Math.random() * 10}s`,
-              }}
-            />
-          );
-        })}
+        {[...Array(22)].map((_, i) => (
+          <Firefly key={i} index={i} />
+        ))}
       </div>
 
       {/* Top accent line — animated gradient sweep */}
@@ -293,10 +307,10 @@ export default function Footer() {
         @keyframes firefly-drift {
           0%   { transform: translate(0, 0); opacity: 0; }
           10%  { opacity: 0.9; }
-          30%  { transform: translate(${Math.random() > 0.5 ? '' : '-'}${20 + Math.random() * 25}px, ${-40 - Math.random() * 50}px); opacity: 0.6; }
-          55%  { transform: translate(${Math.random() > 0.5 ? '' : '-'}${10 + Math.random() * 15}px, ${-80 - Math.random() * 60}px); opacity: 0.85; }
+          30%  { transform: translate(20px, -40px); opacity: 0.6; }
+          55%  { transform: translate(10px, -80px); opacity: 0.85; }
           80%  { opacity: 0.4; }
-          100% { transform: translate(${-15 + Math.random() * 30}px, ${-140 - Math.random() * 50}px); opacity: 0; }
+          100% { transform: translate(-15px, -140px); opacity: 0; }
         }
         @keyframes firefly-flicker {
           0%,100% { opacity: 0.7; box-shadow: 0 0 8px currentColor; }
