@@ -8,7 +8,6 @@ import {
   MailOpen,
   Trash2,
   Search,
-  Filter,
   Calendar,
   Clock,
   CheckCircle,
@@ -23,7 +22,6 @@ import {
   Phone,
   Globe,
 } from 'lucide-react';
-import { useLocale } from '@/lib/i18n';
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
@@ -49,9 +47,6 @@ interface MessageStats {
 }
 
 export default function AdminContactMessagesPage() {
-  const { locale, t } = useLocale();
-  const isRTL = locale === 'ar';
-
   // State
   const [messages, setMessages] = useState<ContactMessage[]>([]);
   const [stats, setStats] = useState<MessageStats>({ total: 0, unread: 0, today: 0, thisWeek: 0 });
@@ -230,33 +225,17 @@ export default function AdminContactMessagesPage() {
     }
   };
 
-  // Subject translations
-  const subjectLabels: Record<string, Record<string, string>> = {
-    en: {
-      general: 'General Inquiry',
-      sales: 'Sales Inquiry',
-      support: 'Technical Support',
-      customization: 'Customization Request',
-      partnership: 'Business Partnership',
-    },
-    zh: {
-      general: '一般咨询',
-      sales: '销售咨询',
-      support: '技术支持',
-      customization: '定制需求',
-      partnership: '商务合作',
-    },
-    ar: {
-      general: 'استفسار عام',
-      sales: 'استفسار مبيعات',
-      support: 'دعم فني',
-      customization: 'طلب تخصيص',
-      partnership: 'شراكة تجارية',
-    },
+  // Subject label mapping (Chinese only for admin interface)
+  const subjectLabels: Record<string, string> = {
+    general: '一般咨询',
+    sales: '销售咨询',
+    support: '技术支持',
+    customization: '定制需求',
+    partnership: '商务合作',
   };
 
   const getSubjectLabel = (subject: string) => {
-    return subjectLabels[locale]?.[subject] || subject;
+    return subjectLabels[subject] || subject;
   };
 
   // Format date
@@ -268,12 +247,12 @@ export default function AdminContactMessagesPage() {
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
 
-    if (diffMins < 1) return locale === 'zh' ? '刚刚' : 'Just now';
-    if (diffMins < 60) return `${diffMins} ${locale === 'zh' ? '分钟前' : 'minutes ago'}`;
-    if (diffHours < 24) return `${diffHours} ${locale === 'zh' ? '小时前' : 'hours ago'}`;
-    if (diffDays < 7) return `${diffDays} ${locale === 'zh' ? '天前' : 'days ago'}`;
+    if (diffMins < 1) return '刚刚';
+    if (diffMins < 60) return `${diffMins} 分钟前`;
+    if (diffHours < 24) return `${diffHours} 小时前`;
+    if (diffDays < 7) return `${diffDays} 天前`;
 
-    return date.toLocaleDateString(locale === 'zh' ? 'zh-CN' : 'en-US', {
+    return date.toLocaleDateString('zh-CN', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -302,73 +281,75 @@ export default function AdminContactMessagesPage() {
       )}
 
       {/* Page Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <Link href="/admin" className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-2">
+          <Link href="/admin" className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-2 text-sm">
             <ArrowLeft className="w-4 h-4 mr-1" />
-            {locale === 'zh' ? '返回仪表盘' : 'Back to Dashboard'}
+            返回仪表盘
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900">
-            {locale === 'zh' ? '联系消息管理' : 'Contact Messages'}
+          <h1 className="text-2xl font-bold text-gray-900">
+            联系消息管理
           </h1>
-          <p className="text-gray-600 mt-1">
-            {locale === 'zh' ? '查看和管理客户联系消息' : 'View and manage customer contact messages'}
+          <p className="text-gray-600 mt-1 text-sm">
+            查看和管理客户联系消息
           </p>
         </div>
       </div>
 
-      {/* Statistics Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+      {/* Statistics Cards - Compact Design */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {[
           {
-            label: locale === 'zh' ? '总消息数' : 'Total Messages',
+            label: '总消息数',
             value: stats.total,
             icon: MessageSquare,
-            color: 'blue',
             bgGradient: 'from-blue-500 to-blue-600',
             bgLight: 'bg-blue-50',
             textColor: 'text-blue-600',
+            borderColor: 'border-blue-100',
           },
           {
-            label: locale === 'zh' ? '未读消息' : 'Unread Messages',
+            label: '未读消息',
             value: stats.unread,
             icon: Mail,
-            color: 'orange',
             bgGradient: 'from-orange-500 to-orange-600',
             bgLight: 'bg-orange-50',
             textColor: 'text-orange-600',
+            borderColor: 'border-orange-100',
           },
           {
-            label: locale === 'zh' ? '今日新增' : "Today's Messages",
+            label: '今日新增',
             value: stats.today,
             icon: Calendar,
-            color: 'green',
             bgGradient: 'from-green-500 to-green-600',
             bgLight: 'bg-green-50',
             textColor: 'text-green-600',
+            borderColor: 'border-green-100',
           },
           {
-            label: locale === 'zh' ? '本周新增' : "This Week's Messages",
+            label: '本周新增',
             value: stats.thisWeek,
             icon: Clock,
-            color: 'purple',
             bgGradient: 'from-purple-500 to-purple-600',
             bgLight: 'bg-purple-50',
             textColor: 'text-purple-600',
+            borderColor: 'border-purple-100',
           },
         ].map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <div key={index} className="admin-card hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
-              <div className="flex items-center justify-between mb-4">
-                <div className={`w-12 h-12 ${stat.bgLight} rounded-xl flex items-center justify-center`}>
-                  <Icon className={`w-6 h-6 ${stat.textColor}`} />
+            <div key={index} className={`bg-white rounded-xl p-4 shadow-sm border ${stat.borderColor} hover:shadow-md transition-shadow duration-200`}>
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className={`text-2xl font-bold bg-gradient-to-r ${stat.bgGradient} bg-clip-text text-transparent`}>
+                    {stat.value}
+                  </div>
+                  <div className="text-xs text-gray-500 mt-1">{stat.label}</div>
+                </div>
+                <div className={`w-10 h-10 ${stat.bgLight} rounded-lg flex items-center justify-center flex-shrink-0`}>
+                  <Icon className={`w-5 h-5 ${stat.textColor}`} />
                 </div>
               </div>
-              <div className={`text-4xl font-bold mb-1 bg-gradient-to-r ${stat.bgGradient} bg-clip-text text-transparent`}>
-                {stat.value}
-              </div>
-              <div className="text-sm text-gray-500">{stat.label}</div>
             </div>
           );
         })}
@@ -380,9 +361,9 @@ export default function AdminContactMessagesPage() {
           {/* Filter Tabs */}
           <div className="flex items-center space-x-1 bg-gray-100 p-1 rounded-xl">
             {([
-              { key: 'all', label: locale === 'zh' ? '全部' : 'All', count: stats.total },
-              { key: 'unread', label: locale === 'zh' ? '未读' : 'Unread', count: stats.unread },
-              { key: 'read', label: locale === 'zh' ? '已读' : 'Read', count: stats.total - stats.unread },
+              { key: 'all', label: '全部', count: stats.total },
+              { key: 'unread', label: '未读', count: stats.unread },
+              { key: 'read', label: '已读', count: stats.total - stats.unread },
             ] as const).map((tab) => (
               <button
                 key={tab.key}
@@ -413,7 +394,7 @@ export default function AdminContactMessagesPage() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={locale === 'zh' ? '搜索姓名、邮箱或消息内容...' : 'Search by name, email, or message...'}
+                placeholder="搜索姓名、邮箱或消息内容..."
                 className="admin-form-input w-full pl-10"
               />
             </div>
@@ -424,63 +405,59 @@ export default function AdminContactMessagesPage() {
         {selectedIds.length > 0 && (
           <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-200">
             <span className="text-sm text-gray-600">
-              {locale === 'zh' ? `已选择 ${selectedIds.length} 条` : `${selectedIds.length} selected`}
+              已选择 {selectedIds.length} 条
             </span>
             <button
               onClick={() => handleBulkAction('mark-read')}
               className="btn-secondary text-sm"
             >
               <CheckCircle className="w-4 h-4 mr-1" />
-              {locale === 'zh' ? '标记已读' : 'Mark Read'}
+              标记已读
             </button>
             <button
               onClick={() => handleBulkAction('mark-unread')}
               className="btn-secondary text-sm"
             >
               <Mail className="w-4 h-4 mr-1" />
-              {locale === 'zh' ? '标记未读' : 'Mark Unread'}
+              标记未读
             </button>
             <button
               onClick={() => handleBulkAction('delete')}
               className="btn-danger text-sm"
             >
               <Trash2 className="w-4 h-4 mr-1" />
-              {locale === 'zh' ? '删除' : 'Delete'}
+              删除
             </button>
           </div>
         )}
       </div>
 
-      {/* Messages Table */}
+      {/* Messages Table with Horizontal Scroll */}
       <div className="admin-card overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center py-12">
             <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
-            <span className="ml-3 text-gray-600">
-              {locale === 'zh' ? '加载中...' : 'Loading...'}
-            </span>
+            <span className="ml-3 text-gray-600">加载中...</span>
           </div>
         ) : messages.length === 0 ? (
           <div className="text-center py-12">
             <MessageSquare className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500 text-lg">
-              {locale === 'zh' ? '暂无消息' : 'No messages found'}
-            </p>
+            <p className="text-gray-500 text-lg">暂无消息</p>
             <p className="text-gray-400 text-sm mt-2">
               {searchQuery
-                ? locale === 'zh' ? '尝试调整搜索条件' : 'Try adjusting your search'
-                : locale === 'zh' ? '当客户提交联系表单时，消息将显示在这里' : 'Messages will appear here when customers submit the contact form'
+                ? '尝试调整搜索条件'
+                : '当客户提交联系表单时，消息将显示在这里'
               }
             </p>
           </div>
         ) : (
           <>
-            {/* Desktop Table */}
+            {/* Desktop Table with Horizontal Scroll */}
             <div className="hidden md:block overflow-x-auto">
-              <table className="w-full">
+              <table className="w-full min-w-[900px]">
                 <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="text-left p-4">
+                  <tr className="border-b border-gray-200 bg-gray-50">
+                    <th className="text-left p-3 w-12">
                       <input
                         type="checkbox"
                         checked={selectAll}
@@ -488,26 +465,26 @@ export default function AdminContactMessagesPage() {
                         className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                       />
                     </th>
-                    <th className="text-left p-4 text-sm font-semibold text-gray-700">
-                      {locale === 'zh' ? '姓名' : 'Name'}
+                    <th className="text-left p-3 text-sm font-semibold text-gray-700 min-w-[120px]">
+                      姓名
                     </th>
-                    <th className="text-left p-4 text-sm font-semibold text-gray-700">
-                      {locale === 'zh' ? '邮箱' : 'Email'}
+                    <th className="text-left p-3 text-sm font-semibold text-gray-700 min-w-[180px]">
+                      邮箱
                     </th>
-                    <th className="text-left p-4 text-sm font-semibold text-gray-700">
-                      {locale === 'zh' ? '主题' : 'Subject'}
+                    <th className="text-left p-3 text-sm font-semibold text-gray-700 min-w-[100px]">
+                      主题
                     </th>
-                    <th className="text-left p-4 text-sm font-semibold text-gray-700">
-                      {locale === 'zh' ? '消息' : 'Message'}
+                    <th className="text-left p-3 text-sm font-semibold text-gray-700 min-w-[200px]">
+                      消息
                     </th>
-                    <th className="text-left p-4 text-sm font-semibold text-gray-700">
-                      {locale === 'zh' ? '状态' : 'Status'}
+                    <th className="text-left p-3 text-sm font-semibold text-gray-700 w-20">
+                      状态
                     </th>
-                    <th className="text-left p-4 text-sm font-semibold text-gray-700">
-                      {locale === 'zh' ? '日期' : 'Date'}
+                    <th className="text-left p-3 text-sm font-semibold text-gray-700 w-36">
+                      日期
                     </th>
-                    <th className="text-right p-4 text-sm font-semibold text-gray-700">
-                      {locale === 'zh' ? '操作' : 'Actions'}
+                    <th className="text-right p-3 text-sm font-semibold text-gray-700 w-24">
+                      操作
                     </th>
                   </tr>
                 </thead>
@@ -516,7 +493,7 @@ export default function AdminContactMessagesPage() {
                     <tr
                       key={message.id}
                       className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${
-                        !message.isRead ? 'bg-blue-50/50' : ''
+                        !message.isRead ? 'bg-blue-50/80 border-l-4 border-l-blue-500' : ''
                       }`}
                     >
                       <td className="p-4">
@@ -533,47 +510,49 @@ export default function AdminContactMessagesPage() {
                           className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                         />
                       </td>
-                      <td className="p-4">
-                        <div className="flex items-center gap-3">
+                      <td className="p-3">
+                        <div className="flex items-center gap-2">
                           {!message.isRead && (
-                            <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0" />
+                            <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0" title="未读" />
                           )}
-                          <span className={`font-medium ${!message.isRead ? 'text-gray-900 font-semibold' : 'text-gray-700'}`}>
+                          <span className={`font-medium text-sm ${!message.isRead ? 'text-gray-900 font-semibold' : 'text-gray-700'}`}>
                             {message.name}
                           </span>
                         </div>
                       </td>
-                      <td className="p-4 text-sm text-gray-600">{message.email}</td>
-                      <td className="p-4">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                      <td className="p-3 text-sm text-gray-600 truncate">{message.email}</td>
+                      <td className="p-3">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
                           {getSubjectLabel(message.subject)}
                         </span>
                       </td>
-                      <td className="p-4 text-sm text-gray-600 max-w-xs">
-                        <p className="truncate">{truncateMessage(message.message)}</p>
+                      <td className="p-3 text-sm text-gray-600 max-w-[200px]">
+                        <div className="truncate" title={message.message}>
+                          {truncateMessage(message.message, 60)}
+                        </div>
                       </td>
-                      <td className="p-4">
+                      <td className="p-3">
                         {message.isRead ? (
                           <span className="inline-flex items-center gap-1 text-xs text-gray-500">
-                            <MailOpen className="w-3.5 h-3.5" />
-                            {locale === 'zh' ? '已读' : 'Read'}
+                            <MailOpen className="w-3 h-3" />
+                            已读
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 text-xs text-blue-600 font-medium">
-                            <Mail className="w-3.5 h-3.5" />
-                            {locale === 'zh' ? '未读' : 'Unread'}
+                          <span className="inline-flex items-center gap-1 text-xs text-blue-600 font-semibold bg-blue-50 px-2 py-0.5 rounded-full">
+                            <Mail className="w-3 h-3" />
+                            未读
                           </span>
                         )}
                       </td>
-                      <td className="p-4 text-sm text-gray-500">
+                      <td className="p-3 text-sm text-gray-500 whitespace-nowrap">
                         {formatDate(message.createdAt)}
                       </td>
-                      <td className="p-4">
-                        <div className="flex items-center justify-end gap-2">
+                      <td className="p-3">
+                        <div className="flex items-center justify-end gap-1">
                           <button
                             onClick={() => handleViewMessage(message)}
-                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                            title={locale === 'zh' ? '查看详情' : 'View Details'}
+                            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                            title="查看详情"
                           >
                             <Eye className="w-4 h-4" />
                           </button>
@@ -589,16 +568,16 @@ export default function AdminContactMessagesPage() {
                                 await loadMessages();
                                 await loadStats();
                               }}
-                              className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                              title={locale === 'zh' ? '标记已读' : 'Mark Read'}
+                              className="p-1.5 text-green-600 hover:bg-green-50 rounded-md transition-colors"
+                              title="标记已读"
                             >
                               <CheckCircle className="w-4 h-4" />
                             </button>
                           )}
                           <button
                             onClick={() => handleDelete(message.id)}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                            title={locale === 'zh' ? '删除' : 'Delete'}
+                            className="p-1.5 text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                            title="删除"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -696,10 +675,7 @@ export default function AdminContactMessagesPage() {
             {totalPages > 1 && (
               <div className="flex items-center justify-between mt-6 pt-6 border-t border-gray-200">
                 <p className="text-sm text-gray-600">
-                  {locale === 'zh'
-                    ? `第 ${(page - 1) * 20 + 1}-${Math.min(page * 20, total)} 条，共 ${total} 条`
-                    : `Showing ${(page - 1) * 20 + 1}-${Math.min(page * 20, total)} of ${total}`
-                  }
+                  第 {(page - 1) * 20 + 1}-{Math.min(page * 20, total)} 条，共 {total} 条
                 </p>
                 <div className="flex items-center gap-2">
                   <button
@@ -734,9 +710,7 @@ export default function AdminContactMessagesPage() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-900">
-                {locale === 'zh' ? '消息详情' : 'Message Details'}
-              </h2>
+              <h2 className="text-xl font-bold text-gray-900">消息详情</h2>
               <button
                 onClick={() => setShowDetail(false)}
                 className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -749,33 +723,25 @@ export default function AdminContactMessagesPage() {
               {/* Contact Info */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-500 mb-1">
-                    {locale === 'zh' ? '姓名' : 'Name'}
-                  </label>
+                  <label className="block text-sm font-medium text-gray-500 mb-1">姓名</label>
                   <p className="text-gray-900 font-medium">{selectedMessage.name}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-500 mb-1">
-                    {locale === 'zh' ? '邮箱' : 'Email'}
-                  </label>
+                  <label className="block text-sm font-medium text-gray-500 mb-1">邮箱</label>
                   <a href={`mailto:${selectedMessage.email}`} className="text-blue-600 hover:underline">
                     {selectedMessage.email}
                   </a>
                 </div>
                 {selectedMessage.phone && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-500 mb-1">
-                      {locale === 'zh' ? '电话' : 'Phone'}
-                    </label>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">电话</label>
                     <a href={`tel:${selectedMessage.phone}`} className="text-blue-600 hover:underline">
                       {selectedMessage.phone}
                     </a>
                   </div>
                 )}
                 <div>
-                  <label className="block text-sm font-medium text-gray-500 mb-1">
-                    {locale === 'zh' ? '主题' : 'Subject'}
-                  </label>
+                  <label className="block text-sm font-medium text-gray-500 mb-1">主题</label>
                   <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
                     {getSubjectLabel(selectedMessage.subject)}
                   </span>
@@ -784,9 +750,7 @@ export default function AdminContactMessagesPage() {
 
               {/* Message Content */}
               <div>
-                <label className="block text-sm font-medium text-gray-500 mb-2">
-                  {locale === 'zh' ? '消息内容' : 'Message'}
-                </label>
+                <label className="block text-sm font-medium text-gray-500 mb-2">消息内容</label>
                 <div className="p-4 bg-gray-50 rounded-xl">
                   <p className="text-gray-700 whitespace-pre-wrap">{selectedMessage.message}</p>
                 </div>
@@ -796,7 +760,7 @@ export default function AdminContactMessagesPage() {
               <div className="flex items-center gap-4 text-sm text-gray-500 pt-4 border-t border-gray-200">
                 <div className="flex items-center gap-1">
                   <Calendar className="w-4 h-4" />
-                  <span>{new Date(selectedMessage.createdAt).toLocaleString(locale === 'zh' ? 'zh-CN' : 'en-US')}</span>
+                  <span>{new Date(selectedMessage.createdAt).toLocaleString('zh-CN')}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Globe className="w-4 h-4" />
@@ -806,12 +770,12 @@ export default function AdminContactMessagesPage() {
                   {selectedMessage.isRead ? (
                     <>
                       <MailOpen className="w-4 h-4" />
-                      <span>{locale === 'zh' ? '已读' : 'Read'}</span>
+                      <span>已读</span>
                     </>
                   ) : (
                     <>
                       <Mail className="w-4 h-4" />
-                      <span>{locale === 'zh' ? '未读' : 'Unread'}</span>
+                      <span>未读</span>
                     </>
                   )}
                 </div>
@@ -824,7 +788,7 @@ export default function AdminContactMessagesPage() {
                   className="btn-primary inline-flex items-center gap-2"
                 >
                   <Send className="w-4 h-4" />
-                  {locale === 'zh' ? '回复邮件' : 'Reply via Email'}
+                  回复邮件
                 </a>
                 <button
                   onClick={() => {
@@ -834,7 +798,7 @@ export default function AdminContactMessagesPage() {
                   className="btn-danger"
                 >
                   <Trash2 className="w-4 h-4 mr-2" />
-                  {locale === 'zh' ? '删除' : 'Delete'}
+                  删除
                 </button>
               </div>
             </div>

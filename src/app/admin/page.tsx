@@ -351,7 +351,7 @@ export default function AdminDashboardPage() {
             </div>
             <div className="flex items-center space-x-2">
               <User className="w-4 h-4 text-gray-400" />
-              <span>用户: <span className="font-semibold text-gray-900">{typeof window !== 'undefined' ? sessionStorage.getItem('admin_user') || 'admin' : 'admin'}</span></span>
+              <span>用户: <span className="font-semibold text-gray-900">{typeof window !== 'undefined' ? localStorage.getItem('admin_user') || 'admin' : 'admin'}</span></span>
             </div>
             <div className="flex items-center space-x-2">
               <Calendar className="w-4 h-4 text-gray-400" />

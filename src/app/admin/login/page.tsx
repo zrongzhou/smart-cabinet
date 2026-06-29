@@ -30,10 +30,10 @@ export default function AdminLoginPage() {
       console.log('[LOGIN] Response:', data);
 
       if (response.ok && data.success) {
-        // Set sessionStorage for layout auth check (client-side only)
+        // Set localStorage for layout auth check (persists across page refreshes)
         if (typeof window !== 'undefined') {
-          sessionStorage.setItem('admin_authenticated', 'true');
-          sessionStorage.setItem('admin_user', username.trim());
+          localStorage.setItem('admin_authenticated', 'true');
+          localStorage.setItem('admin_user', username.trim());
           // Also set localStorage token for authFetch() in unified-data.ts
           localStorage.setItem('admin_token', 'authenticated-' + Date.now());
         }

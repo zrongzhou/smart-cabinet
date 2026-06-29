@@ -43,8 +43,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   useEffect(() => {
     setMounted(true);
     try {
-      const auth = typeof window !== 'undefined' && window.sessionStorage
-        ? sessionStorage.getItem('admin_authenticated') === 'true'
+      const auth = typeof window !== 'undefined' && window.localStorage
+        ? localStorage.getItem('admin_authenticated') === 'true'
         : false;
       setIsAuthenticated(auth);
     } catch {
@@ -78,11 +78,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   const handleLogout = () => {
     if (typeof window !== 'undefined') {
-      if (window.sessionStorage) {
-        sessionStorage.removeItem('admin_authenticated');
-        sessionStorage.removeItem('admin_user');
-      }
       if (window.localStorage) {
+        localStorage.removeItem('admin_authenticated');
+        localStorage.removeItem('admin_user');
         localStorage.removeItem('admin_token');
       }
       // Clear auth cookie
@@ -143,11 +141,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         <div className="p-4 border-t border-gray-700/50">
           <div className="flex items-center space-x-3 px-3 py-2 mb-3">
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold shadow-lg">
-              {(sessionStorage?.getItem('admin_user') || 'A')[0] || 'A'}
+              {(localStorage?.getItem('admin_user') || 'A')[0] || 'A'}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-white truncate">
-                {sessionStorage?.getItem('admin_user') || 'Admin'}
+                {localStorage?.getItem('admin_user') || 'Admin'}
               </p>
               <p className="text-xs text-gray-500 truncate">Administrator</p>
             </div>
@@ -223,10 +221,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           </div>
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold shadow-md cursor-pointer hover:shadow-lg transition-shadow">
-              {(sessionStorage?.getItem('admin_user') || 'A')[0] || 'A'}
+              {(localStorage?.getItem('admin_user') || 'A')[0] || 'A'}
             </div>
             <span className="text-sm text-gray-600 font-medium hidden sm:inline">
-              {sessionStorage?.getItem('admin_user') || 'Admin'}
+              {localStorage?.getItem('admin_user') || 'Admin'}
             </span>
           </div>
         </header>
