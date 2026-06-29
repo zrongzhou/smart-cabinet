@@ -17,7 +17,7 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
   const [recentBlogs, setRecentBlogs] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // === v149 图片匹配方案：优先用数据自带图片 ===
+  // === v150 图片匹配：排除 API 返回的 SVG 占位图，强制用 JPG 真实照片 ===
   const BLOG_IMAGE_FALLBACKS = [
     '/images/blog/industry-trends.jpg',
     '/images/blog/case-study.jpg',
@@ -39,19 +39,17 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
     '/images/blog/general.jpg',
   ];
 
-  // Recent Posts 图片选择 (v149) - 优先使用数据自带图片
+  // Recent Posts 图片选择 (v150) - 排除 SVG 占位图
   function getInlineBlogImage(post: BlogPost, index: number): string {
-    if (post.image && post.image.startsWith('/images/')) {
+    if (post.image && post.image.startsWith('/images/') && !post.image.endsWith('.svg')) {
       return post.image;
     }
     return BLOG_IMAGE_FALLBACKS[index % BLOG_IMAGE_FALLBACKS.length];
   }
 
-  // 详情页图片选择 (v149) - 优先使用数据自带图片
+  // 详情页图片选择 (v150) - 排除 SVG 占位图
   function getInlineBlogDetailImage(post: BlogPost): string {
-    // 优先使用数据自带的图片
-    if (post.image && post.image.startsWith('/images/')) {
-      console.log(`[v149] Detail page: slug="${post.slug}" → image="${post.image}" (from data)`);
+    if (post.image && post.image.startsWith('/images/') && !post.image.endsWith('.svg')) {
       return post.image;
     }
     // fallback: hash 轮换

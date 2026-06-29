@@ -222,13 +222,13 @@ export default function BlogPage() {
                 ? (post.excerpt[locale] || post.excerpt.en || '')
                 : String(post.excerpt || '');
 
-              // === v149 图片匹配方案：优先用数据自带图片 ===
-              let cardImage = post.image; // 优先使用数据自带的图片路径
-              if (!cardImage || !cardImage.startsWith('/images/')) {
-                // fallback 到索引轮换
+              // === v150 图片匹配：排除 API 返回的 SVG 占位图，强制用 JPG 真实照片 ===
+              let cardImage = post.image;
+              // API 返回的 image 通常是 .svg（占位图标），不是真实照片 → 排除！
+              if (!cardImage || !cardImage.startsWith('/images/') || cardImage.endsWith('.svg')) {
                 cardImage = BLOG_IMAGE_FALLBACKS[index % BLOG_IMAGE_FALLBACKS.length];
               }
-              console.log(`[v149] card ${index}: slug="${post.slug}" → image="${cardImage}"`);
+              console.log(`[v150] card ${index}: slug="${post.slug}" apiImage="${post.image}" → final="${cardImage}"`);
 
               // 分类显示
               const postCategory = (post.category || 'general').toLowerCase().trim();
