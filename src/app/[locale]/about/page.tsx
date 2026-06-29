@@ -151,6 +151,214 @@ function TimelineItem({ year, titleKey, descriptionKey, isLeft, locale, t, index
   );
 }
 
+// ===== 3D Book Flip Component for Core Values (v134) =====
+// Value item type
+interface ValueItem {
+  icon: React.ElementType;
+  titleKey: string;
+  descriptionKey: string;
+}
+
+function ValuesBookFlip({ values, t, locale }: { values: ValueItem[]; t: (key: string) => string; locale: string }) {
+  const [currentPage, setCurrentPage] = useState(0);
+  const [isFlipping, setIsFlipping] = useState(false);
+
+  // Auto-flip every 5 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      handleNext();
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [values.length]);
+
+  const handleNext = () => {
+    if (isFlipping) return;
+    setIsFlipping(true);
+    setTimeout(() => {
+      setCurrentPage((prev) => (prev + 1) % values.length);
+      setIsFlipping(false);
+    }, 600);
+  };
+
+  const handlePrev = () => {
+    if (isFlipping) return;
+    setIsFlipping(true);
+    setTimeout(() => {
+      setCurrentPage((prev) => (prev - 1 + values.length) % values.length);
+      setIsFlipping(false);
+    }, 600);
+  };
+
+  // Color palette per value page
+  const pageColors = [
+    { accent: '#0ea5e9', grad: 'linear-gradient(135deg, #0284c7 0%, #0ea5e9 50%, #38bdf8 100%)', iconBg: 'rgba(14,165,233,0.15)', descColor: '#bae6fd' },
+    { accent: '#10b981', grad: 'linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%)', iconBg: 'rgba(16,185,129,0.15)', descColor: '#a7f3d0' },
+    { accent: '#8b5cf6', grad: 'linear-gradient(135deg, #7c3aed 0%, #8b5cf6 50%, #a78bfa 100%)', iconBg: 'rgba(139,92,246,0.15)', descColor: '#ddd6fe' },
+    { accent: '#f59e0b', grad: 'linear-gradient(135deg, #d97706 0%, #f59e0b 50%, #fbbf24 100%)', iconBg: 'rgba(245,158,11,0.15)', descColor: '#fef3c7' },
+    { accent: '#ec4899', grad: 'linear-gradient(135deg, #db2777 0%, #ec4899 50%, #f472b6 100%)', iconBg: 'rgba(236,72,153,0.15)', descColor: '#fce7f3' },
+  ];
+
+  const current = values[currentPage];
+  const Icon = current.icon;
+  const pc = pageColors[currentPage % pageColors.length];
+
+  return (
+    <div className="flex justify-center" style={{ perspective: '1500px' }}>
+      {/* ===== BOOK CONTAINER ===== */}
+      <div
+        className="relative w-full max-w-[720px] mx-auto"
+        style={{
+          transformStyle: 'preserve-3d',
+          animation: 'bookFloat 6s ease-in-out infinite',
+        }}
+        onMouseEnter={(e) => { e.currentTarget.style.animationPlayState = 'paused'; }}
+        onMouseLeave={(e) => { e.currentTarget.style.animationPlayState = 'running'; }}
+      >
+        {/* Book shadow/floor */}
+        <div className="absolute -bottom-8 left-[8%] right-[8%] h-6 rounded-full blur-xl"
+          style={{ background: 'rgba(0,0,0,0.35)' }}
+        />
+
+        {/* Book body */}
+        <div className="relative rounded-lg overflow-hidden shadow-2xl border border-white/10"
+          style={{
+            background: 'linear-gradient(145deg, #ffffff 0%, #f8fafc 50%, #f1f5f9 100%)',
+            transformStyle: 'preserve-3d',
+            boxShadow: '0 25px 60px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.6), inset -2px 0 8px rgba(0,0,0,0.08)',
+          }}
+        >
+          {/* Spine (left edge) */}
+          <div className="absolute top-0 left-0 bottom-0 w-4 sm:w-6 rounded-l-lg"
+            style={{
+              background: 'linear-gradient(180deg, #78716c 0%, #a8a29e 20%, #d6d3d1 45%, #a8a29e 70%, #78716c 100%)',
+              boxShadow: 'inset -3px 0 8px rgba(0,0,0,0.25), 3px 0 12px rgba(0,0,0,0.08)',
+              borderRight: '1px solid rgba(255,255,255,0.15)',
+            }}
+          >
+            {/* Spine decoration lines */}
+            {[...Array(8)].map((_, li) => (
+              <div key={li} className="absolute left-1/2 -translate-x-1/2 h-[1px]"
+                style={{
+                  width: '40%',
+                  top: `${12 + li * 11}%`,
+                  background: `rgba(120,113,108,${0.15 + (li % 2) * 0.1})`,
+                }}
+              />
+            ))}
+            {/* Bookmark ribbon */}
+            <div className="absolute top-6 left-1/2 -translate-x-1/2 px-1.5 py-4 rounded-b-md text-xs font-bold tracking-wider rotate-[-4deg]"
+              style={{
+                background: pc.grad,
+                color: 'white',
+                fontSize: '9px',
+                letterSpacing: '0.08em',
+                animation: 'bookmarkPulse 3s ease-in-out infinite',
+                boxShadow: '0 3px 8px rgba(0,0,0,0.2)',
+              }}
+            >
+              {String(currentPage + 1).padStart(2, '0')}
+            </div>
+          </div>
+
+          {/* Page content area */}
+          <div
+            className="min-h-[380px] sm:min-h-[420px] p-6 sm:p-10 pl-10 sm:pl-14 relative overflow-hidden transition-all duration-500"
+            style={{
+              transformStyle: 'preserve-3d',
+              backfaceVisibility: 'hidden',
+              transform: isFlipping ? 'rotateY(-15deg)' : 'rotateY(0deg)',
+              opacity: isFlipping ? 0.6 : 1,
+            }}
+          >
+            {/* Page corner fold effect */}
+            <div className="absolute top-0 right-0 w-12 h-12 overflow-hidden">
+              <div className="absolute top-0 right-0 w-[18px] h-[18px] origin-top-right rotate-45 translate-x-[2px] translate-y-[2px]"
+                style={{ background: 'linear-gradient(135deg, rgba(241,245,249,1) 0%, rgba(226,232,240,1) 100%)', boxShadow: '-2px 2px 6px rgba(0,0,0,0.06)' }}
+              />
+            </div>
+
+            {/* Page number top-right */}
+            <div className="absolute top-4 right-5 text-xs font-mono text-slate-300">
+              — {currentPage + 1}/{values.length} —
+            </div>
+
+            {/* Value Content */}
+            <div className="flex flex-col items-center text-center pt-4">
+              {/* Icon in a decorative circle */}
+              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full flex items-center justify-center mb-6 relative"
+                style={{
+                  background: pc.iconBg,
+                  border: `2px solid ${pc.accent}30`,
+                  boxShadow: `0 0 24px ${pc.iconBg}, inset 0 -3px 8px ${pc.accent}15`,
+                }}
+              >
+                <Icon className="w-9 h-9 sm:w-11 sm:h-11" style={{ color: pc.accent }} strokeWidth={1.6} />
+                {/* Rotating ring around icon */}
+                <div className="absolute inset-0 rounded-full pointer-events-none" style={{
+                  border: `2px solid transparent`,
+                  borderTopColor: pc.accent,
+                  animation: 'iconRingSpin 6s linear infinite',
+                }} />
+              </div>
+
+              {/* Title */}
+              <h3 className="text-2xl sm:text-3xl font-black mb-4 leading-tight"
+                style={{ color: '#1e293b' }}
+              >
+                {t(current.titleKey)}
+              </h3>
+
+              {/* Description */}
+              <p className="text-base sm:text-lg leading-relaxed max-w-md mx-auto mb-6"
+                style={{ color: '#475569' }}
+              >
+                {t(current.descriptionKey)}
+              </p>
+
+              {/* Decorative line */}
+              <div className="h-[3px] rounded-full w-20 mx-auto mb-6 opacity-40"
+                style={{ background: `linear-gradient(90deg, ${pc.accent}, transparent)` }}
+              />
+
+              {/* Progress dots for pages */}
+              <div className="flex items-center gap-2 mt-2">
+                {values.map((_, vi) => (
+                  <button key={vi}
+                    onClick={() => { if (!isFlipping && vi !== currentPage) { setIsFlipping(true); setTimeout(() => { setCurrentPage(vi); setIsFlipping(false); }, 400); } }}
+                    className="rounded-full transition-all duration-300 cursor-pointer"
+                    style={{
+                      width: vi === currentPage ? '24px' : '8px',
+                      height: '8px',
+                      background: vi === currentPage ? pc.grad : 'rgba(148,163,184,0.3)',
+                      boxShadow: vi === currentPage ? `0 0 8px ${pc.accent}40` : 'none',
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Navigation arrows */}
+        <button onClick={handlePrev}
+          className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[60%] w-11 h-11 rounded-full flex items-center justify-center text-slate-600 hover:text-slate-900 bg-white/90 hover:bg-white shadow-lg border border-slate-200 transition-all duration-200 hover:-translate-x-2 z-20 disabled:opacity-30"
+          disabled={isFlipping}
+          style={{ backdropFilter: 'blur(8px)' }}
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+        </button>
+        <button onClick={handleNext}
+          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-[60%] w-11 h-11 rounded-full flex items-center justify-center text-slate-600 hover:text-slate-900 bg-white/90 hover:bg-white shadow-lg border border-slate-200 transition-all duration-200 hover:translate-x-2 z-20 disabled:opacity-30"
+          disabled={isFlipping}
+          style={{ backdropFilter: 'blur(8px)' }}
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function AboutPage() {
   const { locale, t } = useLocale();
   const isRTL = locale === 'ar';
@@ -579,15 +787,15 @@ export default function AboutPage() {
             </p>
           </div>
 
-          {/* Factory Images Grid — Local images with Glass Effect */}
+          {/* Factory Images Grid — Local images with Glass Effect & Rich Descriptions */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
             {[
-              { src: '/images/about/factory-design.jpg', altKey: 'about.factory.design', label: 'DESIGN', color: '#3b82f6' },
-              { src: '/images/about/factory-cutting.jpg', altKey: 'about.factory.cutting', label: 'CUTTING', color: '#ef4444' },
-              { src: '/images/about/factory-bending.jpg', altKey: 'about.factory.bending', label: 'BENDING', color: '#10b981' },
-              { src: '/images/about/factory-assembly.jpg', altKey: 'about.factory.assembly', label: 'ASSEMBLY', color: '#f59e0b' },
-              { src: '/images/about/factory-welding.jpg', altKey: 'about.factory.welding', label: 'WELDING', color: '#dc2626' },
-              { src: '/images/about/factory-quality.jpg', altKey: 'about.factory.quality', label: 'QUALITY CONTROL', color: '#06b6d4' },
+              { src: '/images/about/factory-design.jpg', altKey: 'about.factory.design', label: 'DESIGN', labelZh: '设计图纸', color: '#3b82f6', desc: 'CAD/CAM 工程设计中心，支持 SolidWorks、UG 等主流软件，DFM 面向制造设计分析' },
+              { src: '/images/about/factory-cutting.jpg', altKey: 'about.factory.cutting', label: 'CUTTING', labelZh: '钣金切割', color: '#ef4444', desc: '高精度激光切割 + 数控冲床，精度 ±0.01mm，支持碳钢/不锈钢/铝板多材质' },
+              { src: '/images/about/factory-bending.jpg', altKey: 'about.factory.bending', label: 'BENDING', labelZh: '折弯工艺', color: '#10b981', desc: '数控折弯机 100T/3200，多角度复合折弯，圆弧折弯最小 R0.5' },
+              { src: '/images/about/factory-assembly.jpg', altKey: 'about.factory.assembly', label: 'ASSEMBLY', labelZh: '组装流水线', color: '#f59e0b', desc: '标准化装配工作站 + 气动夹具，模块化组装流程，日产能 200+ 台' },
+              { src: '/images/about/factory-welding.jpg', altKey: 'about.factory.welding', label: 'WELDING', labelZh: '焊接工艺', color: '#dc2626', desc: '机器人焊接 + TIG/MIG 手工焊，氩弧焊保护，焊缝强度达母材 95%+' },
+              { src: '/images/about/factory-quality.jpg', altKey: 'about.factory.quality', label: 'QUALITY CONTROL', labelZh: '质量检测', color: '#06b6d4', desc: '三坐标测量仪 + 二次元影像仪，ISO 9001 全检流程，出货零缺陷目标' },
             ].map((item, index) => (
               <div key={index} className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2" style={{ height: '280px' }}>
                 {/* Image with zoom on hover */}
@@ -612,6 +820,7 @@ export default function AboutPage() {
                       {item.label}
                     </span>
                     <h3 className="text-xl font-bold text-white drop-shadow-md">{t(item.altKey)}</h3>
+                    <p className="text-sm text-white/70 mt-1.5 leading-relaxed drop-shadow-sm">{item.desc}</p>
                     
                     {/* Decorative glass shimmer line */}
                     <div className="mt-3 h-[2px] rounded-full opacity-50 transition-all duration-500 group-hover:w-full group-hover:opacity-80 w-16"
@@ -706,79 +915,24 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Company Values - 2x2 Grid — Each card unique color */}
+      {/* ===== Company Values — BOOK FLIP ANIMATION (v134) ===== */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden" style={{
-        background: 'linear-gradient(180deg, #ffffff 0%, #fefce8 50%, #fdf4ff 100%)',
+        background: 'linear-gradient(180deg, #1e293b 0%, #334155 30%, #475569 60%, #64748b 100%)',
       }}>
-        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, #b45309 1px, transparent 0)', backgroundSize: '30px 30px' }} />
-        <div className="max-w-7xl mx-auto relative z-10">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
+        {/* Ambient bookshelf pattern */}
+        <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, #fbbf24 1px, transparent 0)', backgroundSize: '24px 24px' }} />
+        <div className="max-w-5xl mx-auto relative z-10">
+          <div className="text-center mb-14">
+            <h2 className="text-4xl sm:text-5xl font-bold text-white mb-4">
               {t('about.values.title')}
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-lg text-slate-300 max-w-2xl mx-auto">
               {t('about.values.subtitle')}
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {values.map((value, index) => {
-              const Icon = value.icon;
-              const vColors = [
-                { grad: 'from-blue-600 to-cyan-600', accent: '#0ea5e9', lightBg: 'rgba(14,165,233,0.09)', ringColor: 'ring-blue-100', textColor: '#0369a1', descText: '#0c4a6e' },
-                { grad: 'from-emerald-600 to-green-600', accent: '#10b981', lightBg: 'rgba(16,185,129,0.09)', ringColor: 'ring-emerald-100', textColor: '#047857', descText: '#065f46' },
-                { grad: 'from-violet-600 to-purple-600', accent: '#8b5cf6', lightBg: 'rgba(139,92,246,0.09)', ringColor: 'ring-violet-100', textColor: '#6d28d9', descText: '#4c1d95' },
-                { grad: 'from-orange-500 to-amber-500', accent: '#f59e0b', lightBg: 'rgba(245,158,11,0.09)', ringColor: 'ring-amber-100', textColor: '#b45309', descText: '#78350f' },
-                { grad: 'from-rose-500 to-pink-600', accent: '#ec4899', lightBg: 'rgba(236,72,153,0.08)', ringColor: 'ring-rose-100', textColor: '#be185d', descText: '#831843' },
-              ];
-              const vc = vColors[index % vColors.length];
-              
-              return (
-                <div key={index} className="group rounded-2xl p-10 lg:p-12 border transition-all duration-400 hover:-translate-y-2.5 hover:shadow-2xl relative overflow-hidden"
-                  style={{ 
-                    background: `linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(250,252,255,0.88) 100%)`,
-                    borderColor: `${vc.accent}25`,
-                    borderWidth: '1px',
-                  }}
-                >
-                  {/* Animated background glow */}
-                  <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
-                    style={{
-                      background: `radial-gradient(circle at 20% 20%, ${vc.lightBg} 0%, transparent 65%)`,
-                    }}
-                  />
-                  {/* Corner decorative dot */}
-                  <div className={`absolute top-5 right-5 w-3 h-3 rounded-full transition-all duration-500 group-hover:scale-150`}
-                    style={{ background: vc.accent, opacity: 0.4 }}
-                  />
-                  
-                  <div className="relative z-10">
-                    {/* Icon — larger with enhanced glow */}
-                    <div className={`w-24 h-24 bg-gradient-to-br ${vc.grad} rounded-2xl flex items-center justify-center mb-8 shadow-lg ring-4 ${vc.ringColor} group-hover:scale-110 group-hover:-rotate-6 transition-all duration-400`}
-                      style={{ boxShadow: `0 8px 24px ${vc.lightBg}` }}
-                    >
-                      <Icon className="w-12 h-12 text-white drop-shadow-md" strokeWidth={1.8} />
-                    </div>
-                    
-                    {/* Title — larger and bolder */}
-                    <h3 className="text-[28px] font-black text-gray-900 mb-4 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r transition-all duration-300"
-                      style={{ backgroundImage: `linear-gradient(90deg, ${vc.accent}, ${index === 1 ? '#34d399' : index === 2 ? '#a78bfa' : index === 3 ? '#fbbf24' : '#f472b6'})`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
-                    >
-                      {t(value.titleKey)}
-                    </h3>
-                    
-                    {/* Description — larger font */}
-                    <p className="leading-relaxed text-lg mb-5" style={{ color: vc.descText }}>{t(value.descriptionKey)}</p>
-                    
-                    {/* Decorative animated line */}
-                    <div className={`h-[3px] rounded-full transition-all duration-500 group-hover:w-full opacity-30 group-hover:opacity-70 w-14`}
-                      style={{ background: `linear-gradient(90deg, ${vc.accent}, transparent)` }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          {/* ===== 3D BOOK WITH PAGE FLIP ===== */}
+          <ValuesBookFlip values={values} t={t} locale={locale} />
         </div>
       </section>
 
@@ -889,104 +1043,136 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ===== SUNRISE BEACH CTA — 精致日出沙滩 (v133) ===== */}
+      {/* ===== SUNRISE BEACH CTA — 左上角初生太阳 + 海浪 + 沙滩 (v134) ===== */}
       <section
         className="py-20 px-4 sm:px-6 lg:px-8 text-white relative overflow-hidden"
         style={{
-          background: 'linear-gradient(180deg, #0c4a6e 0%, #075985 12%, #0369a1 24%, #0ea5e9 40%, #7dd3fc 52%, #fef3c7 68%, #fde68a 78%, #fcd34d 88%, #fbbf24 100%)',
+          background: 'linear-gradient(180deg, #0f172a 0%, #1e3a5f 15%, #3b5998 28%, #e87a4f 48%, #f4a261 58%, #fcd34d 70%, #fde68a 82%, #fef3c7 92%, #fffbeb 100%)',
         }}
       >
-        {/* === OCEAN HORIZON LINE (where sun sits) === */}
-        <div className="absolute top-[58%] left-0 right-0 h-[2px] opacity-30"
-          style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent)' }}
-        />
-
-        {/* === HALF-SUN RISING — 半遮面初生太阳 === */}
-        <div className="absolute top-[55%] left-[8%] sm:left-[12%] w-28 h-28 sm:w-36 sm:h-36 overflow-hidden rounded-full" style={{
-          // Clip bottom half for "half-rising" effect via positioning inside parent
+        {/* === SUN — Upper-left corner, small half-rising sun with corona === */}
+        <div className="absolute top-[12%] left-[5%] sm:left-[8%] w-24 h-24 sm:w-32 sm:h-32 overflow-hidden rounded-full" style={{
+          filter: 'drop-shadow(0 0 40px rgba(251,191,36,0.5)) drop-shadow(0 0 80px rgba(245,158,11,0.3))',
         }}>
-          {/* Sun body — positioned so only top half shows above horizon */}
-          <div className="absolute -bottom-[50%] left-0 w-full h-full rounded-full" style={{
-            background: 'radial-gradient(circle at 50% 45%, #fffbeb 0%, #fef08a 15%, #fde047 35%, #facc15 55%, #eab308 75%, #ca8a04 95%)',
-            boxShadow: '0 0 60px rgba(250,204,21,0.5), 0 0 120px rgba(234,179,8,0.25), 0 10px 40px rgba(202,138,4,0.3), inset 2px 2px 8px rgba(255,255,255,0.3)',
-            animation: 'sunrise-glow 6s ease-in-out infinite alternate',
+          {/* Sun body — only top half visible (half-rising effect) */}
+          <div className="absolute -bottom-[45%] left-0 w-full h-full rounded-full" style={{
+            background: 'radial-gradient(circle at 50% 40%, #fffbeb 0%, #fef08a 12%, #fde047 28%, #facc15 48%, #f59e0b 68%, #d97706 88%)',
+            boxShadow: 'inset 2px 2px 8px rgba(255,255,255,0.4), inset -2px -1px 6px rgba(180,83,9,0.3), 0 0 60px rgba(251,191,36,0.45)',
+            animation: 'v134-sunPulse 5s ease-in-out infinite alternate',
           }}>
-            {/* Sun surface detail — inner texture for realism */}
-            <div className="absolute inset-[12%] rounded-full" style={{
-              background: 'radial-gradient(ellipse at 40% 35%, rgba(255,255,240,0.6) 0%, transparent 50%), radial-gradient(ellipse at 60% 60%, rgba(234,179,8,0.3) 0%, transparent 40%)',
-            }} />
-            {/* Soft corona glow around sun edge */}
-            <div className="absolute -inset-[15%] rounded-full" style={{
-              background: 'radial-gradient(circle, rgba(251,191,36,0.15) 0%, transparent 70%)',
-              animation: 'sunCorona 4s ease-in-out infinite alternate',
+            {/* Inner bright core */}
+            <div className="absolute inset-[15%] rounded-full" style={{
+              background: 'radial-gradient(ellipse at 35% 30%, rgba(255,255,240,0.7) 0%, transparent 55%)',
             }} />
           </div>
+          {/* Outer corona glow */}
+          <div className="absolute -inset-[20%] rounded-full pointer-events-none" style={{
+            background: 'radial-gradient(circle, rgba(251,191,36,0.18) 0%, rgba(245,158,11,0.08) 40%, transparent 70%)',
+            animation: 'v134-corona 4s ease-in-out infinite alternate',
+          }} />
         </div>
 
-        {/* === SUBTLE SUN RAYS (fewer, softer) === */}
-        <div className="absolute top-[54%] left-[6%] sm:left-[10%] w-36 h-36 sm:w-44 sm:h-44 pointer-events-none">
-          {[...Array(6)].map((_, i) => (
+        {/* Soft sun rays radiating outward */}
+        <div className="absolute top-[10%] left-[3%] sm:left-[6%] w-36 h-36 sm:w-44 sm:h-44 pointer-events-none">
+          {[...Array(8)].map((_, i) => (
             <div key={i} className="absolute top-1/2 left-1/2 origin-center" style={{
-              width: `${1 + i * 0.6}px`, height: `${14 + i * 4}px`,
-              background: `linear-gradient(to bottom, rgba(255,251,235,0.5) 0%, rgba(250,204,21,0.15) 50%, transparent)`,
-              transform: `rotate(${i * 30}deg) translateY(-50%)`,
+              width: `${1 + i * 0.4}px`,
+              height: `${16 + i * 5}px`,
+              background: `linear-gradient(to bottom, rgba(255,248,220,0.35) 0%, rgba(251,191,36,0.1) 50%, transparent)`,
+              transform: `rotate(${i * 22.5}deg) translateY(-50%)`,
               borderRadius: '50%',
-              animation: `sunRaySoft ${3 + i * 0.3}s ease-in-out infinite alternate`,
-              animationDelay: `${i * 0.2}s`,
+              animation: `v134-ray ${3 + i * 0.25}s ease-in-out infinite alternate`,
+              animationDelay: `${i * 0.15}s`,
             }} />
           ))}
         </div>
 
-        {/* === TEXTURED CURVED SAND BEACH — 沙粒感弧形沙滩 (smaller, detailed) === */}
-        <div className="absolute bottom-0 left-0 right-0 h-[22%] overflow-hidden">
-          <svg className="absolute bottom-0 left-0 w-full" style={{ height: '100%' }} viewBox="0 0 1440 280" preserveAspectRatio="none">
+        {/* === OCEAN WAVES — Middle layer with animated waves === */}
+        <div className="absolute bottom-[18%] left-0 right-0 h-[24%] overflow-hidden pointer-events-none">
+          {/* Deep water base */}
+          <svg className="absolute bottom-0 w-full" viewBox="0 0 1440 200" preserveAspectRatio="none" style={{ height: '100%' }}>
             <defs>
-              <filter id="sandGrain" x="0%" y="0%" width="100%" height="100%">
-                <feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="4" result="noise" />
-                <feColorMatrix type="matrix" values="1 0 0 0 0  0 0.95 0 0 0  0 0.7 0 0 0  0 0 0 0.25 0" in="noise" result="coloredNoise" />
+              <linearGradient id="oceanGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#0369a1" stopOpacity="0.85" />
+                <stop offset="50%" stopColor="#075985" stopOpacity="0.92" />
+                <stop offset="100%" stopColor="#0c4a6e" stopOpacity="1" />
+              </linearGradient>
+              <filter id="waveGlow">
+                <feGaussianBlur stdDeviation="1.5" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+
+            {/* Wave layer 1 — back, slower */}
+            <path d="M0,120 Q180,80 360,110 T720,105 T1080,115 T1440,100 L1440,200 L0,200Z"
+              fill="url(#oceanGrad)" opacity="0.5"
+              style={{ animation: 'v134-wave1 8s ease-in-out infinite' }}
+            />
+
+            {/* Wave layer 2 — mid */}
+            <path d="M0,135 Q200,100 400,130 T800,120 T1200,140 T1440,125 L1440,200 L0,200Z"
+              fill="#0ea5e9" opacity="0.65"
+              style={{ animation: 'v134-wave2 6s ease-in-out infinite reverse' }}
+            />
+
+            {/* Wave layer 3 — front, faster with foam highlight */}
+            <path d="M0,150 Q160,125 360,155 T720,145 T1080,160 T1440,148 L1440,200 L0,200Z"
+              fill="#38bdf8" opacity="0.75"
+              style={{ animation: 'v134-wave3 5s ease-in-out infinite', filter: 'url(#waveGlow)' }}
+            />
+
+            {/* Wave foam/highlight line on crest */}
+            <path d="M0,152 Q160,127 360,157 T720,147 T1080,162 T1440,150"
+              stroke="rgba(255,255,255,0.35)" strokeWidth="2" fill="none"
+              style={{ animation: 'v134-wave3 5s ease-in-out infinite' }}
+            />
+
+            {/* Subtle sparkles on water */}
+            {[...Array(6)].map((_, si) => (
+              <circle key={si} cx={`${150 + si * 210}`} cy={`${140 + (si % 3) * 12}`} r={1 + (si % 2)} fill="white" opacity={0.25 + (si % 3) * 0.1}
+                style={{ animation: `v134-sparkle ${2 + si * 0.4}s ease-in-out infinite`, animationDelay: `${si * 0.5}s` }}
+              />
+            ))}
+          </svg>
+        </div>
+
+        {/* === SANDY BEACH — Bottom layer with grain texture === */}
+        <div className="absolute bottom-0 left-0 right-0 h-[20%] overflow-hidden">
+          <svg className="absolute bottom-0 left-0 w-full" style={{ height: '100%' }} viewBox="0 0 1440 200" preserveAspectRatio="none">
+            <defs>
+              <filter id="sandTexture" x="0%" y="0%" width="100%" height="100%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="4" result="noise" />
+                <feColorMatrix type="matrix" values="1 0 0 0 0  0 0.92 0 0 0  0 0.65 0 0 0  0 0 0 0.2 0" in="noise" result="coloredNoise" />
                 <feBlend in="SourceGraphic" in2="coloredNoise" mode="multiply" />
               </filter>
             </defs>
-            {/* Far sand layer (lightest, atmospheric perspective) */}
-            <path d="M0,280 L0,140 Q200,90 400,130 Q720,70 1040,120 Q1280,85 1440,135 L1440,280Z"
-              fill="#fef9c3" opacity="0.6" />
-            {/* Mid sand layer */}
-            <path d="M0,280 L0,170 Q180,125 360,160 Q540,110 720,155 Q900,115 1080,150 Q1260,120 1440,165 L1440,280Z"
-              fill="#fef08a" opacity="0.8" />
-            {/* Near sand layer with grain texture */}
-            <path d="M0,280 L0,200 Q220,165 440,195 Q660,150 880,190 Q1100,158 1320,185 L1440,195 L1440,280Z"
-              fill="#fde68a" filter="url(#sandGrain)" />
-            {/* Frontmost sand (deepest) */}
-            <path d="M0,280 L0,230 Q260,200 520,228 Q780,190 1040,225 Q1280,198 1440,230 L1440,280Z"
-              fill="#fcd34d" />
-
-            {/* Sand ripples / texture lines */}
-            <path d="M0,245 Q360,230 720,242 Q1080,228 1440,245" stroke="rgba(217,119,6,0.12)" strokeWidth="1.5" fill="none" />
-            <path d="M0,262 Q360,250 720,258 Q1080,248 1440,262" stroke="rgba(217,119,6,0.08)" strokeWidth="1" fill="none" />
-            {/* Subtle highlight on sand crest */}
-            <path d="M0,205 Q360,185 720,198 Q1080,182 1440,202" stroke="rgba(255,255,255,0.15)" strokeWidth="1" fill="none" />
+            {/* Far beach (lightest, atmospheric) */}
+            <path d="M0,200 L0,130 Q240,95 480,125 Q720,85 960,115 Q1200,90 1440,120 L1440,200Z" fill="#fef9c3" opacity="0.55" />
+            {/* Mid beach */}
+            <path d="M0,200 L0,155 Q200,125 420,158 Q640,128 860,156 Q1080,130 1280,158 L1440,165 L1440,200Z" fill="#fef08a" opacity="0.78" />
+            {/* Near beach with texture */}
+            <path d="M0,200 L0,178 Q260,155 520,182 Q780,152 1040,180 Q1280,162 L1440,183 L1440,200Z" fill="#fde68a" filter="url(#sandTexture)" />
+            {/* Frontmost sand */}
+            <path d="M0,200 L0,192 Q300,175 600,195 Q900,170 1200,193 Q1350,185 1440,196 L1440,200Z" fill="#fcd34d" />
+            {/* Sand ripple lines */}
+            <path d="M0,202 Q360,190 720,198 Q1080,188 1440,202" stroke="rgba(217,119,6,0.1)" strokeWidth="1.2" fill="none" />
+            <path d="M0,212 Q360,204 720,210 Q1080,203 1440,213" stroke="rgba(255,255,255,0.12)" strokeWidth="0.8" fill="none" />
           </svg>
-
-          {/* Sand grain particles (sparse, subtle) */}
-          {[...Array(12)].map((_, i) => (
-            <div key={i} className="absolute rounded-sm pointer-events-none" style={{
-              left: `${4 + i * 7.5}%`,
-              bottom: `${5 + (i % 4) * 4 + Math.random() * 6}%`,
-              width: 1.5 + (i % 3),
-              height: 1.5 + (i % 3),
-              background: i % 3 === 0 ? 'rgba(254,240,138,0.9)' : i % 3 === 1 ? 'rgba(253,224,71,0.7)' : 'rgba(255,255,255,0.5)',
-              animation: `sandGrainFloat ${4 + (i % 3) * 1.5}s ease-in-out infinite`,
-              animationDelay: `${i * 0.3}s`,
+          {/* Sand particles */}
+          {[...Array(8)].map((_, pi) => (
+            <div key={pi} className="absolute rounded-sm pointer-events-none" style={{
+              left: `${5 + pi * 11}%`,
+              bottom: `${3 + (pi % 3) * 5}%`,
+              width: 1.5 + (pi % 3),
+              height: 1.5 + (pi % 3),
+              background: pi % 3 === 0 ? '#fef08a' : pi % 3 === 1 ? 'rgba(253,218,138,0.7)' : 'rgba(255,255,255,0.4)',
+              animation: `v134-grainFloat ${3.5 + (pi % 3) * 1.2}s ease-in-out infinite`,
+              animationDelay: `${pi * 0.35}s`,
             }} />
           ))}
-        </div>
-
-        {/* Small seashell decoration */}
-        <div className="absolute bottom-[8%] left-[18%] opacity-50" style={{ animation: 'shell-glow 5s ease-in-out infinite alternate' }}>
-          <svg width="20" height="16" viewBox="0 0 20 16"><path d="M2,13 Q10,-2 18,13 Q10,18 2,13Z" fill="#fde68a" stroke="#d97706" strokeWidth="0.5"/><path d="M4,12 Q10,3 16,12" stroke="#d97706" strokeWidth="0.35" fill="none"/></svg>
-        </div>
-        <div className="absolute bottom-[11%] right-[22%] opacity-40" style={{ animation: 'star-wiggle 5s ease-in-out infinite alternate' }}>
-          <svg width="22" height="22" viewBox="0 0 22 22"><path d="M11,2 L13,8 L19,8 L14,12 L16,18 L11,14 L6,18 L8,12 L3,8 L9,8 Z" fill="#fb923c" stroke="#ea580c" strokeWidth="0.5"/><circle cx="11" cy="11" r="2" fill="#fde68a" opacity="0.5"/></svg>
         </div>
 
         {/* Content — centered, elevated */}
@@ -1010,9 +1196,9 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ===== ALL ANIMATION KEYFRAMES ===== */}
+      {/* ===== ALL ANIMATION KEYFRAMES (v134) ===== */}
       <style>{`
-        /* ===== Premium stat card animations (v133) ===== */
+        /* ===== Premium stat card animations ===== */
         @keyframes statCardEnter {
           0%{opacity:0;transform:translateY(40px) scale(0.92);filter:blur(4px)}
           60%{opacity:1;transform:translateY(-6px) scale(1.02);filter:blur(0)}
@@ -1033,35 +1219,59 @@ export default function AboutPage() {
           0%{transform:translateX(-100%)} 100%{transform:translateX(200%)}
         }
         @keyframes about-intro-bg-pulse { 0%{opacity:.03;transform:scale(1)} 100%{opacity:.07;transform:scale(1.05)} }
-        @keyframes about-bubble-active {
-          0%{transform:translateY(0) scale(.5);opacity:0} 15%{opacity:.6}
-          50%{transform:translateY(-20px) scale(1.2);opacity:.85}
-          85%{transform:translateY(-42px) scale(.7);opacity:.2}
-          100%{transform:translateY(-54px) scale(.3);opacity:0}
+
+        /* ===== Beach CTA animations (v134 — Sun upper-left + Ocean Waves) ===== */
+        @keyframes v134-sunPulse {
+          0%{transform:scale(1); filter:brightness(1)}
+          100%{transform:scale(1.06); filter:brightness(1.08)}
         }
-        @keyframes sunrise-glow {
-          0%{box-shadow:0 0 50px rgba(250,204,21,0.4),0 0 100px rgba(234,179,8,0.2);transform:scale(1)}
-          100%{box-shadow:0 0 80px rgba(250,204,21,0.6),0 0 160px rgba(234,179,8,0.35);transform:scale(1.04)}
+        @keyframes v134-corona {
+          0%{opacity:0.25; transform:scale(1)}
+          100%{opacity:0.5; transform:scale(1.12)}
         }
-        @keyframes sunCorona {
-          0%{opacity:0.3;transform:scale(1)}
-          100%{opacity:0.6;transform:scale(1.08)}
+        @keyframes v134-ray {
+          0%{opacity:0.25; transform:rotate(var(--r,0)) translateY(-50%) scaleX(1)}
+          100%{opacity:0.6; transform:rotate(var(--r,0)) translateY(-50%) scaleX(1.2)}
         }
-        @keyframes sunRaySoft {
-          0%{opacity:0.3;transform:rotate(var(--r,0)) translateY(-50%) scaleX(1)}
-          100%{opacity:0.7;transform:rotate(var(--r,0)) translateY(-50%) scaleX(1.15)}
+        @keyframes v134-wave1 {
+          0%,100%{transform:translateX(0) translateY(0)}
+          50%{transform:translateX(-20px) translateY(-5px)}
         }
-        @keyframes sandGrainFloat {
-          0%{transform:translateY(0) translateX(0);opacity:0.5}
-          50%{transform:translateY(-4px) translateX(2px);opacity:0.9}
-          100%{transform:translateY(0) translateX(-1px);opacity:0.5}
+        @keyframes v134-wave2 {
+          0%,100%{transform:translateX(0) translateY(0)}
+          50%{transform:translateX(25px) translateY(3px)}
         }
-        @keyframes bw1 { 0%{transform:translateX(0)} 100%{transform:translateX(-33.33%)} }
-        @keyframes bw2 { 0%{transform:translateX(0)} 100%{transform:translateX(-33.33%)} }
-        @keyframes bw3 { 0%{transform:translateX(0)} 100%{transform:translateX(-33.33%)} }
-        @keyframes shell-glow { 0%{filter:brightness(1)} 100%{filter:brightness(1.18) drop-shadow(0 0 6px rgba(251,191,36,0.4))} }
-        @keyframes star-wiggle { 0%{transform:rotate(-6deg) scale(1)} 100%{transform:rotate(9deg) scale(1.1)} }
-        @keyframes sand-sparkle { 0%{transform:translateY(0) scale(0);opacity:0} 50%{transform:translateY(-10px) scale(1.1);opacity:1} 100%{transform:translateY(-20px) scale(0);opacity:0} }
+        @keyframes v134-wave3 {
+          0%,100%{transform:translateX(0) translateY(0)}
+          50%{transform:translateX(-15px) translateY(-4px)}
+        }
+        @keyframes v134-sparkle {
+          0%,100%{opacity:0.15; transform:scale(1)}
+          50%{opacity:0.5; transform:scale(1.4)}
+        }
+        @keyframes v134-grainFloat {
+          0%{transform:translateY(0) translateX(0); opacity:0.45}
+          50%{transform:translateY(-3px) translateX(1.5px); opacity:0.85}
+          100%{transform:translateY(0) translateX(-1px); opacity:0.45}
+        }
+
+        /* ===== Book flip animations (v134) ===== */
+        @keyframes bookFloat {
+          0%,100%{transform:translateY(0) rotateY(0deg)}
+          50%{transform:translateY(-8px) rotateY(0.5deg)}
+        }
+        @keyframes pageFlipLeft {
+          0%{transform:perspective(1500px) rotateY(0deg)}
+          100%{transform:perspective(1500px) rotateY(-160deg)}
+        }
+        @keyframes pageFlipRight {
+          0%{transform:perspective(1500px) rotateY(0deg)}
+          100%{transform:perspective(1500px) rotateY(160deg)}
+        }
+        @keyframes bookmarkPulse {
+          0%,100%{transform:scale(1)}
+          50%{transform:scale(1.1)}
+        }
       `}</style>
     </div>
   );

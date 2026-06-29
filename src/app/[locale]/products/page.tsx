@@ -534,13 +534,34 @@ export default function ProductsPage() {
                             borderWidth: '1px',
                           }}
                         >
-                          {/* Subtle pulse ring for unselected items */}
-                          {!isSelected && (
-                            <span className="absolute inset-0 rounded-full animate-ping" style={{
-                              background: 'rgba(59,130,246,0.08)',
-                              animationDuration: '2.5s',
+                          {/* Bubble rise animation for unselected items — glassmorphic bubbles floating up */}
+                        {!isSelected && (
+                          <>
+                            {/* Glass overlay base */}
+                            <span className="absolute inset-0 rounded-full" style={{
+                              background: 'linear-gradient(135deg, rgba(59,130,246,0.06) 0%, rgba(147,197,253,0.04) 100%)',
                             }} />
-                          )}
+                            {/* Rising bubbles — 6 bubbles per button */}
+                            {[...Array(6)].map((_, bi) => (
+                              <span key={bi} className="absolute rounded-full pointer-events-none" style={{
+                                width: `${4 + (bi % 3) * 3}px`,
+                                height: `${4 + (bi % 3) * 3}px`,
+                                left: `${8 + bi * 14 + (bi % 2) * 8}%`,
+                                bottom: `-${2 + (bi % 2) * 2}px`,
+                                background: `radial-gradient(circle, ${bi % 3 === 0 ? 'rgba(96,165,250,0.7)' : bi % 3 === 1 ? 'rgba(147,197,253,0.5)' : 'rgba(191,219,254,0.6)'} 0%, transparent 70%)`,
+                                animation: `productBubbleRise ${2.5 + bi * 0.4}s ease-in infinite`,
+                                animationDelay: `${bi * 0.5}s`,
+                              }} />
+                            ))}
+                            {/* Subtle glass shimmer sweep */}
+                            <span className="absolute inset-0 rounded-full overflow-hidden pointer-events-none">
+                              <span className="absolute inset-0" style={{
+                                background: 'linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.15) 50%, transparent 70%)',
+                                animation: 'glassShimmer 4s ease-in-out infinite',
+                              }} />
+                            </span>
+                          </>
+                        )}
                           {isSelected && (
                             <span className="inline-block w-1.5 h-1.5 rounded-full bg-white/90 mr-1.5" />
                           )}
@@ -609,8 +630,29 @@ export default function ProductsPage() {
                 const name = locale === 'zh' ? product.name.zh : locale === 'ar' ? product.name.ar : product.name.en;
                 return (
                   <Link key={product.id} href={detailHref}
-                    className="group bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-2 border border-gray-200 hover:border-blue-600/30 block"
+                    className="group relative bg-white/80 backdrop-blur-sm rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-2 border border-gray-200/60 hover:border-blue-600/30 block"
+                    style={{
+                      boxShadow: '0 4px 24px rgba(148,163,184,0.12), 0 1px 3px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6)',
+                    }}
                   >
+                    {/* Glass bubble rise effect on product cards */}
+                    <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl">
+                      {[...Array(5)].map((_, bi) => (
+                        <div key={bi} className="absolute rounded-full" style={{
+                          width: `${6 + (bi % 3) * 4}px`,
+                          height: `${6 + (bi % 3) * 4}px`,
+                          left: `${10 + bi * 18}%`,
+                          bottom: `${5 + (bi % 2) * 8}%`,
+                          background: `radial-gradient(circle, ${bi % 2 === 0 ? 'rgba(96,165,250,0.35)' : 'rgba(147,197,253,0.25)'} 0%, transparent 70%)`,
+                          animation: `productBubbleRise ${3 + bi * 0.5}s ease-in infinite`,
+                          animationDelay: `${bi * 0.7}s`,
+                        }} />
+                      ))}
+                      {/* Subtle glass shimmer on hover */}
+                      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{
+                        background: 'radial-gradient(circle at 30% 20%, rgba(59,130,246,0.04) 0%, transparent 55%)',
+                      }} />
+                    </div>
                     {/* Product Image */}
                     {product.images && product.images[0] ? (
                       <div className="relative h-56 overflow-hidden bg-blue-50">
@@ -747,6 +789,20 @@ export default function ProductsPage() {
           <p className="absolute bottom-4 text-white/60 text-sm">Click anywhere to close</p>
         </div>
       )}
+      {/* Product card bubble & glass animation keyframes */}
+      <style>{`
+        @keyframes productBubbleRise {
+          0% { transform: translateY(0) scale(0.3); opacity: 0; }
+          15% { opacity: 0.7; transform: translateY(-8px) scale(1); }
+          50% { opacity: 0.5; transform: translateY(-20px) scale(0.85); }
+          80% { opacity: 0.2; transform: translateY(-32px) scale(0.6); }
+          100% { transform: translateY(-42px) scale(0.2); opacity: 0; }
+        }
+        @keyframes glassShimmer {
+          0%,100% { transform: translateX(-100%); }
+          50% { transform: translateX(100%); }
+        }
+      `}</style>
     </div>
   );
 }

@@ -14,9 +14,11 @@ function getLocalizedText(obj: { zh: string; en: string; ar?: string }, locale: 
 
 const testimonials = [
   {
-    name: 'Michael Thompson',
-    role: { zh: '生产总监', en: 'Production Director' },
-    company: 'German Auto Parts GmbH',
+    name: '林志远',
+    nameAr: 'لين زهي يوان',
+    role: { zh: '生产总监', en: 'Production Director', ar: 'مدير الإنتاج' },
+    company: '华南精密制造有限公司',
+    companyAr: 'شركة جنوب الصين للتصنيع الدقيق',
     content: {
       zh: '我们生产线上安装了20台智能柜，结果非常出色。AI分析帮助我们预测需求模式，与WMS的物联网集成简化了整个运营。我强烈推荐智能柜给任何物流公司。',
       en: 'We installed 20 Smart Cabinets across our distribution centers, and the results have been outstanding. The AI-powered analytics help us predict demand patterns, and the IoT integration with our WMS has streamlined our entire operation. I highly recommend Smart Cabinet to any logistics company.',
@@ -25,9 +27,11 @@ const testimonials = [
     rating: 5,
   },
   {
-    name: 'Sarah Chen',
-    role: { zh: '首席工程师', en: 'Lead Engineer' },
-    company: 'Precision Machining Co.',
+    name: '黄晓婷',
+    nameAr: 'هوانغ شياو تينغ',
+    role: { zh: '首席工程师', en: 'Lead Engineer', ar: 'المهندسة الرئيسية' },
+    company: '东莞市精工科技有限公司',
+    companyAr: 'شركة دونغوان للتكنولوجيا الدقيقة',
     content: {
       zh: '这家精密加工公司通过智能柜实施，将工具搜索时间减少了75%，消除了生产延误。详细的案例研究和可衡量的结果。',
       en: 'A precision machining company reduced tool search time by 75% and eliminated production delays with smart cabinet implementation. A detailed case study with measurable results.',
@@ -194,16 +198,22 @@ export default function TestimonialsSection({ locale: propLocale }: Testimonials
                 style={{ backgroundColor: 'rgba(26, 54, 93, 0.2)' }}
               />
 
-              {/* Author */}
+              {/* Author — with i18n name/company support */}
               <div className="relative z-10">
-                <div 
+                <div
                   className="font-bold text-lg"
                   style={{ color: '#1a202c' }}
                 >
-                  {testimonials[currentIndex].name}
+                  {currentLocale === 'ar' && testimonials[currentIndex].nameAr
+                    ? testimonials[currentIndex].nameAr
+                    : testimonials[currentIndex].name}
                 </div>
                 <div className="text-sm mt-1" style={{ color: '#4a5568' }}>
-                  {getLocalizedText(testimonials[currentIndex].role, currentLocale)}，{testimonials[currentIndex].company}
+                  {getLocalizedText(testimonials[currentIndex].role, currentLocale)}
+                  ，
+                  {currentLocale === 'ar' && testimonials[currentIndex].companyAr
+                    ? testimonials[currentIndex].companyAr
+                    : testimonials[currentIndex].company}
                 </div>
               </div>
             </motion.div>

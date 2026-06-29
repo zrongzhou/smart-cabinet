@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Calendar, User, ArrowRight, FileText, Newspaper, Lightbulb, TrendingUp, Shield, Award } from 'lucide-react';
 import { useLocale } from '@/lib/i18n';
 import { fetchBlogs, BlogPost } from '@/lib/api';
+import { getBlogBySlug } from '@/data/blogs';
 import OceanHeader from '@/components/OceanHeader';
 
 // Map blog category to Lucide icon + i18n label
@@ -147,14 +148,24 @@ export default function BlogPage() {
             {blogs.map((post, index) => {
               const isPriority = index < 3;
               const detailHref = `/${locale}/blog/${post.slug}`;
-              // Safe i18n access with fallback chain: current locale → en → raw string
-              const resolveI18n = (field: Record<string, any> | string | undefined, defaultKey: string = 'en'): string => {
+              // Safe i18n access with fallback chain: API data → static data (by slug) → en → zh → first value
+              const resolveI18n = (field: Record<string, any> | string | undefined, fallbackStatic?: Record<string, any>): string => {
                 if (!field) return '';
                 if (typeof field === 'string') return field;
-                return field[locale] || field[defaultKey] || field.en || field.zh || Object.values(field).find(v => typeof v === 'string' && v) || '';
+                // 1. Try current locale from API data
+                if (field[locale] && typeof field[locale] === 'string' && field[locale].trim()) return field[locale];
+                // 2. Try static blogs.ts data (has full ar/zh/en translations)
+                if (fallbackStatic) {
+                  const staticVal = fallbackStatic[locale] || fallbackStatic.en;
+                  if (staticVal && typeof staticVal === 'string' && staticVal.trim()) return staticVal;
+                }
+                // 3. Fallback: en → zh → any non-empty string value
+                return field.en || field.zh || Object.values(field).find(v => typeof v === 'string' && v.trim()) || '';
               };
-              const title = resolveI18n(post.title);
-              const excerpt = resolveI18n(post.excerpt);
+              // Match against static blogs.ts for i18n fallback (DB may lack ar translations)
+              const staticPost = getBlogBySlug(post.slug);
+              const title = resolveI18n(post.title, staticPost?.title);
+              const excerpt = resolveI18n(post.excerpt, staticPost?.excerpt);
               const category = post.category || 'General';
               const BlogIcon = getBlogIcon(category);
 
