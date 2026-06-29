@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import ProductDetailClient from '@/components/products/ProductDetailClient';
 import { Product } from '@/lib/api';
+import { prisma } from '@/lib/prisma';
 
 // Helper function to translate i18n objects
 function translate(obj: any, locale: 'en' | 'zh' | 'ar'): string {
@@ -32,24 +33,22 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const locale = params.locale as 'en' | 'zh' | 'ar';
 
   try {
-    // Fetch product data
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-    const res = await fetch(`${baseUrl}/api/products?slug=${encodeURIComponent(slug)}&status=all`, {
-      cache: 'no-store',
+    // Fetch product directly from database
+    const product = await prisma.product.findFirst({
+      where: {
+        OR: [
+          { slug: slug },
+          { id: slug },
+        ],
+        deletedAt: null,
+      },
     });
-
-    if (!res.ok) {
-      return {};
-    }
-
-    const json = await res.json();
-    const product: Product = json.data?.[0];
 
     if (!product) {
       return {};
     }
 
-    // Safely access seoTitle and seoDescription (may not be in Product type yet)
+    // Safely access seoTitle and seoDescription
     const productAny = product as any;
     const title = productAny.seoTitle?.[locale] || translate(product.name, locale) || 'Product';
     const description = productAny.seoDescription?.[locale] || translate(product.description, locale) || '';
@@ -105,17 +104,6 @@ function generateJsonLd(product: Product, locale: string) {
     };
   }
 
-  // Add aggregate rating if reviews exist (using any to access potential reviews field)
-  const productAny = product as any;
-  if (productAny.reviews && productAny.reviews.length > 0) {
-    const avgRating = productAny.reviews.reduce((sum: number, r: any) => sum + r.rating, 0) / productAny.reviews.length;
-    jsonLd.aggregateRating = {
-      '@type': 'AggregateRating',
-      ratingValue: avgRating.toFixed(1),
-      reviewCount: productAny.reviews.length,
-    };
-  }
-
   return jsonLd;
 }
 
@@ -151,41 +139,42 @@ export default async function ProductDetailPage({ params }: PageProps) {
   let relatedProducts: Product[] = [];
 
   try {
-    // Fetch product directly from API
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-    const res = await fetch(`${baseUrl}/api/products?slug=${encodeURIComponent(slug)}&status=all`, {
-      cache: 'no-store',
+    // Fetch product directly from database
+    const dbProduct = await prisma.product.findFirst({
+      where: {
+        OR: [
+          { slug: slug },
+          { id: slug },
+        ],
+        deletedAt: null,
+      },
     });
 
-    if (!res.ok) {
+    if (!dbProduct) {
       notFound();
     }
 
-    const json = await res.json();
-    product = json.data?.[0];
-
-    if (!product) {
-      notFound();
-    }
-
-    // Get related products (same category)
-    const allRes = await fetch(`${baseUrl}/api/products?status=active`, {
-      cache: 'no-store',
+    // Also fetch related products (same category)
+    const allProducts = await prisma.product.findMany({
+      where: {
+        status: 'active',
+        deletedAt: null,
+      },
+      take: 100,
     });
 
-    if (allRes.ok) {
-      const allJson = await allRes.json();
-      const allProducts: Product[] = allJson.data || [];
+    product = dbProduct as any;
 
-      const productCatIds = getCategoryIds(product.categories as any[]);
-      relatedProducts = allProducts
-        .filter(p => p.id !== product!.id)
-        .filter(p => {
-          const pCatIds = getCategoryIds(p.categories as any[]);
-          return pCatIds.some(id => productCatIds.includes(id));
-        })
-        .slice(0, 4);
-    }
+    // Find related products (same category)
+    const productCatIds = getCategoryIds((dbProduct as any).categories || []);
+    relatedProducts = allProducts
+      .filter(p => p.id !== dbProduct.id)
+      .filter(p => {
+        const pCatIds = getCategoryIds((p as any).categories || []);
+        return pCatIds.some(id => productCatIds.includes(id));
+      })
+      .slice(0, 4) as any[];
+
   } catch (error) {
     console.error('Failed to load product:', error);
     notFound();
