@@ -27,58 +27,14 @@ interface PageProps {
   };
 }
 
-// Generate dynamic metadata for SEO
+// Generate dynamic metadata for SEO - TEST VERSION
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const slug = params.slug.join('/');
-  const locale = params.locale as 'en' | 'zh' | 'ar';
-
-  try {
-    console.log(`[generateMetadata] Fetching product for slug: ${slug}`);
-    
-    // Fetch product directly from database
-    const product = await prisma.product.findFirst({
-      where: {
-        OR: [
-          { slug: slug },
-          { id: slug },
-        ],
-        deletedAt: null,
-      },
-    });
-
-    console.log(`[generateMetadata] Product found:`, product ? `id=${product.id}, slug=${product.slug}` : 'null');
-
-    if (!product) {
-      console.log(`[generateMetadata] Product not found, returning default metadata`);
-      return {};
-    }
-
-    // Safely access seoTitle and seoDescription
-    const productAny = product as any;
-    const title = productAny.seoTitle?.[locale] || translate(product.name, locale) || 'Product';
-    const description = productAny.seoDescription?.[locale] || translate(product.description, locale) || '';
-    const image = product.images?.[0] || '';
-
-    return {
-      title,
-      description,
-      openGraph: {
-        title,
-        description,
-        images: image ? [{ url: image }] : [],
-        type: 'website',
-      },
-      twitter: {
-        card: 'summary_large_image',
-        title,
-        description,
-        images: image ? [image] : [],
-      },
-    };
-  } catch (error) {
-    console.error('Error generating metadata:', error);
-    return {};
-  }
+  // TEST: static title to check if generateMetadata is being called
+  console.log('[generateMetadata] CALLED!');
+  return {
+    title: 'TEST - SEO Title Works!',
+    description: 'Test description',
+  };
 }
 
 // Generate JSON-LD structured data for Product
