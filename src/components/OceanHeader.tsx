@@ -5,8 +5,7 @@ import { motion } from 'framer-motion';
 
 // ============================================================
 // SkyHeader — 深蓝夜空 + 流光(Aurora) + 星空
-// 方向：B2B 工业设备网站 → 高级、克制、科技感
-// 取代所有之前的海洋/气泡版本
+// v163: 大幅提高视觉可见度
 // ============================================================
 
 const SKY_GRADIENT = `linear-gradient(180deg,
@@ -22,42 +21,36 @@ const SKY_GRADIENT = `linear-gradient(180deg,
   #bfe8fc 100%)`;
 
 // ============================================================
-// LAYER 1: 流光 Aurora — 多层渐变光带缓慢流动
+// LAYER 1: Aurora 流光 — 高可见度版本
 // ============================================================
 function AuroraFlow() {
   const [ribbons, setRibbons] = useState<Array<{
-    id: number;
-    top: string;
-    height: string;
-    opacity: number;
-    duration: number;
-    delay: number;
-    blur: number;
-    colorA: string;
-    colorB: string;
+    id: number; top: string; height: string; opacity: number;
+    duration: number; delay: number; blur: number;
+    colorA: string; colorB: string;
   }>>([]);
 
   useEffect(() => {
     setRibbons([
       {
-        id: 0, top: '5%', height: '35%', opacity: 0.14,
-        duration: 18, delay: 0, blur: 60,
-        colorA: 'rgba(56,189,248,0.35)', colorB: 'rgba(139,92,246,0.18)',
+        id: 0, top: '0%', height: '45%', opacity: 0.28,
+        duration: 14, delay: 0, blur: 50,
+        colorA: 'rgba(56,189,248,0.55)', colorB: 'rgba(139,92,246,0.35)',
       },
       {
-        id: 1, top: '12%', height: '28%', opacity: 0.11,
-        duration: 22, delay: 3, blur: 75,
-        colorA: 'rgba(99,102,241,0.30)', colorB: 'rgba(16,185,129,0.15)',
+        id: 1, top: '8%', height: '38%', opacity: 0.22,
+        duration: 18, delay: 2, blur: 60,
+        colorA: 'rgba(99,102,241,0.50)', colorB: 'rgba(16,185,129,0.30)',
       },
       {
-        id: 2, top: '-3%', height: '38%', opacity: 0.09,
-        duration: 26, delay: 7, blur: 90,
-        colorA: 'rgba(236,72,153,0.20)', colorB: 'rgba(59,130,246,0.12)',
+        id: 2, top: '-5%', height: '48%', opacity: 0.18,
+        duration: 22, delay: 5, blur: 70,
+        colorA: 'rgba(236,72,153,0.40)', colorB: 'rgba(59,130,246,0.25)',
       },
       {
-        id: 3, top: '18%', height: '22%', opacity: 0.08,
-        duration: 20, delay: 2, blur: 55,
-        colorA: 'rgba(34,211,238,0.25)', colorB: 'rgba(167,139,250,0.10)',
+        id: 3, top: '15%', height: '32%', opacity: 0.16,
+        duration: 16, delay: 1, blur: 45,
+        colorA: 'rgba(34,211,238,0.45)', colorB: 'rgba(167,139,250,0.20)',
       },
     ]);
   }, []);
@@ -68,15 +61,15 @@ function AuroraFlow() {
     <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true"
          style={{ mixBlendMode: 'screen' }}>
       {ribbons.map(r => (
-        <div key={r.id} className="absolute left-[-10%] right-[-10%]"
+        <div key={r.id} className="absolute left-[-15%] right-[-15%]"
              style={{
                top: r.top,
                height: r.height,
                background: `linear-gradient(90deg,
                  transparent 0%,
-                 ${r.colorA} 20%,
-                 ${r.colorB} 50%,
-                 ${r.colorA} 80%,
+                 ${r.colorA} 15%,
+                 ${r.colorB} 45%,
+                 ${r.colorA} 75%,
                  transparent 100%)`,
                filter: `blur(${r.blur}px)`,
                opacity: r.opacity,
@@ -91,7 +84,7 @@ function AuroraFlow() {
 }
 
 // ============================================================
-// LAYER 2: 星空 — 不同大小/亮度的星星闪烁
+// LAYER 2: 星空 — 大尺寸高亮星星（之前1-2.5px太看不见了）
 // ============================================================
 function StarField() {
   const [stars, setStars] = useState<Array<{
@@ -100,15 +93,25 @@ function StarField() {
   }>>([]);
 
   useEffect(() => {
-    setStars(Array.from({ length: 50 }, (_, i) => ({
-      id: i,
-      x: Math.random() * 100,
-      y: Math.random() * 72,
-      size: Math.random() > 0.85 ? 2.5 : (Math.random() > 0.65 ? 1.8 : 1),
-      brightness: 0.3 + Math.random() * 0.7,
-      pulseSpeed: 2 + Math.random() * 5,
-      delay: Math.random() * 8,
-    })));
+    // Mix of small + medium + large stars for depth
+    const starData = Array.from({ length: 45 }, (_, i) => {
+      const roll = Math.random();
+      let size: number;
+      if (roll > 0.85) size = 3.5 + Math.random() * 2;   // large: 3.5-5.5px
+      else if (roll > 0.55) size = 2 + Math.random() * 1.5; // medium: 2-3.5px
+      else size = 1 + Math.random() * 1;                    // small: 1-2px
+
+      return {
+        id: i,
+        x: Math.random() * 100,
+        y: Math.random() * 70, // keep in upper 70%
+        size,
+        brightness: 0.4 + Math.random() * 0.6,
+        pulseSpeed: 2 + Math.random() * 4,
+        delay: Math.random() * 7,
+      };
+    });
+    setStars(starData);
   }, []);
 
   if (stars.length === 0) return null;
@@ -120,8 +123,10 @@ function StarField() {
           style={{
             left: `${s.x}%`, top: `${s.y}%`,
             width: s.size, height: s.size,
-            background: `radial-gradient(circle, rgba(255,255,255,${s.brightness}) 0%, rgba(200,220,255,${s.brightness * 0.45}) 45%, transparent 100%)`,
-            boxShadow: `0 0 ${s.size * 2}px rgba(180,210,255,${s.brightness * 0.25})`,
+            background: `radial-gradient(circle, rgba(255,255,255,${s.brightness}) 0%, rgba(200,220,255,${s.brightness * 0.5}) 40%, transparent 80%)`,
+            boxShadow: s.size > 2.5
+              ? `0 0 ${s.size * 3}px rgba(180,210,255,${s.brightness * 0.4}), 0 0 ${s.size * 6}px rgba(150,190,255,${s.brightness * 0.15})`
+              : `0 0 ${s.size * 2}px rgba(180,210,255,${s.brightness * 0.25})`,
             animation: `star-twinkle ${s.pulseSpeed}s ease-in-out ${s.delay}s infinite`,
           }}
         />
@@ -131,7 +136,7 @@ function StarField() {
 }
 
 // ============================================================
-// LAYER 3: 流星 — 偶尔划过的光线
+// LAYER 3: 流星
 // ============================================================
 function ShootingStars() {
   const [stars, setStars] = useState<Array<{
@@ -145,9 +150,9 @@ function ShootingStars() {
       x: 20 + Math.random() * 60,
       y: 5 + Math.random() * 25,
       angle: 215 + Math.random() * 30,
-      length: 80 + Math.random() * 120,
-      speed: 6 + Math.random() * 5,
-      delay: i * 4 + Math.random() * 6,
+      length: 100 + Math.random() * 120,
+      speed: 6 + Math.random() * 4,
+      delay: i * 5 + Math.random() * 8,
     })));
   }, []);
 
@@ -159,11 +164,9 @@ function ShootingStars() {
         <div key={s.id}
           className="absolute"
           style={{
-            left: `${s.x}%`,
-            top: `${s.y}%`,
-            width: `${s.length}px`,
-            height: '1.5px',
-            background: 'linear-gradient(90deg, rgba(255,255,255,0.9), rgba(180,220,255,0.4), transparent)',
+            left: `${s.x}%`, top: `${s.y}%`,
+            width: `${s.length}px`, height: '2px',
+            background: 'linear-gradient(90deg, rgba(255,255,255,0.95), rgba(180,220,255,0.5), transparent)',
             borderRadius: '1px',
             transform: `rotate(${s.angle}deg)`,
             transformOrigin: '0 50%',
@@ -177,14 +180,14 @@ function ShootingStars() {
 }
 
 // ============================================================
-// LAYER 4: 底部淡出 — 纯净渐变，无黑边
+// LAYER 4: 底部淡出 — 纯净浅色渐变到白
 // ============================================================
 function BottomFade() {
   return (
-    <div className="absolute bottom-0 left-0 right-0 h-[80px] pointer-events-none"
+    <div className="absolute bottom-0 left-0 right-0 h-[70px] pointer-events-none"
          aria-hidden="true"
          style={{
-           background: 'linear-gradient(180deg, rgba(191,232,252,0.0) 0%, rgba(191,232,252,0.10) 30%, rgba(225,245,254,0.40) 65%, rgba(248,252,255,0.94) 100%)',
+           background: 'linear-gradient(180deg, rgba(191,232,252,0.0) 0%, rgba(210,240,250,0.15) 35%, rgba(235,248,255,0.55) 65%, #ffffff 100%)',
          }}
     />
   );
@@ -224,7 +227,7 @@ export default function SkyHeader({
       {/* Layer 3: Shooting stars */}
       <ShootingStars />
 
-      {/* Layer 4: Bottom fade */}
+      {/* Layer 4: Bottom fade to white (no dark edge!) */}
       <BottomFade />
 
       {/* === CONTENT === */}
@@ -278,22 +281,22 @@ export default function SkyHeader({
 
         /* Aurora ribbon flow */
         @keyframes aurora-flow {
-          0%   { transform: translateX(-6%) skewY(-3deg); }
-          50%  { transform: translateX(4%) skewY(-1deg); }
-          100% { transform: translateX(-6%) skewY(-3deg); }
+          0%   { transform: translateX(-8%) skewY(-3deg); }
+          50%  { transform: translateX(6%) skewY(-1.5deg); }
+          100% { transform: translateX(-8%) skewY(-3deg); }
         }
 
         /* Star twinkle */
         @keyframes star-twinkle {
-          0%, 100% { opacity: 0.15; transform: scale(0.75); }
-          50%      { opacity: 1;    transform: scale(1.2); }
+          0%, 100% { opacity: 0.2; transform: scale(0.8); }
+          50%      { opacity: 1;   transform: scale(1.3); }
         }
 
         /* Shooting star */
         @keyframes shooting-star {
           0%   { opacity: 0; transform: translateX(0) translateY(0) rotate(var(--angle, 220deg)); }
           4%   { opacity: 1; }
-          15%  { opacity: 0; transform: translateX(120px) translateY(80px) rotate(var(--angle, 220deg)); }
+          15%  { opacity: 0; transform: translateX(140px) translateY(90px) rotate(var(--angle, 220deg)); }
           100% { opacity: 0; }
         }
       `}</style>

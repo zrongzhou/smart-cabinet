@@ -147,11 +147,11 @@ export default function FAQPage() {
         icon={<HelpCircle className="w-8 h-8 text-blue-300" />}
       />
 
-      {/* Wave divider decoration */}
-      <div className="w-full overflow-hidden leading-none">
-        <svg viewBox="0 0 1440 120" className="w-full h-[60px] md:h-[80px] text-[var(--card-bg)]" preserveAspectRatio="none">
-          <path d="M0,64L48,58.7C96,53,192,43,288,48C384,53,480,75,576,80C672,85,768,75,864,64C960,53,1056,43,1152,42.7C1248,43,1344,53,1392,58.7L1440,64L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z" 
-            fill="currentColor" fillOpacity="1" />
+      {/* Wave divider decoration — light fade (no more black bar!) */}
+      <div className="w-full overflow-hidden leading-none" style={{ background: 'linear-gradient(180deg, #bfe8fc 0%, #f0f9ff 30%, #ffffff 100%)' }}>
+        <svg viewBox="0 0 1440 60" className="w-full h-[35px] md:h-[50px]" preserveAspectRatio="none">
+          <path d="M0,30 C240,48 480,12 720,30 C960,48 1200,12 1440,30 L1440,60 L0,60Z"
+                fill="#f0f9ff" />
         </svg>
       </div>
 
