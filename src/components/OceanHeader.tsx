@@ -9,15 +9,16 @@ import { motion } from 'framer-motion';
 // 无具象生物，只有氛围粒子 + 光效 + 波纹
 // ============================================================
 
-// ===== PREMIUM OCEAN GRADIENT — 深邃富丽的渐变 =====
+// ===== PREMIUM OCEAN GRADIENT — 深邃富丽的渐变（底部明亮，无黑边）=====
 const OCEAN_GRADIENT = `linear-gradient(180deg,
   #0c4a6e 0%,
-  #075985 18%,
-  #0369a1 35%,
-  #0284c7 52%,
-  #0ea5e9 70%,
-  #38bdf8 85%,
-  #7dd3fc 100%)`;
+  #075985 15%,
+  #0369a1 30%,
+  #0284c7 45%,
+  #0ea5e9 60%,
+  #38bdf8 75%,
+  #7dd3fc 90%,
+  #bae6fd 100%)`;
 
 // ============================================================
 // LAYER 1: 氛围光晕 — 大面积模糊光斑，营造深度感
@@ -164,43 +165,49 @@ function RisingBubbles() {
 // ============================================================
 function WaveLines() {
   return (
-    <div className="absolute bottom-0 left-0 right-0 h-[50px] pointer-events-none overflow-hidden" aria-hidden="true">
+    <div className="absolute bottom-0 left-0 right-0 h-[40px] pointer-events-none overflow-hidden" aria-hidden="true">
+      {/* Soft fade at very bottom to blend into page content */}
+      <div className="absolute inset-0"
+           style={{
+             background: 'linear-gradient(180deg, transparent 60%, rgba(186,230,253,0.3) 100%)',
+           }}
+      />
       {/* Wave 1 — back layer, slow */}
-      <svg className="absolute bottom-0 left-0 w-full h-[45px]" preserveAspectRatio="none" viewBox="0 0 1440 45">
-        <path d="M0,22 C360,5 720,38 1080,18 C1260,8 1380,28 1440,22 L1440,45 L0,45 Z"
-              fill="rgba(14,165,233,0.06)">
+      <svg className="absolute bottom-0 left-0 w-full h-[38px]" preserveAspectRatio="none" viewBox="0 0 1440 38">
+        <path d="M0,18 C360,4 720,32 1080,15 C1260,7 1380,24 1440,18 L1440,38 L0,38 Z"
+              fill="rgba(56,189,248,0.10)">
           <animate attributeName="d"
                    dur="10s"
                    repeatCount="indefinite"
-                   values="M0,22 C360,5 720,38 1080,18 C1260,8 1380,28 1440,22 L1440,45 L0,45 Z;
-                           M0,18 C360,32 720,8 1080,26 C1260,34 1380,12 1440,18 L1440,45 L0,45 Z;
-                           M0,22 C360,5 720,38 1080,18 C1260,8 1380,28 1440,22 L1440,45 L0,45 Z" />
+                   values="M0,18 C360,4 720,32 1080,15 C1260,7 1380,24 1440,18 L1440,38 L0,38 Z;
+                           M0,14 C360,28 720,6 1080,22 C1260,29 1380,10 1440,14 L1440,38 L0,38 Z;
+                           M0,18 C360,4 720,32 1080,15 C1260,7 1380,24 1440,18 L1440,38 L0,38 Z" />
         </path>
       </svg>
 
       {/* Wave 2 — middle layer */}
-      <svg className="absolute bottom-0 left-0 w-full h-[35px]" preserveAspectRatio="none" viewBox="0 0 1440 35">
-        <path d="M0,16 C240,28 480,6 720,20 C960,33 1200,10 1440,16 L1440,35 L0,35 Z"
-              fill="rgba(56,189,248,0.08)">
+      <svg className="absolute bottom-0 left-0 w-full h-[28px]" preserveAspectRatio="none" viewBox="0 0 1440 28">
+        <path d="M0,13 C240,22 480,5 720,16 C960,26 1200,8 1440,13 L1440,28 L0,28 Z"
+              fill="rgba(125,211,252,0.12)">
           <animate attributeName="d"
                    dur="7s"
                    repeatCount="indefinite"
-                   values="M0,16 C240,28 480,6 720,20 C960,33 1200,10 1440,16 L1440,35 L0,35 Z;
-                           M0,10 C240,4 480,26 720,12 C960,6 1200,24 1440,10 L1440,35 L0,35 Z;
-                           M0,16 C240,28 480,6 720,20 C960,33 1200,10 1440,16 L1440,35 L0,35 Z" />
+                   values="M0,13 C240,22 480,5 720,16 C960,26 1200,8 1440,13 L1440,28 L0,28 Z;
+                           M0,8 C240,3 480,20 720,10 C960,5 1200,19 1440,8 L1440,28 L0,28 Z;
+                           M0,13 C240,22 480,5 720,16 C960,26 1200,8 1440,13 L1440,28 L0,28 Z" />
         </path>
       </svg>
 
-      {/* Wave 3 — front layer, faster, lighter */}
-      <svg className="absolute bottom-0 left-0 w-full h-[25px]" preserveAspectRatio="none" viewBox="0 0 1440 25">
-        <path d="M0,12 C180,20 360,4 540,14 C720,23 900,8 1080,15 C1260,21 1350,10 1440,12 L1440,25 L0,25 Z"
-              fill="rgba(125,211,252,0.10)">
+      {/* Wave 3 — front layer, faster, lightest */}
+      <svg className="absolute bottom-0 left-0 w-full h-[20px]" preserveAspectRatio="none" viewBox="0 0 1440 20">
+        <path d="M0,10 C180,16 360,3 540,11 C720,18 900,6 1080,11 C1260,16 1350,8 1440,10 L1440,20 L0,20 Z"
+              fill="rgba(186,230,253,0.15)">
           <animate attributeName="d"
                    dur="5s"
                    repeatCount="indefinite"
-                   values="M0,12 C180,20 360,4 540,14 C720,23 900,8 1080,15 C1260,21 1350,10 1440,12 L1440,25 L0,25 Z;
-                           M0,8 C180,2 360,16 540,8 C720,2 900,16 1080,8 C1260,4 1350,14 1440,8 L1440,25 L0,25 Z;
-                           M0,12 C180,20 360,4 540,14 C720,23 900,8 1080,15 C1260,21 1350,10 1440,12 L1440,25 L0,25 Z" />
+                   values="M0,10 C180,16 360,3 540,11 C720,18 900,6 1080,11 C1260,16 1350,8 1440,10 L1440,20 L0,20 Z;
+                           M0,6 C180,2 360,13 540,7 C720,2 900,13 1080,7 C1260,3 1350,11 1440,6 L1440,20 L0,20 Z;
+                           M0,10 C180,16 360,3 540,11 C720,18 900,6 1080,11 C1260,16 1350,8 1440,10 L1440,20 L0,20 Z" />
         </path>
       </svg>
     </div>
@@ -258,8 +265,12 @@ export default function OceanHeader({
         alignItems: 'center',
         justifyContent: 'center',
         background: OCEAN_GRADIENT,
+        // CRITICAL: create clipping boundary so animated particles never leak out
+        clipPath: 'inset(0 round 0)',
       }}
     >
+      {/* Clipping wrapper — double safety to contain all animations */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
       {/* Layer 1: Ambient glow */}
       <AmbientGlow />
 
@@ -274,6 +285,7 @@ export default function OceanHeader({
 
       {/* Layer 5: Wave lines (bottom) */}
       <WaveLines />
+      </div>
 
       {/* === CONTENT (top layer, always readable) === */}
       <div className="relative z-10 max-w-5xl mx-auto text-center">
@@ -327,27 +339,27 @@ export default function OceanHeader({
           }
         }
 
-        /* Floating light particles */
+        /* Floating light particles — keep within container */
         @keyframes float-light {
           0%, 100% {
             transform: translate(0, 0) scale(1);
             opacity: var(--base-opacity, 0.5);
           }
           25% {
-            transform: translate(var(--drift-x, 5px), -12px) scale(1.15);
+            transform: translate(var(--drift-x, 5px), -10px) scale(1.15);
             opacity: calc(var(--base-opacity, 0.5) * 1.3);
           }
           50% {
-            transform: translate(calc(var(--drift-x, 5px) * -0.5), -20px) scale(0.95);
+            transform: translate(calc(var(--drift-x, 5px) * -0.5), -16px) scale(0.95);
             opacity: calc(var(--base-opacity, 0.5) * 0.7);
           }
           75% {
-            transform: translate(calc(var(--drift-x, 5px) * 0.3), -8px) scale(1.1);
+            transform: translate(calc(var(--drift-x, 5px) * 0.3), -6px) scale(1.1);
             opacity: calc(var(--base-opacity, 0.5) * 1.1);
           }
         }
 
-        /* Rising bubble */
+        /* Rising bubble — keep within container */
         @keyframes bubble-rise {
           0% {
             transform: translateY(0) translateX(0) scale(0.8);
@@ -356,11 +368,11 @@ export default function OceanHeader({
           10% {
             opacity: 1;
           }
-          90% {
-            opacity: 0.7;
+          85% {
+            opacity: 0.6;
           }
           100% {
-            transform: translateY(-380px) translateX(calc((var(--bubble-drift, 10px) * 1))) scale(1);
+            transform: translateY(-280px) translateX(calc((var(--bubble-drift, 10px) * 1))) scale(1);
             opacity: 0;
           }
         }
