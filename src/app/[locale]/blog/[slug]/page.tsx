@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Calendar, User, ArrowLeft, ArrowRight, Facebook, Twitter, Linkedin } from 'lucide-react';
 import { useLocale } from '@/lib/i18n';
 import { fetchBlogBySlug, fetchBlogs, BlogPost } from '@/lib/api';
+import { getBlogDetailImage, getBlogImage } from '@/lib/blog-images';
 // Static fallback when API has no data
 import staticBlogs from '@/data/blogs';
 
@@ -248,13 +249,18 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
       {/* Blog Content */}
       <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="bg-white rounded-2xl shadow-md p-8 md:p-12">
-          {blog.image && (
-            <img
-              src={blog.image}
-              alt={locale === 'zh' ? blog.title.zh : locale === 'ar' ? blog.title.ar : blog.title.en}
-              className="w-full h-64 object-cover rounded-xl mb-8"
-            />
-          )}
+          <img
+            src={getBlogDetailImage(blog)}
+            alt={locale === 'zh' ? blog.title.zh : locale === 'ar' ? blog.title.ar : blog.title.en}
+            className="w-full h-64 object-cover rounded-xl mb-8"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              const fallbackSrc = '/images/blog/general.jpg';
+              if (!target.src.includes(fallbackSrc)) {
+                target.src = fallbackSrc;
+              }
+            }}
+          />
 
           {/* Render content (HTML from rich text editor) */}
           <div
@@ -285,19 +291,24 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
             {locale === 'zh' ? '最新文章' : locale === 'ar' ? 'أحدث المقالات' : 'Recent Posts'}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {recentBlogs.map((post) => (
+            {recentBlogs.map((post, idx) => (
               <a
                 key={post.id}
                 href={`/${locale}/blog/${post.slug}`}
                 className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden"
               >
-                {post.image ? (
-                  <img src={post.image} alt="" className="w-full h-48 object-cover" />
-                ) : (
-                  <div className="h-48 bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
-                    <div className="text-white/80 text-4xl">📄</div>
-                  </div>
-                )}
+                <img
+                  src={getBlogImage(post, idx)}
+                  alt=""
+                  className="w-full h-48 object-cover"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    const fallbackSrc = '/images/blog/general.jpg';
+                    if (!target.src.includes(fallbackSrc)) {
+                      target.src = fallbackSrc;
+                    }
+                  }}
+                />
                 <div className="p-6">
                   <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2">
                     {locale === 'zh' ? post.title.zh : locale === 'ar' ? post.title.ar : post.title.en}

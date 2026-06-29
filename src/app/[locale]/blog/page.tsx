@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Calendar, User, ArrowRight, FileText, Newspaper, Lightbulb, TrendingUp, Shield, Award } from 'lucide-react';
 import { useLocale } from '@/lib/i18n';
 import { fetchBlogs, BlogPost } from '@/lib/api';
+import { getBlogImage, normalizeCategory } from '@/lib/blog-images';
 import OceanHeader from '@/components/OceanHeader';
 
 // Map blog category to Lucide icon + i18n label
@@ -29,47 +30,6 @@ const categoryColorMap: Record<string, string> = {
   'Customer Story': '#fa709a',
   'General': '#a18cd1',
 };
-
-// Category-specific local images (reliable, no CDN issues)
-const categoryImageMap: Record<string, string> = {
-  'Industry Trends': '/images/blog/industry-trends.jpg',
-  'Case Study': '/images/blog/case-study.jpg',
-  'Technical Guide': '/images/blog/technical-guide.jpg',
-  'Best Practice': '/images/blog/best-practice.jpg',
-  'Use Case': '/images/blog/use-case.jpg',
-  'Customer Story': '/images/blog/customer-story.jpg',
-  'General': '/images/blog/general.jpg',
-};
-
-// Topic-specific local images (matched by slug keywords for more precise visuals)
-const topicImageMap: Record<string, string> = {
-  'smart-cabinet-warehouse': '/images/blog/smart-cabinet-warehouse.jpg',
-  'roi-cost-analysis': '/images/blog/roi-cost-analysis.jpg',
-  'rfid-tool-tracking': '/images/blog/rfid-tool-tracking.jpg',
-  'iot-mes-integration': '/images/blog/iot-mes-integration.jpg',
-  'cnc-machining-roi': '/images/blog/cnc-machining-roi.jpg',
-  'aerospace-fod-prevention': '/images/blog/aerospace-fod-prevention.jpg',
-  'ai-industry-4-0': '/images/blog/ai-industry-4-0.jpg',
-  'digital-transformation': '/images/blog/digital-transformation.jpg',
-  'future-smart-factory': '/images/blog/future-smart-factory.jpg',
-  'ppe-safety-equipment': '/images/blog/ppe-safety-equipment.jpg',
-  'buying-guide': '/images/blog/buying-guide-smart-cabinet.jpg',
-  'tool-security-audit': '/images/blog/tool-security-audit.jpg',
-};
-
-// Helper: get the best local image for a blog post
-function getBlogImage(post: BlogPost): string {
-  // 1. Try topic-specific image match by slug
-  const slug = post.slug || '';
-  for (const [key, img] of Object.entries(topicImageMap)) {
-    if (slug.includes(key)) {
-      return img;
-    }
-  }
-  // 2. Fall back to category image
-  const category = post.category || 'General';
-  return categoryImageMap[category] || categoryImageMap['General'];
-}
 
 // Translate blog category name
 function getCategoryLabel(category: string, locale: string): string {
@@ -217,7 +177,7 @@ export default function BlogPage() {
               const excerpt = (typeof post.excerpt === 'object' && post.excerpt !== null)
                 ? (post.excerpt[locale] || post.excerpt.en || '')
                 : String(post.excerpt || '');
-              const category = post.category || 'General';
+              const category = normalizeCategory(post.category || 'General');
               const BlogIcon = getBlogIcon(category);
 
               return (
@@ -228,15 +188,15 @@ export default function BlogPage() {
                   {/* Blog Image — always use local images (reliable, no CDN/issues) */}
                   <div className="relative h-56 overflow-hidden bg-gray-100 dark:bg-slate-700">
                     <img
-                      src={getBlogImage(post)}
+                      src={getBlogImage(post, index)}
                       alt={title}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       loading={isPriority ? 'eager' : 'lazy'}
                       onError={(e) => {
-                        // If local image fails, try category fallback (should rarely happen)
+                        // If local image fails, use general fallback (should rarely happen)
                         const target = e.target as HTMLImageElement;
-                        const fallbackSrc = categoryImageMap['General'];
-                        if (target.src !== window.location.origin + fallbackSrc) {
+                        const fallbackSrc = '/images/blog/general.jpg';
+                        if (!target.src.includes(fallbackSrc)) {
                           console.warn(`Blog image load failed, using fallback: ${target.src}`);
                           target.src = fallbackSrc;
                         }
