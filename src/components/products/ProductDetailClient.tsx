@@ -26,19 +26,15 @@ function safeText(value: any, fallback: string = ''): string {
 interface ProductDetailClientProps {
   product: any;
   locale: string;
-  t: (key: string) => string;
+  labels: Record<string, string>;
   relatedProducts: any[];
-  translate: (obj: any, locale: 'en' | 'zh' | 'ar') => string;
-  getCategoryIds: (categories: any[]) => string[];
 }
 
 export default function ProductDetailClient({
   product,
   locale,
-  t,
+  labels,
   relatedProducts,
-  translate,
-  getCategoryIds,
 }: ProductDetailClientProps) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -48,10 +44,9 @@ export default function ProductDetailClient({
   const [mainImageError, setMainImageError] = useState(false);
   const [mainImageLoading, setMainImageLoading] = useState(true);
 
-  // Cast locale to the correct type for translate function
-  const typedLocale = locale as 'en' | 'zh' | 'ar';
-  const name = translate(product.name, typedLocale);
-  const description = translate(product.description, typedLocale);
+  // Use pre-resolved data from server (no function props!)
+  const name = product._resolvedName || '';
+  const description = product._resolvedDescription || '';
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -61,13 +56,13 @@ export default function ProductDetailClient({
           <ol className="flex items-center space-x-2 text-sm">
             <li>
               <a href={`/${locale}`} className="text-gray-500 hover:text-blue-600 transition-colors">
-                {locale === 'zh' ? '首页' : locale === 'ar' ? 'الرئيسية' : 'Home'}
+                {labels.home}
               </a>
             </li>
             <li className="text-gray-400">/</li>
             <li>
               <a href={`/${locale}/products`} className="text-gray-500 hover:text-blue-600 transition-colors">
-                {t('products.title') || 'Products'}
+                {labels.productsTitle}
               </a>
             </li>
             <li className="text-gray-400">/</li>
@@ -95,7 +90,7 @@ export default function ProductDetailClient({
                         /* Fallback when image fails to load */
                         <div className="w-full h-full flex flex-col items-center justify-center bg-gray-50">
                           <Package className="w-24 h-24 text-gray-300" />
-                          <p className="text-gray-400 text-sm mt-4">{locale === 'zh' ? '图片暂时无法显示' : locale === 'ar' ? 'الصورة غير متاحة' : 'Image not available'}</p>
+                          <p className="text-gray-400 text-sm mt-4">{labels.imageNotAvailable}</p>
                         </div>
                       ) : (
                         <>
@@ -123,7 +118,7 @@ export default function ProductDetailClient({
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300 flex items-center justify-center pointer-events-none">
                       <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 backdrop-blur-sm text-gray-800 px-4 py-2 rounded-full flex items-center gap-2 text-sm font-medium shadow-lg">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" /></svg>
-                        {locale === 'zh' ? '点击放大' : locale === 'ar' ? 'تكبير' : 'Click to Zoom'}
+                        {labels.clickToZoom}
                       </div>
                     </div>
                     {/* Navigation arrows for multiple images */}
@@ -197,14 +192,14 @@ export default function ProductDetailClient({
               {/* Header */}
               <div>
                 {/* Category badges */}
-                {product.categories && product.categories.length > 0 && (
+                    {product.categories && product.categories.length > 0 && (
                   <div className="flex flex-wrap gap-2 mb-3">
-                    {product.categories.map((cat: any) => (
+                    {product.categories.map((cat: any, idx: number) => (
                       <span
-                        key={cat.id}
+                        key={cat.id || idx}
                         className="inline-block px-3 py-1 bg-blue-50 text-blue-600 text-xs font-semibold rounded-full"
                       >
-                        {translate(cat.name, typedLocale)}
+                        {cat._resolvedName || cat.name}
                       </span>
                     ))}
                   </div>
@@ -220,7 +215,7 @@ export default function ProductDetailClient({
                 <div className="mb-6">
                   {product.hidePrice ? (
                     <p className="text-lg text-blue-600 font-medium">
-                      {locale === 'zh' ? '联系我们询价' : locale === 'ar' ? 'اتصل بنا للسعر' : 'Contact for Pricing'}
+                      {labels.contactForPricing}
                     </p>
                   ) : product.price ? (
                     <p className="text-3xl font-bold text-red-500">
@@ -228,7 +223,7 @@ export default function ProductDetailClient({
                     </p>
                   ) : (
                     <p className="text-lg text-gray-400 italic">
-                      {locale === 'zh' ? '价格面议' : locale === 'ar' ? 'السعر قابل للتفاوض' : 'Price on Request'}
+                      {labels.priceOnRequest}
                     </p>
                   )}
                 </div>
@@ -247,7 +242,7 @@ export default function ProductDetailClient({
                     href={`/${locale}/contact`}
                     className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200"
                   >
-                    {locale === 'zh' ? '联系我们' : locale === 'ar' ? 'اتصل بنا' : 'Contact Us'}
+                    {labels.contactUs}
                   </a>
                   <button
                     onClick={() => {
@@ -259,13 +254,13 @@ export default function ProductDetailClient({
                         });
                       } else {
                         navigator.clipboard.writeText(window.location.href);
-                        alert(locale === 'zh' ? '链接已复制' : 'Link copied!');
+                        alert(labels.linkCopied);
                       }
                     }}
                     className="inline-flex items-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-colors"
                   >
                     <Share2 className="w-4 h-4" />
-                    {locale === 'zh' ? '分享' : locale === 'ar' ? 'مشاركة' : 'Share'}
+                    {labels.share}
                   </button>
                 </div>
               </div>
@@ -277,7 +272,7 @@ export default function ProductDetailClient({
                   className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium transition-colors"
                 >
                   <ArrowLeft className="w-4 h-4" />
-                  {locale === 'zh' ? '返回产品列表' : locale === 'ar' ? 'العودة للمنتجات' : 'Back to Products'}
+                  {labels.backToProducts}
                 </a>
               </div>
             </div>
@@ -296,10 +291,10 @@ export default function ProductDetailClient({
                 }`}
               >
                 <FileText className="w-4 h-4 inline-block mr-2" />
-                {locale === 'zh' ? '描述' : locale === 'ar' ? 'الوصف' : 'Description'}
+                {labels.description}
               </button>
 
-              {product.specifications && Object.keys(product.specifications).length > 0 && (
+              {product._resolvedSpecs && (typeof product._resolvedSpecs === 'string' ? product._resolvedSpecs.trim() !== '' : Object.keys(product._resolvedSpecs).length > 0) && (
                 <button
                   onClick={() => setActiveTab('specifications')}
                   className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors ${
@@ -309,11 +304,11 @@ export default function ProductDetailClient({
                   }`}
                 >
                   <Ruler className="w-4 h-4 inline-block mr-2" />
-                  {locale === 'zh' ? '规格' : locale === 'ar' ? 'المواصفات' : 'Specifications'}
+                  {labels.specifications}
                 </button>
               )}
 
-              {product.features && (product.features[locale] || product.features.en || []).length > 0 && (
+              {product._resolvedFeatures && product._resolvedFeatures.length > 0 && (
                 <button
                   onClick={() => setActiveTab('features')}
                   className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors ${
@@ -323,7 +318,7 @@ export default function ProductDetailClient({
                   }`}
                 >
                   <Star className="w-4 h-4 inline-block mr-2" />
-                  {locale === 'zh' ? '特点' : locale === 'ar' ? 'الميزات' : 'Features'}
+                  {labels.features}
                 </button>
               )}
 
@@ -336,7 +331,7 @@ export default function ProductDetailClient({
                 }`}
               >
                 <MessageSquare className="w-4 h-4 inline-block mr-2" />
-                {locale === 'zh' ? '评论' : locale === 'ar' ? 'المراجعات' : 'Reviews'}
+                {labels.reviews}
               </button>
             </div>
 
@@ -355,69 +350,47 @@ export default function ProductDetailClient({
               )}
 
               {/* Specifications Tab */}
-              {activeTab === 'specifications' && product.specifications && (() => {
-                // Check if specifications has actual content
-                if (typeof product.specifications === 'object' && !Array.isArray(product.specifications)) {
-                  const specValue = product.specifications[locale as keyof typeof product.specifications]
-                    || product.specifications.en
-                    || product.specifications.zh
-                    || product.specifications.ar
-                    || '';
-                  if (!specValue || (typeof specValue === 'string' && specValue.trim() === '')) return null;
+              {activeTab === 'specifications' && product._resolvedSpecs && (() => {
+                // Check if specs is a string (pre-resolved i18n HTML)
+                if (typeof product._resolvedSpecs === 'string') {
+                  if (!product._resolvedSpecs.trim()) return null;
+                  return (
+                    <div className="prose prose-sm max-w-none">
+                      <div
+                        className="bg-gray-50 rounded-xl p-5 border border-gray-200 whitespace-pre-wrap text-gray-600"
+                        dangerouslySetInnerHTML={{ __html: safeText(product._resolvedSpecs) }}
+                      />
+                    </div>
+                  );
                 }
-                if (Object.keys(product.specifications).length === 0) return null;
-                
+                // Key-value format specs
                 return (
                   <div className="prose prose-sm max-w-none">
-                    {/* Format 1: i18n object */}
-                    {typeof product.specifications === 'object' && !Array.isArray(product.specifications) &&
-                     (product.specifications[locale as keyof typeof product.specifications] !== undefined || 
-                      product.specifications.en !== undefined || 
-                      product.specifications.zh !== undefined ||
-                      product.specifications.ar !== undefined) &&
-                     typeof (product.specifications[locale as keyof typeof product.specifications] || product.specifications.en || product.specifications.zh) === 'string' ? (
-                      (() => {
-                        const specValue = product.specifications[locale as keyof typeof product.specifications]
-                          || product.specifications.en
-                          || product.specifications.zh
-                          || product.specifications.ar
-                          || '';
-                        if (!specValue || (typeof specValue === 'string' && specValue.trim() === '')) return null;
-                        return (
-                          <div
-                            className="bg-gray-50 rounded-xl p-5 border border-gray-200 whitespace-pre-wrap text-gray-600"
-                            dangerouslySetInnerHTML={{ __html: safeText(specValue) }}
-                          />
-                        );
-                      })()
-                    ) : (
-                      /* Format 2: key-value object */
-                      <div className="bg-gray-50 rounded-xl overflow-hidden border border-gray-200">
-                        <div className="overflow-x-auto">
-                          <table className="w-full text-sm min-w-[400px]">
-                            <tbody>
-                              {Object.entries(product.specifications).map(([key, value]: [string, any], index: number) => (
-                                <tr key={key} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                                  <td className="px-4 py-3 font-medium text-gray-900 min-w-[120px] border-r border-gray-200">
-                                    {key}
-                                  </td>
-                                  <td className="px-4 py-3 text-gray-600">
-                                    {safeText(translate(value, typedLocale)) || '-'}
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
+                    <div className="bg-gray-50 rounded-xl overflow-hidden border border-gray-200">
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-sm min-w-[400px]">
+                          <tbody>
+                            {Object.entries(product._resolvedSpecs).map(([key, value]: [string, string], index: number) => (
+                              <tr key={key} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                                <td className="px-4 py-3 font-medium text-gray-900 min-w-[120px] border-r border-gray-200">
+                                  {safeText(key)}
+                                </td>
+                                <td className="px-4 py-3 text-gray-600">
+                                  {safeText(value) || '-'}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
                       </div>
-                    )}
+                    </div>
                   </div>
                 );
               })()}
 
               {/* Features Tab */}
-              {activeTab === 'features' && product.features && (() => {
-                const featuresArray = product.features[locale] || product.features.en || [];
+              {activeTab === 'features' && product._resolvedFeatures && (() => {
+                const featuresArray = product._resolvedFeatures;
                 if (!featuresArray || featuresArray.length === 0) return null;
                 
                 return (
@@ -455,7 +428,7 @@ export default function ProductDetailClient({
           <div className="mt-16 pt-8 border-t border-gray-200">
             <h2 className="text-2xl font-bold text-gray-900 mb-8 flex items-center gap-3">
               <span className="w-1.5 h-6 bg-blue-600 rounded-full inline-block" />
-              {locale === 'zh' ? '相关产品' : locale === 'ar' ? 'منتجات ذات صلة' : 'Related Products'}
+              {labels.relatedProducts}
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {relatedProducts.map((relatedProduct) => (
@@ -468,7 +441,7 @@ export default function ProductDetailClient({
                     {relatedProduct.images?.[0] ? (
                       <SafeImage
                         src={relatedProduct.images[0]}
-                        alt={safeText(translate(relatedProduct.name, typedLocale))}
+                        alt={safeText(relatedProduct._resolvedName || relatedProduct.name)}
                         fill
                         sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                         className="object-contain p-3 transition-transform duration-500 group-hover:scale-110"
@@ -482,9 +455,9 @@ export default function ProductDetailClient({
                       </div>
                     )}
                   </div>
-                  <div className="p-4">
+                      <div className="p-4">
                     <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2 text-sm leading-snug">
-                      {safeText(translate(relatedProduct.name, typedLocale))}
+                      {safeText(relatedProduct._resolvedName || relatedProduct.name)}
                     </h3>
                     <p className="text-xs text-blue-500 font-mono mt-1.5">{relatedProduct.sku}</p>
                   </div>
@@ -523,7 +496,7 @@ export default function ProductDetailClient({
             {/* Zoom hint */}
             {zoomLevel === 1 && (
               <p className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/60 text-sm pointer-events-none">
-                {locale === 'zh' ? '点击图片放大' : locale === 'ar' ? 'انقر لتكبير الصورة' : 'Click image to zoom'}
+                {labels.clickImageToZoom}
               </p>
             )}
           </div>

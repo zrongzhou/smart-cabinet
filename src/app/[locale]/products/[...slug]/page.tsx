@@ -132,20 +132,6 @@ function JsonLd({ data }: { data: object }) {
 export default async function ProductDetailPage({ params }: PageProps) {
   const slug = params.slug.join('/');
   const locale = params.locale as 'en' | 'zh' | 'ar';
-  const t = (key: string) => {
-    const translations: Record<string, Record<string, string>> = {
-      en: {
-        'products.title': 'Products',
-      },
-      zh: {
-        'products.title': '产品',
-      },
-      ar: {
-        'products.title': 'المنتجات',
-      },
-    };
-    return translations[locale]?.[key] || key;
-  };
 
   let product: Product | null = null;
   let relatedProducts: Product[] = [];
@@ -199,19 +185,85 @@ export default async function ProductDetailPage({ params }: PageProps) {
   // Generate JSON-LD data
   const jsonLdData = generateJsonLd(product, locale);
 
+  // === CRITICAL: Pre-resolve all i18n data on the server side ===
+  // Next.js does NOT allow passing functions from Server Components to Client Components.
+  // We must resolve all translations here and pass only plain serializable data.
+  const productAny = product as any;
+  const resolvedProduct = {
+    ...productAny,
+    // Pre-translate all i18n fields to plain strings
+    _resolvedName: translate(productAny.name, locale),
+    _resolvedDescription: translate(productAny.description, locale),
+    // Pre-translate categories
+    categories: (productAny.categories || []).map((cat: any) => ({
+      ...cat,
+      _resolvedName: typeof cat === 'string' ? cat : translate(cat.name, locale),
+    })),
+    // Pre-translate specifications if it's an i18n object
+    _resolvedSpecs: (() => {
+      if (!productAny.specifications) return null;
+      if (typeof productAny.specifications === 'string') return productAny.specifications;
+      if (typeof productAny.specifications === 'object' && !Array.isArray(productAny.specifications)) {
+        const specValue = productAny.specifications[locale] || productAny.specifications.en || '';
+        if (typeof specValue === 'string') return specValue;
+      }
+      // For key-value format specs, pre-translate values
+      if (typeof productAny.specifications === 'object') {
+        const result: Record<string, string> = {};
+        for (const [key, value] of Object.entries(productAny.specifications)) {
+          result[key] = typeof value === 'object' ? translate(value, locale) : String(value);
+        }
+        return result;
+      }
+      return null;
+    })(),
+    // Pre-translate features
+    _resolvedFeatures: (() => {
+      if (!productAny.features) return [];
+      return productAny.features[locale] || productAny.features.en || [];
+    })(),
+  };
+
+  // Pre-resolve related products
+  const resolvedRelatedProducts = relatedProducts.map(rp => {
+    const rpAny = rp as any;
+    return {
+      ...rpAny,
+      _resolvedName: translate(rpAny.name, locale),
+    };
+  });
+
+  // Static label map for the client component (no functions!)
+  const labels = {
+    productsTitle: locale === 'zh' ? '产品' : locale === 'ar' ? 'المنتجات' : 'Products',
+    home: locale === 'zh' ? '首页' : locale === 'ar' ? 'الرئيسية' : 'Home',
+    contactUs: locale === 'zh' ? '联系我们' : locale === 'ar' ? 'اتصل بنا' : 'Contact Us',
+    share: locale === 'zh' ? '分享' : locale === 'ar' ? 'مشاركة' : 'Share',
+    backToProducts: locale === 'zh' ? '返回产品列表' : locale === 'ar' ? 'العودة للمنتجات' : 'Back to Products',
+    description: locale === 'zh' ? '描述' : locale === 'ar' ? 'الوصف' : 'Description',
+    specifications: locale === 'zh' ? '规格' : locale === 'ar' ? 'المواصفات' : 'Specifications',
+    features: locale === 'zh' ? '特点' : locale === 'ar' ? 'الميزات' : 'Features',
+    reviews: locale === 'zh' ? '评论' : locale === 'ar' ? 'المراجعات' : 'Reviews',
+    relatedProducts: locale === 'zh' ? '相关产品' : locale === 'ar' ? 'منتجات ذات صلة' : 'Related Products',
+    clickToZoom: locale === 'zh' ? '点击放大' : locale === 'ar' ? 'تكبير' : 'Click to Zoom',
+    linkCopied: locale === 'zh' ? '链接已复制' : locale === 'ar' ? 'تم نسخ الرابط!' : 'Link copied!',
+    imageNotAvailable: locale === 'zh' ? '图片暂时无法显示' : locale === 'ar' ? 'الصورة غير متاحة' : 'Image not available',
+    contactForPricing: locale === 'zh' ? '联系我们询价' : locale === 'ar' ? 'اتصل بالسعر' : 'Contact for Pricing',
+    priceOnRequest: locale === 'zh' ? '价格面议' : locale === 'ar' ? 'السعر قابل للتفاوض' : 'Price on Request',
+    clickImageToZoom: locale === 'zh' ? '点击图片放大' : locale === 'ar' => 'انقر لتكبير الصورة' : 'Click image to zoom',
+  };
+
   return (
     <>
       {/* JSON-LD structured data for SEO */}
       <JsonLd data={jsonLdData} />
 
-      {/* Product Detail Client Component for interactive parts */}
+      {/* Product Detail Client Component - only receives serializable data */}
       <ProductDetailClient
-        product={product}
+        product={resolvedProduct}
         locale={locale}
-        t={t}
-        relatedProducts={relatedProducts}
-        translate={translate}
-        getCategoryIds={getCategoryIds}
+        labels={labels}
+        relatedProducts={resolvedRelatedProducts}
       />
     </>
   );
