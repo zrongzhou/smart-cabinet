@@ -33,8 +33,8 @@ function RisingBubbles() {
   const [bubbles, setBubbles] = useState<Bubble[]>([]);
 
   useEffect(() => {
-    // PERFORMANCE: Reduced from 20 to 5 bubbles
-    const bbs: Bubble[] = Array.from({ length: 5 }, (_, i) => ({
+    // PERFORMANCE: Balanced count for visual richness (10 bubbles)
+    const bbs: Bubble[] = Array.from({ length: 10 }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
       size: 4 + Math.random() * 8,
@@ -76,8 +76,8 @@ function FishSchool() {
       'rgba(167,139,250,0.5)',  // purple
       'rgba(52,211,153,0.6)',   // emerald
     ];
-    // PERFORMANCE: Reduced from 12 to 3 fish
-    const school: Fish[] = Array.from({ length: 3 }, (_, i) => ({
+    // Balanced count for visual richness (6 fish)
+    const school: Fish[] = Array.from({ length: 6 }, (_, i) => ({
       id: i,
       x: -10 - Math.random() * 30,
       y: 25 + Math.random() * 50,
@@ -220,21 +220,41 @@ function Jellyfish({ style, delay }: { style?: React.CSSProperties; delay?: stri
   );
 }
 
-// Light rays from surface
+// Light rays from surface - fixed for hydration
+interface LightRay {
+  left: number;
+  width: number;
+  opacity: number;
+  rotate: number;
+}
+
 function LightRays() {
+  const [rays, setRays] = useState<LightRay[]>([]);
+  
+  useEffect(() => {
+    setRays(Array.from({ length: 5 }, (_, i) => ({
+      left: 10 + i * 20,
+      width: 30 + Math.random() * 40,
+      opacity: 0.06 + i * 0.015,
+      rotate: -8 + i * 5,
+    })));
+  }, []);
+  
+  if (rays.length === 0) return null;
+  
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      {Array.from({ length: 5 }).map((_, i) => (
+      {rays.map((ray, i) => (
         <div
           key={i}
           className="absolute light-ray"
           style={{
-            left: `${10 + i * 20}%`,
+            left: `${ray.left}%`,
             top: '-10%',
-            width: `${30 + Math.random() * 40}px`,
+            width: `${ray.width}px`,
             height: '120%',
-            background: `linear-gradient(180deg, rgba(147,197,253,${0.06 + i * 0.015}), rgba(147,197,253,${0.01}) 60%, transparent)`,
-            transform: `rotate(${-8 + i * 5}deg)`,
+            background: `linear-gradient(180deg, rgba(147,197,253,${ray.opacity}), rgba(147,197,253,${ray.opacity * 0.15}) 60%, transparent)`,
+            transform: `rotate(${ray.rotate}deg)`,
             animation: `light-ray-sway ${4 + i * 0.8}s ease-in-out infinite`,
             animationDelay: `${i * 0.5}s`,
           }}
@@ -244,8 +264,30 @@ function LightRays() {
   );
 }
 
-// Wave layers at bottom
+// Wave layers at bottom - fixed for hydration
+interface FoamParticle {
+  left: number;
+  bottom: number;
+  width: number;
+  height: number;
+  duration: number;
+  delay: number;
+}
+
 function OceanWaves() {
+  const [particles, setParticles] = useState<FoamParticle[]>([]);
+  
+  useEffect(() => {
+    setParticles(Array.from({ length: 20 }, (_, i) => ({
+      left: i * 7 + Math.random() * 3,
+      bottom: Math.random() * 8,
+      width: 2 + Math.random() * 4,
+      height: 2 + Math.random() * 3,
+      duration: 1.5 + Math.random(),
+      delay: Math.random() * 2,
+    })));
+  }, []);
+  
   return (
     <div className="absolute bottom-0 left-0 right-0 h-[60px] pointer-events-none overflow-hidden">
       {/* Back wave — darker, slower */}
@@ -257,17 +299,17 @@ function OceanWaves() {
 
       {/* Foam/spray particles on front wave */}
       <div className="absolute bottom-0 left-0 right-0 h-3">
-        {Array.from({ length: 15 }).map((_, i) => (
+        {particles.map((p, i) => (
           <div
             key={i}
             className="absolute rounded-full bg-white/20"
             style={{
-              left: `${i * 7 + Math.random() * 3}%`,
-              bottom: `${Math.random() * 8}px`,
-              width: 2 + Math.random() * 4,
-              height: 2 + Math.random() * 3,
-              animation: `foam-flicker ${1.5 + Math.random()}s ease-in-out infinite`,
-              animationDelay: `${Math.random() * 2}s`,
+              left: `${p.left}%`,
+              bottom: `${p.bottom}px`,
+              width: p.width,
+              height: p.height,
+              animation: `foam-flicker ${p.duration}s ease-in-out infinite`,
+              animationDelay: `${p.delay}s`,
             }}
           />
         ))}
@@ -342,8 +384,9 @@ export default function OceanHeader({
         animationDelay: '8s',
       }} delay="0s" />
 
-      {/* Jellyfish - PERFORMANCE: Reduced from 3 to 1 */}
+      {/* Jellyfish - Balanced count (2 jellyfish) */}
       <Jellyfish style={{ top: '20%', right: '15%' }} delay="0s" />
+      <Jellyfish style={{ top: '45%', left: '10%' }} delay="2s" />
 
       {/* Ocean waves at bottom */}
       <OceanWaves />

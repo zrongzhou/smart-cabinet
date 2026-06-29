@@ -5,6 +5,24 @@ import { Package, ArrowLeft, Share2, ChevronRight, ChevronLeft, X, Star, FileTex
 import ReviewList from '@/components/products/ReviewList';
 import SafeImage from '@/components/ui/SafeImage';
 
+// Safe text renderer - handles i18n objects, arrays, null, undefined
+function safeText(value: any, fallback: string = ''): string {
+  if (value === null || value === undefined) return fallback;
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number') return String(value);
+  if (Array.isArray(value)) return value.join(', ');
+  if (typeof value === 'object') {
+    // Try to extract string value from common i18n formats
+    const keys = Object.keys(value);
+    if (keys.some(k => ['en','zh','ar'].includes(k))) {
+      // It's an i18n object - try en first, then zh, then ar
+      return value.en || value.zh || value.ar || JSON.stringify(value);
+    }
+    return JSON.stringify(value);
+  }
+  return fallback;
+}
+
 interface ProductDetailClientProps {
   product: any;
   locale: string;
@@ -219,7 +237,7 @@ export default function ProductDetailClient({
                 {description && (
                   <div
                     className="prose prose-sm max-w-none mb-6 text-gray-600 whitespace-pre-wrap"
-                    dangerouslySetInnerHTML={{ __html: description }}
+                    dangerouslySetInnerHTML={{ __html: safeText(description) }}
                   />
                 )}
 
@@ -330,7 +348,7 @@ export default function ProductDetailClient({
                   {description && (
                     <div
                       className="text-gray-600 whitespace-pre-wrap"
-                      dangerouslySetInnerHTML={{ __html: description }}
+                      dangerouslySetInnerHTML={{ __html: safeText(description) }}
                     />
                   )}
                 </div>
@@ -368,7 +386,7 @@ export default function ProductDetailClient({
                         return (
                           <div
                             className="bg-gray-50 rounded-xl p-5 border border-gray-200 whitespace-pre-wrap text-gray-600"
-                            dangerouslySetInnerHTML={{ __html: typeof specValue === 'string' ? specValue : '' }}
+                            dangerouslySetInnerHTML={{ __html: safeText(specValue) }}
                           />
                         );
                       })()
@@ -384,7 +402,7 @@ export default function ProductDetailClient({
                                     {key}
                                   </td>
                                   <td className="px-4 py-3 text-gray-600">
-                                    {translate(value, typedLocale) || '-'}
+                                    {safeText(translate(value, typedLocale)) || '-'}
                                   </td>
                                 </tr>
                               ))}
@@ -450,7 +468,7 @@ export default function ProductDetailClient({
                     {relatedProduct.images?.[0] ? (
                       <SafeImage
                         src={relatedProduct.images[0]}
-                        alt={translate(relatedProduct.name, typedLocale)}
+                        alt={safeText(translate(relatedProduct.name, typedLocale))}
                         fill
                         sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                         className="object-contain p-3 transition-transform duration-500 group-hover:scale-110"
@@ -466,7 +484,7 @@ export default function ProductDetailClient({
                   </div>
                   <div className="p-4">
                     <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2 text-sm leading-snug">
-                      {translate(relatedProduct.name, typedLocale)}
+                      {safeText(translate(relatedProduct.name, typedLocale))}
                     </h3>
                     <p className="text-xs text-blue-500 font-mono mt-1.5">{relatedProduct.sku}</p>
                   </div>

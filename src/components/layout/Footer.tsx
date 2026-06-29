@@ -87,10 +87,10 @@ export default function Footer() {
   const displayCopyright = settings?.footerCopyright?.replace('{year}', String(currentYear)) || `© ${currentYear} ${displayCompany}`;
 
   return (
-    <footer className="relative text-gray-300 overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
+    <footer className="relative text-gray-300 overflow-hidden" style={{ backgroundColor: '#1e293b' }}>
       {/* ===== DYNAMIC BACKGROUND EFFECTS ===== */}
       {/* Animated gradient mesh that slowly shifts colors */}
-      <div className="absolute inset-0 opacity-[0.15]" style={{
+      <div className="absolute inset-0 opacity-[0.06]" style={{
         background: `
           radial-gradient(ellipse at 20% 50%, rgba(59,130,246,0.3) 0%, transparent 50%),
           radial-gradient(ellipse at 80% 20%, rgba(139,92,246,0.25) 0%, transparent 50%),
@@ -101,9 +101,9 @@ export default function Footer() {
         filter: 'blur(60px)',
       }} />
 
-      {/* Fireflies — glowing warm particles with random drift & flicker (v135) */}
+      {/* Fireflies — glowing warm particles with random drift & flicker (reduced count) */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(22)].map((_, i) => (
+        {[...Array(8)].map((_, i) => (
           <Firefly key={i} index={i} />
         ))}
       </div>
@@ -116,7 +116,7 @@ export default function Footer() {
       </div>
 
       {/* Subtle wave lines at the very bottom */}
-      <div className="absolute bottom-0 left-0 right-0 h-16 overflow-hidden pointer-events-none opacity-[0.07]">
+      <div className="absolute bottom-0 left-0 right-0 h-16 overflow-hidden pointer-events-none opacity-[0.03]">
         <svg className="absolute bottom-0 w-[200%] h-full" viewBox="0 0 1200 80" preserveAspectRatio="none">
           <path d="M0,40 C200,70 400,10 600,45 C800,75 1000,20 1200,50 L1200,80 L0,80 Z" fill="url(#fw1)" style={{ animation: 'footer-wave-move 14s linear infinite' }} />
           <path d="M0,55 C300,30 500,65 750,42 C1000,18 1100,58 1200,48 L1200,80 L0,80 Z" fill="url(#fw2)" style={{ animation: 'footer-wave-move 11s linear infinite reverse' }} />
