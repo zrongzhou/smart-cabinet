@@ -72,26 +72,23 @@ function FishSchool() {
 
   useEffect(() => {
     const colors = [
-      'rgba(96,165,250,0.85)',   // blue
-      'rgba(167,139,250,0.7)',   // purple
-      'rgba(52,211,153,0.75)',   // emerald
-      'rgba(251,191,36,0.7)',    // amber
-      'rgba(248,113,113,0.65)',  // red/coral
-      'rgba(45,212,191,0.7)',    // teal
+      '#60a5fa', // blue-400
+      '#a78bfa', // purple-400
+      '#34d399', // emerald-400
+      '#fbbf24', // amber-400
+      '#f87171', // red-400
+      '#2dd4bf', // teal-400
     ];
-    // 12 fish for high visibility
-    const school: Fish[] = Array.from({ length: 12 }, (_, i) => {
-      const dir = i % 2 === 0 ? 1 : -1; // alternate direction
-      const startX = dir === 1
-        ? -10 - Math.random() * 20
-        : 110 + Math.random() * 20;
+    const school: Fish[] = Array.from({ length: 8 }, (_, i) => {
+      const dir = i % 2 === 0 ? 1 : -1;
+      const startX = dir === 1 ? -15 : 115;
       return {
         id: i,
         x: startX,
-        y: 15 + (i * 6) % 70, // distribute vertically
-        size: 10 + Math.random() * 8, // larger: 10-18px
-        speed: 6 + Math.random() * 6, // faster: 6-12s
-        delay: Math.random() * 4, // overlap animations
+        y: 20 + (i * 9) % 60,
+        size: 24 + Math.random() * 14, // BIGGER: 24-38px
+        speed: 10 + Math.random() * 7, // SLOWER: 10-17s for smooth swim
+        delay: Math.random() * 8, // staggered entry
         color: colors[i % colors.length],
         direction: dir,
       };
@@ -109,15 +106,22 @@ function FishSchool() {
             left: `${f.x}%`,
             top: `${f.y}%`,
             willChange: 'transform',
-            animation: `fish-swim-${f.direction === 1 ? 'right' : 'left'} ${f.speed}s linear infinite`,
+            animation: `fish-swim-${f.direction === 1 ? 'right' : 'left'} ${f.speed}s ease-in-out infinite`,
             animationDelay: `${f.delay}s`,
           }}
         >
-          {/* Fish body — tiny SVG */}
-          <svg width={f.size} height={f.size * 0.55} viewBox="0 0 24 13" fill={f.color}>
-            <ellipse cx="10" cy="6.5" rx="9" ry="5.5" />
-            <polygon points="19,6.5 24,1 22,6.5 24,12" />
-            <circle cx="4" cy="5.5" r="1.8" fill="rgba(255,255,255,0.8)" />
+          {/* Larger fish SVG with body wiggle */}
+          <svg width={f.size} height={f.size * 0.55} viewBox="0 0 24 13"
+            style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.25))' }}>
+            <g className="fish-body" style={{
+              transformOrigin: '12px 6.5px',
+              animation: `fish-wiggle ${0.4 + Math.random() * 0.3}s ease-in-out infinite`,
+            }}>
+              <ellipse cx="10" cy="6.5" rx="9" ry="5.5" fill={f.color} />
+              <polygon points="19,6.5 24,1 22,6.5 24,12" fill={f.color} />
+              <circle cx="4" cy="5.5" r="1.8" fill="rgba(255,255,255,0.85)" />
+              <circle cx="3.5" cy="5.3" r="0.8" fill="rgba(0,0,0,0.35)" />
+            </g>
           </svg>
         </div>
       ))}
@@ -189,19 +193,19 @@ function SmallWhale({ style, delay }: { style?: React.CSSProperties; delay?: str
   );
 }
 
-// Jellyfish floating
+// Jellyfish floating — larger, more visible
 function Jellyfish({ style, delay }: { style?: React.CSSProperties; delay?: string }) {
   return (
     <div className="absolute jellyfish-float" style={{ ...style, animationDelay: delay || '0s' }}>
-      <svg width="32" height="45" viewBox="0 0 32 45">
+      <svg width="44" height="60" viewBox="0 0 32 45">
         <defs>
           <radialGradient id="jellyGrad" cx="50%" cy="30%" r="60%">
-            <stop offset="0%" stopColor="rgba(236,72,153,0.35)" />
-            <stop offset="70%" stopColor="rgba(167,139,250,0.2)" />
-            <stop offset="100%" stopColor="rgba(139,92,246,0.08)" />
+            <stop offset="0%" stopColor="rgba(236,72,153,0.5)" />
+            <stop offset="60%" stopColor="rgba(167,139,250,0.35)" />
+            <stop offset="100%" stopColor="rgba(139,92,246,0.12)" />
           </radialGradient>
           <filter id="jellyGlow">
-            <feGaussianBlur stdDeviation="1.5" result="blur" />
+            <feGaussianBlur stdDeviation="2" result="blur" />
             <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
           </filter>
         </defs>
@@ -209,21 +213,21 @@ function Jellyfish({ style, delay }: { style?: React.CSSProperties; delay?: stri
         <path d="M2 18 Q2 2 16 2 Q30 2 30 18 Q28 22 16 22 Q4 22 2 18Z"
               fill="url(#jellyGrad)" filter="url(#jellyGlow)"
               className="jelly-bell" />
-        {/* Tentacles */}
+        {/* Tentacles — more visible */}
         {[6, 11, 16, 21, 26].map((tx, ti) => (
           <path
             key={ti}
-            d={`M${tx} 21 Q ${tx + (ti % 2 === 0 ? 4 : -4)} 33 ${tx + (ti % 3 === 0 ? 2 : -2)} 44`}
-            stroke={`rgba(${ti % 2 === 0 ? '236,72,153' : '167,139,149'},${0.2 + ti * 0.05})`}
-            strokeWidth="1.2"
+            d={`M${tx} 21 Q ${tx + (ti % 2 === 0 ? 5 : -5)} 33 ${tx + (ti % 3 === 0 ? 3 : -3)} 44`}
+            stroke={`rgba(${ti % 2 === 0 ? '236,72,153' : '167,139,249'},${0.3 + ti * 0.07})`}
+            strokeWidth="1.5"
             fill="none"
             className={`jelly-tentacle-${ti}`}
-            style={{ animationDelay: `${ti * 0.2}s` }}
+            style={{ animationDelay: `${ti * 0.25}s` }}
           />
         ))}
-        {/* Inner glow dots */}
-        <circle cx="12" cy="12" r="1.5" fill="rgba(255,255,255,0.25)" />
-        <circle cx="20" cy="14" r="1" fill="rgba(255,255,255,0.18)" />
+        {/* Inner glow dots — brighter */}
+        <circle cx="11" cy="11" r="2.5" fill="rgba(255,255,255,0.4)" />
+        <circle cx="21" cy="13" r="1.8" fill="rgba(255,255,255,0.3)" />
       </svg>
     </div>
   );
@@ -284,45 +288,16 @@ interface FoamParticle {
 }
 
 function OceanWaves() {
-  const [particles, setParticles] = useState<FoamParticle[]>([]);
-  
-  useEffect(() => {
-    setParticles(Array.from({ length: 20 }, (_, i) => ({
-      left: i * 7 + Math.random() * 3,
-      bottom: Math.random() * 8,
-      width: 2 + Math.random() * 4,
-      height: 2 + Math.random() * 3,
-      duration: 1.5 + Math.random(),
-      delay: Math.random() * 2,
-    })));
-  }, []);
-  
   return (
-    <div className="absolute bottom-0 left-0 right-0 h-[60px] pointer-events-none overflow-hidden">
-      {/* Back wave — darker, slower */}
-      <div className="wave-layer-back" />
-      {/* Middle wave */}
-      <div className="wave-layer-mid" />
-      {/* Front wave — lighter, faster */}
-      <div className="wave-layer-front" />
-
-      {/* Foam/spray particles on front wave */}
-      <div className="absolute bottom-0 left-0 right-0 h-3">
-        {particles.map((p, i) => (
-          <div
-            key={i}
-            className="absolute rounded-full bg-white/20"
-            style={{
-              left: `${p.left}%`,
-              bottom: `${p.bottom}px`,
-              width: p.width,
-              height: p.height,
-              animation: `foam-flicker ${p.duration}s ease-in-out infinite`,
-              animationDelay: `${p.delay}s`,
-            }}
-          />
-        ))}
-      </div>
+    <div className="absolute bottom-0 left-0 right-0 h-[20px] pointer-events-none overflow-hidden">
+      {/* Single subtle light wave — no dark area */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 20'%3E%3Cpath d='M0 10 C150 2 350 18 600 10 C850 2 1050 18 1200 10 L1200 20 L0 20Z' fill='rgba(96,165,250,0.08)'/%3E%3C/svg%3E") no-repeat bottom center / cover`,
+          animation: 'wave-move-front 5.5s ease-in-out infinite',
+        }}
+      />
     </div>
   );
 }
@@ -347,13 +322,13 @@ export default function OceanHeader({
         alignItems: 'center',
         justifyContent: 'center',
         background: `linear-gradient(175deg,
-          #0c1929 0%,
-          #0a2540 15%,
-          #0d3a6d 35%,
-          #0e4d8a 50%,
-          #0a3d6e 70%,
-          #072850 90%,
-          #041529 100%)`,
+          #0c2845 0%,
+          #0a3a6d 15%,
+          #0e4d8a 35%,
+          #0f5a9e 50%,
+          #0d4d8a 70%,
+          #0a3d6e 90%,
+          #0c2845 100%)`,
       }}
     >
       {/* Deep ocean ambient gradients */}
@@ -366,8 +341,7 @@ export default function OceanHeader({
              style={{ backgroundColor: 'rgba(139,92,246,0.05)' }} />
       </div>
 
-      {/* Light rays from surface */}
-      <LightRays />
+      {/* Light rays REMOVED per user request */}
 
       {/* Rising bubbles */}
       <RisingBubbles />
@@ -399,7 +373,7 @@ export default function OceanHeader({
       <Jellyfish style={{ top: '65%', right: '25%', transform: 'scale(0.7)' }} delay="4s" />
       <Jellyfish style={{ top: '25%', left: '30%', transform: 'scale(0.6)' }} delay="1s" />
 
-      {/* Ocean waves at bottom */}
+      {/* Subtle wave line at bottom — no dark area */}
       <OceanWaves />
 
       {/* Content */}
@@ -465,23 +439,29 @@ export default function OceanHeader({
           100% { transform: translateY(-260px) translateX(-4px) scale(0.6); opacity: 0; }
         }
 
-        /* ===== FISH SWIM (bidirectional) ===== */
+        /* ===== FISH SWIM (bidirectional, smooth) ===== */
         @keyframes fish-swim-right {
           0%   { transform: translateX(0) translateY(0); }
-          25%  { transform: translateX(25vw) translateY(-8px); }
-          50%  { transform: translateX(50vw) translateY(5px); }
-          75%  { transform: translateX(75vw) translateY(-4px); }
-          100% { transform: translateX(110vw) translateY(0); }
+          20%  { transform: translateX(18vw) translateY(-6px); }
+          40%  { transform: translateX(38vw) translateY(4px); }
+          60%  { transform: translateX(58vw) translateY(-3px); }
+          80%  { transform: translateX(78vw) translateY(5px); }
+          100% { transform: translateX(115vw) translateY(0); }
         }
         @keyframes fish-swim-left {
           0%   { transform: scaleX(-1) translateX(0) translateY(0); }
-          25%  { transform: scaleX(-1) translateX(25vw) translateY(6px); }
-          50%  { transform: scaleX(-1) translateX(50vw) translateY(-5px); }
-          75%  { transform: scaleX(-1) translateX(75vw) translateY(4px); }
-          100% { transform: translateX(-110vw) translateY(0); }
+          20%  { transform: scaleX(-1) translateX(18vw) translateY(4px); }
+          40%  { transform: scaleX(-1) translateX(38vw) translateY(-3px); }
+          60%  { transform: scaleX(-1) translateX(58vw) translateY(5px); }
+          80%  { transform: scaleX(-1) translateX(78vw) translateY(-2px); }
+          100% { transform: translateX(-115vw) translateY(0); }
         }
-        .fish-school svg {
-          filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2));
+        /* Fish body wiggle — makes fish look alive */
+        @keyframes fish-wiggle {
+          0%, 100% { transform: rotate(0deg) scaleY(1); }
+          25%      { transform: rotate(2deg) scaleY(0.95); }
+          50%      { transform: rotate(0deg) scaleY(1); }
+          75%      { transform: rotate(-2deg) scaleY(0.96); }
         }
 
         /* ===== WHALE SWIM ===== */
@@ -559,13 +539,9 @@ export default function OceanHeader({
           50%      { d: path('M{tx} 21 Q {tx-4} 33 {tx-2} 44'); }
         }
 
-        /* ===== LIGHT RAYS ===== */
-        @keyframes light-ray-sway {
-          0%, 100% { opacity: 0.6; transform: rotate(-8deg + var(--ray-offset, 0deg)) scaleX(1); }
-          50%      { opacity: 0.9; transform: rotate(-5deg + var(--ray-offset, 0deg)) scaleX(1.03); }
-        }
+        /* ===== LIGHT RAYS (REMOVED) ===== */
 
-        /* ===== OCEAN WAVES ===== */
+        /* ===== OCEAN WAVES (simplified) ===== */
         @keyframes wave-move-front {
           0%   { transform: translateX(0) translateZ(0); }
           50%  { transform: translateX(-25px) translateZ(0); }
@@ -585,26 +561,8 @@ export default function OceanHeader({
         .wave-layer-front {
           position: absolute;
           bottom: 0; left: -20px; right: -20px; top: 0;
-          background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 60'%3E%3Cpath d='M0 30 C150 5 350 55 600 30 C850 5 1050 55 1200 30 L1200 60 L0 60Z' fill='rgba(96,165,250,0.12)'/%3E%3C/svg%3E") no-repeat bottom center / cover;
+          background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 20'%3E%3Cpath d='M0 10 C150 2 350 18 600 10 C850 2 1050 18 1200 10 L1200 20 L0 20Z' fill='rgba(96,165,250,0.08)'/%3E%3C/svg%3E") no-repeat bottom center / cover;
           animation: wave-move-front 5.5s ease-in-out infinite;
-        }
-        .wave-layer-mid {
-          position: absolute;
-          bottom: 0; left: -30px; right: -30px; top: 0;
-          background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 60'%3E%3Cpath d='M0 35 C200 10 400 50 700 28 C1000 6 1100 48 1200 35 L1200 60 L0 60Z' fill='rgba(59,130,246,0.08)'/%3E%3C/svg%3E") no-repeat bottom center / cover;
-          animation: wave-move-mid 7s ease-in-out infinite;
-        }
-        .wave-layer-back {
-          position: absolute;
-          bottom: 0; left: -40px; right: -40px; top: 0;
-          background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 60'%3E%3Cpath d='M0 40 C180 18 380 52 650 35 C920 18 1080 52 1200 40 L1200 60 L0 60Z' fill='rgba(37,99,235,0.06)'/%3E%3C/svg%3E") no-repeat bottom center / cover;
-          animation: wave-move-back 9s ease-in-out infinite;
-        }
-
-        /* Foam flicker on waves */
-        @keyframes foam-flicker {
-          0%, 100% { opacity: 0.15; transform: scale(1); }
-          50%      { opacity: 0.4; transform: scale(1.3); }
         }
 
         /* Small whale specific */
