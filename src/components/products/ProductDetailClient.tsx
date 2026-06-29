@@ -370,7 +370,7 @@ export default function ProductDetailClient({
                       <div className="overflow-x-auto">
                         <table className="w-full text-sm min-w-[400px]">
                           <tbody>
-                            {Object.entries(product._resolvedSpecs).map(([key, value]: [string, string], index: number) => (
+                            {Object.entries(product._resolvedSpecs).map(([key, value]: [string, any], index: number) => (
                               <tr key={key} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                                 <td className="px-4 py-3 font-medium text-gray-900 min-w-[120px] border-r border-gray-200">
                                   {safeText(key)}
