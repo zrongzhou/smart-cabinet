@@ -215,12 +215,12 @@ function ValuesBookFlip({ values, t, locale }: { values: ValueItem[]; t: (key: s
           style={{ background: ht.accent, opacity: 0.4, animation: 'v138-beamPulse 3.5s ease-in-out infinite' }}
         />
 
-        {/* Main holographic panel — premium glass-morphic */}
+        {/* Main holographic panel — premium glass-morphic (force dark to prevent theme override) */}
         <div
           className="relative rounded-2xl overflow-hidden"
           style={{
-            background: `linear-gradient(135deg, ${ht.bg1} 0%, ${ht.bg2} 50%, ${ht.bg1} 100%)`,
-            border: `1.5px solid ${ht.accent}50`,
+            background: `linear-gradient(135deg, #000810 0%, #0a0f1e 50%, #000810 100%) !important`,
+            border: `1.5px solid ${ht.accent} !important`,
             boxShadow: `
               0 0 40px ${ht.glow},
               0 0 80px ${ht.beam},
@@ -700,7 +700,7 @@ export default function AboutPage() {
         </nav>
       </OceanHeader>
 
-      {/* Company Introduction with Icon Cards — Enhanced with gradient bg */}
+      {/* Company Introduction with Icon Cards — Enhanced with gradient bg + bottom waves */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative overflow-hidden">
         {/* Subtle animated background gradient */}
         <div className="absolute inset-0 opacity-[0.04]" style={{
@@ -766,6 +766,38 @@ export default function AboutPage() {
               })}
             </div>
           </div>
+        </div>
+
+        {/* ===== BOTTOM WAVE ANIMATION — Ocean wave separator ===== */}
+        <div className="absolute bottom-0 left-0 right-0 h-24 overflow-hidden pointer-events-none" style={{ transform: 'translateY(95%)' }}>
+          <svg className="absolute bottom-0 w-full" viewBox="0 0 1440 100" preserveAspectRatio="none" style={{ height: '100%' }}>
+            <defs>
+              <linearGradient id="companyWaveGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#e0f2fe" stopOpacity="0.6" />
+                <stop offset="100%" stopColor="#f0f9ff" stopOpacity="0.15" />
+              </linearGradient>
+            </defs>
+            {/* Wave layer 1 - back */}
+            <path d="M0,40 Q180,10 360,35 T720,30 T1080,40 T1440,25 L1440,100 L0,100Z"
+              fill="url(#companyWaveGrad)" opacity="0.4"
+              style={{ animation: 'v135-waveBack 9s ease-in-out infinite' }}
+            />
+            {/* Wave layer 2 - mid */}
+            <path d="M0,55 Q200,30 400,55 T800,45 T1200,58 T1440,42 L1440,100 L0,100Z"
+              fill="#bae6fd" opacity="0.35"
+              style={{ animation: 'v135-waveMid 7s ease-in-out infinite reverse' }}
+            />
+            {/* Wave layer 3 - front */}
+            <path d="M0,68 Q160,52 320,70 T640,62 T960,75 T1280,60 T1440,72 L1440,100 L0,100Z"
+              fill="#e0f2fe" opacity="0.5"
+              style={{ animation: 'v135-waveFront 5.5s ease-in-out infinite' }}
+            />
+            {/* Foam line on wave crest */}
+            <path d="M0,70 Q160,54 320,72 T640,64 T960,77 T1280,62 T1440,74"
+              stroke="rgba(255,255,255,0.6)" strokeWidth="1.5" fill="none" strokeLinecap="round"
+              style={{ animation: 'v135-waveFront 5.5s ease-in-out infinite' }}
+            />
+          </svg>
         </div>
       </section>
 
@@ -1259,6 +1291,25 @@ export default function AboutPage() {
           </div>
         </div>
 
+        {/* === ATMOSPHERIC CLOUDS — soft layered clouds near horizon (v139) === */}
+        <div className="absolute top-[8%] left-0 right-0 pointer-events-none" style={{ height: '18%' }}>
+          {/* Cloud layer 1 — distant, soft */}
+          <div className="absolute top-[30%] left-[12%] w-48 h-10 rounded-full opacity-40"
+            style={{ background: 'radial-gradient(ellipse, rgba(255,255,255,0.7) 0%, transparent 70%)', filter: 'blur(8px)', animation: 'v139-cloudDrift 25s ease-in-out infinite' }}
+          />
+          <div className="absolute top-[45%] right-[18%] w-64 h-12 rounded-full opacity-30"
+            style={{ background: 'radial-gradient(ellipse, rgba(255,248,220,0.5) 0%, transparent 70%)', filter: 'blur(10px)', animation: 'v139-cloudDrift 20s ease-in-out infinite reverse' }}
+          />
+          {/* Cloud layer 2 — mid, slightly defined */}
+          <div className="absolute top-[55%] left-[35%] w-56 h-8 rounded-full opacity-25"
+            style={{ background: 'radial-gradient(ellipse, rgba(255,255,255,0.35) 0%, transparent 65%)', filter: 'blur(6px)', animation: 'v139-cloudDrift 18s ease-in-out infinite 2s' }}
+          />
+          {/* Golden hour glow band at horizon */}
+          <div className="absolute bottom-0 left-0 right-0 h-8 rounded-full opacity-60"
+            style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(251,191,36,0.15) 20%, rgba(251,146,60,0.2) 50%, rgba(251,191,36,0.15) 80%, transparent 100%)', filter: 'blur(4px)' }}
+          />
+        </div>
+
             {/* Seagulls in sky — 海鸥飞过日出天空 (v137) */}
           <div className="absolute top-[1%] left-0 right-0 pointer-events-none overflow-visible" style={{ height: '22%' }}>
             {/* Gull 1 — main soaring gull, prominent */}
@@ -1414,26 +1465,26 @@ export default function AboutPage() {
             style={{ color: '#e0f2fe', textShadow: '0 1px 6px rgba(0,0,0,0.15)' }}
           >{t('about.cta.subtitle')}</p>
 
-          {/* Buttons — sunrise themed with glow */}
+          {/* Buttons — sunrise themed with enhanced glow (v139) */}
           <div className="flex flex-col sm:flex-row gap-5 justify-center mb-8">
-            <a href={`/${locale}/contact`} className="group relative inline-flex items-center justify-center px-9 py-4 font-bold rounded-full overflow-hidden cursor-pointer text-base transition-all duration-400 hover:-translate-y-1 hover:scale-[1.02]"
+            <a href={`/${locale}/contact`} className="group relative inline-flex items-center justify-center px-10 py-4.5 font-bold rounded-full overflow-hidden cursor-pointer text-base transition-all duration-500 hover:-translate-y-1.5 hover:scale-[1.03]"
               style={{
-                background: 'linear-gradient(135deg,#fffbeb 0%,#fef3c7 40%,#fde68a 70%,#fcd34d 100%)',
+                background: 'linear-gradient(135deg,#fffbeb 0%,#fef3c7 30%,#fde68a 60%,#fbbf24 100%)',
                 color: '#92400e',
-                boxShadow: '0 6px 28px rgba(146,64,14,0.3), 0 0 0 1px rgba(255,255,255,0.5), 0 0 40px rgba(253,218,109,0.2)',
+                boxShadow: '0 8px 32px rgba(146,64,14,0.35), 0 0 0 1.5px rgba(255,255,255,0.6), 0 0 50px rgba(253,218,109,0.25), inset 0 1px 0 rgba(255,255,255,0.5)',
               }}
             >
-              <span style={{ position:'relative',zIndex:10,display:'inline-flex',alignItems:'center',gap:'5px' }}>{t('nav.contact')}<ChevronRight className="ml-1 w-5 h-5" /></span>
+              <span style={{ position:'relative',zIndex:10,display:'inline-flex',alignItems:'center',gap:'6px' }}>{t('nav.contact')}<ChevronRight className="ml-1 w-5 h-5 group-hover:translate-x-1 transition-transform" /></span>
             </a>
             <a href={`tel:${contactPhone.replace(/\s/g,'')}`}
-              className="group relative inline-flex items-center justify-center px-9 py-4 font-bold rounded-full overflow-hidden cursor-pointer text-base text-white transition-all duration-400 hover:-translate-y-1 hover:scale-[1.02]"
+              className="group relative inline-flex items-center justify-center px-10 py-4.5 font-bold rounded-full overflow-hidden cursor-pointer text-base text-white transition-all duration-500 hover:-translate-y-1.5 hover:scale-[1.03]"
               style={{
-                background: 'linear-gradient(135deg,rgba(255,255,255,0.25),rgba(255,255,255,0.12))',
-                border: '1.5px solid rgba(255,255,255,0.4)',
-                backdropFilter: 'blur(14px)',
-                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.18),0 4px 20px rgba(0,0,0,0.12), 0 0 30px rgba(251,191,36,0.08)',
+                background: 'linear-gradient(135deg,rgba(255,255,255,0.28),rgba(255,255,255,0.12))',
+                border: '1.5px solid rgba(255,255,255,0.45)',
+                backdropFilter: 'blur(16px)',
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.2),0 6px 24px rgba(0,0,0,0.15), 0 0 40px rgba(251,191,36,0.1)',
               }}
-            ><ChevronRight className="mr-2 w-4 h-4" />{contactPhone}</a>
+            ><ChevronRight className="mr-2 w-4 h-4 group-hover:translate-x-0.5 transition-transform" />{contactPhone}</a>
           </div>
 
           <div className="flex items-center justify-center drop-shadow-sm" style={{ color:'#bae6fd', fontSize: '14px' }}>
@@ -1614,6 +1665,12 @@ export default function AboutPage() {
           0%{transform:translate(0,0); opacity:0.18}
           40%{transform:translate(8px,-25px); opacity:0.28}
           100%{transform:translate(-5px,-60px); opacity:0}
+        }
+        /* v139 CTA cloud drift */
+        @keyframes v139-cloudDrift {
+          0%{transform:translateX(0); opacity:1}
+          50%{transform:translateX(25px); opacity:0.7}
+          100%{transform:translateX(0); opacity:1}
         }
       `}</style>
     </div>
