@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 
+// Force dynamic rendering (this route uses request.headers)
+export const dynamic = 'force-dynamic';
+
 /**
  * Dynamic Sitemap Route Handler
  * Generates sitemap.xml dynamically based on the request host

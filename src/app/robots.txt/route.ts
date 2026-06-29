@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Force dynamic rendering (this route uses request.headers)
+export const dynamic = 'force-dynamic';
+
 /**
  * Dynamic Robots Route Handler
  * Generates robots.txt dynamically based on the request host
