@@ -27,14 +27,53 @@ interface PageProps {
   };
 }
 
-// Generate dynamic metadata for SEO - TEST VERSION
+// Generate dynamic metadata for SEO
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  // TEST: static title to check if generateMetadata is being called
-  console.log('[generateMetadata] CALLED!');
-  return {
-    title: 'TEST - SEO Title Works!',
-    description: 'Test description',
-  };
+  const slug = params.slug.join('/');
+  const locale = params.locale as 'en' | 'zh' | 'ar';
+
+  try {
+    // Fetch product directly from database
+    const product = await prisma.product.findFirst({
+      where: {
+        OR: [
+          { slug: slug },
+          { id: slug },
+        ],
+        deletedAt: null,
+      },
+    });
+
+    if (!product) {
+      return {};
+    }
+
+    // Safely access seoTitle and seoDescription
+    const productAny = product as any;
+    const title = productAny.seoTitle?.[locale] || translate(product.name, locale) || 'Product';
+    const description = productAny.seoDescription?.[locale] || translate(product.description, locale) || '';
+    const image = product.images?.[0] || '';
+
+    return {
+      title,
+      description,
+      openGraph: {
+        title,
+        description,
+        images: image ? [{ url: image }] : [],
+        type: 'website',
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title,
+        description,
+        images: image ? [image] : [],
+      },
+    };
+  } catch (error) {
+    console.error('Error generating metadata:', error);
+    return {};
+  }
 }
 
 // Generate JSON-LD structured data for Product
