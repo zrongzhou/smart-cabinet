@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { Calendar, User, ArrowLeft, ArrowRight, Facebook, Twitter, Linkedin } from 'lucide-react';
 import { useLocale } from '@/lib/i18n';
 import { fetchBlogBySlug, fetchBlogs, BlogPost } from '@/lib/api';
-import { getBlogDetailImage, getBlogImage } from '@/lib/blog-images';
 // Static fallback when API has no data
 import staticBlogs from '@/data/blogs';
 
@@ -17,6 +16,98 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
   const [blog, setBlog] = useState<BlogPost | null>(null);
   const [recentBlogs, setRecentBlogs] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // === 内联 Blog 图片映射 (v147) — 不依赖外部模块 ===
+
+  // 所有可用的本地图片
+  const BLOG_IMAGES = [
+    '/images/blog/industry-trends.jpg',
+    '/images/blog/case-study.jpg',
+    '/images/blog/technical-guide.jpg',
+    '/images/blog/best-practice.jpg',
+    '/images/blog/use-case.jpg',
+    '/images/blog/customer-story.jpg',
+    '/images/blog/general.jpg',
+    '/images/blog/smart-cabinet-warehouse.jpg',
+    '/images/blog/roi-cost-analysis.jpg',
+    '/images/blog/rfid-tool-tracking.jpg',
+    '/images/blog/iot-mes-integration.jpg',
+    '/images/blog/cnc-machining-roi.jpg',
+    '/images/blog/aerospace-fod-prevention.jpg',
+    '/images/blog/ai-industry-4-0.jpg',
+    '/images/blog/digital-transformation.jpg',
+    '/images/blog/future-smart-factory.jpg',
+    '/images/blog/ppe-safety-equipment.jpg',
+    '/images/blog/buying-guide-smart-cabinet.jpg',
+  ];
+
+  // 按 slug 精确匹配的主题图片
+  const SLUG_IMAGE_MAP: Record<string, string> = {
+    'smart-cabinet-warehouse': '/images/blog/smart-cabinet-warehouse.jpg',
+    'roi-cost-analysis': '/images/blog/roi-cost-analysis.jpg',
+    'rfid-tool-tracking': '/images/blog/rfid-tool-tracking.jpg',
+    'iot-mes-integration': '/images/blog/iot-mes-integration.jpg',
+    'cnc-machining-roi': '/images/blog/cnc-machining-roi.jpg',
+    'aerospace-fod-prevention': '/images/blog/aerospace-fod-prevention.jpg',
+    'ai-industry-4-0': '/images/blog/ai-industry-4-0.jpg',
+    'digital-transformation': '/images/blog/digital-transformation.jpg',
+    'future-smart-factory': '/images/blog/future-smart-factory.jpg',
+    'ppe-safety-equipment': '/images/blog/ppe-safety-equipment.jpg',
+    'buying-guide-smart-cabinet': '/images/blog/buying-guide-smart-cabinet.jpg',
+  };
+
+  // 按分类匹配的图片（key 是 API 返回的小写格式）
+  const CATEGORY_IMAGE_MAP: Record<string, string> = {
+    'industry-trends': '/images/blog/industry-trends.jpg',
+    'case-study': '/images/blog/case-study.jpg',
+    'technical-guide': '/images/blog/technical-guide.jpg',
+    'best-practice': '/images/blog/best-practice.jpg',
+    'use-case': '/images/blog/use-case.jpg',
+    'customer-story': '/images/blog/customer-story.jpg',
+    'general': '/images/blog/general.jpg',
+  };
+
+  // 内联图片选择函数 (v147)
+  function getInlineBlogImage(post: BlogPost, index: number): string {
+    const postSlug = post.slug || '';
+    const postCategory = (post.category || 'general').toLowerCase().trim();
+
+    // 1. 先按 slug 匹配
+    for (const [key, img] of Object.entries(SLUG_IMAGE_MAP)) {
+      if (postSlug.includes(key)) {
+        return img;
+      }
+    }
+
+    // 2. 再按分类匹配
+    if (CATEGORY_IMAGE_MAP[postCategory]) {
+      return CATEGORY_IMAGE_MAP[postCategory];
+    }
+
+    // 3. 最后按索引轮换
+    return BLOG_IMAGES[index % BLOG_IMAGES.length];
+  }
+
+  // 内联详情页图片选择函数 (v147)
+  function getInlineBlogDetailImage(post: BlogPost): string {
+    const postSlug = post.slug || '';
+    const postCategory = (post.category || 'general').toLowerCase().trim();
+
+    // 1. 先按 slug 匹配
+    for (const [key, img] of Object.entries(SLUG_IMAGE_MAP)) {
+      if (postSlug.includes(key)) {
+        return img;
+      }
+    }
+
+    // 2. 再按分类匹配
+    if (CATEGORY_IMAGE_MAP[postCategory]) {
+      return CATEGORY_IMAGE_MAP[postCategory];
+    }
+
+    // 3. 默认返回 general
+    return '/images/blog/general.jpg';
+  }
 
   // Resolve params (Promise in Next.js 14.1+)
   const [resolvedParams, setResolvedParams] = useState<{ locale: string; slug: string } | null>(null);
@@ -221,6 +312,9 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
 
   const content = blog.content?.[locale as 'en' | 'zh' | 'ar'] || '';
 
+  // 调试日志 (v147)
+  console.log(`[v147] Detail page: slug="${blog.slug}" category="${(blog.category || 'general').toLowerCase()}" → image="${getInlineBlogDetailImage(blog)}"`);
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Page Header */}
@@ -250,13 +344,15 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
       <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="bg-white rounded-2xl shadow-md p-8 md:p-12">
           <img
-            src={getBlogDetailImage(blog)}
+            src={getInlineBlogDetailImage(blog)}
             alt={locale === 'zh' ? blog.title.zh : locale === 'ar' ? blog.title.ar : blog.title.en}
             className="w-full h-64 object-cover rounded-xl mb-8"
             onError={(e) => {
+              // 简化 onError：只替换 src 到 general.jpg
               const target = e.target as HTMLImageElement;
               const fallbackSrc = '/images/blog/general.jpg';
               if (!target.src.includes(fallbackSrc)) {
+                console.warn(`[v147] Detail image load failed, using fallback: ${target.src}`);
                 target.src = fallbackSrc;
               }
             }}
@@ -298,13 +394,15 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
                 className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden"
               >
                 <img
-                  src={getBlogImage(post, idx)}
+                  src={getInlineBlogImage(post, idx)}
                   alt=""
                   className="w-full h-48 object-cover"
                   onError={(e) => {
+                    // 简化 onError：只替换 src 到 general.jpg
                     const target = e.target as HTMLImageElement;
                     const fallbackSrc = '/images/blog/general.jpg';
                     if (!target.src.includes(fallbackSrc)) {
+                      console.warn(`[v147] Recent post image load failed, using fallback: ${target.src}`);
                       target.src = fallbackSrc;
                     }
                   }}
