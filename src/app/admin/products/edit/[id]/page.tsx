@@ -92,6 +92,37 @@ export default function EditProductPage() {
     return Array.from(keywords).join(', ');
   };
 
+  // Check slug uniqueness and generate unique slug (excluding current product)
+  const generateUniqueSlug = async (baseSlug: string): Promise<string> => {
+    let slug = baseSlug;
+    let counter = 1;
+    
+    while (true) {
+      try {
+        const res = await fetch(`/api/products?slug=${encodeURIComponent(slug)}&status=all`);
+        if (res.ok) {
+          const json = await res.json();
+          const existingProduct = json.data?.[0];
+          
+          // If product exists and it's not the current product, slug conflicts
+          if (existingProduct && existingProduct.id !== productId) {
+            counter++;
+            slug = `${baseSlug}-${counter}`;
+          } else {
+            // Slug is unique or belongs to current product
+            return slug;
+          }
+        } else {
+          // Error checking, return the original slug
+          return slug;
+        }
+      } catch (error) {
+        console.error('Error checking slug uniqueness:', error);
+        return slug;
+      }
+    }
+  };
+
   // Auto-generate SEO keywords when names change
   useEffect(() => {
     if (!form.seoKeywords && (form.nameEn || form.nameZh || form.nameAr)) {
@@ -280,10 +311,13 @@ export default function EditProductPage() {
     }
     setSaving(true);
     try {
+      // Check slug uniqueness
       const slug = form.slug || form.nameEn.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || 'product-' + Date.now();
+      const uniqueSlug = await generateUniqueSlug(slug);
+      
       await adminApi.updateProduct(productId, {
         name: { en: form.nameEn, zh: form.nameZh, ar: form.nameAr },
-        slug,
+        slug: uniqueSlug,
         sku: form.sku,
         price: parseFloat(form.price) || 0,
         categoryIds: form.categoryIds,

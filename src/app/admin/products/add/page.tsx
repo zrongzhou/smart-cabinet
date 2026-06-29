@@ -83,10 +83,43 @@ export default function AddProductPage() {
   // Auto-generate slug from name
   useEffect(() => {
     if (form.nameEn && !form.slug) {
-      const slug = form.nameEn.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+      const slug = form.nameEn.toLowerCase()
+        .replace(/[^\w\s-]/g, '') // Remove special characters
+        .replace(/\s+/g, '-')     // Spaces to hyphens
+        .replace(/-+/g, '-')      // Multiple hyphens to one
+        .trim();
       if (slug) setForm(prev => ({ ...prev, slug }));
     }
   }, [form.nameEn]);
+
+  // Check slug uniqueness and generate unique slug
+  const generateUniqueSlug = async (baseSlug: string): Promise<string> => {
+    let slug = baseSlug;
+    let counter = 1;
+    
+    while (true) {
+      try {
+        const res = await fetch(`/api/products?slug=${encodeURIComponent(slug)}&status=all`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json.data && json.data.length > 0) {
+            // Slug exists, try with counter
+            counter++;
+            slug = `${baseSlug}-${counter}`;
+          } else {
+            // Slug is unique
+            return slug;
+          }
+        } else {
+          // Error checking, return the original slug
+          return slug;
+        }
+      } catch (error) {
+        console.error('Error checking slug uniqueness:', error);
+        return slug;
+      }
+    }
+  };
 
   // Auto-generate SKU from name
   useEffect(() => {
@@ -206,9 +239,12 @@ export default function AddProductPage() {
     }
     setSaving(true);
     try {
+      // Check slug uniqueness
+      const uniqueSlug = await generateUniqueSlug(form.slug);
+      
       await adminApi.createProduct({
         name: { en: form.nameEn, zh: form.nameZh || form.nameEn, ar: form.nameAr || form.nameEn },
-        slug: form.slug,
+        slug: uniqueSlug,
         sku: form.sku,
         price: parseFloat(form.price) || 0,
         categoryIds: form.categoryIds,

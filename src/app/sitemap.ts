@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 import { PrismaClient } from '@prisma/client';
 
-const BASE_URL = 'https://test.wstoolcabinet.com';
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.wstoolcabinet.com';
 
 /**
  * Sitemap — fetches data from DB directly (Server Component)
