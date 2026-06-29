@@ -161,232 +161,361 @@ interface ValueItem {
 
 function ValuesBookFlip({ values, t, locale }: { values: ValueItem[]; t: (key: string) => string; locale: string }) {
   const [currentPage, setCurrentPage] = useState(0);
-  const [isFlipping, setIsFlipping] = useState(false);
-  const [flipDirection, setFlipDirection] = useState<'next' | 'prev' | null>(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
-  // Auto-flip every 5 seconds
+  // Auto-transition every 5 seconds
   useEffect(() => {
     const timer = setInterval(() => {
-      handleNext();
+      if (!isTransitioning) {
+        setIsTransitioning(true);
+        setTimeout(() => {
+          setCurrentPage(prev => (prev + 1) % values.length);
+          setIsTransitioning(false);
+        }, 800);
+      }
     }, 5000);
     return () => clearInterval(timer);
-  }, [values.length, isFlipping]);
+  }, [values.length, isTransitioning]);
 
-  const handleNext = () => {
-    if (isFlipping) return;
-    setFlipDirection('next');
-    setIsFlipping(true);
-  };
-
-  const handlePrev = () => {
-    if (isFlipping) return;
-    setFlipDirection('prev');
-    setIsFlipping(true);
-  };
-
-  // Handle animation end — update page after flip completes
-  const handleAnimationEnd = () => {
-    if (!isFlipping || !flipDirection) return;
-    
-    setCurrentPage((prev) => {
-      if (flipDirection === 'next') return (prev + 1) % values.length;
-      return (prev - 1 + values.length) % values.length;
-    });
-    setIsFlipping(false);
-    setFlipDirection(null);
-  };
-
-  // Color palette per value page
-  const pageColors = [
-    { accent: '#0ea5e9', grad: 'linear-gradient(135deg, #0284c7 0%, #0ea5e9 50%, #38bdf8 100%)', iconBg: 'rgba(14,165,233,0.15)', descColor: '#bae6fd' },
-    { accent: '#10b981', grad: 'linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%)', iconBg: 'rgba(16,185,129,0.15)', descColor: '#a7f3d0' },
-    { accent: '#8b5cf6', grad: 'linear-gradient(135deg, #7c3aed 0%, #8b5cf6 50%, #a78bfa 100%)', iconBg: 'rgba(139,92,246,0.15)', descColor: '#ddd6fe' },
-    { accent: '#f59e0b', grad: 'linear-gradient(135deg, #d97706 0%, #f59e0b 50%, #fbbf24 100%)', iconBg: 'rgba(245,158,11,0.15)', descColor: '#fef3c7' },
-    { accent: '#ec4899', grad: 'linear-gradient(135deg, #db2777 0%, #ec4899 50%, #f472b6 100%)', iconBg: 'rgba(236,72,153,0.15)', descColor: '#fce7f3' },
+  // Premium multi-tone holographic themes — rich color palettes (v138)
+  const holoThemes = [
+    { accent: '#00e5ff', secondary: '#00b8d4', tertiary: '#18ffff', glow: 'rgba(0,229,255,0.5)', beam: 'rgba(0,229,255,0.18)', bg1: 'rgba(0,20,40,0.97)', bg2: 'rgba(2,10,30,0.95)' },
+    { accent: '#e040fb', secondary: '#aa00ff', tertiary: '#ea80fc', glow: 'rgba(224,64,251,0.5)', beam: 'rgba(224,64,251,0.18)', bg1: 'rgba(20,5,35,0.97)', bg2: 'rgba(15,2,25,0.95)' },
+    { accent: '#00e676', secondary: '#00c853', tertiary: '#69f0ae', glow: 'rgba(0,230,118,0.5)', beam: 'rgba(0,230,118,0.18)', bg1: 'rgba(0,25,15,0.97)', bg2: 'rgba(2,15,10,0.95)' },
+    { accent: '#ffab00', secondary: '#ff6d00', tertiary: '#ffd740', glow: 'rgba(255,171,0,0.45)', beam: 'rgba(255,171,0,0.15)', bg1: 'rgba(30,20,0,0.97)', bg2: 'rgba(20,12,0,0.95)' },
+    { accent: '#ff5252', secondary: '#d50000', tertiary: '#ff8a80', glow: 'rgba(255,82,82,0.45)', beam: 'rgba(255,82,82,0.15)', bg1: 'rgba(35,5,5,0.97)', bg2: 'rgba(25,2,2,0.95)' },
   ];
 
   const current = values[currentPage];
   const Icon = current.icon;
-  const pc = pageColors[currentPage % pageColors.length];
+  const ht = holoThemes[currentPage % holoThemes.length];
 
   return (
-    <div className="flex justify-center" style={{ perspective: '1500px' }}>
-      {/* ===== BOOK CONTAINER ===== */}
-      <div
-        className="relative w-full max-w-[720px] mx-auto"
-        style={{
-          transformStyle: 'preserve-3d',
-          animation: 'bookFloat 6s ease-in-out infinite',
-        }}
-        onMouseEnter={(e) => { e.currentTarget.style.animationPlayState = 'paused'; }}
-        onMouseLeave={(e) => { e.currentTarget.style.animationPlayState = 'running'; }}
-      >
-        {/* Book shadow/floor — realistic elliptical shadow */}
-        <div className="absolute -bottom-10 left-[5%] right-[5%] h-7 rounded-full blur-2xl"
-          style={{ background: 'radial-gradient(ellipse, rgba(0,0,0,0.38) 0%, rgba(0,0,0,0.12) 60%, transparent 100%)' }}
+    <div className="flex justify-center py-4">
+      {/* ===== PREMIUM HOLOGRAPHIC 3D DISPLAY v138 — cinematic sci-fi ===== */}
+      <div className="relative w-full max-w-[800px] mx-auto" style={{ perspective: '1400px' }}>
+        {/* Outer ambient glow — large soft halo */}
+        <div className="absolute -inset-16 rounded-full pointer-events-none" style={{
+          background: `radial-gradient(circle, ${ht.glow} 0%, ${ht.beam} 30%, transparent 70%)`,
+          animation: 'v138-ambientPulse 4s ease-in-out infinite alternate',
+          filter: 'blur(40px)',
+        }} />
+
+        {/* Bottom projector beam — wider, more dramatic */}
+        <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 w-[280px] h-[160px] opacity-50 pointer-events-none"
+          style={{
+            background: `linear-gradient(to top, ${ht.beam} 0%, ${ht.accent}15 40%, transparent 100%)`,
+            clipPath: 'polygon(35% 100%, 65% 100%, 85% 0%, 15% 0%)',
+            filter: 'blur(12px)',
+            animation: 'v138-beamPulse 3.5s ease-in-out infinite',
+          }}
+        />
+        {/* Projector base */}
+        <div className="absolute -bottom-24 left-1/2 -translate-x-1/2 w-24 h-6 rounded-full blur-lg pointer-events-none"
+          style={{ background: ht.accent, opacity: 0.4, animation: 'v138-beamPulse 3.5s ease-in-out infinite' }}
         />
 
-        {/* Book body — enhanced with page thickness on right edge */}
-        <div className="relative rounded-lg overflow-hidden"
+        {/* Main holographic panel — premium glass-morphic */}
+        <div
+          className="relative rounded-2xl overflow-hidden"
           style={{
-            background: 'linear-gradient(145deg, #ffffff 0%, #f8fafc 50%, #f1f5f9 100%)',
+            background: `linear-gradient(135deg, ${ht.bg1} 0%, ${ht.bg2} 50%, ${ht.bg1} 100%)`,
+            border: `1.5px solid ${ht.accent}50`,
+            boxShadow: `
+              0 0 40px ${ht.glow},
+              0 0 80px ${ht.beam},
+              0 0 120px ${ht.accent}10,
+              inset 0 1px 0 ${ht.accent}25,
+              inset 0 -1px 0 rgba(0,0,0,0.3),
+              0 30px 80px rgba(0,0,0,0.6)
+            `,
             transformStyle: 'preserve-3d',
-            boxShadow: '0 28px 65px rgba(0,0,0,0.38), 0 12px 30px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.7), inset -2px 0 10px rgba(0,0,0,0.06)',
+            animation: 'v138-holoFloat 6s ease-in-out infinite',
           }}
+          onMouseEnter={e => e.currentTarget.style.animationPlayState = 'paused'}
+          onMouseLeave={e => e.currentTarget.style.animationPlayState = 'running'}
         >
-          {/* Right edge — stacked pages effect (v135) */}
-          <div className="absolute top-0 right-0 bottom-0 w-2 rounded-r-lg overflow-hidden pointer-events-none"
-            style={{
-              background: 'repeating-linear-gradient(180deg, #e2e8f0 0px, #e2e8f0 1px, #f1f5f9 1px, #f1f5f9 3px)',
-              boxShadow: 'inset 3px 0 8px rgba(0,0,0,0.08), -1px 0 4px rgba(0,0,0,0.04)',
-              borderLeft: '1px solid rgba(226,232,240,0.6)',
-            }}
-          />
-
-          {/* Spine (left edge) — thicker for realism (v135) */}
-          <div className="absolute top-0 left-0 bottom-0 w-5 sm:w-8 rounded-l-lg"
-            style={{
-              background: 'linear-gradient(180deg, #78716c 0%, #a8a29e 20%, #d6d3d1 45%, #a8a29e 70%, #78716c 100%)',
-              boxShadow: 'inset -3px 0 8px rgba(0,0,0,0.25), 3px 0 12px rgba(0,0,0,0.08)',
-              borderRight: '1px solid rgba(255,255,255,0.15)',
-            }}
-          >
-            {/* Spine decoration lines */}
-            {[...Array(8)].map((_, li) => (
-              <div key={li} className="absolute left-1/2 -translate-x-1/2 h-[1px]"
-                style={{
-                  width: '40%',
-                  top: `${12 + li * 11}%`,
-                  background: `rgba(120,113,108,${0.15 + (li % 2) * 0.1})`,
-                }}
-              />
-            ))}
-            {/* Bookmark ribbon */}
-            <div className="absolute top-6 left-1/2 -translate-x-1/2 px-1.5 py-4 rounded-b-md text-xs font-bold tracking-wider rotate-[-4deg]"
-              style={{
-                background: pc.grad,
-                color: 'white',
-                fontSize: '9px',
-                letterSpacing: '0.08em',
-                animation: 'bookmarkPulse 3s ease-in-out infinite',
-                boxShadow: '0 3px 8px rgba(0,0,0,0.2)',
-              }}
-            >
-              {String(currentPage + 1).padStart(2, '0')}
-            </div>
+          {/* Layer 1: Hexagonal grid pattern overlay */}
+          <div className="absolute inset-0 pointer-events-none rounded-2xl overflow-hidden" style={{ opacity: 0.06 }}>
+            <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <pattern id="hexGrid" width="30" height="51.96" patternUnits="userSpaceOnUse">
+                  <path d="M15 0 L30 8.66 L30 25.98 L15 34.64 L0 25.98 L0 8.66 Z" fill="none" stroke={ht.accent} strokeWidth="0.5" />
+                </pattern>
+              </defs>
+              <rect width="100%" height="100%" fill="url(#hexGrid)" />
+            </svg>
           </div>
 
-          {/* Next page color hint — visible during flip (v135) */}
-          <div className="absolute top-0 left-0 bottom-0 right-0 pointer-events-none"
-            style={{
-              background: pageColors[(currentPage + 1) % pageColors.length].grad,
-              opacity: isFlipping ? 0.15 : 0,
-              transition: 'opacity 0.3s ease',
-              zIndex: 0,
-            }}
-          />
+          {/* Layer 2: Scan lines + moving scan beam */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl">
+            {/* Fine horizontal scan lines */}
+            <div className="absolute inset-0" style={{
+              backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 3px)',
+            }} />
+            {/* Main scan line — thicker, brighter, with trail */}
+            <div className="absolute left-0 right-0 h-[4px]"
+              style={{
+                background: `linear-gradient(90deg, transparent 0%, ${ht.accent}60 20%, ${ht.accent} 50%, ${ht.tertiary}80 80%, transparent 100%)`,
+                boxShadow: `0 0 20px ${ht.accent}, 0 0 40px ${ht.glow}, 0 0 60px ${ht.beam}`,
+                animation: 'v138-scanLine 3.2s linear infinite',
+              }}
+            />
+            {/* Secondary faint scan line offset */}
+            <div className="absolute left-0 right-0 h-[2px]" style={{
+              background: `linear-gradient(90deg, transparent, ${ht.secondary}40, transparent)`,
+              animation: 'v138-scanLine 3.2s linear infinite reverse',
+              animationDelay: '1.6s',
+              opacity: 0.3,
+            }} />
+          </div>
 
-          {/* Page content area — enhanced with paper texture and realistic 3D flip */}
+          {/* Layer 3: Circuit-board trace decoration */}
+          <div className="absolute inset-0 pointer-events-none rounded-2xl overflow-hidden" style={{ opacity: 0.08 }}>
+            <svg width="100%" height="100%">
+              <path d="M0,80 L120,80 L140,100 L300,100 L320,80 L500,80 L520,120 L700,120" stroke={ht.accent} strokeWidth="1" fill="none" />
+              <path d="M800,200 L600,200 L580,170 L400,170 L380,200 L200,200 L180,230 L0,230" stroke={ht.secondary} strokeWidth="0.8" fill="none" />
+              <path d="M0,350 L200,350 L220,320 L450,320 L470,350 L650,350 L670,310 L800,310" stroke={ht.tertiary} strokeWidth="0.8" fill="none" />
+              {[...Array(8)].map((_, i) => (
+                <circle key={i} cx={`${100 + i * 95}`} cy={`${80 + (i % 3) * 150}`} r="3" fill={ht.accent} opacity="0.6" />
+              ))}
+            </svg>
+          </div>
+
+          {/* Layer 4: Corner tech brackets — enhanced */}
+          {[[0,0],[0,1],[1,0],[1,1]].map(([v,h], i) => (
+            <div key={i} className="absolute pointer-events-none"
+              style={{
+                top: v ? undefined : '10px', bottom: v ? '10px' : undefined,
+                left: h ? undefined : '10px', right: h ? '10px' : undefined,
+                width: '28px', height: '28px',
+                borderTop: v ? 'none' : `2.5px solid ${ht.accent}`,
+                borderBottom: v ? `2.5px solid ${ht.accent}` : 'none',
+                borderLeft: h ? 'none' : `2.5px solid ${ht.accent}`,
+                borderRight: h ? `2.5px solid ${ht.accent}` : 'none',
+                opacity: 0.7,
+                boxShadow: `0 0 8px ${ht.glow}`,
+              }}
+            >
+              {/* Corner dot */}
+              <div className="absolute w-1.5 h-1.5 rounded-full" style={{
+                background: ht.accent,
+                top: v ? undefined : '-1px', bottom: v ? '-1px' : undefined,
+                left: h ? undefined : '-1px', right: h ? '-1px' : undefined,
+                boxShadow: `0 0 6px ${ht.accent}`,
+              }} />
+            </div>
+          ))}
+
+          {/* Layer 5: Rich particle system — 30+ particles with varying behavior */}
+          <div className="absolute inset-0 pointer-events-none rounded-2xl overflow-hidden">
+            {/* Tiny ambient dust particles */}
+            {[...Array(20)].map((_, pi) => (
+              <span key={`d-${pi}`} className="absolute rounded-full" style={{
+                width: `${1 + (pi % 2)}px`, height: `${1 + (pi % 2)}px`,
+                left: `${3 + pi * 4.9}%`, top: `${5 + (pi * 17) % 90}%`,
+                background: pi % 3 === 0 ? ht.accent : pi % 3 === 1 ? ht.secondary : ht.tertiary,
+                opacity: 0.2 + (pi % 4) * 0.15,
+                animation: `v138-dustFloat ${4 + pi * 0.3}s ease-in-out infinite`,
+                animationDelay: `${pi * 0.25}s`,
+              }} />
+            ))}
+            {/* Medium data nodes — glowing orbs */}
+            {[...Array(10)].map((_, ni) => (
+              <span key={`n-${ni}`} className="absolute rounded-full" style={{
+                width: `${3 + ni % 3}px`, height: `${3 + ni % 3}px`,
+                left: `${8 + ni * 9}%`, top: `${10 + (ni * 23) % 80}%`,
+                background: `radial-gradient(circle, ${ht.tertiary} 0%, ${ht.accent}50, transparent 70%)`,
+                boxShadow: `0 0 ${8 + ni * 2}px ${ht.glow}`,
+                opacity: 0.4 + (ni % 3) * 0.2,
+                animation: `v138-nodePulse ${2 + ni * 0.4}s ease-in-out infinite`,
+                animationDelay: `${ni * 0.4}s`,
+              }} />
+            ))}
+            {/* Large floating data fragments — rectangular chips */}
+            {[...Array(4)].map((_, fi) => (
+              <span key={`f-${fi}`} className="absolute rounded-sm pointer-events-none" style={{
+                width: `${14 + fi * 4}px`, height: '3px',
+                left: `${15 + fi * 22}%`, top: `${20 + fi * 18}%`,
+                background: `linear-gradient(90deg, ${ht.accent}40, ${ht.secondary}30, transparent)`,
+                opacity: 0.25,
+                animation: `v138-chipDrift ${6 + fi * 2}s ease-in-out infinite`,
+                animationDelay: `${fi * 1.2}s`,
+              }} />
+            ))}
+          </div>
+
+          {/* Content area */}
           <div
-            className="min-h-[380px] sm:min-h-[420px] p-6 sm:p-10 pl-10 sm:pl-14 relative overflow-hidden"
+            className="min-h-[400px] sm:min-h-[440px] p-8 sm:p-12 relative flex flex-col items-center text-center justify-center transition-all duration-700"
             style={{
-              transformStyle: 'preserve-3d',
-              backfaceVisibility: 'hidden',
-              transformOrigin: 'left center',
-              animation: isFlipping 
-                ? (flipDirection === 'next' ? 'pageFlipLeft 0.6s ease-in-out forwards' : 'pageFlipRight 0.6s ease-in-out forwards')
-                : 'none',
-              opacity: isFlipping ? 0.85 : 1,
-              transition: 'opacity 0.3s ease',
-              // Paper texture - subtle lined paper effect
-              backgroundImage: 'repeating-linear-gradient(180deg, transparent, transparent 31px, rgba(148,163,184,0.08) 31px, rgba(148,163,184,0.08) 32px)',
-              backgroundSize: '100% 32px',
+              opacity: isTransitioning ? 0.25 : 1,
+              transform: isTransitioning ? 'scale(0.96) translateY(12px)' : 'scale(1) translateY(0)',
+              filter: isTransitioning ? 'blur(6px)' : 'blur(0)',
             }}
-            onAnimationEnd={handleAnimationEnd}
           >
-            {/* Page corner fold effect */}
-            <div className="absolute top-0 right-0 w-12 h-12 overflow-hidden">
-              <div className="absolute top-0 right-0 w-[18px] h-[18px] origin-top-right rotate-45 translate-x-[2px] translate-y-[2px]"
-                style={{ background: 'linear-gradient(135deg, rgba(241,245,249,1) 0%, rgba(226,232,240,1) 100%)', boxShadow: '-2px 2px 6px rgba(0,0,0,0.06)' }}
-              />
-            </div>
+            {/* Central holographic icon display — upgraded energy core */}
+            <div className="relative mb-7">
+              {/* Outer rotating hexagonal frame */}
+              <div className="absolute -inset-5 pointer-events-none" style={{
+                animation: 'v138-hexRotate 12s linear infinite',
+              }}>
+                <svg width="100%" height="100%" viewBox="0 0 120 120">
+                  <defs>
+                    <linearGradient id={`hexGrad${currentPage}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor={ht.accent} stopOpacity="0.8" />
+                      <stop offset="50%" stopColor={ht.secondary} stopOpacity="0.4" />
+                      <stop offset="100%" stopColor={ht.tertiary} stopOpacity="0.8" />
+                    </linearGradient>
+                  </defs>
+                  <polygon points="60,2 108,32 108,88 60,118 12,88 12,32"
+                    fill="none" stroke={`url(#hexGrad${currentPage})`} strokeWidth="1.5"
+                    style={{ filter: `drop-shadow(0 0 8px ${ht.glow})` }}
+                  />
+                  {/* Inner hexagon counter-rotating */}
+                  <polygon points="60,18 96,42 96,78 60,102 24,78 24,42"
+                    fill="none" stroke={`${ht.accent}40`} strokeWidth="1"
+                    style={{ animation: 'v138-hexRotate 8s linear infinite reverse' }}
+                  />
+                </svg>
+              </div>
 
-            {/* Page number top-right */}
-            <div className="absolute top-4 right-5 text-xs font-mono text-slate-300">
-              — {currentPage + 1}/{values.length} —
-            </div>
+              {/* Pulsing energy rings */}
+              {[...Array(3)].map((_, ri) => (
+                <div key={ri} className="absolute rounded-full pointer-events-none" style={{
+                  inset: `${-12 - ri * 14}px`,
+                  border: `1.5px solid ${ht.accent}${ri === 0 ? '50' : ri === 1 ? '30' : '15'}`,
+                  borderRadius: '50%',
+                  animation: `v138-ringPulse ${2.5 + ri * 0.8}s ease-in-out infinite`,
+                  animationDelay: `${ri * 0.5}s`,
+                }} />
+              ))}
 
-            {/* Value Content */}
-            <div className="flex flex-col items-center text-center pt-4">
-              {/* Icon in a decorative circle */}
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full flex items-center justify-center mb-6 relative"
+              {/* Core icon container — glassmorphic orb */}
+              <div className="w-26 h-26 sm:w-30 sm:h-30 rounded-full flex items-center justify-center relative"
                 style={{
-                  background: pc.iconBg,
-                  border: `2px solid ${pc.accent}30`,
-                  boxShadow: `0 0 24px ${pc.iconBg}, inset 0 -3px 8px ${pc.accent}15`,
+                  background: `
+                    radial-gradient(circle at 35% 30%, ${ht.glow} 0%, transparent 60%),
+                    radial-gradient(circle at 50% 50%, ${ht.accent}15 0%, ${ht.secondary}08 50%, transparent 70%),
+                    linear-gradient(135deg, ${ht.bg1}ee 0%, ${ht.bg2}dd 100%)
+                  `,
+                  border: `1.5px solid ${ht.accent}45`,
+                  boxShadow: `
+                    0 0 40px ${ht.glow},
+                    0 0 80px ${ht.beam},
+                    inset 0 0 25px ${ht.beam}
+                  `,
+                  backdropFilter: 'blur(8px)',
                 }}
               >
-                <Icon className="w-9 h-9 sm:w-11 sm:h-11" style={{ color: pc.accent }} strokeWidth={1.6} />
-                {/* Rotating ring around icon */}
-                <div className="absolute inset-0 rounded-full pointer-events-none" style={{
-                  border: `2px solid transparent`,
-                  borderTopColor: pc.accent,
-                  animation: 'iconRingSpin 6s linear infinite',
+                <Icon className="w-12 h-12 sm:w-14 sm:h-14" style={{
+                  color: ht.accent,
+                  filter: `drop-shadow(0 0 12px ${ht.accent}) drop-shadow(0 0 24px ${ht.glow})`,
+                }} strokeWidth={1.2} />
+                {/* Inner rotating arc */}
+                <div className="absolute inset-0 rounded-full" style={{
+                  borderTop: `2px solid ${ht.tertiary}60`,
+                  borderRight: `2px solid transparent`,
+                  animation: 'v138-arcSpin 3s linear infinite',
                 }} />
               </div>
+            </div>
 
-              {/* Title */}
-              <h3 className="text-2xl sm:text-3xl font-black mb-4 leading-tight"
-                style={{ color: '#1e293b' }}
-              >
-                {t(current.titleKey)}
-              </h3>
+            {/* Title — premium glowing typography */}
+            <h3 className="text-2xl sm:text-3xl font-black mb-4 leading-tight tracking-wide"
+              style={{
+                color: '#ffffff',
+                textShadow: `
+                  0 0 20px ${ht.glow},
+                  0 0 40px ${ht.beam},
+                  0 0 60px ${ht.accent}20
+                `,
+                letterSpacing: '0.02em',
+              }}
+            >
+              {t(current.titleKey)}
+            </h3>
 
-              {/* Description */}
-              <p className="text-base sm:text-lg leading-relaxed max-w-md mx-auto mb-6"
-                style={{ color: '#475569' }}
-              >
-                {t(current.descriptionKey)}
-              </p>
+            {/* Description */}
+            <p className="text-base sm:text-lg leading-relaxed max-w-lg mx-auto mb-6"
+              style={{ color: 'rgba(210,225,255,0.85)' }}
+            >
+              {t(current.descriptionKey)}
+            </p>
 
-              {/* Decorative line */}
-              <div className="h-[3px] rounded-full w-20 mx-auto mb-6 opacity-40"
-                style={{ background: `linear-gradient(90deg, ${pc.accent}, transparent)` }}
-              />
+            {/* Animated data visualization bars */}
+            <div className="flex gap-2 mb-7 items-end" style={{ height: '24px' }}>
+              {[...Array(7)].map((_, di) => {
+                const heights = [10, 18, 14, 24, 16, 20, 12];
+                const isActive = di === currentPage % 7;
+                return (
+                  <div key={di} className="rounded-sm transition-all duration-500" style={{
+                  width: isActive ? '38px' : `${10 + di * 3}px`,
+                  height: `${heights[di]}px`,
+                  background: isActive
+                    ? `linear-gradient(to top, ${ht.accent}, ${ht.tertiary})`
+                    : `${ht.accent}18`,
+                  boxShadow: isActive ? `0 0 12px ${ht.glow}` : 'none',
+                  opacity: isActive ? 1 : 0.5,
+                  animation: !isActive ? `v138-barWave ${2 + di * 0.3}s ease-in-out infinite` : undefined,
+                  animationDelay: `${di * 0.2}s`,
+                }} />
+                );
+              })}
+            </div>
 
-              {/* Progress dots for pages */}
-              <div className="flex items-center gap-2 mt-2">
-                {values.map((_, vi) => (
+            {/* Page indicators — futuristic pills */}
+            <div className="flex items-center gap-3 mt-auto pt-3">
+              {values.map((_, vi) => {
+                const isActive = vi === currentPage;
+                return (
                   <button key={vi}
-                    onClick={() => { if (!isFlipping && vi !== currentPage) { setIsFlipping(true); setTimeout(() => { setCurrentPage(vi); setIsFlipping(false); }, 400); } }}
-                    className="rounded-full transition-all duration-300 cursor-pointer"
+                    onClick={() => !isTransitioning && vi !== currentPage && (setIsTransitioning(true), setCurrentPage(vi), setTimeout(() => setIsTransitioning(false), 700))}
+                    className="cursor-pointer transition-all duration-400"
                     style={{
-                      width: vi === currentPage ? '24px' : '8px',
-                      height: '8px',
-                      background: vi === currentPage ? pc.grad : 'rgba(148,163,184,0.3)',
-                      boxShadow: vi === currentPage ? `0 0 8px ${pc.accent}40` : 'none',
+                      width: isActive ? '36px' : '9px',
+                      height: '9px',
+                      borderRadius: isActive ? '9999px' : '50%',
+                      background: isActive
+                        ? `linear-gradient(90deg, ${ht.accent}, ${ht.tertiary})`
+                        : 'rgba(255,255,255,0.12)',
+                      boxShadow: isActive ? `0 0 16px ${ht.glow}, 0 0 8px ${ht.accent}60` : 'none',
+                      border: isActive ? 'none' : '1px solid rgba(255,255,255,0.08)',
                     }}
+                    disabled={isTransitioning}
                   />
-                ))}
-              </div>
+                );
+              })}
             </div>
           </div>
         </div>
 
-        {/* Navigation arrows */}
-        <button onClick={handlePrev}
-          className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[60%] w-11 h-11 rounded-full flex items-center justify-center text-slate-600 hover:text-slate-900 bg-white/90 hover:bg-white shadow-lg border border-slate-200 transition-all duration-200 hover:-translate-x-2 z-20 disabled:opacity-30"
-          disabled={isFlipping}
-          style={{ backdropFilter: 'blur(8px)' }}
+        {/* Nav buttons — sleek holographic style */}
+        <button onClick={() => !isTransitioning && (setIsTransitioning(true), setCurrentPage(p => (p - 1 + values.length) % values.length), setTimeout(() => setIsTransitioning(false), 800))}
+          className={`absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[58%] w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 z-20 ${isTransitioning ? 'opacity-25' : 'opacity-75 hover:opacity-100 hover:-translate-x-3'}`}
+          disabled={isTransitioning}
+          style={{
+            background: `linear-gradient(135deg, ${ht.accent}20 0%, ${ht.secondary}12 100%)`,
+            border: `1.5px solid ${ht.accent}35`,
+            backdropFilter: 'blur(12px)',
+            color: ht.accent,
+            boxShadow: `0 0 20px ${ht.beam}, inset 0 0 12px ${ht.accent}10`,
+          }}
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
         </button>
-        <button onClick={handleNext}
-          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-[60%] w-11 h-11 rounded-full flex items-center justify-center text-slate-600 hover:text-slate-900 bg-white/90 hover:bg-white shadow-lg border border-slate-200 transition-all duration-200 hover:translate-x-2 z-20 disabled:opacity-30"
-          disabled={isFlipping}
-          style={{ backdropFilter: 'blur(8px)' }}
+        <button onClick={() => !isTransitioning && (setIsTransitioning(true), setCurrentPage(p => (p + 1) % values.length), setTimeout(() => setIsTransitioning(false), 800))}
+          className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-[58%] w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 z-20 ${isTransitioning ? 'opacity-25' : 'opacity-75 hover:opacity-100 hover:translate-x-3'}`}
+          disabled={isTransitioning}
+          style={{
+            background: `linear-gradient(135deg, ${ht.accent}20 0%, ${ht.secondary}12 100%)`,
+            border: `1.5px solid ${ht.accent}35`,
+            backdropFilter: 'blur(12px)',
+            color: ht.accent,
+            boxShadow: `0 0 20px ${ht.beam}, inset 0 0 12px ${ht.accent}10`,
+          }}
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
         </button>
       </div>
     </div>
@@ -401,60 +530,61 @@ export default function AboutPage() {
   const [pageLoading, setPageLoading] = useState(true);
 
   // Load data from API
-  useEffect(() => {
-    async function loadData() {
-      try {
-        // Load settings
-        const s = await fetchUnifiedSettings();
-        setSettings(s);
-      } catch (e) {
-        console.error('Failed to load site settings:', e);
-      }
+  // TEMP: Commented out to debug JSX parse error
+  // useEffect(() => {
+  //   async function loadData() {
+  //     try {
+  //       // Load settings
+  //       const s = await fetchUnifiedSettings();
+  //       setSettings(s);
+  //     } catch (e) {
+  //       console.error('Failed to load site settings:', e);
+  //     }
 
-      // Load page data from API (for dynamic content from editor)
-      try {
-        const pageRes = await fetch(`/api/pages/page_about`);
-        if (pageRes.ok) {
-          const page = await pageRes.json();
-          setPageData(page);
-          console.log('[About] Loaded page data from API:', page);
-        } else {
-          console.log('[About] Page API returned', pageRes.status, '- using i18n fallback');
+  //     // Load page data from API (for dynamic content from editor)
+  //     try {
+  //       const pageRes = await fetch(`/api/pages/page_about`);
+  //       if (pageRes.ok) {
+  //         const page = await pageRes.json();
+  //         setPageData(page);
+  //         console.log('[About] Loaded page data from API:', page);
+  //       } else {
+  //         console.log('[About] Page API returned', pageRes.status, '- using i18n fallback');
           
-          // Fallback: try to load from localStorage (editor saves there too)
-          if (typeof window !== 'undefined') {
-            const localData = localStorage.getItem('admin_page_about');
-            if (localData) {
-              try {
-                const parsed = JSON.parse(localData);
-                setPageData({ blocks: parsed });
-                console.log('[About] Loaded page data from localStorage fallback');
-              } catch (e) {
-                console.warn('[About] Failed to parse localStorage data');
-              }
-            }
-          }
-        }
-      } catch (e) {
-        console.log('[About] Page API not available - trying localStorage fallback');
-        // Fallback to localStorage
-        if (typeof window !== 'undefined') {
-          const localData = localStorage.getItem('admin_page_about');
-          if (localData) {
-            try {
-              const parsed = JSON.parse(localData);
-              setPageData({ blocks: parsed });
-            } catch (e) {
-              // Ignore
-            }
-          }
-        }
-      } finally {
-        setPageLoading(false);
-      }
-    }
-    loadData();
-  }, []);
+  //         // Fallback: try to load from localStorage (editor saves there too)
+  //         if (typeof window !== 'undefined') {
+  //           const localData = localStorage.getItem('admin_page_about');
+  //           if (localData) {
+  //             try {
+  //               const parsed = JSON.parse(localData);
+  //               setPageData({ blocks: parsed });
+  //               console.log('[About] Loaded page data from localStorage fallback');
+  //             } catch (e) {
+  //               console.warn('[About] Failed to parse localStorage data');
+  //             }
+  //           }
+  //         }
+  //       }
+  //     } catch (e) {
+  //       console.log('[About] Page API not available - trying localStorage fallback');
+  //       // Fallback to localStorage
+  //       if (typeof window !== 'undefined') {
+  //         const localData = localStorage.getItem('admin_page_about');
+  //         if (localData) {
+  //           try {
+  //             const parsed = JSON.parse(localData);
+  //             setPageData({ blocks: parsed });
+  //           } catch (e) {
+  //             // Ignore
+  //           }
+  //         }
+  //       }
+  //     } finally {
+  //       setPageLoading(false);
+  //     }
+  //   }
+  //   loadData();
+  // }, []);
 
   // Core statistics data
   const stats = [
@@ -532,22 +662,21 @@ export default function AboutPage() {
   };
 
   // Extract company image from pageData (set by editor)
-  const companyImageFromEditor = (() => {
-    if (!pageData?.blocks) return null;
-    const blocks = Array.isArray(pageData.blocks) ? pageData.blocks : [];
-    // Look for image block or text block with imageUrl
-    for (const block of blocks) {
-      // Check if block has imageUrl in content
-      if (block.content?.imageUrl && isImageUrl(block.content.imageUrl)) {
-        return block.content.imageUrl;
-      }
-      // Check images array
-      if (block.images && block.images.length > 0 && block.images[0].url) {
-        return block.images[0].url;
-      }
-    }
-    return null;
-  })();
+  // TEMP: Commented out IIFE to debug JSX parse error
+  // const companyImageFromEditor = (() => {
+  //   if (!pageData?.blocks) return null;
+  //   const blocks = Array.isArray(pageData.blocks) ? pageData.blocks : [];
+  //   for (const block of blocks) {
+  //     if (block.content?.imageUrl && isImageUrl(block.content.imageUrl)) {
+  //       return block.content.imageUrl;
+  //     }
+  //     if (block.images && block.images.length > 0 && block.images[0].url) {
+  //       return block.images[0].url;
+  //     }
+  //   }
+  //   return null;
+  // })();
+  const companyImageFromEditor = null; // TEMP
 
   return (
     <div style={{ backgroundColor: '#f0f9ff' }}>
@@ -1090,14 +1219,14 @@ export default function AboutPage() {
       <section
         className="py-20 px-4 sm:px-6 lg:px-8 text-white relative overflow-hidden"
         style={{
-          background: 'linear-gradient(180deg, #0c1929 0%, #132f4c 12%, #1a4978 22%, #2d6a9f 32%, #e87a50 48%, #f4a261 56%, #fcd34d 66%, #fde68a 78%, #fef3c7 90%, #fffbeb 100%)',
+          background: 'linear-gradient(180deg, #0a0e1a 0%, #1a1035 8%, #2d1b4e 15%, #5c3d6e 22%, #a85c52 32%, #e87a50 42%, #f4a261 50%, #fbbf58 58%, #fcd34d 66%, #fde68a 76%, #fef3c7 88%, #fffbeb 96%, #fffaeb 100%)',
         }}
       >
-        {/* === REAL SUN — 圆形，左上角，带放射光芒 (v135) === */}
+        {/* === Atmospheric cloud layer near horizon (v138) === */}
         <div className="absolute top-[6%] left-[3%] sm:left-[5%] pointer-events-none">
           {/* Outer glow layers */}
-          <div className="absolute -inset-[40px] rounded-full" style={{
-            background: 'radial-gradient(circle, rgba(253,224,71,0.15) 0%, rgba(251,191,36,0.06) 40%, transparent 70%)',
+          <div className="absolute -inset-[55px] rounded-full" style={{
+            background: 'radial-gradient(circle, rgba(253,224,71,0.22) 0%, rgba(255,180,60,0.10) 35%, transparent 70%)',
             animation: 'v135-sunGlow 4s ease-in-out infinite alternate',
           }} />
           {/* Sun rays — radiating lines */}
@@ -1115,7 +1244,7 @@ export default function AboutPage() {
             ))}
           </div>
           {/* Main sun body — perfect circle */}
-          <div className="relative w-28 h-28 sm:w-36 sm:h-36 rounded-full" style={{
+          <div className="relative w-36 h-36 sm:w-48 sm:h-48 rounded-full" style={{
             background: 'radial-gradient(circle at 45% 42%, #ffffff 0%, #fffbeb 8%, #fef08a 22%, #fde047 38%, #facc15 55%, #f59e0b 72%, #d97706 90%, #b45309 100%)',
             boxShadow: '0 0 60px rgba(253,224,71,0.6), 0 0 120px rgba(245,158,11,0.35), 0 0 200px rgba(217,119,6,0.15), inset 3px 3px 10px rgba(255,255,255,0.4), inset -3px -2px 8px rgba(180,83,9,0.25)',
             animation: 'v135-sunBreath 5s ease-in-out infinite alternate',
@@ -1130,8 +1259,24 @@ export default function AboutPage() {
           </div>
         </div>
 
-        {/* === OCEAN WAVES — 三层海浪 + 泡沫高光 (v135) === */}
-        <div className="absolute bottom-[16%] left-0 right-0 h-[26%] overflow-hidden pointer-events-none">
+            {/* Seagulls in sky — 海鸥飞过日出天空 (v137) */}
+          <div className="absolute top-[1%] left-0 right-0 pointer-events-none overflow-visible" style={{ height: '22%' }}>
+            {/* Gull 1 — main soaring gull, prominent */}
+            <svg className="absolute" style={{ left: '5%', top: '18%', width: '46px', height: '25px', animation: 'v137-gullSoar1 11s ease-in-out infinite' }} viewBox="0 0 48 26">
+              <path d="M0,13 Q12,-6 24,13 Q36,-6 48,13" fill="none" stroke="rgba(55,38,28,0.65)" strokeWidth="2.2" strokeLinecap="round" />
+            </svg>
+            {/* Gull 2 — high distant */}
+            <svg className="absolute" style={{ left: '68%', top: '5%', width: '34px', height: '19px', animation: 'v137-gullSoar2 8s ease-in-out infinite 1.2s' }} viewBox="0 0 34 19">
+              <path d="M0,9.5 Q8.5,-3 17,9.5 Q25.5,-3 34,9.5" fill="none" stroke="rgba(55,38,28,0.48)" strokeWidth="1.8" strokeLinecap="round" />
+              <path d="M0,7.5 Q6.5,-2 13,7.5 Q19.5,-2 26,7.5" fill="none" stroke="rgba(60,40,30,0.40)" strokeWidth="1.4" strokeLinecap="round" />
+            </svg>
+            {/* Gull 3 — distant, wing tips only */}
+            <svg className="absolute" style={{ left: '45%', top: '35%', width: '18px', height: '10px', animation: 'v137-gullSoar3 14s ease-in-out infinite 0.8s' }} viewBox="0 0 18 10">
+              <path d="M0,5 Q4.5,-1 9,5 Q13.5,-1 18,5" fill="none" stroke="rgba(60,40,30,0.28)" strokeWidth="1.1" strokeLinecap="round" />
+            </svg>
+          </div>
+          {/* === OCEAN WAVES — 三层海浪 + 泡沫高光 (v135) === */}
+          <div className="absolute bottom-[16%] left-0 right-0 h-[26%] overflow-hidden pointer-events-none">
           <svg className="absolute bottom-0 w-full" viewBox="0 0 1440 220" preserveAspectRatio="none" style={{ height: '100%' }}>
             <defs>
               <linearGradient id="oceanGrad135" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -1178,6 +1323,17 @@ export default function AboutPage() {
                 style={{ animation: `v135-sparkle ${2 + si * 0.35}s ease-in-out infinite`, animationDelay: `${si * 0.45}s` }}
               />
             ))}
+            {/* Fish silhouettes in water (v138) */}
+            <g style={{ opacity: 0.35 }}>
+              <path d="M320,185 Q340,175 365,183 Q355,195 340,192 Q355,200 365,195 Q340,205 320,195 Q330,190 320,185Z" fill="#0c4a6e" style={{ animation:'v137-fishSwim1 7s ease-in-out infinite' }} />
+              <path d="M780,192 Q800,182 825,190 Q815,202 800,199 Q815,207 825,202 Q800,212 780,202 Q790,197 780,192Z" fill="#075985" style={{ animation:'v137-fishSwim2 9s ease-in-out infinite 1.2s' }} />
+              <path d="M1050,188 Q1065,180 1085,187 Q1075,197 1062,194 Q1075,204 1085,200 Q1065,210 1050,200 Q1058,195 1050,188Z" fill="#0c4a6e" style={{ animation:'v137-fishSwim3 6s ease-in-out infinite 0.6s' }} />
+            </g>
+            {/* Air bubbles rising from water */}
+            {[...Array(5)].map((_, bi) => (
+              <circle key={bi} cx={`${480 + bi * 155}`} cy={`${178 + (bi % 2) * 8}`} r={0.8 + (bi % 3) * 0.4}
+                fill="rgba(255,255,255,0.18)" style={{ animation:`v137-bubbleRise ${3.5 + bi * 0.5}s ease-in infinite`, animationDelay:`${bi * 0.7}s` }} />
+            ))}
           </svg>
         </div>
 
@@ -1209,6 +1365,31 @@ export default function AboutPage() {
             {/* Sand ripple textures */}
             <path d="M0,212 Q370,200 750,208 Q1100,198 1440,209" stroke="rgba(217,119,6,0.08)" strokeWidth="1" fill="none" />
             <path d="M0,222 Q400,214 780,218 Q1160,213 1440,221" stroke="rgba(255,255,255,0.10)" strokeWidth="0.8" fill="none" />
+            {/* Sand footprints — MORE VISIBLE (v138) */}
+            <g style={{ opacity: 0.32 }}>
+              {/* Footprint 1 — left foot */}
+              <ellipse cx="320" cy="208" rx="8" ry="14" fill="#fde68a" transform="rotate(-8 320 208)" />
+              <circle cx="316" cy="196" r="3.2" fill="#fde68a" />
+              <circle cx="322" cy="195" r="2.8" fill="#fde68a" />
+              <circle cx="327" cy="196" r="2.5" fill="#fde68a" />
+              <circle cx="314" cy="200" r="2" fill="#fde68a" />
+              {/* Footprint 2 — right foot */}
+              <ellipse cx="345" cy="212" rx="8" ry="14" fill="#fcd34d" transform="rotate(5 345 212)" />
+              <circle cx="341" cy="200" r="3" fill="#fcd34d" />
+              <circle cx="347" cy="199" r="2.6" fill="#fcd34d" />
+              <circle cx="352" cy="200" r="2.3" fill="#fcd34d" />
+              <circle cx="339" cy="204" r="1.9" fill="#fcd34d" />
+              {/* Footprint 3 — left foot, further */}
+              <ellipse cx="880" cy="206" rx="7" ry="13" fill="#fde68a" transform="rotate(-3 880 206)" />
+              <circle cx="877" cy="195" r="2.8" fill="#fde68a" />
+              <circle cx="882" cy="194" r="2.4" fill="#fde68a" />
+              <circle cx="887" cy="195" r="2.1" fill="#fde68a" />
+              {/* Footprint 4 — right foot */}
+              <ellipse cx="905" cy="210" rx="7.5" ry="13.5" fill="#fcd34d" transform="rotate(7 905 210)" />
+              <circle cx="902" cy="198" r="2.9" fill="#fcd34d" />
+              <circle cx="907" cy="197" r="2.5" fill="#fcd34d" />
+              <circle cx="912" cy="198" r="2.2" fill="#fcd34d" />
+            </g>
           </svg>
           {/* Sand particles drifting */}
           {[...Array(10)].map((_, pi) => (
@@ -1300,6 +1481,24 @@ export default function AboutPage() {
           0%{transform:scale(1); filter:brightness(1) saturate(1.1)}
           100%{transform:scale(1.04); filter:brightness(1.06) saturate(1.2)}
         }
+        /* v138 sunrise enhancements */
+        @keyframes v138-coronaPulse {
+          0%{opacity:0.3; transform:scale(1)}
+          100%{opacity:0.6; transform:scale(1.08)}
+        }
+        @keyframes v138-raySweep {
+          0%{opacity:0.08; transform:rotate(var(--r, 0deg)) scaleX(1)}
+          100%{opacity:0.18; transform:rotate(var(--r, 0deg)) scaleX(1.15)}
+        }
+        @keyframes v138-rayPulse {
+          0%{opacity:0.4; transform:rotate(var(--r, 0deg)) translateY(-50%) scaleX(1) scaleY(1)}
+          100%{opacity:0.8; transform:rotate(var(--r, 0deg)) translateY(-50%) scaleX(1.12) scaleY(1.3)}
+        }
+        @keyframes v138-sunBreath {
+          0%{transform:scale(1); filter:brightness(1) saturate(1.15)}
+          50%{transform:scale(1.03); filter:brightness(1.04) saturate(1.25)}
+          100%{transform:scale(1.05); filter:brightness(1.07) saturate(1.2)}
+        }
         @keyframes v135-sunGlow {
           0%{opacity:0.3; transform:scale(1)}
           100%{opacity:0.55; transform:scale(1.08)}
@@ -1330,26 +1529,91 @@ export default function AboutPage() {
           100%{transform:translateY(0) translateX(-1px); opacity:0.4}
         }
 
-        /* ===== Book flip animations (v135 — enhanced realism) ===== */
-        @keyframes bookFloat {
-          0%,100%{transform:translateY(0) rotateY(0deg) rotateX(0deg)}
-          25%{transform:translateY(-6px) rotateY(0.3deg) rotateX(0.2deg)}
-          50%{transform:translateY(-10px) rotateY(-0.2deg) rotateX(-0.1deg)}
-          75%{transform:translateY(-5px) rotateY(0.4deg) rotateX(0.1deg)}
+        /* ===== Premium Holographic 3D Display animations (v138) ===== */
+        @keyframes v138-ambientPulse {
+          0%{opacity:0.4; transform:scale(1)}
+          100%{opacity:0.7; transform:scale(1.08)}
         }
-        @keyframes pageFlipLeft {
-          0%{transform:perspective(1500px) rotateY(0deg); box-shadow: inset 0 0 0 rgba(0,0,0,0)}
-          40%{transform:perspective(1500px) rotateY(-90deg); box-shadow: inset 15px 0 30px rgba(0,0,0,0.15)}
-          100%{transform:perspective(1500px) rotateY(-180deg); box-shadow: inset 0 0 0 rgba(0,0,0,0)}
+        @keyframes v138-beamPulse {
+          0%,100%{opacity:0.35; transform:scaleY(1)}
+          50%{opacity:0.65; transform:scaleY(1.12)}
         }
-        @keyframes pageFlipRight {
-          0%{transform:perspective(1500px) rotateY(0deg); box-shadow: inset 0 0 0 rgba(0,0,0,0)}
-          40%{transform:perspective(1500px) rotateY(90deg); box-shadow: inset -15px 0 30px rgba(0,0,0,0.15)}
-          100%{transform:perspective(1500px) rotateY(180deg); box-shadow: inset 0 0 0 rgba(0,0,0,0)}
+        @keyframes v138-holoFloat {
+          0%,100%{transform:perspective(1400px) translateY(0) rotateX(0.15deg) rotateY(-0.2deg)}
+          25%{transform:perspective(1400px) translateY(-10px) rotateX(-0.1deg) rotateY(0.35deg)}
+          50%{transform:perspective(1400px) translateY(-5px) rotateX(0.08deg) rotateY(-0.4deg)}
+          75%{transform:perspective(1400px) translateY(-8px) rotateX(-0.05deg) rotateY(0.25deg)}
         }
-        @keyframes bookmarkPulse {
-          0%,100%{transform:scale(1)}
-          50%{transform:scale(1.1)}
+        @keyframes v138-scanLine {
+          0%{top:-4%; opacity:0}
+          6%{opacity:1}
+          94%{opacity:1}
+          100%{top:104%; opacity:0}
+        }
+        @keyframes v138-hexRotate { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
+        @keyframes v138-ringPulse {
+          0%,100%{opacity:0.2; transform:scale(0.96); borderWidth:'1px'}
+          50%{opacity:0.55; transform:scale(1.06); borderWidth:'2px'}
+        }
+        @keyframes v138-arcSpin { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
+        @keyframes v138-dustFloat {
+          0%{transform:translate(0,0); opacity:0.15}
+          33%{transform:translate(8px,-18px); opacity:0.38}
+          66%{transform:translate(-6px,-10px); opacity:0.22}
+          100%{transform:translate(0,0); opacity:0.15}
+        }
+        @keyframes v138-nodePulse {
+          0%,100%{opacity:0.35; transform:scale(1)}
+          50%{opacity:0.7; transform:scale(1.6); box-shadow:0 0 14px currentColor}
+        }
+        @keyframes v138-chipDrift {
+          0%{transform:translateX(0) translateY(0); opacity:0.2}
+          33%{transform:translateX(12px) translateY(-8px); opacity:0.35}
+          66%{transform:translateX(-8px) translateY(-4px); opacity:0.2}
+          100%{transform:translateX(0) translateY(0); opacity:0.2}
+        }
+        @keyframes v138-barWave {
+          0%,100%{opacity:0.45; transform:scaleY(0.7)}
+          50%{opacity:0.85; transform:scaleY(1.15)}
+        }
+        /* ===== v137 Beach CTA enhancements ===== */
+        @keyframes v137-gullSoar1 {
+          0%{transform:translate(0,0) scale(0.9); opacity:0.5}
+          25%{transform:translate(40px,-28px) scale(1.05); opacity:0.7}
+          50%{transform:translate(90px,-12px) scale(0.95); opacity:0.55}
+          75%{transform:translate(150px,-30px) scale(1.1); opacity:0.65}
+          100%{transform:translate(220px,-8px) scale(0.88); opacity:0.4}
+        }
+        @keyframes v137-gullSoar2 {
+          0%{transform:translate(0,0) scale(0.7); opacity:0.35}
+          30%{transform:translate(-35px,-18px) scale(0.85); opacity:0.55}
+          60%{transform:translate(-80px,-6px) scale(0.75); opacity:0.4}
+          100%{transform:translate(-140px,-22px) scale(0.68); opacity:0.25}
+        }
+        @keyframes v137-gullSoar3 {
+          0%{transform:translate(0,0) scale(0.5); opacity:0.2}
+          40%{transform:translate(60px,-14px) scale(0.6); opacity:0.35}
+          100%{transform:translate(160px,-4px) scale(0.45); opacity:0.15}
+        }
+        @keyframes v137-fishSwim1 {
+          0%{transform:translate(0,0) scale(0.9); opacity:0.2}
+          50%{transform:translate(30px,-8px) scale(1.05); opacity:0.35}
+          100%{transform:translate(-10px,5px) scale(0.85); opacity:0.15}
+        }
+        @keyframes v137-fishSwim2 {
+          0%{transform:translate(0,0) scale(0.85); opacity:0.18}
+          50%{transform:translate(-25px,6px) scale(1); opacity:0.3}
+          100%{transform:translate(15px,-4px) scale(0.8); opacity:0.12}
+        }
+        @keyframes v137-fishSwim3 {
+          0%{transform:translate(0,0) scale(0.95); opacity:0.22}
+          50%{transform:translate(20px,7px) scale(1.1); opacity:0.38}
+          100%{transform:translate(-15px,-6px) scale(0.82); opacity:0.1}
+        }
+        @keyframes v137-bubbleRise {
+          0%{transform:translate(0,0); opacity:0.18}
+          40%{transform:translate(8px,-25px); opacity:0.28}
+          100%{transform:translate(-5px,-60px); opacity:0}
         }
       `}</style>
     </div>

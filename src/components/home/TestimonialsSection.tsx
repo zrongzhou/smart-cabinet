@@ -14,11 +14,11 @@ function getLocalizedText(obj: { zh: string; en: string; ar?: string }, locale: 
 
 const testimonials = [
   {
-    name: '林志远',
-    nameAr: 'لين زهي يوان',
+    name: '林总',
+    nameAr: 'السيد لين',
     role: { zh: '生产总监', en: 'Production Director', ar: 'مدير الإنتاج' },
-    company: '华南精密制造有限公司',
-    companyAr: 'شركة جنوب الصين للتصنيع الدقيق',
+    company: '华南某精密制造企业',
+    companyAr: 'شركة تصنيع دقيقة في جنوب الصين',
     content: {
       zh: '我们生产线上安装了20台智能柜，结果非常出色。AI分析帮助我们预测需求模式，与WMS的物联网集成简化了整个运营。我强烈推荐智能柜给任何物流公司。',
       en: 'We installed 20 Smart Cabinets across our distribution centers, and the results have been outstanding. The AI-powered analytics help us predict demand patterns, and the IoT integration with our WMS has streamlined our entire operation. I highly recommend Smart Cabinet to any logistics company.',
@@ -27,11 +27,11 @@ const testimonials = [
     rating: 5,
   },
   {
-    name: '黄晓婷',
-    nameAr: 'هوانغ شياو تينغ',
+    name: '黄工',
+    nameAr: 'المهندسة هوانغ',
     role: { zh: '首席工程师', en: 'Lead Engineer', ar: 'المهندسة الرئيسية' },
-    company: '东莞市精工科技有限公司',
-    companyAr: 'شركة دونغوان للتكنولوجيا الدقيقة',
+    company: '东莞某精密加工企业',
+    companyAr: 'شركة تصنيع دقيقة في دونغوان',
     content: {
       zh: '这家精密加工公司通过智能柜实施，将工具搜索时间减少了75%，消除了生产延误。详细的案例研究和可衡量的结果。',
       en: 'A precision machining company reduced tool search time by 75% and eliminated production delays with smart cabinet implementation. A detailed case study with measurable results.',
@@ -40,9 +40,11 @@ const testimonials = [
     rating: 5,
   },
   {
-    name: '张伟',
-    role: { zh: '车间主任', en: 'Workshop Manager' },
-    company: '东莞精工制造',
+    name: '张经理',
+    nameAr: 'المدير زانغ',
+    role: { zh: '车间主任', en: 'Workshop Manager', ar: 'مشرف الورشة' },
+    company: '某精密制造公司',
+    companyAr: 'شركة تصنيع دقيقة',
     content: {
       zh: '以前找一把刀要花10分钟，现在刷一下卡就能取刀，系统自动记录。我们的工具损耗率下降了40%，管理成本大幅降低。',
       en: 'It used to take 10 minutes to find a tool. Now I just swipe a card to get the tool, and the system automatically records it. Our tool loss rate dropped by 40%, and management costs decreased significantly.',
@@ -51,9 +53,11 @@ const testimonials = [
     rating: 5,
   },
   {
-    name: '李明辉',
-    role: { zh: '设备部长', en: 'Equipment Director' },
-    company: '深圳航空制造',
+    name: '李部长',
+    nameAr: 'المدير لي',
+    role: { zh: '设备负责人', en: 'Equipment Director', ar: 'مدير المعدات' },
+    company: '某航空制造企业',
+    companyAr: 'شركة تصنيع طيران',
     content: {
       zh: '智能柜系统彻底改变了我们的工具管理方式。从入库到出库全流程可追溯，库存准确率提升到99.5%。员工满意度也大幅提升，再也不用为找工具发愁了。',
       en: 'The smart cabinet system has completely transformed our tool management. Full traceability from check-in to checkout, inventory accuracy up to 99.5%. Employee satisfaction has also improved significantly - no more struggling to find tools.',
@@ -62,9 +66,11 @@ const testimonials = [
     rating: 5,
   },
   {
-    name: '陈思远',
-    role: { zh: 'IT经理', en: 'IT Manager' },
-    company: '华东电子科技',
+    name: '陈经理',
+    nameAr: 'المديرة تشين',
+    role: { zh: 'IT负责人', en: 'IT Manager', ar: 'مدير تقنية المعلومات' },
+    company: '华东某电子科技企业',
+    companyAr: 'شركة تكنولوجيا إلكترونية في شرق الصين',
     content: {
       zh: '作为IT负责人，我最看重系统的稳定性和数据安全。这套智能柜运行一年多零故障，数据实时同步到我们的ERP系统，报表功能也非常强大。',
       en: 'As an IT manager, I value system stability and data security most. This smart cabinet has run for over a year with zero downtime, real-time data sync to our ERP, and powerful reporting capabilities.',
@@ -73,9 +79,11 @@ const testimonials = [
     rating: 5,
   },
   {
-    name: '王建国',
-    role: { zh: '运营副总', en: 'VP of Operations' },
-    company: '北方重工集团',
+    name: '王总',
+    nameAr: 'السيد وانغ',
+    role: { zh: '运营副总', en: 'VP of Operations', ar: 'نائب الرئيس للعمليات' },
+    company: '北方某重工集团',
+    companyAr: 'مجموعة صناعية ثقيلة في شمال الصين',
     content: {
       zh: '我们集团下属5个工厂都部署了智能柜，统一管理平台让我们能实时监控所有工厂的刀具使用情况。ROI在8个月内就实现了，这是近年来最成功的数字化项目之一。',
       en: 'All 5 of our group\'s factories have deployed smart cabinets. The unified management platform lets us monitor cutting tool usage across all facilities in real time. ROI was achieved within 8 months - one of our most successful digital transformation projects.',

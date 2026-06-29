@@ -428,34 +428,25 @@ export default function ProductsPage() {
             border: '1px solid rgba(226,232,240,0.5)',
             boxShadow: '0 8px 32px rgba(148,163,184,0.12), inset 0 2px 0 rgba(255,255,255,0.7), inset 0 -1px 0 rgba(226,232,240,0.4)',
           }}>
-            {/* ===== COLORFUL RISING BUBBLES — entire filter area background (v135) ===== */}
+            {/* ===== COLORFUL RISING BUBBLES — very sparse, elegant scatter (v138) ===== */}
             <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
-              {/* Large colorful bubbles rising through the filter container */}
-              {[...Array(14)].map((_, bi) => {
-                const bubbleColors = [
-                  'rgba(96,165,250,0.55)',   // blue
-                  'rgba(167,139,250,0.50)',   // violet
-                  'rgba(52,211,153,0.45)',    // emerald
-                  'rgba(251,146,60,0.45)',    // orange
-                  'rgba(236,72,153,0.40)',    // pink
-                  'rgba(34,211,238,0.45)',    // cyan
-                  'rgba(250,204,21,0.40)',    // yellow
-                ];
-                const bc = bubbleColors[bi % bubbleColors.length];
-                const size = 10 + (bi % 4) * 8; // 10-34px bubbles
-                return (
-                  <span key={bi} className="absolute rounded-full" style={{
-                    width: `${size}px`,
-                    height: `${size}px`,
-                    left: `${3 + bi * 6.8}%`,
-                    bottom: `-${5 + (bi % 3) * 3}px`,
-                    background: `radial-gradient(circle at 35% 30%, rgba(255,255,255,0.9) 0%, ${bc} 40%, transparent 70%)`,
-                    animation: `filterBubbleRise ${3 + bi * 0.35}s ease-in infinite`,
-                    animationDelay: `${bi * 0.4}s`,
-                    boxShadow: `0 0 ${size * 0.4}px ${bc}`,
-                  }} />
-                );
-              })}
+              {/* Only 5 well-spaced bubbles — quality over quantity */}
+              {[
+                { l: 8, b: -4, s: 32, d: 0.3, c: 'rgba(59,130,246,0.35)' },
+                { l: 28, b: -8, s: 44, d: 1.5, c: 'rgba(139,92,246,0.30)' },
+                { l: 55, b: -5, s: 26, d: 0.9, c: 'rgba(16,185,129,0.28)' },
+                { l: 78, b: -10, s: 38, d: 2.1, c: 'rgba(245,158,11,0.28)' },
+                { l: 92, b: -6, s: 30, d: 0.6, c: 'rgba(236,72,153,0.25)' },
+              ].map((b, bi) => (
+                <span key={bi} className="absolute rounded-full" style={{
+                  width: `${b.s}px`, height: `${b.s}px`,
+                  left: `${b.l}%`, bottom: `${b.b}px`,
+                  background: `radial-gradient(circle at 35% 30%, rgba(255,255,255,0.92) 0%, ${b.c} 35%, transparent 65%)`,
+                  animation: `filterBubbleRise ${3.2 + b.d}s ease-in infinite`,
+                  animationDelay: `${bi * 0.7}s`,
+                  boxShadow: `0 0 ${b.s * 0.45}px ${b.c}`,
+                }} />
+              ))}
             </div>
             {/* Subtle accent bar - shows under active dimension tab instead of top line */}
             <div className="h-1" />
@@ -563,38 +554,18 @@ export default function ProductsPage() {
                             borderWidth: '1px',
                           }}
                         >
-                          {/* Bubble rise animation for unselected items — larger colorful glassmorphic bubbles (v135) */}
+                          {/* Single subtle accent bubble per unselected button (v138) — was 7, now 1 */}
                         {!isSelected && (
                           <>
-                            {/* Glass overlay base */}
-                            <span className="absolute inset-0 rounded-full" style={{
-                              background: 'linear-gradient(135deg, rgba(59,130,246,0.06) 0%, rgba(147,197,253,0.04) 100%)',
+                            {/* One gentle rising bubble for visual interest */}
+                            <span className="absolute rounded-full pointer-events-none" style={{
+                              width: '10px', height: '10px',
+                              left: '50%', bottom: '-2px',
+                              transform: 'translateX(-50%)',
+                              background: 'radial-gradient(circle at 35% 30%, rgba(255,255,255,0.9) 0%, rgba(96,165,250,0.40) 45%, transparent 75%)',
+                              animation: `productBubbleRise ${2.8}s ease-in infinite`,
+                              boxShadow: '0 0 5px rgba(96,165,250,0.30)',
                             }} />
-                            {/* Rising colorful bubbles — 7 bubbles per button, larger & multi-color */}
-                            {[...Array(7)].map((_, bi) => {
-                              const subBubbleColors = [
-                                'rgba(96,165,250,0.60)',
-                                'rgba(167,139,250,0.55)',
-                                'rgba(52,211,153,0.50)',
-                                'rgba(251,146,60,0.50)',
-                                'rgba(236,72,153,0.45)',
-                                'rgba(34,211,238,0.50)',
-                                'rgba(250,204,21,0.45)',
-                              ];
-                              const sbc = subBubbleColors[bi % subBubbleColors.length];
-                              const sSize = 6 + (bi % 3) * 4; // 6-14px
-                              return (
-                              <span key={bi} className="absolute rounded-full pointer-events-none" style={{
-                                width: `${sSize}px`,
-                                height: `${sSize}px`,
-                                left: `${6 + bi * 12 + (bi % 2) * 6}%`,
-                                bottom: `-${2 + (bi % 2) * 2}px`,
-                                background: `radial-gradient(circle at 35% 30%, rgba(255,255,255,0.9) 0%, ${sbc} 45%, transparent 75%)`,
-                                animation: `productBubbleRise ${2.2 + bi * 0.35}s ease-in infinite`,
-                                animationDelay: `${bi * 0.4}s`,
-                                boxShadow: `0 0 ${sSize * 0.5}px ${sbc}`,
-                              }} />
-                            )})}
                             {/* Subtle glass shimmer sweep */}
                             <span className="absolute inset-0 rounded-full overflow-hidden pointer-events-none">
                               <span className="absolute inset-0" style={{
@@ -677,31 +648,22 @@ export default function ProductsPage() {
                       boxShadow: '0 4px 24px rgba(148,163,184,0.12), 0 1px 3px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6)',
                     }}
                   >
-                    {/* Glass bubble rise effect on product cards — larger colorful bubbles (v135) */}
+                    {/* Sparse colorful bubbles on product cards (v138) — 3 scattered, elegant */}
                     <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl">
-                      {[...Array(7)].map((_, bi) => {
-                        const cardBubbleColors = [
-                          'rgba(96,165,250,0.50)',   // blue
-                          'rgba(167,139,250,0.45)',   // violet
-                          'rgba(52,211,153,0.40)',    // emerald
-                          'rgba(251,146,60,0.40)',    // orange
-                          'rgba(236,72,153,0.35)',    // pink
-                          'rgba(34,211,238,0.40)',    // cyan
-                        ];
-                        const cbc = cardBubbleColors[bi % cardBubbleColors.length];
-                        const bSize = 14 + (bi % 3) * 10; // 14-34px
-                        return (
+                      {[
+                        { l: 8, b: 4, s: 28, d: 0.4, c: 'rgba(59,130,246,0.35)' },
+                        { l: 58, b: 8, s: 38, d: 1.5, c: 'rgba(139,92,246,0.30)' },
+                        { l: 78, b: 18, s: 22, d: 2.3, c: 'rgba(16,185,129,0.28)' },
+                      ].map((b, bi) => (
                         <div key={bi} className="absolute rounded-full" style={{
-                          width: `${bSize}px`,
-                          height: `${bSize}px`,
-                          left: `${5 + bi * 14}%`,
-                          bottom: `${3 + (bi % 2) * 10}%`,
-                          background: `radial-gradient(circle at 35% 30%, rgba(255,255,255,0.85) 0%, ${cbc} 40%, transparent 70%)`,
-                          animation: `productBubbleRise ${2.5 + bi * 0.4}s ease-in infinite`,
-                          animationDelay: `${bi * 0.55}s`,
-                          boxShadow: `0 0 ${bSize * 0.35}px ${cbc}`,
+                          width: `${b.s}px`, height: `${b.s}px`,
+                          left: `${b.l}%`, bottom: `${b.b}%`,
+                          background: `radial-gradient(circle at 35% 30%, rgba(255,255,255,0.90) 0%, ${b.c} 35%, transparent 60%)`,
+                          animation: `productBubbleRise ${2.2 + b.d}s ease-in infinite`,
+                          animationDelay: `${bi * 0.6}s`,
+                          boxShadow: `0 0 ${b.s * 0.45}px ${b.c}`,
                         }} />
-                      )})}
+                      ))}
                       {/* Subtle glass shimmer on hover */}
                       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{
                         background: 'radial-gradient(circle at 30% 20%, rgba(59,130,246,0.04) 0%, transparent 55%)',
