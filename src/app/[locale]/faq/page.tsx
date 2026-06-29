@@ -195,9 +195,12 @@ export default function FAQPage() {
           </div>
 
           {/* Category Pills — wrapped in a styled card container */}
-          <div 
-            className="rounded-2xl p-5 border border-[var(--border-color)] bg-[var(--card-bg)] shadow-[0_4px_20px_rgba(0,0,0,0.04)]"
+          <div
+            className="rounded-2xl p-5 border border-[var(--border-color)] bg-gradient-to-br from-[var(--card-bg)] via-[var(--card-bg)] to-blue-50/30 dark:to-slate-700/30 shadow-[0_4px_20px_rgba(0,0,0,0.04)] relative overflow-hidden"
           >
+            {/* Subtle decorative top border gradient */}
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" />
+
             {/* Subtle header for visual grouping */}
             <div className="flex items-center gap-2 mb-3">
               <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(180deg, #3b82f6, #8b5cf6)' }} />
@@ -205,18 +208,18 @@ export default function FAQPage() {
                 {locale === 'zh' ? '按分类筛选' : locale === 'ar' ? 'تصفية حسب الفئة' : 'Filter by Category'}
               </span>
             </div>
-            
+
             <div className="flex flex-wrap items-center gap-2">
               {categories.map(cat => (
                 <button
                   key={cat.id}
                   onClick={() => setActiveCategory(cat.id)}
-                  className="px-4 py-2 rounded-xl text-[13px] font-medium transition-all duration-300 hover:shadow-md hover:-translate-y-0.5"
+                  className="px-4 py-2 rounded-xl text-[13px] font-medium transition-all duration-300 hover:shadow-md hover:scale-105"
                   style={activeCategory === cat.id ? {
                     backgroundImage: 'linear-gradient(135deg, #3b82f6, #2563eb)',
                     color: '#ffffff',
-                    boxShadow: '0 4px 12px rgba(59,130,246,0.35)',
-                    transform: 'translateY(-1px)',
+                    boxShadow: '0 4px 12px rgba(59,130,246,0.35), 0 0 20px rgba(59,130,246,0.15)',
+                    transform: 'translateY(-1px) scale(105%)',
                   } : {
                     backgroundColor: 'var(--section-alt-bg)',
                     color: 'var(--text-primary)',

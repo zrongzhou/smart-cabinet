@@ -17,8 +17,8 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
   const [recentBlogs, setRecentBlogs] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // === v148 超简单图片方案：纯索引轮换 + 背景图 ===
-  const BLOG_IMAGE_LIST = [
+  // === v149 图片匹配方案：优先用数据自带图片 ===
+  const BLOG_IMAGE_FALLBACKS = [
     '/images/blog/industry-trends.jpg',
     '/images/blog/case-study.jpg',
     '/images/blog/technical-guide.jpg',
@@ -39,24 +39,32 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
     '/images/blog/general.jpg',
   ];
 
-  // 简单的图片选择函数 (v148) - 只用索引轮换
+  // Recent Posts 图片选择 (v149) - 优先使用数据自带图片
   function getInlineBlogImage(post: BlogPost, index: number): string {
-    return BLOG_IMAGE_LIST[index % BLOG_IMAGE_LIST.length];
+    if (post.image && post.image.startsWith('/images/')) {
+      return post.image;
+    }
+    return BLOG_IMAGE_FALLBACKS[index % BLOG_IMAGE_FALLBACKS.length];
   }
 
-  // 详情页图片选择 (v148) - 基于 slug 的 hash 确保一致性
+  // 详情页图片选择 (v149) - 优先使用数据自带图片
   function getInlineBlogDetailImage(post: BlogPost): string {
+    // 优先使用数据自带的图片
+    if (post.image && post.image.startsWith('/images/')) {
+      console.log(`[v149] Detail page: slug="${post.slug}" → image="${post.image}" (from data)`);
+      return post.image;
+    }
+    // fallback: hash 轮换
     const slug = post.slug || '';
-    // 简单的 hash 函数，确保同一 slug 总是返回同一图片
     let hash = 0;
     for (let i = 0; i < slug.length; i++) {
       const char = slug.charCodeAt(i);
       hash = ((hash << 5) - hash) + char;
       hash = hash & hash; // Convert to 32bit integer
     }
-    const index = Math.abs(hash) % BLOG_IMAGE_LIST.length;
-    console.log(`[v148] Detail page: slug="${slug}" → image="${BLOG_IMAGE_LIST[index]}"`);
-    return BLOG_IMAGE_LIST[index];
+    const fallbackImage = BLOG_IMAGE_FALLBACKS[Math.abs(hash) % BLOG_IMAGE_FALLBACKS.length];
+    console.log(`[v149] Detail page: slug="${slug}" → image="${fallbackImage}" (fallback)`);
+    return fallbackImage;
   }
 
   // Resolve params (Promise in Next.js 14.1+)
@@ -262,8 +270,8 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
 
   const content = blog.content?.[locale as 'en' | 'zh' | 'ar'] || '';
 
-  // 调试日志 (v148)
-   console.log(`[v148] Detail page: slug="${blog.slug}" → image="${getInlineBlogDetailImage(blog)}"`);
+  // 调试日志 (v149)
+   console.log(`[v149] Detail page: slug="${blog.slug}" → image="${getInlineBlogDetailImage(blog)}"`);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 dark:from-slate-900 dark:to-slate-800">
@@ -276,8 +284,8 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
           backgroundPosition: 'center',
         }}
       >
-        {/* Dark overlay for readability */}
-        <div className="absolute inset-0 bg-blue-900/80 backdrop-blur-sm" />
+        {/* Gradient overlay for readability - v149:中间更透明，能隐约看到背景图 */}
+        <div className="absolute inset-0 bg-gradient-to-b from-blue-900/70 via-blue-900/50 to-blue-900/80 backdrop-blur-[2px]" />
         <div className="relative z-10 max-w-5xl mx-auto">
           <a href={`/${locale}/blog`} className="inline-flex items-center gap-2 text-blue-200 hover:text-white transition-colors mb-6 group">
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />

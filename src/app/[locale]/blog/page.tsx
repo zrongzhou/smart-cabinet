@@ -66,8 +66,8 @@ export default function BlogPage() {
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // === v148 超简单图片方案：纯索引轮换 + 背景图 ===
-  const BLOG_IMAGE_LIST = [
+  // === v149 图片匹配方案：优先用数据自带图片 ===
+  const BLOG_IMAGE_FALLBACKS = [
     '/images/blog/industry-trends.jpg',
     '/images/blog/case-study.jpg',
     '/images/blog/technical-guide.jpg',
@@ -222,9 +222,13 @@ export default function BlogPage() {
                 ? (post.excerpt[locale] || post.excerpt.en || '')
                 : String(post.excerpt || '');
 
-              // === v148 超简单图片方案：纯索引轮换 ===
-              const cardImage = BLOG_IMAGE_LIST[index % BLOG_IMAGE_LIST.length];
-              console.log(`[v148] Blog card ${index}: using image ${cardImage}`);
+              // === v149 图片匹配方案：优先用数据自带图片 ===
+              let cardImage = post.image; // 优先使用数据自带的图片路径
+              if (!cardImage || !cardImage.startsWith('/images/')) {
+                // fallback 到索引轮换
+                cardImage = BLOG_IMAGE_FALLBACKS[index % BLOG_IMAGE_FALLBACKS.length];
+              }
+              console.log(`[v149] card ${index}: slug="${post.slug}" → image="${cardImage}"`);
 
               // 分类显示
               const postCategory = (post.category || 'general').toLowerCase().trim();
