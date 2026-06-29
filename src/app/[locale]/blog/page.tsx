@@ -30,15 +30,15 @@ const categoryColorMap: Record<string, string> = {
   'General': '#a18cd1',
 };
 
-// Category-specific real images from Unsplash (high quality, free, relevant to each category)
+// Category-specific local images (reliable, no CDN issues)
 const categoryImageMap: Record<string, string> = {
-  'Industry Trends': 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop&q=80',
-  'Case Study': 'https://images.unsplash.com/photo-1553877522-43269d4ea984?w=600&h=400&fit=crop&q=80',
-  'Technical Guide': 'https://images.unsplash.com/photo-1581092160562-8986c065163b?w=600&h=400&fit=crop&q=80',
-  'Best Practice': 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&h=400&fit=crop&q=80',
-  'Use Case': 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600&h=400&fit=crop&q=80',
-  'Customer Story': 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=400&fit=crop&q=80',
-  'General': 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&h=400&fit=crop&q=80',
+  'Industry Trends': '/images/blog/industry-trends.jpg',
+  'Case Study': '/images/blog/case-study.jpg',
+  'Technical Guide': '/images/blog/technical-guide.jpg',
+  'Best Practice': '/images/blog/best-practice.jpg',
+  'Use Case': '/images/blog/use-case.jpg',
+  'Customer Story': '/images/blog/customer-story.jpg',
+  'General': '/images/blog/general.jpg',
 };
 
 // Translate blog category name
@@ -202,6 +202,18 @@ export default function BlogPage() {
                       alt={title}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       loading={isPriority ? 'eager' : 'lazy'}
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        const parent = target.parentElement;
+                        if (parent && !parent.querySelector('.img-fallback')) {
+                          const fallback = document.createElement('div');
+                          fallback.className = 'img-fallback absolute inset-0 flex flex-col items-center justify-center';
+                          fallback.style.background = categoryColorMap[category] || categoryColorMap['General'];
+                          fallback.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white/70"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>`;
+                          parent.appendChild(fallback);
+                        }
+                      }}
                     />
                     {/* Gradient overlay for text readability */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />

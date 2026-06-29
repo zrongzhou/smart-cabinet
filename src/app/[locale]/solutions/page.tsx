@@ -29,9 +29,9 @@ interface SolutionsPageProps {
   };
 }
 
-export default function SolutionsPage({ params: { locale } }: SolutionsPageProps) {
+export default function SolutionsPage({ params: { locale: rawLocale } }: SolutionsPageProps) {
   const { locale: hookLocale, t } = useLocale();
-  const currentLocale = locale || hookLocale;
+  const currentLocale = rawLocale || hookLocale || 'en';
   const isRTL = currentLocale === 'ar';
 
   const [expanded, setExpanded] = useState<number | null>(null);

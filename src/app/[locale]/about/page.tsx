@@ -743,7 +743,8 @@ function ValuesBookFlip({ values, t, locale }: { values: ValueItem[]; t: (key: s
 }
 
 export default function AboutPage() {
-  const { locale, t } = useLocale();
+  const { locale: rawLocale, t } = useLocale();
+  const locale = rawLocale || 'en';
   const isRTL = locale === 'ar';
   const [settings, setSettings] = useState<SiteSettings | null>(null);
   const [pageData, setPageData] = useState<PageData | null>(null);
@@ -899,7 +900,7 @@ export default function AboutPage() {
   const companyImageFromEditor = null; // TEMP
 
   return (
-    <div style={{ backgroundColor: '#f0f9ff' }}>
+    <div style={{ backgroundColor: '#f0f9ff' }} suppressHydrationWarning>
       {/* Hero Section — Ocean Header */}
       <OceanHeader
         title={t('about.hero.title')}

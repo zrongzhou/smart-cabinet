@@ -16,7 +16,8 @@ const faqCardThemes = [
 ];
 
 export default function FAQPage() {
-  const { locale } = useLocale();
+  const { locale: rawLocale } = useLocale();
+  const locale = rawLocale || 'en';
   const [faqs, setFaqs] = useState<FAQ[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -115,14 +116,12 @@ export default function FAQPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen" style={{ backgroundColor: 'var(--bg-color)' }}>
+      <div className="min-h-screen bg-[var(--bg-color)]" suppressHydrationWarning>
         {/* Page Header Skeleton */}
-        <section className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
-          style={{ background: 'linear-gradient(135deg, #1e3a8a, #1e40af, #2563eb)' }}
-        >
+        <section className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white">
           <div className="max-w-5xl mx-auto text-center">
-            <div className="h-10 rounded-lg w-64 mx-auto mb-4 animate-pulse" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }} />
-            <div className="h-6 rounded-lg w-96 mx-auto animate-pulse" style={{ backgroundColor: 'rgba(255,255,255,0.08)' }} />
+            <div className="h-10 bg-white/15 rounded-lg w-64 mx-auto mb-4 animate-pulse" />
+            <div className="h-6 bg-white/8 rounded-lg w-96 mx-auto animate-pulse" />
           </div>
         </section>
         <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -150,9 +149,9 @@ export default function FAQPage() {
 
       {/* Wave divider decoration */}
       <div className="w-full overflow-hidden leading-none">
-        <svg viewBox="0 0 1440 120" className="w-full h-[60px] md:h-[80px]" preserveAspectRatio="none">
+        <svg viewBox="0 0 1440 120" className="w-full h-[60px] md:h-[80px] text-[var(--card-bg)]" preserveAspectRatio="none">
           <path d="M0,64L48,58.7C96,53,192,43,288,48C384,53,480,75,576,80C672,85,768,75,864,64C960,53,1056,43,1152,42.7C1248,43,1344,53,1392,58.7L1440,64L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z" 
-            fill="var(--card-bg)" fillOpacity="1" />
+            fill="currentColor" fillOpacity="1" />
         </svg>
       </div>
 
@@ -173,7 +172,7 @@ export default function FAQPage() {
         <div className="mb-12 space-y-6">
           {/* Search bar */}
           <div className="relative max-w-md mx-auto">
-            <Search className="absolute left-3.5 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-all duration-300" style={{ color: 'var(--text-secondary)' }} id="faq-search-icon" />
+            <Search className="absolute left-3.5 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[var(--text-secondary)] transition-all duration-300" id="faq-search-icon" />
             <input
               type="text"
               value={searchQuery}
@@ -191,28 +190,18 @@ export default function FAQPage() {
                 if (icon) icon.style.animation = '';
               }}
               placeholder={t.searchPlaceholder}
-              className="w-full pl-11 pr-4 py-3 border rounded-xl text-sm outline-none transition-all"
-              style={{
-                backgroundColor: 'var(--card-bg)',
-                borderColor: 'var(--border-color)',
-                color: 'var(--text-primary)',
-              }}
+              className="w-full pl-11 pr-4 py-3 border-[var(--border-color)] rounded-xl text-sm outline-none transition-all text-[var(--text-primary)] bg-[var(--card-bg)]"
             />
           </div>
 
           {/* Category Pills — wrapped in a styled card container */}
           <div 
-            className="rounded-2xl p-5 border"
-            style={{
-              backgroundColor: 'var(--card-bg)',
-              borderColor: 'var(--border-color)',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
-            }}
+            className="rounded-2xl p-5 border border-[var(--border-color)] bg-[var(--card-bg)] shadow-[0_4px_20px_rgba(0,0,0,0.04)]"
           >
             {/* Subtle header for visual grouping */}
             <div className="flex items-center gap-2 mb-3">
               <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(180deg, #3b82f6, #8b5cf6)' }} />
-              <span className="text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
+              <span className="text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">
                 {locale === 'zh' ? '按分类筛选' : locale === 'ar' ? 'تصفية حسب الفئة' : 'Filter by Category'}
               </span>
             </div>
@@ -255,6 +244,7 @@ export default function FAQPage() {
                   boxShadow: openIndex === index ? `0 10px 30px ${theme.shadowColor}` : undefined,
                   background: openIndex === index ? theme.bgGrad : undefined,
                 }}
+                suppressHydrationWarning
               >
                 {/* Left color bar */}
                 <div 
@@ -283,7 +273,7 @@ export default function FAQPage() {
                     }
                   }}
                 >
-                  <span className="font-bold text-[15px] transition-colors duration-200 hover:text-blue-600" style={{ color: 'var(--text-primary)' }}>
+                  <span className="font-bold text-[15px] transition-colors duration-200 hover:text-blue-600" style={{ color: 'var(--text-primary)' }} suppressHydrationWarning>
                     {locale === 'zh' ? faq.question.zh : locale === 'ar' ? faq.question.ar : faq.question.en}
                   </span>
                   {openIndex === index ? (
@@ -306,7 +296,7 @@ export default function FAQPage() {
                     }}>
                       {/* Decorative quote icon watermark */}
                       <div className="absolute top-2 right-3 opacity-8 text-4xl leading-none" style={{ color: theme.accent }}>"</div>
-                      <p className="leading-relaxed text-[14px] relative z-10" style={{ color: 'var(--text-secondary)' }}>
+                      <p className="leading-relaxed text-[14px] relative z-10" style={{ color: 'var(--text-secondary)' }} suppressHydrationWarning>
                         {locale === 'zh' ? faq.answer.zh : locale === 'ar' ? faq.answer.ar : faq.answer.en}
                       </p>
                     </div>
@@ -319,7 +309,7 @@ export default function FAQPage() {
 
         {/* Empty State */}
         {filteredFaqs.length === 0 && (
-          <div className="text-center py-20">
+          <div className="text-center py-20" suppressHydrationWarning>
             <HelpCircle className="w-16 h-16 mx-auto mb-4" style={{ color: 'var(--text-muted)' }} />
             <p className="text-xl" style={{ color: 'var(--text-secondary)' }}>
               {t.empty}
@@ -337,12 +327,12 @@ export default function FAQPage() {
             <div className="rounded-2xl p-8 shadow-lg relative z-10" style={{
               background: 'linear-gradient(135deg, #f5f3ff 0%, #eff6ff 50%, #ecfeff 100%)',
               border: '1px solid var(--border-color)'
-          }}>
+          }} suppressHydrationWarning>
             <MessageCircle className="w-12 h-12 mx-auto mb-4" style={{ color: '#8b5cf6' }} />
-            <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
+            <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--text-primary)' }} suppressHydrationWarning>
               {t.stillHaveQuestions}
             </h3>
-            <p className="mb-6" style={{ color: 'var(--text-secondary)' }}>
+            <p className="mb-6" style={{ color: 'var(--text-secondary)' }} suppressHydrationWarning>
               {t.description}
             </p>
             <a
