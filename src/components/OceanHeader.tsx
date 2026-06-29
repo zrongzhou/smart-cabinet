@@ -27,6 +27,9 @@ function FishSwarm() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const context = ctx;
+
     let animId: number;
 
     // Fish data
@@ -64,70 +67,70 @@ function FishSwarm() {
     }));
 
     function drawFish(f: FishData) {
-      ctx.save();
-      ctx.translate(f.x, f.y);
-      if (f.dir < 0) ctx.scale(-1, 1);
+      context.save();
+      context.translate(f.x, f.y);
+      if (f.dir < 0) context.scale(-1, 1);
 
       // Tail wagging
       f.tailPhase += 0.12;
       const tailWag = Math.sin(f.tailPhase) * 5;
 
       // Body shadow
-      ctx.shadowColor = 'rgba(0,0,0,0.25)';
-      ctx.shadowBlur = 6;
-      ctx.shadowOffsetY = 3;
+      context.shadowColor = 'rgba(0,0,0,0.25)';
+      context.shadowBlur = 6;
+      context.shadowOffsetY = 3;
 
       // Fish body (ellipse)
-      ctx.fillStyle = f.color;
-      ctx.beginPath();
-      ctx.ellipse(0, 0, f.size * 0.55, f.size * 0.3, 0, 0, Math.PI * 2);
-      ctx.fill();
+      context.fillStyle = f.color;
+      context.beginPath();
+      context.ellipse(0, 0, f.size * 0.55, f.size * 0.3, 0, 0, Math.PI * 2);
+      context.fill();
 
       // Tail fin
-      ctx.beginPath();
-      ctx.moveTo(-f.size * 0.45, 0);
-      ctx.lineTo(-f.size * 0.72, -f.size * 0.22 + tailWag);
-      ctx.lineTo(-f.size * 0.68, 0);
-      ctx.lineTo(-f.size * 0.72, f.size * 0.22 + tailWag);
-      ctx.closePath();
-      ctx.fill();
+      context.beginPath();
+      context.moveTo(-f.size * 0.45, 0);
+      context.lineTo(-f.size * 0.72, -f.size * 0.22 + tailWag);
+      context.lineTo(-f.size * 0.68, 0);
+      context.lineTo(-f.size * 0.72, f.size * 0.22 + tailWag);
+      context.closePath();
+      context.fill();
 
       // Dorsal fin
-      ctx.fillStyle = f.color;
-      ctx.globalAlpha = 0.75;
-      ctx.beginPath();
-      ctx.moveTo(-f.size * 0.1, -f.size * 0.28);
-      ctx.quadraticCurveTo(f.size * 0.05, -f.size * 0.45, f.size * 0.2, -f.size * 0.26);
-      ctx.fill();
+      context.fillStyle = f.color;
+      context.globalAlpha = 0.75;
+      context.beginPath();
+      context.moveTo(-f.size * 0.1, -f.size * 0.28);
+      context.quadraticCurveTo(f.size * 0.05, -f.size * 0.45, f.size * 0.2, -f.size * 0.26);
+      context.fill();
 
       // Pectoral fin
-      ctx.globalAlpha = 0.5;
-      ctx.beginPath();
-      ctx.ellipse(f.size * 0.05, f.size * 0.12, f.size * 0.12, f.size * 0.06, 0.3, 0, Math.PI * 2);
-      ctx.fill();
+      context.globalAlpha = 0.5;
+      context.beginPath();
+      context.ellipse(f.size * 0.05, f.size * 0.12, f.size * 0.12, f.size * 0.06, 0.3, 0, Math.PI * 2);
+      context.fill();
 
       // Eye
-      ctx.globalAlpha = 1;
-      ctx.fillStyle = 'white';
-      ctx.beginPath();
-      ctx.arc(f.size * 0.28, -f.size * 0.04, f.size * 0.09, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#1e293b';
-      ctx.beginPath();
-      ctx.arc(f.size * 0.3, -f.size * 0.03, f.size * 0.045, 0, Math.PI * 2);
-      ctx.fill();
+      context.globalAlpha = 1;
+      context.fillStyle = 'white';
+      context.beginPath();
+      context.arc(f.size * 0.28, -f.size * 0.04, f.size * 0.09, 0, Math.PI * 2);
+      context.fill();
+      context.fillStyle = '#1e293b';
+      context.beginPath();
+      context.arc(f.size * 0.3, -f.size * 0.03, f.size * 0.045, 0, Math.PI * 2);
+      context.fill();
 
       // Highlight on body
-      ctx.fillStyle = 'rgba(255,255,255,0.35)';
-      ctx.beginPath();
-      ctx.ellipse(f.size * 0.05, -f.size * 0.1, f.size * 0.2, f.size * 0.1, -0.3, 0, Math.PI * 2);
-      ctx.fill();
+      context.fillStyle = 'rgba(255,255,255,0.35)';
+      context.beginPath();
+      context.ellipse(f.size * 0.05, -f.size * 0.1, f.size * 0.2, f.size * 0.1, -0.3, 0, Math.PI * 2);
+      context.fill();
 
-      ctx.restore();
+      context.restore();
     }
 
     function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      context.clearRect(0, 0, canvas.width, canvas.height);
 
       fishes.forEach((f, i) => {
         // Move
