@@ -167,8 +167,6 @@ function FishSwarm() {
   );
 }
 
-import { useRef } from 'react';
-
 // ===== BEAUTIFUL JELLYFISH — 半透明发光体 + 飘逸触须 =====
 interface JellyfishData {
   id: number;
