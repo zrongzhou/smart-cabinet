@@ -163,43 +163,100 @@ function ValuesBookFlip({ values, t, locale }: { values: ValueItem[]; t: (key: s
   const [currentPage, setCurrentPage] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  // === v140: Sci-fi text scramble/assemble animation ===
+  // === v141: Enhanced sci-fi text scramble with glitch + matrix rain ===
   const [scrambleTitle, setScrambleTitle] = useState('');
   const [scrambleDesc, setScrambleDesc] = useState('');
+  const [glitchActive, setGlitchActive] = useState(false);
+  const [textGlowIntensity, setTextGlowIntensity] = useState(0);
   const scrambleRef = useRef({ frame: 0, animId: 0 });
-  // Scramble charset — mix of tech-looking glyphs
-  const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%&*+=<>[]{}|/\\~';
+  // Extended charset with more tech/cyber glyphs
+  const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%&*+=<>[]{}|/\\~ΔΘΛΠΣΨΩαβγδεζηθλμξπσςφψω';
+  const BINARY = '01';
 
   const runScramble = (targetTitle: string, targetDesc: string) => {
     // Cancel previous
     if (scrambleRef.current.animId) cancelAnimationFrame(scrambleRef.current.animId);
-    const maxLen = Math.max(targetTitle.length, targetDesc.length);
     let frame = 0;
-    const totalFrames = 35; // ~0.6s at 60fps
+    const totalFrames = 55; // ~0.92s at 60fps — longer for more dramatic effect
+    const glitchFrames = 8; // initial glitch burst
+    // Track per-character resolve state
+    const titleResolved = new Array(targetTitle.length).fill(false);
+    const descResolved = new Array(targetDesc.length).fill(false);
 
     const tick = () => {
       frame++;
       const progress = frame / totalFrames;
+      const eased = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2; // ease-in-out
 
-      // Title: resolve characters from left to right with easing
+      // Glitch activation pulse at start
+      if (frame <= glitchFrames + 5) {
+        setGlitchActive(true);
+        setTextGlowIntensity(Math.min(1, frame / 10));
+      } else if (frame > totalFrames - 8) {
+        setGlitchActive(false);
+        setTextGlowIntensity(Math.max(0, (totalFrames - frame) / 8));
+      } else {
+        setGlitchActive(frame % 20 < 3); // occasional micro-glitch
+        setTextGlowIntensity(0.3 + Math.sin(frame * 0.15) * 0.25);
+      }
+
+      // Phase 1 (frames 1-8): Pure glitch burst — all random/noise
+      // Phase 2 (frames 9-40): Progressive left-to-right resolve with occasional regression
+      // Phase 3 (frames 41-55): Final lock-in with settling shimmer
+
       let newTitle = '';
       for (let i = 0; i < targetTitle.length; i++) {
-        const charProgress = Math.min(1, Math.max(0, (progress * 1.4 - (i / targetTitle.length) * 0.5)));
-        if (charProgress >= 1 || Math.random() > (1 - charProgress) * 1.5) {
-          newTitle += targetTitle[i];
-        } else {
+        const charDelay = (i / targetTitle.length) * 0.6;
+        const charProgress = Math.min(1, Math.max(0, (eased - charDelay) * 1.6));
+
+        if (frame <= glitchFrames) {
+          // Glitch phase: pure chaos
           newTitle += CHARS[Math.floor(Math.random() * CHARS.length)];
+        } else if (charProgress >= 0.98) {
+          // Fully resolved
+          newTitle += targetTitle[i];
+          titleResolved[i] = true;
+        } else if (charProgress > 0.3) {
+          // Resolving phase — mostly correct but with glitch regression
+          if (!titleResolved[i] && Math.random() < 0.08 && frame % 7 < 2) {
+            // Glitch regression — briefly flip back to noise
+            newTitle += Math.random() > 0.5 ? BINARY[Math.floor(Math.random() * 2)] : CHARS[Math.floor(Math.random() * CHARS.length)];
+          } else {
+            newTitle += Math.random() > (1 - charProgress) * 1.2
+              ? targetTitle[i]
+              : CHARS[Math.floor(Math.random() * CHARS.length)];
+          }
+        } else {
+          // Still scrambling — mix of chars and binary
+          newTitle += Math.random() > 0.4
+            ? CHARS[Math.floor(Math.random() * CHARS.length)]
+            : BINARY[Math.floor(Math.random() * 2)];
         }
       }
 
-      // Description: slightly delayed, faster resolve
+      // Description: similar but slightly delayed, uses binary more
       let newDesc = '';
       for (let i = 0; i < targetDesc.length; i++) {
-        const charProgress = Math.min(1, Math.max(0, (progress * 1.2 - (i / targetDesc.length) * 0.3)));
-        if (charProgress >= 0.95 || Math.random() > (1 - charProgress) * 1.8) {
-          newDesc += targetDesc[i];
-        } else {
+        const charDelay = 0.05 + (i / targetDesc.length) * 0.45;
+        const charProgress = Math.min(1, Math.max(0, (eased - charDelay) * 1.7));
+
+        if (frame <= glitchFrames) {
           newDesc += CHARS[Math.floor(Math.random() * CHARS.length)];
+        } else if (charProgress >= 0.97) {
+          newDesc += targetDesc[i];
+          descResolved[i] = true;
+        } else if (charProgress > 0.25) {
+          if (!descResolved[i] && Math.random() < 0.06 && frame % 9 < 2) {
+            newDesc += BINARY[Math.floor(Math.random() * 2)];
+          } else {
+            newDesc += Math.random() > (1 - charProgress) * 1.5
+              ? targetDesc[i]
+              : (Math.random() > 0.35 ? CHARS[Math.floor(Math.random() * CHARS.length)] : BINARY[Math.floor(Math.random() * 2)]);
+          }
+        } else {
+          newDesc += Math.random() > 0.3
+            ? CHARS[Math.floor(Math.random() * CHARS.length)]
+            : BINARY[Math.floor(Math.random() * 2)];
         }
       }
 
@@ -211,6 +268,8 @@ function ValuesBookFlip({ values, t, locale }: { values: ValueItem[]; t: (key: s
       } else {
         setScrambleTitle(targetTitle);
         setScrambleDesc(targetDesc);
+        setGlitchActive(false);
+        setTextGlowIntensity(0);
       }
     };
     scrambleRef.current.animId = requestAnimationFrame(tick);
@@ -414,6 +473,85 @@ function ValuesBookFlip({ values, t, locale }: { values: ValueItem[]; t: (key: s
             ))}
           </div>
 
+          {/* ===== v141 NEW: Layer 6 — Binary Rain (Matrix-style columns) ===== */}
+          <div className="absolute inset-0 pointer-events-none rounded-2xl overflow-hidden" style={{ opacity: 0.12 }}>
+            {[...Array(12)].map((_, ci) => {
+              const colChars = [...Array(8 + (ci % 5))].map(() =>
+                Math.random() > 0.3 ? BINARY[Math.floor(Math.random() * 2)] : ''
+              ).join('');
+              return (
+                <div key={`br-${ci}`} className="absolute text-[7px] font-mono leading-tight"
+                  style={{
+                    left: `${4 + ci * 8}%`,
+                    top: '-40px',
+                    color: ht.accent,
+                    opacity: 0.4 + (ci % 3) * 0.25,
+                    animation: `v141-binRain ${3 + ci * 0.5}s linear infinite`,
+                    animationDelay: `${ci * 0.35}s`,
+                    textShadow: `0 0 4px ${ht.glow}`,
+                  }}
+                >
+                  {colChars.split('').map((c, i) => (
+                    <div key={i}>{c || '\u00A0'}</div>
+                  ))}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* ===== v141 NEW: Layer 7 — Floating hex code snippets ===== */}
+          <div className="absolute inset-0 pointer-events-none rounded-2xl overflow-hidden" style={{ opacity: 0.09 }}>
+            {[...Array(6)].map((_, hi) => {
+              const hexStr = Array.from({ length: 6 + (hi % 4) }, () =>
+                '0123456789ABCDEF'[Math.floor(Math.random() * 16)]
+              ).join('');
+              return (
+                <span key={`hx-${hi}`} className="absolute font-mono text-[8px] tracking-wider"
+                  style={{
+                    left: `${10 + hi * 15}%`,
+                    top: `${15 + (hi * 23) % 70}%`,
+                    color: ht.tertiary,
+                    opacity: 0.35 + (hi % 3) * 0.2,
+                    animation: `v138-chipDrift ${8 + hi * 1.5}s ease-in-out infinite`,
+                    animationDelay: `${hi * 0.8}s`,
+                    textShadow: `0 0 3px ${ht.accent}30`,
+                  }}
+                >
+                  {'0x' + hexStr}
+                </span>
+              );
+            })}
+          </div>
+
+          {/* ===== v141 NEW: Layer 8 — Horizontal data sweep lines ===== */}
+          <div className="absolute inset-0 pointer-events-none rounded-2xl overflow-hidden">
+            {[...Array(3)].map((_, si) => (
+              <div key={`sw-${si}`} className="absolute left-0 h-px"
+                style={{
+                  top: `${22 + si * 25}%`,
+                  width: '0%',
+                  background: `linear-gradient(90deg, transparent, ${ht.accent}${40 + si * 15}, ${ht.tertiary}60, transparent)`,
+                  boxShadow: `0 0 6px ${ht.glow}`,
+                  animation: `v141-dataSweep ${4 + si * 1.5}s ease-in-out infinite`,
+                  animationDelay: `${si * 1.2}s`,
+                }}
+              />
+            ))}
+          </div>
+
+          {/* ===== v141 NEW: Layer 9 — Radial pulse rings from center ===== */}
+          <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+            {[...Array(3)].map((_, ri) => (
+              <div key={`pr-${ri}`} className="absolute rounded-full" style={{
+                width: `${80 + ri * 60}px`,
+                height: `${80 + ri * 60}px`,
+                border: `1px solid ${ht.accent}${15 - ri * 4}`,
+                animation: `v141-pulseRing ${3 + ri * 0.7}s ease-out infinite`,
+                animationDelay: `${ri * 0.6}s`,
+              }} />
+            ))}
+          </div>
+
           {/* Content area */}
           <div
             className="min-h-[400px] sm:min-h-[440px] p-8 sm:p-12 relative flex flex-col items-center text-center justify-center transition-all duration-700"
@@ -490,29 +628,36 @@ function ValuesBookFlip({ values, t, locale }: { values: ValueItem[]; t: (key: s
               </div>
             </div>
 
-            {/* Title — premium glowing typography with v140 scramble animation */}
+            {/* Title — v141: enhanced glowing typography with dynamic glitch + scramble */}
             <h3 className="text-2xl sm:text-3xl font-black mb-4 leading-tight tracking-wide"
               style={{
                 color: '#ffffff',
                 textShadow: `
-                  0 0 20px ${ht.glow},
-                  0 0 40px ${ht.beam},
-                  0 0 60px ${ht.accent}20
+                  0 0 ${10 + textGlowIntensity * 25}px ${ht.glow},
+                  0 0 ${20 + textGlowIntensity * 50}px ${ht.beam},
+                  0 0 ${30 + textGlowIntensity * 80}px ${ht.accent}20,
+                  ${glitchActive ? '2px 0 #ff0040, -2px 0 #00ffff' : 'none'}
                 `,
                 letterSpacing: '0.02em',
                 minHeight: '2.8rem',
                 fontFamily: "'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif",
+                transform: glitchActive ? `translate(${Math.random() * 4 - 2}px, ${Math.random() * 2 - 1}px)` : 'translate(0,0)',
+                transition: 'transform 0.05s linear',
+                filter: glitchActive ? `hue-rotate(${Math.random() * 30 - 15}deg)` : 'hue-rotate(0deg)',
               }}
             >
               {scrambleTitle || t(current.titleKey)}
             </h3>
 
-            {/* Description — v140 scramble effect */}
+            {/* Description — v141: scramble + subtle glitch glow */}
             <p className="text-base sm:text-lg leading-relaxed max-w-lg mx-auto mb-6"
               style={{
-                color: 'rgba(210,225,255,0.85)',
+                color: glitchActive ? '#ffffff' : 'rgba(210,225,255,0.85)',
                 minHeight: '4.5rem',
                 fontFamily: "'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif",
+                textShadow: glitchActive ? `0 0 15px ${ht.glow}, 0 0 30px ${ht.accent}30` : 'none',
+                opacity: glitchActive ? 0.9 : 1,
+                transition: 'color 0.1s, opacity 0.1s',
               }}
             >
               {scrambleDesc || t(current.descriptionKey)}
@@ -1322,62 +1467,94 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ===== SUNRISE BEACH CTA v140 — 清晨日出：亮粉天际 + 金色阳光 + 活力海洋 ===== */}
+      {/* ===== SUNRISE BEACH CTA v141 — 远处小太阳 + 云朵半遮面 + 空间层次感 ===== */}
       <section
         className="py-20 px-4 sm:px-6 lg:px-8 text-white relative overflow-hidden"
         style={{
-          /* v140: Sunrise palette — top=soft dawn pink/cyan → mid=warm peach → bottom=bright gold horizon */
-          background: 'linear-gradient(180deg, #e8f4fc 0%, #c9e4f6 6%, #b8d4ed 12%, #f2dbe3 18%, #fad4cf 25%, #ffcbb8 32%, #ffb49a 40%, #ffa06a 48%, #ff8c47 56%, #ff7a30 64%, #f59e0b 74%, #fbbf24 82%, #fcd34d 90%, #fde68a 96%, #fef9c3 100%)',
+          /* v141: Refined sunrise palette — softer top, warmer mid-gold */
+          background: 'linear-gradient(180deg, #dbeafe 0%, #bfdbfe 5%, #e0f2fe 10%, #fce7f3 16%, #fecdd3 22%, #fed7aa 30%, #fdba74 40%, #fb923c 50%, #f97316 60%, #ea580c 70%, #dc2626 78%, #f59e0b 86%, #fbbf24 92%, #fef3c7 98%, #fffbeb 100%)',
         }}
       >
-        {/* === v140: SUN near horizon — 日出太阳贴近海平面，更亮更温暖 === */}
-        <div className="absolute bottom-[38%] left-[3%] sm:left-[5%] pointer-events-none">
-          {/* Outer glow layers — brighter for sunrise (v140) */}
-          <div className="absolute -inset-[70px] rounded-full" style={{
-            background: 'radial-gradient(circle, rgba(255,248,220,0.35) 0%, rgba(251,191,36,0.18) 30%, rgba(251,146,60,0.08) 55%, transparent 75%)',
-            animation: 'v135-sunGlow 4s ease-in-out infinite alternate',
+        {/* === v141: DISTANT SUN — 小太阳放远处，营造距离感和空间层次 === */}
+        <div className="absolute bottom-[46%] left-[8%] sm:left-[12%] pointer-events-none">
+          {/* Subtle ambient glow — reduced for distance effect */}
+          <div className="absolute -inset-[45px] rounded-full" style={{
+            background: 'radial-gradient(circle, rgba(255,250,220,0.2) 0%, rgba(251,191,36,0.08) 25%, rgba(251,146,60,0.03) 50%, transparent 70%)',
+            animation: 'v135-sunGlow 5s ease-in-out infinite alternate',
           }} />
-          {/* Dawn light rays — 14 rays, upward ones brighter for sunrise feel */}
-          <div className="absolute w-44 h-44 sm:w-56 sm:h-56 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-            {[...Array(14)].map((_, i) => {
-              const angle = (i * 360 / 14);
-              const isUpward = angle > 50 && angle < 130;
+          {/* Gentle light rays — fewer, softer for distant sun */}
+          <div className="absolute w-28 h-28 sm:w-36 sm:h-36 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+            {[...Array(8)].map((_, i) => {
+              const angle = (i * 360 / 8);
               return (
                 <div key={i} className="absolute top-1/2 left-1/2 origin-left" style={{
-                  width: `${30 + i * 4}px`,
-                  height: `${2 + (i % 3) * 0.6}px`,
+                  width: `${18 + i * 3}px`,
+                  height: `${1.5 + (i % 2) * 0.5}px`,
                   background: `linear-gradient(90deg,
-                    ${isUpward ? 'rgba(255,250,220,0.6)' : 'rgba(255,248,220,0.3)'} 0%,
-                    rgba(251,191,36,${isUpward ? '0.2' : '0.1'}) 40%,
+                    rgba(255,250,220,0.35) 0%,
+                    rgba(251,191,36,0.12) 35%,
                     transparent 100%)`,
                   transform: `rotate(${angle}deg) translateY(-50%)`,
                   borderRadius: '2px',
-                  animation: `v135-rayPulse ${2 + i * 0.12}s ease-in-out infinite alternate`,
-                  animationDelay: `${i * 0.1}s`,
+                  animation: `v135-rayPulse ${3 + i * 0.15}s ease-in-out infinite alternate`,
+                  animationDelay: `${i * 0.12}s`,
                 }} />
               );
             })}
           </div>
-          {/* Main sun body — v40: larger, brighter center, stronger glow */}
-          <div className="relative w-40 h-40 sm:w-52 sm:h-52 rounded-full" style={{
-            background: 'radial-gradient(circle at 42% 40%, #ffffff 0%, #fffbeb 6%, #fef9c3 16%, #fde047 32%, #facc15 50%, #f59e0b 68%, #d97706 85%, #b45309 100%)',
+          {/* Main sun body — v141: smaller, more distant feel */}
+          <div className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-full" style={{
+            background: 'radial-gradient(circle at 42% 40%, #ffffff 0%, #fffbeb 8%, #fef9c3 20%, #fde047 38%, #facc15 55%, #f59e0b 72%, #d97706 88%, #b45309 100%)',
             boxShadow: `
-              0 0 80px rgba(253,224,71,0.7),
-              0 0 160px rgba(245,158,11,0.45),
-              0 0 260px rgba(217,119,6,0.18),
-              inset 4px 4px 14px rgba(255,255,255,0.5),
-              inset -4px -3px 10px rgba(180,83,9,0.2)
+              0 0 50px rgba(253,224,71,0.45),
+              0 0 100px rgba(245,158,11,0.25),
+              0 0 180px rgba(217,119,6,0.1),
+              inset 3px 3px 12px rgba(255,255,255,0.45),
+              inset -3px -2px 8px rgba(180,83,9,0.15)
             `,
-            animation: 'v138-sunBreath 5s ease-in-out infinite alternate',
+            animation: 'v138-sunBreath 6s ease-in-out infinite alternate',
           }}>
             {/* Inner bright core */}
             <div className="absolute rounded-full" style={{
-              width: '38%', height: '32%', top: '20%', left: '19%',
-              background: 'radial-gradient(ellipse, rgba(255,255,252,0.98) 0%, rgba(255,255,245,0.5) 45%, transparent 78%)',
+              width: '36%', height: '28%', top: '22%', left: '21%',
+              background: 'radial-gradient(ellipse, rgba(255,255,252,0.98) 0%, rgba(255,255,245,0.45) 70%, transparent 85%)',
             }} />
             {/* Surface sunspot */}
-            <div className="absolute rounded-full opacity-12" style={{ width: '13%', height: '10%', bottom: '26%', right: '20%', background: 'rgba(180,83,9,0.35)' }} />
+            <div className="absolute rounded-full opacity-10" style={{ width: '11%', height: '8%', bottom: '28%', right: '22%', background: 'rgba(180,83,9,0.3)' }} />
           </div>
+
+          {/* ===== v141 NEW: 半遮面云朵 — 云朵遮挡太阳，增加层次 ===== */}
+          {/* Cloud A — upper-left soft cloud partially over sun */}
+          <div className="absolute -top-6 -left-8 pointer-events-none" style={{
+            width: '120px', height: '36px',
+            background: 'radial-gradient(ellipse at 30% 50%, rgba(255,255,255,0.65) 0%, rgba(255,248,230,0.35) 40%, rgba(255,240,220,0.12) 70%, transparent 100%)',
+            filter: 'blur(6px)',
+            borderRadius: '50%',
+            animation: 'v141-cloudFloatA 14s ease-in-out infinite',
+          }} />
+          <div className="absolute -top-2 -left-4 pointer-events-none" style={{
+            width: '80px', height: '26px',
+            background: 'radial-gradient(ellipse at 50% 55%, rgba(255,255,255,0.5) 0%, rgba(255,245,225,0.25) 50%, transparent 80%)',
+            filter: 'blur(5px)',
+            borderRadius: '50%',
+            animation: 'v141-cloudFloatB 11s ease-in-out infinite reverse',
+          }} />
+          {/* Cloud B — right side wispy cloud */}
+          <div className="absolute top-2 -right-10 pointer-events-none" style={{
+            width: '90px', height: '28px',
+            background: 'radial-gradient(ellipse at 60% 50%, rgba(255,255,255,0.4) 0%, rgba(255,245,235,0.2) 45%, transparent 75%)',
+            filter: 'blur(7px)',
+            borderRadius: '50%',
+            animation: 'v141-cloudFloatC 17s ease-in-out infinite 2s',
+          }} />
+          {/* Cloud C — lower semi-transparent veil across sun bottom */}
+          <div className="absolute -bottom-3 -right-4 pointer-events-none" style={{
+            width: '100px', height: '22px',
+            background: 'radial-gradient(ellipse at 50% 50%, rgba(255,240,220,0.3) 0%, rgba(255,230,200,0.12) 40%, transparent 70%)',
+            filter: 'blur(8px)',
+            borderRadius: '50%',
+            animation: 'v141-cloudFloatA 13s ease-in-out infinite 4s',
+          }} />
         </div>
 
         {/* === ATMOSPHERIC CLOUDS — soft layered clouds near horizon (v139) === */}
@@ -1763,6 +1940,39 @@ export default function AboutPage() {
           0%{transform:translateX(0); opacity:1}
           50%{transform:translateX(25px); opacity:0.7}
           100%{transform:translateX(0); opacity:1}
+        }
+        /* ===== v141: Enhanced sci-fi animations ===== */
+        @keyframes v141-binRain {
+          0%{transform:translateY(-40px); opacity:0}
+          10%{opacity:1}
+          90%{opacity:0.6}
+          100%{transform:translateY(480px); opacity:0}
+        }
+        @keyframes v141-dataSweep {
+          0%{width:0; left:0; opacity:0}
+          20%{opacity:1}
+          80%{opacity:0.7}
+          100%{width:100%; left:100%; opacity:0}
+        }
+        @keyframes v141-pulseRing {
+          0%{transform:scale(0.3); opacity:0.5}
+          50%{opacity:0.15}
+          100%{transform:scale(2.5); opacity:0}
+        }
+        @keyframes v141-cloudFloatA {
+          0%,100%{transform:translate(0,0) scale(1); opacity:1}
+          33%{transform:translate(8px,-4px) scale(1.04); opacity:0.85}
+          66%{transform:translate(-5px,3px) scale(0.97); opacity:0.92}
+        }
+        @keyframes v141-cloudFloatB {
+          0%,100%{transform:translate(0,0) scale(1); opacity:1}
+          33%{transform:translate(-6px,2px) scale(1.03); opacity:0.88}
+          66%{transform:translate(7px,-3px) scale(0.98; opacity:0.9)}
+        }
+        @keyframes v141-cloudFloatC {
+          0%,100%{transform:translate(0,0); opacity:0.8}
+          40%{transform:translate(10px,5px); opacity:0.6}
+          70%{transform:translate(-6px,-2px); opacity:0.75}
         }
       `}</style>
     </div>
