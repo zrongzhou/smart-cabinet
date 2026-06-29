@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { MapPin, Phone, Mail, Clock, Send, CheckCircle, MessageCircle } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Send, CheckCircle, MessageCircle, AlertCircle, Loader2 } from 'lucide-react';
 import { useLocale } from '@/lib/i18n';
 import { fetchSettings, SiteSettings } from '@/lib/api';
 import OceanHeader from '@/components/OceanHeader';
@@ -55,6 +55,8 @@ export default function ContactPage() {
   });
 
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -65,10 +67,32 @@ export default function ContactPage() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitted(true);
-    setTimeout(() => setIsSubmitted(false), 6000);
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to submit');
+      }
+
+      setIsSubmitted(true);
+      setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+      setTimeout(() => setIsSubmitted(false), 6000);
+    } catch (err: any) {
+      setSubmitError(err.message || 'Failed to submit. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const contactInfoItems = [
@@ -246,6 +270,18 @@ export default function ContactPage() {
                 </div>
               )}
 
+              {submitError && (
+                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3 animate-in fade-in">
+                  <AlertCircle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-red-800 font-semibold">
+                      {locale === 'zh' ? '提交失败' : locale === 'ar' ? 'فشل الإرسال' : 'Submission Failed'}
+                    </p>
+                    <p className="text-red-600 text-sm mt-1">{submitError}</p>
+                  </div>
+                </div>
+              )}
+
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   {/* Name */}
@@ -340,13 +376,23 @@ export default function ContactPage() {
                 {/* Submit Button */}
                 <button
                   type="submit"
-                  className="w-full px-8 py-4 text-white font-semibold rounded-xl transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 group"
+                  disabled={isSubmitting}
+                  className="w-full px-8 py-4 text-white font-semibold rounded-xl transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{ backgroundColor: 'var(--primary-color, #2563eb)' }}
-                  onMouseEnter={(e) => { (e.target as HTMLElement).style.backgroundColor = 'var(--primary-hover, #1d4ed8)'; }}
+                  onMouseEnter={(e) => { if (!isSubmitting) { (e.target as HTMLElement).style.backgroundColor = 'var(--primary-hover, #1d4ed8)'; } }}
                   onMouseLeave={(e) => { (e.target as HTMLElement).style.backgroundColor = 'var(--primary-color, #2563eb)'; }}
                 >
-                  <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                  <span>{t('contact.form.submit')}</span>
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <span>{locale === 'zh' ? '发送中...' : locale === 'ar' ? 'جاري الإرسال...' : 'Sending...'}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                      <span>{t('contact.form.submit')}</span>
+                    </>
+                  )}
                 </button>
               </form>
 

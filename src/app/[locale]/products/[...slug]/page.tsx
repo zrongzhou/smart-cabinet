@@ -27,7 +27,8 @@ function getCategoryIds(categories: any[]): string[] {
 export default function ProductDetailPage() {
   const params = useParams();
   const { locale, t } = useLocale();
-  const slug = params.slug as string;
+  // [...slug] catch-all: params.slug 是 string[]，支持别名含 / 的情况（如 abc/efg）
+  const slug = Array.isArray(params.slug) ? params.slug.join('/') : (params.slug as string);
 
   const [product, setProduct] = useState<Product | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);

@@ -16,6 +16,7 @@ import {
   FolderOpen,
   Tag,
   Edit3,
+  MessageSquare,
 } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
@@ -99,6 +100,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { href: '/admin/media', label: '媒体库', icon: ImageIcon },
     { href: '/admin/editor', label: '页面编辑', icon: Edit3 },
     { href: '/admin/settings', label: '站点设置', icon: Settings },
+  { href: '/admin/contact-messages', label: '联系消息', icon: MessageSquare },
   ];
 
   return (

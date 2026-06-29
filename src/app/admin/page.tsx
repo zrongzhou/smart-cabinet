@@ -144,7 +144,7 @@ export default function AdminDashboardPage() {
       bgGradient: 'from-orange-500 to-orange-600',
       bgLight: 'bg-orange-50',
       textColor: 'text-orange-600',
-      href: '#',
+      href: '/admin/contact-messages',
       trend: stats.messageTrend,
     },
   ] : [];

@@ -274,3 +274,21 @@ model Review {
   @@index([isApproved])
   @@map("reviews")
 }
+
+// ==================== 联系消息 ====================
+model ContactMessage {
+  id          Int      @id @default(autoincrement())
+  name        String
+  email       String
+  phone       String?
+  subject     String   // general | sales | support | customization | partnership
+  message     String   @db.Text
+  isRead      Boolean  @default(false)
+  locale      String   @default("en")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([createdAt])
+  @@index([isRead])
+  @@map("contact_messages")
+}

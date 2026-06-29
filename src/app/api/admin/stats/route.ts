@@ -21,11 +21,15 @@ export async function GET(request: NextRequest) {
       totalBlogs,
       totalFaqs,
       totalCategories,
+      totalMessages,
+      unreadMessages,
     ] = await Promise.all([
       prisma.product.count(),
       prisma.blogPost.count(),
       prisma.fAQ.count(),
       prisma.category.count(),
+      prisma.contactMessage.count(),
+      prisma.contactMessage.count({ where: { isRead: false } }),
     ]);
 
     // Get recent activities
@@ -79,6 +83,8 @@ export async function GET(request: NextRequest) {
       totalBlogs,
       totalFaqs,
       totalCategories,
+      totalMessages,
+      unreadMessages,
       productTrend: 12, // TODO: Calculate real trend
       blogTrend: 8,
       faqTrend: -3,
