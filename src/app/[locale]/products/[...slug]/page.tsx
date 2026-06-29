@@ -33,6 +33,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const locale = params.locale as 'en' | 'zh' | 'ar';
 
   try {
+    console.log(`[generateMetadata] Fetching product for slug: ${slug}`);
+    
     // Fetch product directly from database
     const product = await prisma.product.findFirst({
       where: {
@@ -44,7 +46,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       },
     });
 
+    console.log(`[generateMetadata] Product found:`, product ? `id=${product.id}, slug=${product.slug}` : 'null');
+
     if (!product) {
+      console.log(`[generateMetadata] Product not found, returning default metadata`);
       return {};
     }
 
