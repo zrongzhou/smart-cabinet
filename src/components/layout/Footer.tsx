@@ -87,23 +87,22 @@ export default function Footer() {
   const displayCopyright = settings?.footerCopyright?.replace('{year}', String(currentYear)) || `© ${currentYear} ${displayCompany}`;
 
   return (
-    <footer className="relative text-gray-300 overflow-hidden" style={{ backgroundColor: '#1e293b' }}>
+    <footer className="relative text-gray-200 overflow-hidden" style={{ backgroundColor: '#334155' }}>
       {/* ===== DYNAMIC BACKGROUND EFFECTS ===== */}
-      {/* Animated gradient mesh that slowly shifts colors */}
-      <div className="absolute inset-0 opacity-[0.06]" style={{
+      {/* Animated gradient mesh - very subtle */}
+      <div className="absolute inset-0 opacity-[0.03]" style={{
         background: `
           radial-gradient(ellipse at 20% 50%, rgba(59,130,246,0.3) 0%, transparent 50%),
           radial-gradient(ellipse at 80% 20%, rgba(139,92,246,0.25) 0%, transparent 50%),
-          radial-gradient(ellipse at 60% 80%, rgba(6,182,212,0.2) 0%, transparent 50%),
-          radial-gradient(ellipse at 10% 90%, rgba(245,158,11,0.12) 0%, transparent 40%)
+          radial-gradient(ellipse at 60% 80%, rgba(6,182,212,0.2) 0%, transparent 50%)
         `,
         animation: 'footer-bg-drift 12s ease-in-out infinite alternate',
         filter: 'blur(60px)',
       }} />
 
-      {/* Fireflies — glowing warm particles with random drift & flicker (reduced count) */}
+      {/* Fireflies — reduced to 4, very subtle */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(8)].map((_, i) => (
+        {[...Array(4)].map((_, i) => (
           <Firefly key={i} index={i} />
         ))}
       </div>
@@ -151,10 +150,10 @@ export default function Footer() {
               </div>
               <span className="text-white font-bold text-lg">{displayName}</span>
             </div>
-            <p className="text-sm leading-relaxed mb-5 text-gray-400">
+            <p className="text-sm leading-relaxed mb-5 text-gray-300">
               {t('footer.companyDescription')}
             </p>
-            <div className="flex items-center gap-2 text-xs text-gray-500">
+            <div className="flex items-center gap-2 text-xs text-gray-400">
               <Globe className="w-4 h-4 flex-shrink-0" />
               <span>{displayCompany}</span>
             </div>
