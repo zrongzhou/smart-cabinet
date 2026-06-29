@@ -129,8 +129,11 @@ function FishSwarm() {
       context.restore();
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const c = canvas;
+
     function animate() {
-      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.clearRect(0, 0, c.width, c.height);
 
       fishes.forEach((f, i) => {
         // Move
@@ -141,13 +144,13 @@ function FishSwarm() {
         f.y += Math.sin(time * 0.8) * 0.3;
 
         // Wrap around
-        if (f.dir > 0 && f.x > canvas.width + 50) {
+        if (f.dir > 0 && f.x > c.width + 50) {
           f.x = -50;
-          f.y = 30 + Math.random() * (canvas.height * 0.6);
+          f.y = 30 + Math.random() * (c.height * 0.6);
         }
         if (f.dir < 0 && f.x < -50) {
-          f.x = canvas.width + 50;
-          f.y = 30 + Math.random() * (canvas.height * 0.6);
+          f.x = c.width + 50;
+          f.y = 30 + Math.random() * (c.height * 0.6);
         }
 
         drawFish(f);
