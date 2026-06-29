@@ -88,9 +88,23 @@ export default function BlogPage() {
     '/images/blog/general.jpg',
   ];
 
-  // 按 slug 精确匹配：每篇博客显示与其主题相关的真实照片
+  // 按 slug（API 返回的是数字 ID）精确匹配：每篇博客显示与其主题相关的真实照片
   const SLUG_TO_IMAGE: Record<string, string> = {
-    'future-of-intelligent-tool-storage': '/images/blog/future-smart-factory.jpg',
+    // API 返回的 slug 是数字 ID，按文章主题匹配图片
+    '1': '/images/blog/ai-industry-4-0.jpg',           // The Future of Intelligent Tool Storage
+    '2': '/images/blog/cnc-machining-roi.jpg',          // How Smart Cabinets Reduce CNC Downtime
+    '3': '/images/blog/rfid-tool-tracking.jpg',         // Complete Guide to RFID Tool Management
+    '4': '/images/blog/smart-cabinet-warehouse.jpg',     // 5 Ways Smart Cabinets Improve Inventory Accuracy
+    '5': '/images/blog/ppe-safety-equipment.jpg',        // PPE Vending: Compliance Made Easy
+    '6': '/images/blog/digital-transformation.jpg',      // From Manual to Smart Manufacturing
+    '7': '/images/blog/roi-cost-analysis.jpg',           // Smart Cabinet ROI Calculator
+    '8': '/images/blog/iot-mes-integration.jpg',        // IoT Integration: Connecting Smart Cabinets
+    '9': '/images/blog/buying-guide-smart-cabinet.jpg', // Top 10 Features When Buying
+    '10': '/images/blog/aerospace-fod-prevention.jpg',   // Aerospace Manufacturers Smart Tool Mgmt
+    '11': '/images/blog/best-practice.jpg',              // Smart Cabinet Security Best Practices
+    '12': '/images/blog/future-smart-factory.jpg',      // Future of Smart Warehousing Beyond Tool Cabinets
+    // 文字 slug 兼容（静态数据源时使用）
+    'future-of-intelligent-tool-storage': '/images/blog/ai-industry-4-0.jpg',
     'smart-cabinets-reduce-cnc-downtime': '/images/blog/cnc-machining-roi.jpg',
     'complete-guide-rfid-tool-management': '/images/blog/rfid-tool-tracking.jpg',
     '5-ways-smart-cabinets-improve-inventory-accuracy': '/images/blog/smart-cabinet-warehouse.jpg',
@@ -100,7 +114,7 @@ export default function BlogPage() {
     'iot-integration-smart-cabinets-factory-network': '/images/blog/iot-mes-integration.jpg',
     'top-10-features-smart-tool-cabinets-buying-guide': '/images/blog/buying-guide-smart-cabinet.jpg',
     'aerospace-manufacturers-smart-tool-management-benefits': '/images/blog/aerospace-fod-prevention.jpg',
-    'future-of-smart-warehousing-beyond-tool-cabinets': '/images/blog/ai-industry-4-0.jpg',
+    'future-of-smart-warehousing-beyond-tool-cabinets': '/images/blog/future-smart-factory.jpg',
   };
 
   // 分类颜色映射（用于 badge 颜色）

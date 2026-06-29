@@ -40,7 +40,21 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
   ];
 
   const SLUG_TO_IMAGE: Record<string, string> = {
-    'future-of-intelligent-tool-storage': '/images/blog/future-smart-factory.jpg',
+    // API 返回数字 ID slug
+    '1': '/images/blog/ai-industry-4-0.jpg',
+    '2': '/images/blog/cnc-machining-roi.jpg',
+    '3': '/images/blog/rfid-tool-tracking.jpg',
+    '4': '/images/blog/smart-cabinet-warehouse.jpg',
+    '5': '/images/blog/ppe-safety-equipment.jpg',
+    '6': '/images/blog/digital-transformation.jpg',
+    '7': '/images/blog/roi-cost-analysis.jpg',
+    '8': '/images/blog/iot-mes-integration.jpg',
+    '9': '/images/blog/buying-guide-smart-cabinet.jpg',
+    '10': '/images/blog/aerospace-fod-prevention.jpg',
+    '11': '/images/blog/best-practice.jpg',
+    '12': '/images/blog/future-smart-factory.jpg',
+    // 文字 slug 兼容
+    'future-of-intelligent-tool-storage': '/images/blog/ai-industry-4-0.jpg',
     'smart-cabinets-reduce-cnc-downtime': '/images/blog/cnc-machining-roi.jpg',
     'complete-guide-rfid-tool-management': '/images/blog/rfid-tool-tracking.jpg',
     '5-ways-smart-cabinets-improve-inventory-accuracy': '/images/blog/smart-cabinet-warehouse.jpg',
@@ -50,7 +64,7 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
     'iot-integration-smart-cabinets-factory-network': '/images/blog/iot-mes-integration.jpg',
     'top-10-features-smart-tool-cabinets-buying-guide': '/images/blog/buying-guide-smart-cabinet.jpg',
     'aerospace-manufacturers-smart-tool-management-benefits': '/images/blog/aerospace-fod-prevention.jpg',
-    'future-of-smart-warehousing-beyond-tool-cabinets': '/images/blog/ai-industry-4-0.jpg',
+    'future-of-smart-warehousing-beyond-tool-cabinets': '/images/blog/future-smart-factory.jpg',
   };
 
   // Recent Posts 图片选择 - 按 slug 匹配
