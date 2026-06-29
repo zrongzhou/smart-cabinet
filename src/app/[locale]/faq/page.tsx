@@ -200,27 +200,44 @@ export default function FAQPage() {
             />
           </div>
 
-          {/* Category Pills */}
-          <div className="flex flex-wrap items-center justify-center gap-2">
-            {categories.map(cat => (
-              <button
-                key={cat.id}
-                onClick={() => setActiveCategory(cat.id)}
-                className="px-4 py-2 rounded-full text-[14px] font-medium transition-all duration-300 hover:shadow-md hover:-translate-y-0.5"
-                style={activeCategory === cat.id ? {
-                  backgroundImage: 'linear-gradient(135deg, #3b82f6, #2563eb)',
-                  color: '#ffffff',
-                  boxShadow: '0 4px 14px rgba(59,130,246,0.4)',
-                  transform: 'translateY(-2px)',
-                } : {
-                  backgroundColor: 'var(--card-bg)',
-                  color: 'var(--text-primary)',
-                  border: '1px solid var(--border-color)',
-                }}
-              >
-                {cat.label}
-              </button>
-            ))}
+          {/* Category Pills — wrapped in a styled card container */}
+          <div 
+            className="rounded-2xl p-5 border"
+            style={{
+              backgroundColor: 'var(--card-bg)',
+              borderColor: 'var(--border-color)',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
+            }}
+          >
+            {/* Subtle header for visual grouping */}
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(180deg, #3b82f6, #8b5cf6)' }} />
+              <span className="text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
+                {locale === 'zh' ? '按分类筛选' : locale === 'ar' ? 'تصفية حسب الفئة' : 'Filter by Category'}
+              </span>
+            </div>
+            
+            <div className="flex flex-wrap items-center gap-2">
+              {categories.map(cat => (
+                <button
+                  key={cat.id}
+                  onClick={() => setActiveCategory(cat.id)}
+                  className="px-4 py-2 rounded-xl text-[13px] font-medium transition-all duration-300 hover:shadow-md hover:-translate-y-0.5"
+                  style={activeCategory === cat.id ? {
+                    backgroundImage: 'linear-gradient(135deg, #3b82f6, #2563eb)',
+                    color: '#ffffff',
+                    boxShadow: '0 4px 12px rgba(59,130,246,0.35)',
+                    transform: 'translateY(-1px)',
+                  } : {
+                    backgroundColor: 'var(--section-alt-bg)',
+                    color: 'var(--text-primary)',
+                    border: '1px solid var(--border-color)',
+                  }}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
