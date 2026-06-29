@@ -67,46 +67,14 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
     'future-of-smart-warehousing-beyond-tool-cabinets': '/images/blog/future-smart-factory.jpg',
   };
 
-  // === v152 正文配图：每篇文章在 h2 段落间插入主题相关图片 ===
-  const CONTENT_IMAGES: Record<string, string[]> = {
-    '1': ['/images/blog/ai-industry-4-0.jpg', '/images/blog/future-smart-factory.jpg', '/images/blog/iot-mes-integration.jpg', '/images/blog/digital-transformation.jpg'],
-    '2': ['/images/blog/cnc-machining-roi.jpg', '/images/blog/smart-cabinet-warehouse.jpg', '/images/blog/roi-cost-analysis.jpg'],
-    '3': ['/images/blog/rfid-tool-tracking.jpg', '/images/blog/smart-cabinet-warehouse.jpg', '/images/blog/ai-industry-4-0.jpg'],
-    '4': ['/images/blog/smart-cabinet-warehouse.jpg', '/images/blog/roi-cost-analysis.jpg', '/images/blog/digital-transformation.jpg'],
-    '5': ['/images/blog/ppe-safety-equipment.jpg', '/images/blog/buying-guide-smart-cabinet.jpg', '/images/blog/smart-cabinet-warehouse.jpg'],
-    '6': ['/images/blog/digital-transformation.jpg', '/images/blog/future-smart-factory.jpg', '/images/blog/ai-industry-4-0.jpg', '/images/blog/iot-mes-integration.jpg'],
-    '7': ['/images/blog/roi-cost-analysis.jpg', '/images/blog/cnc-machining-roi.jpg', '/images/blog/smart-cabinet-warehouse.jpg'],
-    '8': ['/images/blog/iot-mes-integration.jpg', '/images/blog/ai-industry-4-0.jpg', '/images/blog/digital-transformation.jpg', '/images/blog/future-smart-factory.jpg'],
-    '9': ['/images/blog/buying-guide-smart-cabinet.jpg', '/images/blog/smart-cabinet-warehouse.jpg', '/images/blog/roi-cost-analysis.jpg'],
-    '10': ['/images/blog/aerospace-fod-prevention.jpg', '/images/blog/rfid-tool-tracking.jpg', '/images/blog/ppe-safety-equipment.jpg'],
-    '11': ['/images/blog/best-practice.jpg', '/images/blog/ppe-safety-equipment.jpg', '/images/blog/rfid-tool-tracking.jpg'],
-    '12': ['/images/blog/future-smart-factory.jpg', '/images/blog/ai-industry-4-0.jpg', '/images/blog/iot-mes-integration.jpg', '/images/blog/digital-transformation.jpg'],
-    'future-of-intelligent-tool-storage': ['/images/blog/ai-industry-4-0.jpg', '/images/blog/future-smart-factory.jpg', '/images/blog/iot-mes-integration.jpg', '/images/blog/digital-transformation.jpg'],
-    'smart-cabinets-reduce-cnc-downtime': ['/images/blog/cnc-machining-roi.jpg', '/images/blog/smart-cabinet-warehouse.jpg', '/images/blog/roi-cost-analysis.jpg'],
-    'complete-guide-rfid-tool-management': ['/images/blog/rfid-tool-tracking.jpg', '/images/blog/smart-cabinet-warehouse.jpg', '/images/blog/ai-industry-4-0.jpg'],
-    '5-ways-smart-cabinets-improve-inventory-accuracy': ['/images/blog/smart-cabinet-warehouse.jpg', '/images/blog/roi-cost-analysis.jpg', '/images/blog/digital-transformation.jpg'],
-    'ppe-vending-compliance-made-easy': ['/images/blog/ppe-safety-equipment.jpg', '/images/blog/buying-guide-smart-cabinet.jpg', '/images/blog/smart-cabinet-warehouse.jpg'],
-    'from-manual-to-smart-manufacturing-transformation': ['/images/blog/digital-transformation.jpg', '/images/blog/future-smart-factory.jpg', '/images/blog/ai-industry-4-0.jpg', '/images/blog/iot-mes-integration.jpg'],
-    'smart-cabinet-roi-calculator-guide': ['/images/blog/roi-cost-analysis.jpg', '/images/blog/cnc-machining-roi.jpg', '/images/blog/smart-cabinet-warehouse.jpg'],
-    'iot-integration-smart-cabinets-factory-network': ['/images/blog/iot-mes-integration.jpg', '/images/blog/ai-industry-4-0.jpg', '/images/blog/digital-transformation.jpg', '/images/blog/future-smart-factory.jpg'],
-    'top-10-features-smart-tool-cabinets-buying-guide': ['/images/blog/buying-guide-smart-cabinet.jpg', '/images/blog/smart-cabinet-warehouse.jpg', '/images/blog/roi-cost-analysis.jpg'],
-    'aerospace-manufacturers-smart-tool-management-benefits': ['/images/blog/aerospace-fod-prevention.jpg', '/images/blog/rfid-tool-tracking.jpg', '/images/blog/ppe-safety-equipment.jpg'],
-    'future-of-smart-warehousing-beyond-tool-cabinets': ['/images/blog/future-smart-factory.jpg', '/images/blog/ai-industry-4-0.jpg', '/images/blog/iot-mes-integration.jpg', '/images/blog/digital-transformation.jpg'],
-  };
-
-  /** v152: 在 content HTML 的每个 </h2> 后插入配图（SSR 安全，无 DOM API） */
-  function injectContentImages(htmlContent: string, slug: string): string {
-    const images = CONTENT_IMAGES[slug] || [];
-    if (images.length === 0) return htmlContent;
-    const parts = htmlContent.split(/(<\/h2>)/i);
-    let imgIndex = 0;
-    return parts.map((part) => {
-      if (part.toLowerCase() === '</h2>' && imgIndex < images.length) {
-        const imgSrc = images[imgIndex++];
-        return part + `<figure class="my-8 rounded-2xl overflow-hidden shadow-lg"><img src="${imgSrc}" alt="Article illustration" class="w-full h-auto object-cover" style="max-height:360px" /></figure>`;
-      }
-      return part;
-    }).join('');
+  /** v152b: 只在正文开头插入封面图（避免重复图片） */
+  function injectCoverImageInContent(htmlContent: string, coverImage: string): string {
+    if (!coverImage) return htmlContent;
+    const figureHtml = `<figure class="my-8 rounded-2xl overflow-hidden shadow-lg"><img src="${coverImage}" alt="Cover image" class="w-full h-auto object-cover" style="max-height:400px" /></figure>`;
+    // 在第一个 </p> 后插入（即第一段结束后）
+    const insertPos = htmlContent.indexOf('</p>');
+    if (insertPos === -1) return figureHtml + htmlContent; // 没有段落标签，直接前置
+    return htmlContent.slice(0, insertPos + 4) + figureHtml + htmlContent.slice(insertPos + 4);
   }
 
   // Recent Posts 图片选择 - 按 slug 匹配
@@ -376,7 +344,7 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
           {/* Render content (HTML from rich text editor) — v152: 注入正文配图 */}
           <div
             className="prose max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-blue-600 prose-img:rounded-xl"
-            dangerouslySetInnerHTML={{ __html: injectContentImages(content, blog.slug || '') }}
+            dangerouslySetInnerHTML={{ __html: injectCoverImageInContent(content, getInlineBlogDetailImage(blog)) }}
           />
 
           {/* Share buttons */}
