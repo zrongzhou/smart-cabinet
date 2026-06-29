@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { unlink, stat } from 'fs/promises';
 import { join } from 'path';
+import { verifyAuth, unauthorizedResponse } from '@/lib/auth';
 
 // Resolve uploads directory (consistent with upload/list routes)
 function getUploadDir(): string {
@@ -12,6 +13,12 @@ const UPLOAD_DIR = getUploadDir();
 
 export async function POST(request: NextRequest) {
   try {
+    // Verify authentication
+    const isAuthenticated = await verifyAuth(request);
+    if (!isAuthenticated) {
+      return unauthorizedResponse();
+    }
+
     const { filename } = await request.json();
 
     if (!filename) {

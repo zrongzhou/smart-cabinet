@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import { verifyAuth, unauthorizedResponse } from '@/lib/auth';
-
-const prisma = new PrismaClient();
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
@@ -62,8 +60,6 @@ export async function GET(request: NextRequest) {
       { error: 'Failed to fetch contact messages' },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
@@ -113,7 +109,5 @@ export async function PATCH(request: NextRequest) {
       { error: 'Failed to perform bulk operation' },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }

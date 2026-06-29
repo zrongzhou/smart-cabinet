@@ -1,11 +1,18 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { verifyAuth, unauthorizedResponse } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
 // ============ GET: List all custom dimensions ============
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    // Verify authentication
+    const isAuthenticated = await verifyAuth(request);
+    if (!isAuthenticated) {
+      return unauthorizedResponse();
+    }
+
     const dims = await prisma.customDimension.findMany({
       orderBy: [{ order: 'asc' }, { createdAt: 'asc' }]
     });
@@ -27,8 +34,14 @@ export async function GET() {
  * 1. Upserts into `custom_dimensions` table
  * 2. Also syncs to `site_settings.custom_dimension_labels` as backup
  */
-export async function PUT(request: Request) {
+export async function PUT(request: NextRequest) {
   try {
+    // Verify authentication
+    const isAuthenticated = await verifyAuth(request);
+    if (!isAuthenticated) {
+      return unauthorizedResponse();
+    }
+
     const body = await request.json();
     const { dimensions } = body;
 
@@ -89,8 +102,14 @@ export async function PUT(request: Request) {
 }
 
 // ============ DELETE: Remove a dimension by key ============
-export async function DELETE(request: Request) {
+export async function DELETE(request: NextRequest) {
   try {
+    // Verify authentication
+    const isAuthenticated = await verifyAuth(request);
+    if (!isAuthenticated) {
+      return unauthorizedResponse();
+    }
+
     const { searchParams } = new URL(request.url);
     const key = searchParams.get('key');
 

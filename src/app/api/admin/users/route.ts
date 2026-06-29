@@ -1,40 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyToken } from '@/lib/auth/jwt';
+import { verifyAuth, unauthorizedResponse } from '@/lib/auth';
 import { getAllUsers, updateUserStatus, updateUserRole, deleteUser } from '@/lib/auth/userAuth';
-
-/**
- * Verify admin access from request
- */
-async function verifyAdmin(request: NextRequest): Promise<{ authorized: boolean; error?: string }> {
-  const authHeader = request.headers.get('Authorization');
-  
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return { authorized: false, error: 'Authorization token is required' };
-  }
-
-  const token = authHeader.substring(7);
-  const payload = verifyToken(token);
-
-  if (!payload) {
-    return { authorized: false, error: 'Invalid or expired token' };
-  }
-
-  if (payload.role !== 'admin') {
-    return { authorized: false, error: 'Admin access required' };
-  }
-
-  return { authorized: true };
-}
 
 export async function GET(request: NextRequest) {
   try {
-    // Verify admin access
-    const auth = await verifyAdmin(request);
-    if (!auth.authorized) {
-      return NextResponse.json(
-        { success: false, error: auth.error },
-        { status: 401 }
-      );
+    // Verify authentication (cookie-based, consistent with other admin routes)
+    const isAuthenticated = await verifyAuth(request);
+    if (!isAuthenticated) {
+      return unauthorizedResponse();
     }
 
     // Get query parameters
