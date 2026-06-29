@@ -266,15 +266,17 @@ function JellyfishV2({ jf }: { jf: JellyfishData }) {
 }
 
 // ===== SEA SPARKLES / PLANKTON — 小亮点粒子让海洋有生气 =====
+interface SparkleParticle {
+  id: number;
+  x: number;
+  y: number;
+  size: number;
+  duration: number;
+  delay: number;
+}
+
 function SeaSparkles() {
-  const [particles, setParticles] = useState<Array<{
-    id: number;
-    x: number;
-    y: number;
-    size: number;
-    duration: number;
-    delay: number;
-  }>>([]);
+  const [particles, setParticles] = useState<SparkleParticle[]>([]);
 
   useEffect(() => {
     setParticles(Array.from({ length: 25 }, (_, i) => ({
@@ -318,7 +320,7 @@ function CausticLights() {
                  left: `${i * 13 + Math.random() * 5}%`,
                  bottom: `${Math.random() * 40}px`,
                  width: `${60 + Math.random() * 80}px`,
-                 height: `${20 + Math.random() * 25px`,
+                 height: `${20 + Math.random() * 25}px`,
                  borderRadius: '50%',
                  filter: 'blur(8px)',
                  animation: `caustic-move ${3 + Math.random() * 3}s ease-in-out infinite alternate`,
