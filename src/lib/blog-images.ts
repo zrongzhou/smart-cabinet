@@ -91,25 +91,34 @@ const topicImageMap: Record<string, string> = {
  * Priority: 1) slug keyword match → 2) normalized category match → 3) index-based rotation → 4) default
  */
 export function getBlogImage(post: BlogPost, index?: number): string {
-  // 1. Try topic-specific image match by slug
   const slug = post.slug || '';
+  const category = post.category || 'General';
+  
+  // 1. Try topic-specific image match by slug
   for (const [key, img] of Object.entries(topicImageMap)) {
     if (slug.includes(key)) {
+      console.log(`[getBlogImage] slug match: ${slug} → ${img}`);
       return img;
     }
   }
   
   // 2. Try normalized category match
-  const normalizedCategory = normalizeCategory(post.category || 'General');
+  const normalizedCategory = normalizeCategory(category);
   const categoryImage = categoryImageMap[normalizedCategory];
-  if (categoryImage) return categoryImage;
+  if (categoryImage) {
+    console.log(`[getBlogImage] category match: ${category} → ${normalizedCategory} → ${categoryImage}`);
+    return categoryImage;
+  }
   
   // 3. Fallback: use index-based rotation to ensure variety
   if (index !== undefined) {
-    return allBlogImages[index % allBlogImages.length];
+    const rotated = allBlogImages[index % allBlogImages.length];
+    console.log(`[getBlogImage] index rotation: index=${index} → ${rotated}`);
+    return rotated;
   }
   
   // 4. Ultimate fallback
+  console.log(`[getBlogImage] fallback to general.jpg`);
   return categoryImageMap['General'];
 }
 
