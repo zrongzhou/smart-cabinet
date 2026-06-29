@@ -420,34 +420,16 @@ export default function ProductsPage() {
             )}
           </div>
 
-          {/* Filter Panel — Enhanced Glass Card Container with Colorful Bubble Background */}
-          <div className="relative rounded-2xl px-6 py-5 overflow-visible" style={{
-            background: 'linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(241,245,249,0.4) 100%)',
+          {/* Filter Panel — Enhanced Glass Card Container */}
+          <div className="relative rounded-2xl px-6 py-5 overflow-hidden group" style={{
+            background: 'linear-gradient(135deg, rgba(255,255,255,0.65) 0%, rgba(241,245,249,0.45) 100%)',
             backdropFilter: 'blur(18px) saturate(1.8)',
             WebkitBackdropFilter: 'blur(18px) saturate(1.8)',
             border: '1px solid rgba(226,232,240,0.5)',
             boxShadow: '0 8px 32px rgba(148,163,184,0.12), inset 0 2px 0 rgba(255,255,255,0.7), inset 0 -1px 0 rgba(226,232,240,0.4)',
           }}>
-            {/* ===== COLORFUL RISING BUBBLES — very sparse, elegant scatter (v138) ===== */}
-            <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
-              {/* Only 5 well-spaced bubbles — quality over quantity */}
-              {[
-                { l: 8, b: -4, s: 32, d: 0.3, c: 'rgba(59,130,246,0.35)' },
-                { l: 28, b: -8, s: 44, d: 1.5, c: 'rgba(139,92,246,0.30)' },
-                { l: 55, b: -5, s: 26, d: 0.9, c: 'rgba(16,185,129,0.28)' },
-                { l: 78, b: -10, s: 38, d: 2.1, c: 'rgba(245,158,11,0.28)' },
-                { l: 92, b: -6, s: 30, d: 0.6, c: 'rgba(236,72,153,0.25)' },
-              ].map((b, bi) => (
-                <span key={bi} className="absolute rounded-full" style={{
-                  width: `${b.s}px`, height: `${b.s}px`,
-                  left: `${b.l}%`, bottom: `${b.b}px`,
-                  background: `radial-gradient(circle at 35% 30%, rgba(255,255,255,0.92) 0%, ${b.c} 35%, transparent 65%)`,
-                  animation: `filterBubbleRise ${3.2 + b.d}s ease-in infinite`,
-                  animationDelay: `${bi * 0.7}s`,
-                  boxShadow: `0 0 ${b.s * 0.45}px ${b.c}`,
-                }} />
-              ))}
-            </div>
+            {/* Hover ripple overlay — water wave on hover */}
+            <span className="ripple-container absolute inset-0 pointer-events-none rounded-2xl overflow-hidden" />
             {/* Subtle accent bar - shows under active dimension tab instead of top line */}
             <div className="h-1" />
             
@@ -554,28 +536,7 @@ export default function ProductsPage() {
                             borderWidth: '1px',
                           }}
                         >
-                          {/* Single subtle accent bubble per unselected button (v138) — was 7, now 1 */}
-                        {!isSelected && (
-                          <>
-                            {/* One gentle rising bubble for visual interest */}
-                            <span className="absolute rounded-full pointer-events-none" style={{
-                              width: '10px', height: '10px',
-                              left: '50%', bottom: '-2px',
-                              transform: 'translateX(-50%)',
-                              background: 'radial-gradient(circle at 35% 30%, rgba(255,255,255,0.9) 0%, rgba(96,165,250,0.40) 45%, transparent 75%)',
-                              animation: `productBubbleRise ${2.8}s ease-in infinite`,
-                              boxShadow: '0 0 5px rgba(96,165,250,0.30)',
-                            }} />
-                            {/* Subtle glass shimmer sweep */}
-                            <span className="absolute inset-0 rounded-full overflow-hidden pointer-events-none">
-                              <span className="absolute inset-0" style={{
-                                background: 'linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.15) 50%, transparent 70%)',
-                                animation: 'glassShimmer 4s ease-in-out infinite',
-                              }} />
-                            </span>
-                          </>
-                        )}
-                          {isSelected && (
+                            {isSelected && (
                             <span className="inline-block w-1.5 h-1.5 rounded-full bg-white/90 mr-1.5" />
                           )}
                           <span>{(() => {
@@ -643,32 +604,11 @@ export default function ProductsPage() {
                 const name = locale === 'zh' ? product.name.zh : locale === 'ar' ? product.name.ar : product.name.en;
                 return (
                   <Link key={product.id} href={detailHref}
-                    className="group relative bg-white/80 backdrop-blur-sm rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-2 border border-gray-200/60 hover:border-blue-600/30 block"
+                    className="group relative bg-white/80 backdrop-blur-sm rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-2 border border-gray-200/60 hover:border-blue-600/30 block ripple-card"
                     style={{
                       boxShadow: '0 4px 24px rgba(148,163,184,0.12), 0 1px 3px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6)',
                     }}
                   >
-                    {/* Sparse colorful bubbles on product cards (v138) — 3 scattered, elegant */}
-                    <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl">
-                      {[
-                        { l: 8, b: 4, s: 28, d: 0.4, c: 'rgba(59,130,246,0.35)' },
-                        { l: 58, b: 8, s: 38, d: 1.5, c: 'rgba(139,92,246,0.30)' },
-                        { l: 78, b: 18, s: 22, d: 2.3, c: 'rgba(16,185,129,0.28)' },
-                      ].map((b, bi) => (
-                        <div key={bi} className="absolute rounded-full" style={{
-                          width: `${b.s}px`, height: `${b.s}px`,
-                          left: `${b.l}%`, bottom: `${b.b}%`,
-                          background: `radial-gradient(circle at 35% 30%, rgba(255,255,255,0.90) 0%, ${b.c} 35%, transparent 60%)`,
-                          animation: `productBubbleRise ${2.2 + b.d}s ease-in infinite`,
-                          animationDelay: `${bi * 0.6}s`,
-                          boxShadow: `0 0 ${b.s * 0.45}px ${b.c}`,
-                        }} />
-                      ))}
-                      {/* Subtle glass shimmer on hover */}
-                      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{
-                        background: 'radial-gradient(circle at 30% 20%, rgba(59,130,246,0.04) 0%, transparent 55%)',
-                      }} />
-                    </div>
                     {/* Product Image */}
                     {product.images && product.images[0] ? (
                       <div className="relative h-56 overflow-hidden bg-blue-50">
@@ -805,25 +745,38 @@ export default function ProductsPage() {
           <p className="absolute bottom-4 text-white/60 text-sm">Click anywhere to close</p>
         </div>
       )}
-      {/* Product card bubble & glass animation keyframes (v135) */}
+      {/* Hover water-ripple effect (v164) */}
       <style>{`
-        @keyframes productBubbleRise {
-          0% { transform: translateY(0) scale(0.3); opacity: 0; }
-          12% { opacity: 0.85; transform: translateY(-6px) scale(1); }
-          40% { opacity: 0.6; transform: translateY(-18px) scale(0.88); }
-          70% { opacity: 0.3; transform: translateY(-32px) scale(0.65); }
-          100% { transform: translateY(-48px) scale(0.2); opacity: 0; }
+        /* Water ripple on hover for cards */
+        .ripple-card {
+          position: relative;
+          overflow: hidden;
         }
-        @keyframes filterBubbleRise {
-          0% { transform: translateY(0) scale(0.2); opacity: 0; }
-          15% { opacity: 0.8; transform: translateY(-10px) scale(1); }
-          45% { opacity: 0.55; transform: translateY(-25px) scale(0.85); }
-          75% { opacity: 0.25; transform: translateY(-42px) scale(0.6); }
-          100% { transform: translateY(-60px) scale(0.15); opacity: 0; }
+        .ripple-card::after {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 0;
+          height: 0;
+          border-radius: 50%;
+          background: radial-gradient(circle, rgba(59,130,246,0.12) 0%, rgba(96,165,250,0.06) 40%, transparent 70%);
+          transform: translate(-50%, -50%) scale(0);
+          opacity: 0;
+          transition: width 0.7s ease-out, height 0.7s ease-out, opacity 0.5s ease;
         }
-        @keyframes glassShimmer {
-          0%,100% { transform: translateX(-100%); }
-          50% { transform: translateX(100%); }
+        .ripple-card:hover::after {
+          width: 400px;
+          height: 400px;
+          opacity: 1;
+        }
+
+        /* Filter panel hover shimmer sweep */
+        .group:hover .ripple-container {
+          position: absolute;
+          inset: 0;
+          overflow: hidden;
+          border-radius: inherit;
         }
       `}</style>
     </div>

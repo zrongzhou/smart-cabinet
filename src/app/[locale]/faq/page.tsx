@@ -147,14 +147,6 @@ export default function FAQPage() {
         icon={<HelpCircle className="w-8 h-8 text-blue-300" />}
       />
 
-      {/* Wave divider decoration — light fade (no more black bar!) */}
-      <div className="w-full overflow-hidden leading-none" style={{ background: 'linear-gradient(180deg, #bfe8fc 0%, #f0f9ff 30%, #ffffff 100%)' }}>
-        <svg viewBox="0 0 1440 60" className="w-full h-[35px] md:h-[50px]" preserveAspectRatio="none">
-          <path d="M0,30 C240,48 480,12 720,30 C960,48 1200,12 1440,30 L1440,60 L0,60Z"
-                fill="#f0f9ff" />
-        </svg>
-      </div>
-
       {/* FAQ Content */}
       <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <style dangerouslySetInnerHTML={{ __html: `
