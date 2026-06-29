@@ -194,41 +194,67 @@ export default function FAQPage() {
             />
           </div>
 
-          {/* Category Pills — wrapped in a styled card container */}
+          {/* Category Pills — v151: 玻璃拟态卡片 + 更大更醒目 */}
           <div
-            className="rounded-2xl p-5 border border-[var(--border-color)] bg-gradient-to-br from-[var(--card-bg)] via-[var(--card-bg)] to-blue-50/30 dark:to-slate-700/30 shadow-[0_4px_20px_rgba(0,0,0,0.04)] relative overflow-hidden"
+            className="rounded-2xl p-6 relative overflow-hidden"
+            style={{
+              background: 'linear-gradient(135deg, rgba(59,130,246,0.06) 0%, rgba(139,92,246,0.06) 50%, rgba(6,182,212,0.06) 100%)',
+              border: '1px solid rgba(59,130,246,0.15)',
+              boxShadow: '0 8px 32px rgba(59,130,246,0.08), inset 0 1px 0 rgba(255,255,255,0.5)',
+            }}
           >
-            {/* Subtle decorative top border gradient */}
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" />
+            {/* Decorative glowing orbs */}
+            <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full opacity-20 blur-2xl" style={{ background: 'radial-gradient(circle, #3b82f6, transparent)' }} />
+            <div className="absolute -bottom-8 -left-8 w-24 h-24 rounded-full opacity-15 blur-2xl" style={{ background: 'radial-gradient(circle, #8b5cf6, transparent)' }} />
 
-            {/* Subtle header for visual grouping */}
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(180deg, #3b82f6, #8b5cf6)' }} />
-              <span className="text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">
+            {/* Header */}
+            <div className="flex items-center gap-3 mb-4 relative z-10">
+              <div className="w-1.5 h-5 rounded-full" style={{ background: 'linear-gradient(180deg, #3b82f6, #8b5cf6)' }} />
+              <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: '#3b82f6' }}>
                 {locale === 'zh' ? '按分类筛选' : locale === 'ar' ? 'تصفية حسب الفئة' : 'Filter by Category'}
               </span>
+              <div className="flex-1 h-px" style={{ background: 'linear-gradient(to right, rgba(59,130,246,0.3), transparent)' }} />
             </div>
 
-            <div className="flex flex-wrap items-center gap-2">
-              {categories.map(cat => (
-                <button
-                  key={cat.id}
-                  onClick={() => setActiveCategory(cat.id)}
-                  className="px-4 py-2 rounded-xl text-[13px] font-medium transition-all duration-300 hover:shadow-md hover:scale-105"
-                  style={activeCategory === cat.id ? {
-                    backgroundImage: 'linear-gradient(135deg, #3b82f6, #2563eb)',
-                    color: '#ffffff',
-                    boxShadow: '0 4px 12px rgba(59,130,246,0.35), 0 0 20px rgba(59,130,246,0.15)',
-                    transform: 'translateY(-1px) scale(105%)',
-                  } : {
-                    backgroundColor: 'var(--section-alt-bg)',
-                    color: 'var(--text-primary)',
-                    border: '1px solid var(--border-color)',
-                  }}
-                >
-                  {cat.label}
-                </button>
-              ))}
+            <div className="flex flex-wrap items-center gap-2.5 relative z-10">
+              {categories.map(cat => {
+                const isActive = activeCategory === cat.id;
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => setActiveCategory(cat.id)}
+                    className="px-4 py-2 text-sm font-medium transition-all duration-300 cursor-pointer"
+                    style={isActive ? {
+                      backgroundImage: 'linear-gradient(135deg, #3b82f6, #2563eb)',
+                      color: '#ffffff',
+                      boxShadow: '0 4px 16px rgba(59,130,246,0.4), 0 0 24px rgba(59,130,246,0.12)',
+                      transform: 'translateY(-1px)',
+                      borderRadius: '12px',
+                    } : {
+                      backgroundColor: 'rgba(255,255,255,0.7)',
+                      color: 'var(--text-primary)',
+                      border: '1px solid var(--border-color)',
+                      borderRadius: '12px',
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.95)';
+                        e.currentTarget.style.transform = 'translateY(-1px)';
+                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.06)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.7)';
+                        e.currentTarget.style.transform = 'none';
+                        e.currentTarget.style.boxShadow = 'none';
+                      }
+                    }}
+                  >
+                    {cat.label}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>

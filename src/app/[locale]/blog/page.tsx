@@ -66,7 +66,7 @@ export default function BlogPage() {
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // === v149 图片匹配方案：优先用数据自带图片 ===
+  // === v151 图片方案：按 slug 精确匹配主题图片，确保图文相关 ===
   const BLOG_IMAGE_FALLBACKS = [
     '/images/blog/industry-trends.jpg',
     '/images/blog/case-study.jpg',
@@ -87,6 +87,21 @@ export default function BlogPage() {
     '/images/blog/buying-guide-smart-cabinet.jpg',
     '/images/blog/general.jpg',
   ];
+
+  // 按 slug 精确匹配：每篇博客显示与其主题相关的真实照片
+  const SLUG_TO_IMAGE: Record<string, string> = {
+    'future-of-intelligent-tool-storage': '/images/blog/future-smart-factory.jpg',
+    'smart-cabinets-reduce-cnc-downtime': '/images/blog/cnc-machining-roi.jpg',
+    'complete-guide-rfid-tool-management': '/images/blog/rfid-tool-tracking.jpg',
+    '5-ways-smart-cabinets-improve-inventory-accuracy': '/images/blog/smart-cabinet-warehouse.jpg',
+    'ppe-vending-compliance-made-easy': '/images/blog/ppe-safety-equipment.jpg',
+    'from-manual-to-smart-manufacturing-transformation': '/images/blog/digital-transformation.jpg',
+    'smart-cabinet-roi-calculator-guide': '/images/blog/roi-cost-analysis.jpg',
+    'iot-integration-smart-cabinets-factory-network': '/images/blog/iot-mes-integration.jpg',
+    'top-10-features-smart-tool-cabinets-buying-guide': '/images/blog/buying-guide-smart-cabinet.jpg',
+    'aerospace-manufacturers-smart-tool-management-benefits': '/images/blog/aerospace-fod-prevention.jpg',
+    'future-of-smart-warehousing-beyond-tool-cabinets': '/images/blog/ai-industry-4-0.jpg',
+  };
 
   // 分类颜色映射（用于 badge 颜色）
   const CATEGORY_COLOR_MAP: Record<string, string> = {
@@ -222,13 +237,20 @@ export default function BlogPage() {
                 ? (post.excerpt[locale] || post.excerpt.en || '')
                 : String(post.excerpt || '');
 
-              // === v150 图片匹配：排除 API 返回的 SVG 占位图，强制用 JPG 真实照片 ===
-              let cardImage = post.image;
-              // API 返回的 image 通常是 .svg（占位图标），不是真实照片 → 排除！
-              if (!cardImage || !cardImage.startsWith('/images/') || cardImage.endsWith('.svg')) {
+              // === v151 图片匹配：按 slug 精确匹配 → 排除 SVG → fallback 轮换 ===
+              let cardImage: string;
+              const postSlug = post.slug || '';
+              // 1. 优先按 slug 匹配主题相关图片
+              if (SLUG_TO_IMAGE[postSlug]) {
+                cardImage = SLUG_TO_IMAGE[postSlug];
+              } else if (post.image && post.image.startsWith('/images/') && !post.image.endsWith('.svg')) {
+                // 2. API 返回的有效非 SVG 图片
+                cardImage = post.image;
+              } else {
+                // 3. fallback：索引轮换
                 cardImage = BLOG_IMAGE_FALLBACKS[index % BLOG_IMAGE_FALLBACKS.length];
               }
-              console.log(`[v150] card ${index}: slug="${post.slug}" apiImage="${post.image}" → final="${cardImage}"`);
+              console.log(`[v151] card ${index}: slug="${postSlug}" → image="${cardImage}"`);
 
               // 分类显示
               const postCategory = (post.category || 'general').toLowerCase().trim();

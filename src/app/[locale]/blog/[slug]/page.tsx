@@ -17,7 +17,7 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
   const [recentBlogs, setRecentBlogs] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // === v150 图片匹配：排除 API 返回的 SVG 占位图，强制用 JPG 真实照片 ===
+  // === v151 图片方案：按 slug 精确匹配 ===
   const BLOG_IMAGE_FALLBACKS = [
     '/images/blog/industry-trends.jpg',
     '/images/blog/case-study.jpg',
@@ -39,30 +39,37 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
     '/images/blog/general.jpg',
   ];
 
-  // Recent Posts 图片选择 (v150) - 排除 SVG 占位图
+  const SLUG_TO_IMAGE: Record<string, string> = {
+    'future-of-intelligent-tool-storage': '/images/blog/future-smart-factory.jpg',
+    'smart-cabinets-reduce-cnc-downtime': '/images/blog/cnc-machining-roi.jpg',
+    'complete-guide-rfid-tool-management': '/images/blog/rfid-tool-tracking.jpg',
+    '5-ways-smart-cabinets-improve-inventory-accuracy': '/images/blog/smart-cabinet-warehouse.jpg',
+    'ppe-vending-compliance-made-easy': '/images/blog/ppe-safety-equipment.jpg',
+    'from-manual-to-smart-manufacturing-transformation': '/images/blog/digital-transformation.jpg',
+    'smart-cabinet-roi-calculator-guide': '/images/blog/roi-cost-analysis.jpg',
+    'iot-integration-smart-cabinets-factory-network': '/images/blog/iot-mes-integration.jpg',
+    'top-10-features-smart-tool-cabinets-buying-guide': '/images/blog/buying-guide-smart-cabinet.jpg',
+    'aerospace-manufacturers-smart-tool-management-benefits': '/images/blog/aerospace-fod-prevention.jpg',
+    'future-of-smart-warehousing-beyond-tool-cabinets': '/images/blog/ai-industry-4-0.jpg',
+  };
+
+  // Recent Posts 图片选择 - 按 slug 匹配
   function getInlineBlogImage(post: BlogPost, index: number): string {
-    if (post.image && post.image.startsWith('/images/') && !post.image.endsWith('.svg')) {
-      return post.image;
-    }
+    const postSlug = post.slug || '';
+    if (SLUG_TO_IMAGE[postSlug]) return SLUG_TO_IMAGE[postSlug];
+    if (post.image && post.image.startsWith('/images/') && !post.image.endsWith('.svg')) return post.image;
     return BLOG_IMAGE_FALLBACKS[index % BLOG_IMAGE_FALLBACKS.length];
   }
 
-  // 详情页图片选择 (v150) - 排除 SVG 占位图
+  // 详情页图片选择 - 按 slug 匹配
   function getInlineBlogDetailImage(post: BlogPost): string {
-    if (post.image && post.image.startsWith('/images/') && !post.image.endsWith('.svg')) {
-      return post.image;
-    }
-    // fallback: hash 轮换
-    const slug = post.slug || '';
+    const postSlug = post.slug || '';
+    if (SLUG_TO_IMAGE[postSlug]) return SLUG_TO_IMAGE[postSlug];
+    if (post.image && post.image.startsWith('/images/') && !post.image.endsWith('.svg')) return post.image;
+    // fallback
     let hash = 0;
-    for (let i = 0; i < slug.length; i++) {
-      const char = slug.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash; // Convert to 32bit integer
-    }
-    const fallbackImage = BLOG_IMAGE_FALLBACKS[Math.abs(hash) % BLOG_IMAGE_FALLBACKS.length];
-    console.log(`[v149] Detail page: slug="${slug}" → image="${fallbackImage}" (fallback)`);
-    return fallbackImage;
+    for (let i = 0; i < postSlug.length; i++) hash = ((hash << 5) - hash) + postSlug.charCodeAt(i);
+    return BLOG_IMAGE_FALLBACKS[Math.abs(hash) % BLOG_IMAGE_FALLBACKS.length];
   }
 
   // Resolve params (Promise in Next.js 14.1+)
@@ -268,22 +275,23 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
 
   const content = blog.content?.[locale as 'en' | 'zh' | 'ar'] || '';
 
-  // 调试日志 (v149)
-   console.log(`[v149] Detail page: slug="${blog.slug}" → image="${getInlineBlogDetailImage(blog)}"`);
+  // 调试日志 (v151)
+  console.log(`[v151] Detail: slug="${blog.slug}" → image="${getInlineBlogDetailImage(blog)}"`);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 dark:from-slate-900 dark:to-slate-800">
-      {/* Page Header with background image */}
+      {/* Page Header with background image — v151: 移除 bg-gradient-to-br 避免覆盖背景图 */}
       <section
-        className="relative bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white py-20 px-4 sm:px-6 lg:px-8 overflow-hidden"
+        className="relative text-white py-20 px-4 sm:px-6 lg:px-8 overflow-hidden"
         style={{
           backgroundImage: `url(${getInlineBlogDetailImage(blog)})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
+          backgroundColor: '#1e3a5f', // fallback 背景色（图片加载前显示）
         }}
       >
-        {/* Gradient overlay for readability - v149:中间更透明，能隐约看到背景图 */}
-        <div className="absolute inset-0 bg-gradient-to-b from-blue-900/70 via-blue-900/50 to-blue-900/80 backdrop-blur-[2px]" />
+        {/* Gradient overlay — 降低不透明度，让背景图可见 */}
+        <div className="absolute inset-0 bg-gradient-to-b from-blue-900/60 via-blue-900/40 to-blue-900/70" />
         <div className="relative z-10 max-w-5xl mx-auto">
           <a href={`/${locale}/blog`} className="inline-flex items-center gap-2 text-blue-200 hover:text-white transition-colors mb-6 group">
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
