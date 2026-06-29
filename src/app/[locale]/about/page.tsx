@@ -162,6 +162,7 @@ interface ValueItem {
 function ValuesBookFlip({ values, t, locale }: { values: ValueItem[]; t: (key: string) => string; locale: string }) {
   const [currentPage, setCurrentPage] = useState(0);
   const [isFlipping, setIsFlipping] = useState(false);
+  const [flipDirection, setFlipDirection] = useState<'next' | 'prev' | null>(null);
 
   // Auto-flip every 5 seconds
   useEffect(() => {
@@ -169,24 +170,30 @@ function ValuesBookFlip({ values, t, locale }: { values: ValueItem[]; t: (key: s
       handleNext();
     }, 5000);
     return () => clearInterval(timer);
-  }, [values.length]);
+  }, [values.length, isFlipping]);
 
   const handleNext = () => {
     if (isFlipping) return;
+    setFlipDirection('next');
     setIsFlipping(true);
-    setTimeout(() => {
-      setCurrentPage((prev) => (prev + 1) % values.length);
-      setIsFlipping(false);
-    }, 600);
   };
 
   const handlePrev = () => {
     if (isFlipping) return;
+    setFlipDirection('prev');
     setIsFlipping(true);
-    setTimeout(() => {
-      setCurrentPage((prev) => (prev - 1 + values.length) % values.length);
-      setIsFlipping(false);
-    }, 600);
+  };
+
+  // Handle animation end — update page after flip completes
+  const handleAnimationEnd = () => {
+    if (!isFlipping || !flipDirection) return;
+    
+    setCurrentPage((prev) => {
+      if (flipDirection === 'next') return (prev + 1) % values.length;
+      return (prev - 1 + values.length) % values.length;
+    });
+    setIsFlipping(false);
+    setFlipDirection(null);
   };
 
   // Color palette per value page
@@ -214,21 +221,30 @@ function ValuesBookFlip({ values, t, locale }: { values: ValueItem[]; t: (key: s
         onMouseEnter={(e) => { e.currentTarget.style.animationPlayState = 'paused'; }}
         onMouseLeave={(e) => { e.currentTarget.style.animationPlayState = 'running'; }}
       >
-        {/* Book shadow/floor */}
-        <div className="absolute -bottom-8 left-[8%] right-[8%] h-6 rounded-full blur-xl"
-          style={{ background: 'rgba(0,0,0,0.35)' }}
+        {/* Book shadow/floor — realistic elliptical shadow */}
+        <div className="absolute -bottom-10 left-[5%] right-[5%] h-7 rounded-full blur-2xl"
+          style={{ background: 'radial-gradient(ellipse, rgba(0,0,0,0.38) 0%, rgba(0,0,0,0.12) 60%, transparent 100%)' }}
         />
 
-        {/* Book body */}
-        <div className="relative rounded-lg overflow-hidden shadow-2xl border border-white/10"
+        {/* Book body — enhanced with page thickness on right edge */}
+        <div className="relative rounded-lg overflow-hidden"
           style={{
             background: 'linear-gradient(145deg, #ffffff 0%, #f8fafc 50%, #f1f5f9 100%)',
             transformStyle: 'preserve-3d',
-            boxShadow: '0 25px 60px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.6), inset -2px 0 8px rgba(0,0,0,0.08)',
+            boxShadow: '0 28px 65px rgba(0,0,0,0.38), 0 12px 30px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.7), inset -2px 0 10px rgba(0,0,0,0.06)',
           }}
         >
-          {/* Spine (left edge) */}
-          <div className="absolute top-0 left-0 bottom-0 w-4 sm:w-6 rounded-l-lg"
+          {/* Right edge — stacked pages effect (v135) */}
+          <div className="absolute top-0 right-0 bottom-0 w-2 rounded-r-lg overflow-hidden pointer-events-none"
+            style={{
+              background: 'repeating-linear-gradient(180deg, #e2e8f0 0px, #e2e8f0 1px, #f1f5f9 1px, #f1f5f9 3px)',
+              boxShadow: 'inset 3px 0 8px rgba(0,0,0,0.08), -1px 0 4px rgba(0,0,0,0.04)',
+              borderLeft: '1px solid rgba(226,232,240,0.6)',
+            }}
+          />
+
+          {/* Spine (left edge) — thicker for realism (v135) */}
+          <div className="absolute top-0 left-0 bottom-0 w-5 sm:w-8 rounded-l-lg"
             style={{
               background: 'linear-gradient(180deg, #78716c 0%, #a8a29e 20%, #d6d3d1 45%, #a8a29e 70%, #78716c 100%)',
               boxShadow: 'inset -3px 0 8px rgba(0,0,0,0.25), 3px 0 12px rgba(0,0,0,0.08)',
@@ -260,15 +276,33 @@ function ValuesBookFlip({ values, t, locale }: { values: ValueItem[]; t: (key: s
             </div>
           </div>
 
-          {/* Page content area */}
+          {/* Next page color hint — visible during flip (v135) */}
+          <div className="absolute top-0 left-0 bottom-0 right-0 pointer-events-none"
+            style={{
+              background: pageColors[(currentPage + 1) % pageColors.length].grad,
+              opacity: isFlipping ? 0.15 : 0,
+              transition: 'opacity 0.3s ease',
+              zIndex: 0,
+            }}
+          />
+
+          {/* Page content area — enhanced with paper texture and realistic 3D flip */}
           <div
-            className="min-h-[380px] sm:min-h-[420px] p-6 sm:p-10 pl-10 sm:pl-14 relative overflow-hidden transition-all duration-500"
+            className="min-h-[380px] sm:min-h-[420px] p-6 sm:p-10 pl-10 sm:pl-14 relative overflow-hidden"
             style={{
               transformStyle: 'preserve-3d',
               backfaceVisibility: 'hidden',
-              transform: isFlipping ? 'rotateY(-15deg)' : 'rotateY(0deg)',
-              opacity: isFlipping ? 0.6 : 1,
+              transformOrigin: 'left center',
+              animation: isFlipping 
+                ? (flipDirection === 'next' ? 'pageFlipLeft 0.6s ease-in-out forwards' : 'pageFlipRight 0.6s ease-in-out forwards')
+                : 'none',
+              opacity: isFlipping ? 0.85 : 1,
+              transition: 'opacity 0.3s ease',
+              // Paper texture - subtle lined paper effect
+              backgroundImage: 'repeating-linear-gradient(180deg, transparent, transparent 31px, rgba(148,163,184,0.08) 31px, rgba(148,163,184,0.08) 32px)',
+              backgroundSize: '100% 32px',
             }}
+            onAnimationEnd={handleAnimationEnd}
           >
             {/* Page corner fold effect */}
             <div className="absolute top-0 right-0 w-12 h-12 overflow-hidden">
@@ -661,14 +695,16 @@ export default function AboutPage() {
                       maskComposite: 'exclude',
                     }} />
 
-                    {/* Subtle floating particles */}
-                    <div className="absolute top-6 right-6 w-2 h-2 rounded-full opacity-20" style={{
-                      background: p.barColor,
-                      animation: `floatParticle ${3 + index * 0.4}s ease-in-out infinite`,
+                    {/* Large colorful rising bubbles instead of tiny dots (v135) */}
+                    <div className="absolute top-4 right-4 w-7 h-7 rounded-full opacity-25" style={{
+                      background: `radial-gradient(circle at 35% 30%, rgba(255,255,255,0.9) 0%, ${p.barColor} 50%, transparent 75%)`,
+                      boxShadow: `0 0 ${14}px ${p.glowColor}`,
+                      animation: `statBubbleFloat ${3 + index * 0.35}s ease-in-out infinite`,
                     }} />
-                    <div className="absolute bottom-10 left-8 w-1.5 h-1.5 rounded-full opacity-15" style={{
-                      background: p.barColor,
-                      animation: `floatParticle ${3.5 + index * 0.3}s ease-in-out infinite reverse`,
+                    <div className="absolute bottom-12 left-5 w-9 h-9 rounded-full opacity-20" style={{
+                      background: `radial-gradient(circle at 40% 35%, rgba(255,255,255,0.85) 0%, ${p.barColor} 45%, transparent 70%)`,
+                      boxShadow: `0 0 ${18}px ${p.glowColor}`,
+                      animation: `statBubbleFloat ${3.8 + index * 0.3}s ease-in-out infinite reverse`,
                       animationDelay: '1s',
                     }} />
 
@@ -720,14 +756,21 @@ export default function AboutPage() {
                         {t(stat.labelKey)}
                       </p>
 
-                      {/* Bottom decorative dots */}
-                      <div className="flex justify-center gap-1.5 mt-4 opacity-25 group-hover:opacity-50 transition-opacity duration-500">
-                        {[...Array(3)].map((_, di) => (
-                          <div key={di} className="w-1.5 h-1.5 rounded-full" style={{
-                            background: p.barColor,
+                      {/* Bottom decorative large bubbles with color variation (v135) */}
+                      <div className="flex justify-center gap-2.5 mt-4 opacity-25 group-hover:opacity-50 transition-opacity duration-500">
+                        {[...Array(3)].map((_, di) => {
+                          const bubbleHues = [p.barColor, p.glowColor, p.textColor];
+                          const bSize = 8 + di * 3; // 8, 11, 14px
+                          return (
+                          <div key={di} className="rounded-full" style={{
+                            width: `${bSize}px`,
+                            height: `${bSize}px`,
+                            background: `radial-gradient(circle at 35% 30%, rgba(255,255,255,0.9) 0%, ${bubbleHues[di]} 50%, transparent 75%)`,
+                            boxShadow: `0 0 ${bSize * 0.6}px ${bubbleHues[di]}`,
+                            animation: `statBubblePulse ${2 + di * 0.4}s ease-in-out infinite`,
                             animationDelay: `${di * 0.15}s`,
                           }} />
-                        ))}
+                        )})}
                       </div>
                     </div>
                   </div>
@@ -1043,156 +1086,178 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ===== SUNRISE BEACH CTA — 左上角初生太阳 + 海浪 + 沙滩 (v134) ===== */}
+      {/* ===== SUNRISE BEACH CTA v135 — 真实圆形太阳 + 海浪 + 沙滩日出 ===== */}
       <section
         className="py-20 px-4 sm:px-6 lg:px-8 text-white relative overflow-hidden"
         style={{
-          background: 'linear-gradient(180deg, #0f172a 0%, #1e3a5f 15%, #3b5998 28%, #e87a4f 48%, #f4a261 58%, #fcd34d 70%, #fde68a 82%, #fef3c7 92%, #fffbeb 100%)',
+          background: 'linear-gradient(180deg, #0c1929 0%, #132f4c 12%, #1a4978 22%, #2d6a9f 32%, #e87a50 48%, #f4a261 56%, #fcd34d 66%, #fde68a 78%, #fef3c7 90%, #fffbeb 100%)',
         }}
       >
-        {/* === SUN — Upper-left corner, small half-rising sun with corona === */}
-        <div className="absolute top-[12%] left-[5%] sm:left-[8%] w-24 h-24 sm:w-32 sm:h-32 overflow-hidden rounded-full" style={{
-          filter: 'drop-shadow(0 0 40px rgba(251,191,36,0.5)) drop-shadow(0 0 80px rgba(245,158,11,0.3))',
-        }}>
-          {/* Sun body — only top half visible (half-rising effect) */}
-          <div className="absolute -bottom-[45%] left-0 w-full h-full rounded-full" style={{
-            background: 'radial-gradient(circle at 50% 40%, #fffbeb 0%, #fef08a 12%, #fde047 28%, #facc15 48%, #f59e0b 68%, #d97706 88%)',
-            boxShadow: 'inset 2px 2px 8px rgba(255,255,255,0.4), inset -2px -1px 6px rgba(180,83,9,0.3), 0 0 60px rgba(251,191,36,0.45)',
-            animation: 'v134-sunPulse 5s ease-in-out infinite alternate',
-          }}>
-            {/* Inner bright core */}
-            <div className="absolute inset-[15%] rounded-full" style={{
-              background: 'radial-gradient(ellipse at 35% 30%, rgba(255,255,240,0.7) 0%, transparent 55%)',
-            }} />
-          </div>
-          {/* Outer corona glow */}
-          <div className="absolute -inset-[20%] rounded-full pointer-events-none" style={{
-            background: 'radial-gradient(circle, rgba(251,191,36,0.18) 0%, rgba(245,158,11,0.08) 40%, transparent 70%)',
-            animation: 'v134-corona 4s ease-in-out infinite alternate',
+        {/* === REAL SUN — 圆形，左上角，带放射光芒 (v135) === */}
+        <div className="absolute top-[6%] left-[3%] sm:left-[5%] pointer-events-none">
+          {/* Outer glow layers */}
+          <div className="absolute -inset-[40px] rounded-full" style={{
+            background: 'radial-gradient(circle, rgba(253,224,71,0.15) 0%, rgba(251,191,36,0.06) 40%, transparent 70%)',
+            animation: 'v135-sunGlow 4s ease-in-out infinite alternate',
           }} />
-        </div>
-
-        {/* Soft sun rays radiating outward */}
-        <div className="absolute top-[10%] left-[3%] sm:left-[6%] w-36 h-36 sm:w-44 sm:h-44 pointer-events-none">
-          {[...Array(8)].map((_, i) => (
-            <div key={i} className="absolute top-1/2 left-1/2 origin-center" style={{
-              width: `${1 + i * 0.4}px`,
-              height: `${16 + i * 5}px`,
-              background: `linear-gradient(to bottom, rgba(255,248,220,0.35) 0%, rgba(251,191,36,0.1) 50%, transparent)`,
-              transform: `rotate(${i * 22.5}deg) translateY(-50%)`,
-              borderRadius: '50%',
-              animation: `v134-ray ${3 + i * 0.25}s ease-in-out infinite alternate`,
-              animationDelay: `${i * 0.15}s`,
+          {/* Sun rays — radiating lines */}
+          <div className="absolute w-40 h-40 sm:w-52 sm:h-52 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+            {[...Array(12)].map((_, i) => (
+              <div key={i} className="absolute top-1/2 left-1/2 origin-left" style={{
+                width: `${28 + i * 3}px`,
+                height: `${2 + (i % 3) * 0.5}px`,
+                background: `linear-gradient(90deg, rgba(255,248,220,0.5) 0%, rgba(251,191,36,0.15) 40%, transparent 100%)`,
+                transform: `rotate(${i * 30}deg) translateY(-50%)`,
+                borderRadius: '2px',
+                animation: `v135-rayPulse ${2.5 + i * 0.15}s ease-in-out infinite alternate`,
+                animationDelay: `${i * 0.12}s`,
+              }} />
+            ))}
+          </div>
+          {/* Main sun body — perfect circle */}
+          <div className="relative w-28 h-28 sm:w-36 sm:h-36 rounded-full" style={{
+            background: 'radial-gradient(circle at 45% 42%, #ffffff 0%, #fffbeb 8%, #fef08a 22%, #fde047 38%, #facc15 55%, #f59e0b 72%, #d97706 90%, #b45309 100%)',
+            boxShadow: '0 0 60px rgba(253,224,71,0.6), 0 0 120px rgba(245,158,11,0.35), 0 0 200px rgba(217,119,6,0.15), inset 3px 3px 10px rgba(255,255,255,0.4), inset -3px -2px 8px rgba(180,83,9,0.25)',
+            animation: 'v135-sunBreath 5s ease-in-out infinite alternate',
+          }}>
+            {/* Inner bright spot */}
+            <div className="absolute rounded-full" style={{
+              width: '35%', height: '30%', top: '22%', left: '20%',
+              background: 'radial-gradient(ellipse, rgba(255,255,250,0.95) 0%, rgba(255,255,240,0.4) 50%, transparent 75%)',
             }} />
-          ))}
+            {/* Surface detail — subtle sunspots */}
+            <div className="absolute rounded-full opacity-15" style={{ width: '12%', height: '10%', bottom: '28%', right: '22%', background: 'rgba(180,83,9,0.4)' }} />
+          </div>
         </div>
 
-        {/* === OCEAN WAVES — Middle layer with animated waves === */}
-        <div className="absolute bottom-[18%] left-0 right-0 h-[24%] overflow-hidden pointer-events-none">
-          {/* Deep water base */}
-          <svg className="absolute bottom-0 w-full" viewBox="0 0 1440 200" preserveAspectRatio="none" style={{ height: '100%' }}>
+        {/* === OCEAN WAVES — 三层海浪 + 泡沫高光 (v135) === */}
+        <div className="absolute bottom-[16%] left-0 right-0 h-[26%] overflow-hidden pointer-events-none">
+          <svg className="absolute bottom-0 w-full" viewBox="0 0 1440 220" preserveAspectRatio="none" style={{ height: '100%' }}>
             <defs>
-              <linearGradient id="oceanGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="#0369a1" stopOpacity="0.85" />
-                <stop offset="50%" stopColor="#075985" stopOpacity="0.92" />
+              <linearGradient id="oceanGrad135" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#0369a1" stopOpacity="0.82" />
+                <stop offset="50%" stopColor="#075985" stopOpacity="0.90" />
                 <stop offset="100%" stopColor="#0c4a6e" stopOpacity="1" />
               </linearGradient>
-              <filter id="waveGlow">
-                <feGaussianBlur stdDeviation="1.5" result="blur" />
-                <feMerge>
-                  <feMergeNode in="blur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
+              <filter id="waveGlow135">
+                <feGaussianBlur stdDeviation="1.2" result="blur" />
+                <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
               </filter>
             </defs>
-
-            {/* Wave layer 1 — back, slower */}
-            <path d="M0,120 Q180,80 360,110 T720,105 T1080,115 T1440,100 L1440,200 L0,200Z"
-              fill="url(#oceanGrad)" opacity="0.5"
-              style={{ animation: 'v134-wave1 8s ease-in-out infinite' }}
+            {/* Layer 1 — Deep back wave */}
+            <path d="M0,130 Q200,85 400,118 T800,108 T1200,125 T1440,105 L1440,220 L0,220Z"
+              fill="url(#oceanGrad135)" opacity="0.45"
+              style={{ animation: 'v135-waveBack 9s ease-in-out infinite' }}
+            />
+            {/* Layer 2 — Mid wave */}
+            <path d="M0,145 Q240,105 480,138 T960,128 T1440,140 L1440,220 L0,220Z"
+              fill="#0ea5e9" opacity="0.62"
+              style={{ animation: 'v135-waveMid 7s ease-in-out infinite reverse' }}
+            />
+            {/* Layer 3 — Front wave with foam */}
+            <path d="M0,162 Q180,138 380,168 T760,155 T1140,172 T1440,158 L1440,220 L0,220Z"
+              fill="#38bdf8" opacity="0.80"
+              style={{ animation: 'v135-waveFront 5.5s ease-in-out infinite', filter: 'url(#waveGlow135)' }}
+            />
+            {/* Foam highlight line on wave crest */}
+            <path d="M0,164 Q180,140 380,170 T760,157 T1140,174 T1440,160"
+              stroke="rgba(255,255,255,0.42)" strokeWidth="2.5" fill="none"
+              strokeLinecap="round"
+              style={{ animation: 'v135-waveFront 5.5s ease-in-out infinite' }}
+            />
+            {/* Secondary foam line */}
+            <path d="M0,150 Q240,115 440,148 T880,135 T1320,152 T1440,142"
+              stroke="rgba(255,255,255,0.18)" strokeWidth="1.2" fill="none"
+              style={{ animation: 'v135-waveMid 7s ease-in-out infinite' }}
             />
 
-            {/* Wave layer 2 — mid */}
-            <path d="M0,135 Q200,100 400,130 T800,120 T1200,140 T1440,125 L1440,200 L0,200Z"
-              fill="#0ea5e9" opacity="0.65"
-              style={{ animation: 'v134-wave2 6s ease-in-out infinite reverse' }}
-            />
-
-            {/* Wave layer 3 — front, faster with foam highlight */}
-            <path d="M0,150 Q160,125 360,155 T720,145 T1080,160 T1440,148 L1440,200 L0,200Z"
-              fill="#38bdf8" opacity="0.75"
-              style={{ animation: 'v134-wave3 5s ease-in-out infinite', filter: 'url(#waveGlow)' }}
-            />
-
-            {/* Wave foam/highlight line on crest */}
-            <path d="M0,152 Q160,127 360,157 T720,147 T1080,162 T1440,150"
-              stroke="rgba(255,255,255,0.35)" strokeWidth="2" fill="none"
-              style={{ animation: 'v134-wave3 5s ease-in-out infinite' }}
-            />
-
-            {/* Subtle sparkles on water */}
-            {[...Array(6)].map((_, si) => (
-              <circle key={si} cx={`${150 + si * 210}`} cy={`${140 + (si % 3) * 12}`} r={1 + (si % 2)} fill="white" opacity={0.25 + (si % 3) * 0.1}
-                style={{ animation: `v134-sparkle ${2 + si * 0.4}s ease-in-out infinite`, animationDelay: `${si * 0.5}s` }}
+            {/* Sparkles on water surface */}
+            {[...Array(8)].map((_, si) => (
+              <circle key={si} cx={`${120 + si * 165}`} cy={`${145 + (si % 3) * 14}`} r={1.2 + (si % 2) * 0.6}
+                fill="white" opacity={0.22 + (si % 3) * 0.1}
+                style={{ animation: `v135-sparkle ${2 + si * 0.35}s ease-in-out infinite`, animationDelay: `${si * 0.45}s` }}
               />
             ))}
           </svg>
         </div>
 
-        {/* === SANDY BEACH — Bottom layer with grain texture === */}
-        <div className="absolute bottom-0 left-0 right-0 h-[20%] overflow-hidden">
-          <svg className="absolute bottom-0 left-0 w-full" style={{ height: '100%' }} viewBox="0 0 1440 200" preserveAspectRatio="none">
+        {/* === SANDY BEACH — 沙滩纹理 + 远近层次 (v135) === */}
+        <div className="absolute bottom-0 left-0 right-0 h-[22%] overflow-hidden pointer-events-none">
+          <svg className="absolute bottom-0 left-0 w-full" viewBox="0 0 1440 210" preserveAspectRatio="none" style={{ height: '100%' }}>
             <defs>
-              <filter id="sandTexture" x="0%" y="0%" width="100%" height="100%">
-                <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="4" result="noise" />
-                <feColorMatrix type="matrix" values="1 0 0 0 0  0 0.92 0 0 0  0 0.65 0 0 0  0 0 0 0.2 0" in="noise" result="coloredNoise" />
+              <filter id="sandTexture135" x="0%" y="0%" width="100%" height="100%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.82" numOctaves="4" result="noise" />
+                <feColorMatrix type="matrix" values="1 0 0 0 0  0 0.93 0 0 0  0 0.65 0 0 0  0 0 0 0.2 0" in="noise" result="coloredNoise" />
                 <feBlend in="SourceGraphic" in2="coloredNoise" mode="multiply" />
               </filter>
             </defs>
-            {/* Far beach (lightest, atmospheric) */}
-            <path d="M0,200 L0,130 Q240,95 480,125 Q720,85 960,115 Q1200,90 1440,120 L1440,200Z" fill="#fef9c3" opacity="0.55" />
+            {/* Far beach — lightest, atmospheric haze */}
+            <path d="M0,210 L0,125 Q270,88 540,120 Q810,82 1080,115 Q1260,92 1440,122 L1440,210Z"
+              fill="#fef9c3" opacity="0.50" />
             {/* Mid beach */}
-            <path d="M0,200 L0,155 Q200,125 420,158 Q640,128 860,156 Q1080,130 1280,158 L1440,165 L1440,200Z" fill="#fef08a" opacity="0.78" />
+            <path d="M0,210 L0,152 Q230,118 450,155 Q680,122 900,156 Q1120,130 1330,158 L1440,168 L1440,210Z"
+              fill="#fef08a" opacity="0.76" />
             {/* Near beach with texture */}
-            <path d="M0,200 L0,178 Q260,155 520,182 Q780,152 1040,180 Q1280,162 L1440,183 L1440,200Z" fill="#fde68a" filter="url(#sandTexture)" />
-            {/* Frontmost sand */}
-            <path d="M0,200 L0,192 Q300,175 600,195 Q900,170 1200,193 Q1350,185 1440,196 L1440,200Z" fill="#fcd34d" />
-            {/* Sand ripple lines */}
-            <path d="M0,202 Q360,190 720,198 Q1080,188 1440,202" stroke="rgba(217,119,6,0.1)" strokeWidth="1.2" fill="none" />
-            <path d="M0,212 Q360,204 720,210 Q1080,203 1440,213" stroke="rgba(255,255,255,0.12)" strokeWidth="0.8" fill="none" />
+            <path d="M0,210 L0,178 Q280,152 560,188 Q840,156 1120,186 Q1280,168 1440,190 L1440,210Z"
+              fill="#fde68a" filter="url(#sandTexture135)" />
+            {/* Frontmost sand — warm golden tone */}
+            <path d="M0,210 L0,195 Q320,176 640,198 Q960,172 1280,196 Q1380,188 1440,200 L1440,210Z"
+              fill="#fcd34d" />
+            {/* Wet sand darker strip near water edge */}
+            <path d="M0,210 Q360,195 720,204 Q1080,194 1440,206 L1440,210Z"
+              fill="#fbbf24" opacity="0.6" />
+            {/* Sand ripple textures */}
+            <path d="M0,212 Q370,200 750,208 Q1100,198 1440,209" stroke="rgba(217,119,6,0.08)" strokeWidth="1" fill="none" />
+            <path d="M0,222 Q400,214 780,218 Q1160,213 1440,221" stroke="rgba(255,255,255,0.10)" strokeWidth="0.8" fill="none" />
           </svg>
-          {/* Sand particles */}
-          {[...Array(8)].map((_, pi) => (
+          {/* Sand particles drifting */}
+          {[...Array(10)].map((_, pi) => (
             <div key={pi} className="absolute rounded-sm pointer-events-none" style={{
-              left: `${5 + pi * 11}%`,
-              bottom: `${3 + (pi % 3) * 5}%`,
-              width: 1.5 + (pi % 3),
-              height: 1.5 + (pi % 3),
-              background: pi % 3 === 0 ? '#fef08a' : pi % 3 === 1 ? 'rgba(253,218,138,0.7)' : 'rgba(255,255,255,0.4)',
-              animation: `v134-grainFloat ${3.5 + (pi % 3) * 1.2}s ease-in-out infinite`,
-              animationDelay: `${pi * 0.35}s`,
+              left: `${3 + pi * 10}%`,
+              bottom: `${2 + (pi % 4) * 4}%`,
+              width: 1.5 + (pi % 3) * 0.5,
+              height: 1.5 + (pi % 3) * 0.5,
+              background: pi % 3 === 0 ? '#fef08a' : pi % 3 === 1 ? 'rgba(253,218,138,0.65)' : 'rgba(255,255,255,0.35)',
+              animation: `v135-sandDrift ${3.5 + (pi % 3) * 1.2}s ease-in-out infinite`,
+              animationDelay: `${pi * 0.32}s`,
             }} />
           ))}
         </div>
 
-        {/* Content — centered, elevated */}
-        <div className="max-w-4xl mx-auto text-center relative z-10 pt-4 pb-32">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-5 text-white drop-shadow-lg" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.2)' }}>{t('about.cta.title')}</h2>
-          <p className="text-lg sm:text-xl mb-10 max-w-2xl mx-auto leading-relaxed" style={{ color: '#e0f2fe', textShadow: '0 1px 4px rgba(0,0,0,0.12)' }}>{t('about.cta.subtitle')}</p>
+        {/* Content — centered, elevated above waves */}
+        <div className="max-w-4xl mx-auto text-center relative z-10 pt-4 pb-36">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-5 text-white drop-shadow-lg"
+            style={{ textShadow: '0 2px 12px rgba(0,0,0,0.25), 0 0 40px rgba(251,191,36,0.12)' }}
+          >{t('about.cta.title')}</h2>
+          <p className="text-lg sm:text-xl mb-10 max-w-2xl mx-auto leading-relaxed"
+            style={{ color: '#e0f2fe', textShadow: '0 1px 6px rgba(0,0,0,0.15)' }}
+          >{t('about.cta.subtitle')}</p>
 
-          {/* Buttons — Warm sunrise themed */}
+          {/* Buttons — sunrise themed with glow */}
           <div className="flex flex-col sm:flex-row gap-5 justify-center mb-8">
-            <a href={`/${locale}/contact`} className="group relative inline-flex items-center justify-center px-9 py-4 font-bold rounded-full overflow-hidden cursor-pointer text-base transition-all duration-400 hover:-translate-y-1"
-              style={{ background: 'linear-gradient(135deg,#fffbeb 0%,#fef3c7 50%,#fde68a 100%)', color: '#92400e', boxShadow: '0 6px 24px rgba(146,64,14,0.25), 0 0 0 1px rgba(255,255,255,0.4)' }}
+            <a href={`/${locale}/contact`} className="group relative inline-flex items-center justify-center px-9 py-4 font-bold rounded-full overflow-hidden cursor-pointer text-base transition-all duration-400 hover:-translate-y-1 hover:scale-[1.02]"
+              style={{
+                background: 'linear-gradient(135deg,#fffbeb 0%,#fef3c7 40%,#fde68a 70%,#fcd34d 100%)',
+                color: '#92400e',
+                boxShadow: '0 6px 28px rgba(146,64,14,0.3), 0 0 0 1px rgba(255,255,255,0.5), 0 0 40px rgba(253,218,109,0.2)',
+              }}
             >
               <span style={{ position:'relative',zIndex:10,display:'inline-flex',alignItems:'center',gap:'5px' }}>{t('nav.contact')}<ChevronRight className="ml-1 w-5 h-5" /></span>
             </a>
-            <a href={`tel:${contactPhone.replace(/\s/g,'')}`} className="group relative inline-flex items-center justify-center px-9 py-4 font-bold rounded-full overflow-hidden cursor-pointer text-base text-white transition-all duration-400 hover:-translate-y-1"
-              style={{ background: 'linear-gradient(135deg,rgba(255,255,255,0.22),rgba(255,255,255,0.1))', border: '1.5px solid rgba(255,255,255,0.35)', backdropFilter: 'blur(12px)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.15),0 4px 16px rgba(0,0,0,0.1)' }}
+            <a href={`tel:${contactPhone.replace(/\s/g,'')}`}
+              className="group relative inline-flex items-center justify-center px-9 py-4 font-bold rounded-full overflow-hidden cursor-pointer text-base text-white transition-all duration-400 hover:-translate-y-1 hover:scale-[1.02]"
+              style={{
+                background: 'linear-gradient(135deg,rgba(255,255,255,0.25),rgba(255,255,255,0.12))',
+                border: '1.5px solid rgba(255,255,255,0.4)',
+                backdropFilter: 'blur(14px)',
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.18),0 4px 20px rgba(0,0,0,0.12), 0 0 30px rgba(251,191,36,0.08)',
+              }}
             ><ChevronRight className="mr-2 w-4 h-4" />{contactPhone}</a>
           </div>
 
-          <div className="flex items-center justify-center drop-shadow-sm" style={{ color:'#bae6fd', fontSize: '14px' }}><span>{contactEmail}</span></div>
+          <div className="flex items-center justify-center drop-shadow-sm" style={{ color:'#bae6fd', fontSize: '14px' }}>
+            <span>{contactEmail}</span>
+          </div>
         </div>
       </section>
 
@@ -1209,6 +1274,16 @@ export default function AboutPage() {
           33%{transform:translate(6px,-10px) scale(1.3);opacity:0.35}
           66%{transform:translate(-4px,6px) scale(0.8);opacity:0.15}
         }
+        @keyframes statBubbleFloat {
+          0%,100%{transform:translate(0,0) translateY(0) scale(1);opacity:0.2}
+          25%{opacity:0.4; transform:translate(8px,-12px) scale(1.15)}
+          50%{opacity:0.28; transform:translate(-5px,8px) scale(0.9)}
+          75%{opacity:0.35; transform:translate(4px,-6px) scale(1.05)}
+        }
+        @keyframes statBubblePulse {
+          0%,100%{transform:scale(1); opacity:0.25; box-shadow: 0 0 5px currentColor}
+          50%{transform:scale(1.25); opacity:0.45; box-shadow: 0 0 12px currentColor}
+        }
         @keyframes iconRingSpin { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
         @keyframes iconPulse {
           0%{box-shadow:0 0 0 0 var(--glow, rgba(59,130,246,0.25))}
@@ -1220,53 +1295,57 @@ export default function AboutPage() {
         }
         @keyframes about-intro-bg-pulse { 0%{opacity:.03;transform:scale(1)} 100%{opacity:.07;transform:scale(1.05)} }
 
-        /* ===== Beach CTA animations (v134 — Sun upper-left + Ocean Waves) ===== */
-        @keyframes v134-sunPulse {
-          0%{transform:scale(1); filter:brightness(1)}
-          100%{transform:scale(1.06); filter:brightness(1.08)}
+        /* ===== Beach CTA animations (v135 — Real sun + Ocean waves + Sand) ===== */
+        @keyframes v135-sunBreath {
+          0%{transform:scale(1); filter:brightness(1) saturate(1.1)}
+          100%{transform:scale(1.04); filter:brightness(1.06) saturate(1.2)}
         }
-        @keyframes v134-corona {
-          0%{opacity:0.25; transform:scale(1)}
-          100%{opacity:0.5; transform:scale(1.12)}
+        @keyframes v135-sunGlow {
+          0%{opacity:0.3; transform:scale(1)}
+          100%{opacity:0.55; transform:scale(1.08)}
         }
-        @keyframes v134-ray {
+        @keyframes v135-rayPulse {
           0%{opacity:0.25; transform:rotate(var(--r,0)) translateY(-50%) scaleX(1)}
-          100%{opacity:0.6; transform:rotate(var(--r,0)) translateY(-50%) scaleX(1.2)}
+          100%{opacity:0.65; transform:rotate(var(--r,0)) translateY(-50%) scaleX(1.15)}
         }
-        @keyframes v134-wave1 {
+        @keyframes v135-waveBack {
           0%,100%{transform:translateX(0) translateY(0)}
-          50%{transform:translateX(-20px) translateY(-5px)}
+          50%{transform:translateX(-22px) translateY(-4px)}
         }
-        @keyframes v134-wave2 {
+        @keyframes v135-waveMid {
           0%,100%{transform:translateX(0) translateY(0)}
-          50%{transform:translateX(25px) translateY(3px)}
+          50%{transform:translateX(28px) translateY(3px)}
         }
-        @keyframes v134-wave3 {
+        @keyframes v135-waveFront {
           0%,100%{transform:translateX(0) translateY(0)}
-          50%{transform:translateX(-15px) translateY(-4px)}
+          50%{transform:translateX(-18px) translateY(-5px)}
         }
-        @keyframes v134-sparkle {
-          0%,100%{opacity:0.15; transform:scale(1)}
-          50%{opacity:0.5; transform:scale(1.4)}
+        @keyframes v135-sparkle {
+          0%,100%{opacity:0.18; transform:scale(1)}
+          50%{opacity:0.55; transform:scale(1.5)}
         }
-        @keyframes v134-grainFloat {
-          0%{transform:translateY(0) translateX(0); opacity:0.45}
-          50%{transform:translateY(-3px) translateX(1.5px); opacity:0.85}
-          100%{transform:translateY(0) translateX(-1px); opacity:0.45}
+        @keyframes v135-sandDrift {
+          0%{transform:translateY(0) translateX(0); opacity:0.4}
+          50%{transform:translateY(-3px) translateX(2px); opacity:0.8}
+          100%{transform:translateY(0) translateX(-1px); opacity:0.4}
         }
 
-        /* ===== Book flip animations (v134) ===== */
+        /* ===== Book flip animations (v135 — enhanced realism) ===== */
         @keyframes bookFloat {
-          0%,100%{transform:translateY(0) rotateY(0deg)}
-          50%{transform:translateY(-8px) rotateY(0.5deg)}
+          0%,100%{transform:translateY(0) rotateY(0deg) rotateX(0deg)}
+          25%{transform:translateY(-6px) rotateY(0.3deg) rotateX(0.2deg)}
+          50%{transform:translateY(-10px) rotateY(-0.2deg) rotateX(-0.1deg)}
+          75%{transform:translateY(-5px) rotateY(0.4deg) rotateX(0.1deg)}
         }
         @keyframes pageFlipLeft {
-          0%{transform:perspective(1500px) rotateY(0deg)}
-          100%{transform:perspective(1500px) rotateY(-160deg)}
+          0%{transform:perspective(1500px) rotateY(0deg); box-shadow: inset 0 0 0 rgba(0,0,0,0)}
+          40%{transform:perspective(1500px) rotateY(-90deg); box-shadow: inset 15px 0 30px rgba(0,0,0,0.15)}
+          100%{transform:perspective(1500px) rotateY(-180deg); box-shadow: inset 0 0 0 rgba(0,0,0,0)}
         }
         @keyframes pageFlipRight {
-          0%{transform:perspective(1500px) rotateY(0deg)}
-          100%{transform:perspective(1500px) rotateY(160deg)}
+          0%{transform:perspective(1500px) rotateY(0deg); box-shadow: inset 0 0 0 rgba(0,0,0,0)}
+          40%{transform:perspective(1500px) rotateY(90deg); box-shadow: inset -15px 0 30px rgba(0,0,0,0.15)}
+          100%{transform:perspective(1500px) rotateY(180deg); box-shadow: inset 0 0 0 rgba(0,0,0,0)}
         }
         @keyframes bookmarkPulse {
           0%,100%{transform:scale(1)}

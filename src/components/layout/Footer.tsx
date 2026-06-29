@@ -65,24 +65,33 @@ export default function Footer() {
         filter: 'blur(60px)',
       }} />
 
-      {/* Floating particles — tiny glowing dots drifting upward */}
+      {/* Fireflies — glowing warm particles with random drift & flicker (v135) */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(18)].map((_, i) => (
-          <span
-            key={i}
-            className="absolute rounded-full"
-            style={{
-              left: `${5 + Math.random() * 90}%`,
-              bottom: '-6px',
-              width: 1 + Math.random() * 2.5,
-              height: 1 + Math.random() * 2.5,
-              background: i % 3 === 0 ? 'rgba(96,165,250,0.7)' : i % 3 === 1 ? 'rgba(167,139,250,0.55)' : 'rgba(34,211,238,0.5)',
-              boxShadow: `0 0 ${4 + Math.random() * 6}px ${i % 3 === 0 ? 'rgba(96,165,250,0.4)' : i % 3 === 1 ? 'rgba(167,139,250,0.3)' : 'rgba(34,211,238,0.25)'}`,
-              animation: `footer-particle-rise ${5 + Math.random() * 8}s ease-in-out infinite`,
-              animationDelay: `${Math.random() * 8}s`,
-            }}
-          />
-        ))}
+        {[...Array(22)].map((_, i) => {
+          const fireflyColors = [
+            { core: '#fef08a', glow: 'rgba(254,240,138,0.7)', outer: 'rgba(253,224,71,0.25)' },  // warm yellow
+            { core: '#d9f99d', glow: 'rgba(217,249,157,0.65)', outer: 'rgba(163,230,53,0.2)' },   // lime green
+            { core: '#a5f3fc', glow: 'rgba(165,243,252,0.55)', outer: 'rgba(34,211,238,0.18)' },    // cyan
+          ];
+          const fc = fireflyColors[i % 3];
+          const fSize = 3 + (i % 4) * 1.5; // 3-8px
+          return (
+            <span
+              key={i}
+              className="absolute rounded-full"
+              style={{
+                left: `${2 + Math.random() * 95}%`,
+                bottom: `${Math.random() * 70}%`,
+                width: `${fSize}px`,
+                height: `${fSize}px`,
+                background: `radial-gradient(circle, ${fc.core} 0%, ${fc.glow} 40%, transparent 75%)`,
+                boxShadow: `0 0 ${fSize * 2}px ${fc.glow}, 0 0 ${fSize * 4}px ${fc.outer}`,
+                animation: `firefly-drift ${6 + Math.random() * 10}s ease-in-out infinite, firefly-flicker ${1.5 + Math.random() * 2}s ease-in-out infinite`,
+                animationDelay: `${Math.random() * 10}s`,
+              }}
+            />
+          );
+        })}
       </div>
 
       {/* Top accent line — animated gradient sweep */}
@@ -275,17 +284,25 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* ===== FOOTER ANIMATION KEYFRAMES ===== */}
+      {/* ===== FOOTER ANIMATION KEYFRAMES (v135 — Firefly effects) ===== */}
       <style>{`
         @keyframes footer-bg-drift {
           0%   { transform: scale(1) translateX(0); }
           100% { transform: scale(1.08) translateX(-2%); }
         }
-        @keyframes footer-particle-rise {
-          0%   { transform: translateY(0) translateX(0); opacity: 0; }
-          10%  { opacity: 0.8; }
-          90%  { opacity: 0.3; }
-          100% { transform: translateY(-180px) translateX(${Math.random() > 0.5 ? '' : '-'}${15 + Math.random() * 20}px); opacity: 0; }
+        @keyframes firefly-drift {
+          0%   { transform: translate(0, 0); opacity: 0; }
+          10%  { opacity: 0.9; }
+          30%  { transform: translate(${Math.random() > 0.5 ? '' : '-'}${20 + Math.random() * 25}px, ${-40 - Math.random() * 50}px); opacity: 0.6; }
+          55%  { transform: translate(${Math.random() > 0.5 ? '' : '-'}${10 + Math.random() * 15}px, ${-80 - Math.random() * 60}px); opacity: 0.85; }
+          80%  { opacity: 0.4; }
+          100% { transform: translate(${-15 + Math.random() * 30}px, ${-140 - Math.random() * 50}px); opacity: 0; }
+        }
+        @keyframes firefly-flicker {
+          0%,100% { opacity: 0.7; box-shadow: 0 0 8px currentColor; }
+          25%     { opacity: 1; box-shadow: 0 0 16px currentColor, 0 0 28px currentColor; }
+          50%     { opacity: 0.4; box-shadow: 0 0 4px currentColor; }
+          75%     { opacity: 0.95; box-shadow: 0 0 14px currentColor, 0 0 22px currentColor; }
         }
         @keyframes footer-line-sweep {
           0%   { transform: translateX(-100%); }

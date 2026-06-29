@@ -420,7 +420,7 @@ export default function ProductsPage() {
             )}
           </div>
 
-          {/* Filter Panel — Enhanced Glass Card Container */}
+          {/* Filter Panel — Enhanced Glass Card Container with Colorful Bubble Background */}
           <div className="relative rounded-2xl px-6 py-5 overflow-visible" style={{
             background: 'linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(241,245,249,0.4) 100%)',
             backdropFilter: 'blur(18px) saturate(1.8)',
@@ -428,6 +428,35 @@ export default function ProductsPage() {
             border: '1px solid rgba(226,232,240,0.5)',
             boxShadow: '0 8px 32px rgba(148,163,184,0.12), inset 0 2px 0 rgba(255,255,255,0.7), inset 0 -1px 0 rgba(226,232,240,0.4)',
           }}>
+            {/* ===== COLORFUL RISING BUBBLES — entire filter area background (v135) ===== */}
+            <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
+              {/* Large colorful bubbles rising through the filter container */}
+              {[...Array(14)].map((_, bi) => {
+                const bubbleColors = [
+                  'rgba(96,165,250,0.55)',   // blue
+                  'rgba(167,139,250,0.50)',   // violet
+                  'rgba(52,211,153,0.45)',    // emerald
+                  'rgba(251,146,60,0.45)',    // orange
+                  'rgba(236,72,153,0.40)',    // pink
+                  'rgba(34,211,238,0.45)',    // cyan
+                  'rgba(250,204,21,0.40)',    // yellow
+                ];
+                const bc = bubbleColors[bi % bubbleColors.length];
+                const size = 10 + (bi % 4) * 8; // 10-34px bubbles
+                return (
+                  <span key={bi} className="absolute rounded-full" style={{
+                    width: `${size}px`,
+                    height: `${size}px`,
+                    left: `${3 + bi * 6.8}%`,
+                    bottom: `-${5 + (bi % 3) * 3}px`,
+                    background: `radial-gradient(circle at 35% 30%, rgba(255,255,255,0.9) 0%, ${bc} 40%, transparent 70%)`,
+                    animation: `filterBubbleRise ${3 + bi * 0.35}s ease-in infinite`,
+                    animationDelay: `${bi * 0.4}s`,
+                    boxShadow: `0 0 ${size * 0.4}px ${bc}`,
+                  }} />
+                );
+              })}
+            </div>
             {/* Subtle accent bar - shows under active dimension tab instead of top line */}
             <div className="h-1" />
             
@@ -534,25 +563,38 @@ export default function ProductsPage() {
                             borderWidth: '1px',
                           }}
                         >
-                          {/* Bubble rise animation for unselected items — glassmorphic bubbles floating up */}
+                          {/* Bubble rise animation for unselected items — larger colorful glassmorphic bubbles (v135) */}
                         {!isSelected && (
                           <>
                             {/* Glass overlay base */}
                             <span className="absolute inset-0 rounded-full" style={{
                               background: 'linear-gradient(135deg, rgba(59,130,246,0.06) 0%, rgba(147,197,253,0.04) 100%)',
                             }} />
-                            {/* Rising bubbles — 6 bubbles per button */}
-                            {[...Array(6)].map((_, bi) => (
+                            {/* Rising colorful bubbles — 7 bubbles per button, larger & multi-color */}
+                            {[...Array(7)].map((_, bi) => {
+                              const subBubbleColors = [
+                                'rgba(96,165,250,0.60)',
+                                'rgba(167,139,250,0.55)',
+                                'rgba(52,211,153,0.50)',
+                                'rgba(251,146,60,0.50)',
+                                'rgba(236,72,153,0.45)',
+                                'rgba(34,211,238,0.50)',
+                                'rgba(250,204,21,0.45)',
+                              ];
+                              const sbc = subBubbleColors[bi % subBubbleColors.length];
+                              const sSize = 6 + (bi % 3) * 4; // 6-14px
+                              return (
                               <span key={bi} className="absolute rounded-full pointer-events-none" style={{
-                                width: `${4 + (bi % 3) * 3}px`,
-                                height: `${4 + (bi % 3) * 3}px`,
-                                left: `${8 + bi * 14 + (bi % 2) * 8}%`,
+                                width: `${sSize}px`,
+                                height: `${sSize}px`,
+                                left: `${6 + bi * 12 + (bi % 2) * 6}%`,
                                 bottom: `-${2 + (bi % 2) * 2}px`,
-                                background: `radial-gradient(circle, ${bi % 3 === 0 ? 'rgba(96,165,250,0.7)' : bi % 3 === 1 ? 'rgba(147,197,253,0.5)' : 'rgba(191,219,254,0.6)'} 0%, transparent 70%)`,
-                                animation: `productBubbleRise ${2.5 + bi * 0.4}s ease-in infinite`,
-                                animationDelay: `${bi * 0.5}s`,
+                                background: `radial-gradient(circle at 35% 30%, rgba(255,255,255,0.9) 0%, ${sbc} 45%, transparent 75%)`,
+                                animation: `productBubbleRise ${2.2 + bi * 0.35}s ease-in infinite`,
+                                animationDelay: `${bi * 0.4}s`,
+                                boxShadow: `0 0 ${sSize * 0.5}px ${sbc}`,
                               }} />
-                            ))}
+                            )})}
                             {/* Subtle glass shimmer sweep */}
                             <span className="absolute inset-0 rounded-full overflow-hidden pointer-events-none">
                               <span className="absolute inset-0" style={{
@@ -635,19 +677,31 @@ export default function ProductsPage() {
                       boxShadow: '0 4px 24px rgba(148,163,184,0.12), 0 1px 3px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6)',
                     }}
                   >
-                    {/* Glass bubble rise effect on product cards */}
+                    {/* Glass bubble rise effect on product cards — larger colorful bubbles (v135) */}
                     <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl">
-                      {[...Array(5)].map((_, bi) => (
+                      {[...Array(7)].map((_, bi) => {
+                        const cardBubbleColors = [
+                          'rgba(96,165,250,0.50)',   // blue
+                          'rgba(167,139,250,0.45)',   // violet
+                          'rgba(52,211,153,0.40)',    // emerald
+                          'rgba(251,146,60,0.40)',    // orange
+                          'rgba(236,72,153,0.35)',    // pink
+                          'rgba(34,211,238,0.40)',    // cyan
+                        ];
+                        const cbc = cardBubbleColors[bi % cardBubbleColors.length];
+                        const bSize = 14 + (bi % 3) * 10; // 14-34px
+                        return (
                         <div key={bi} className="absolute rounded-full" style={{
-                          width: `${6 + (bi % 3) * 4}px`,
-                          height: `${6 + (bi % 3) * 4}px`,
-                          left: `${10 + bi * 18}%`,
-                          bottom: `${5 + (bi % 2) * 8}%`,
-                          background: `radial-gradient(circle, ${bi % 2 === 0 ? 'rgba(96,165,250,0.35)' : 'rgba(147,197,253,0.25)'} 0%, transparent 70%)`,
-                          animation: `productBubbleRise ${3 + bi * 0.5}s ease-in infinite`,
-                          animationDelay: `${bi * 0.7}s`,
+                          width: `${bSize}px`,
+                          height: `${bSize}px`,
+                          left: `${5 + bi * 14}%`,
+                          bottom: `${3 + (bi % 2) * 10}%`,
+                          background: `radial-gradient(circle at 35% 30%, rgba(255,255,255,0.85) 0%, ${cbc} 40%, transparent 70%)`,
+                          animation: `productBubbleRise ${2.5 + bi * 0.4}s ease-in infinite`,
+                          animationDelay: `${bi * 0.55}s`,
+                          boxShadow: `0 0 ${bSize * 0.35}px ${cbc}`,
                         }} />
-                      ))}
+                      )})}
                       {/* Subtle glass shimmer on hover */}
                       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{
                         background: 'radial-gradient(circle at 30% 20%, rgba(59,130,246,0.04) 0%, transparent 55%)',
@@ -789,14 +843,21 @@ export default function ProductsPage() {
           <p className="absolute bottom-4 text-white/60 text-sm">Click anywhere to close</p>
         </div>
       )}
-      {/* Product card bubble & glass animation keyframes */}
+      {/* Product card bubble & glass animation keyframes (v135) */}
       <style>{`
         @keyframes productBubbleRise {
           0% { transform: translateY(0) scale(0.3); opacity: 0; }
-          15% { opacity: 0.7; transform: translateY(-8px) scale(1); }
-          50% { opacity: 0.5; transform: translateY(-20px) scale(0.85); }
-          80% { opacity: 0.2; transform: translateY(-32px) scale(0.6); }
-          100% { transform: translateY(-42px) scale(0.2); opacity: 0; }
+          12% { opacity: 0.85; transform: translateY(-6px) scale(1); }
+          40% { opacity: 0.6; transform: translateY(-18px) scale(0.88); }
+          70% { opacity: 0.3; transform: translateY(-32px) scale(0.65); }
+          100% { transform: translateY(-48px) scale(0.2); opacity: 0; }
+        }
+        @keyframes filterBubbleRise {
+          0% { transform: translateY(0) scale(0.2); opacity: 0; }
+          15% { opacity: 0.8; transform: translateY(-10px) scale(1); }
+          45% { opacity: 0.55; transform: translateY(-25px) scale(0.85); }
+          75% { opacity: 0.25; transform: translateY(-42px) scale(0.6); }
+          100% { transform: translateY(-60px) scale(0.15); opacity: 0; }
         }
         @keyframes glassShimmer {
           0%,100% { transform: translateX(-100%); }

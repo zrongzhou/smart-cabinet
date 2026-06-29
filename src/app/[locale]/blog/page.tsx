@@ -148,19 +148,21 @@ export default function BlogPage() {
             {blogs.map((post, index) => {
               const isPriority = index < 3;
               const detailHref = `/${locale}/blog/${post.slug}`;
-              // Safe i18n access with fallback chain: API data → static data (by slug) → en → zh → first value
+              // Safe i18n access with fallback chain: static data (has full ar/zh/en) → API locale → API en → any
               const resolveI18n = (field: Record<string, any> | string | undefined, fallbackStatic?: Record<string, any>): string => {
                 if (!field) return '';
-                if (typeof field === 'string') return field;
-                // 1. Try current locale from API data
-                if (field[locale] && typeof field[locale] === 'string' && field[locale].trim()) return field[locale];
-                // 2. Try static blogs.ts data (has full ar/zh/en translations)
+                // 1. PRIORITY: Use static blogs.ts data first (it has complete ar/zh/en translations)
                 if (fallbackStatic) {
                   const staticVal = fallbackStatic[locale] || fallbackStatic.en;
                   if (staticVal && typeof staticVal === 'string' && staticVal.trim()) return staticVal;
                 }
-                // 3. Fallback: en → zh → any non-empty string value
-                return field.en || field.zh || Object.values(field).find(v => typeof v === 'string' && v.trim()) || '';
+                // 2. If field is object, try current locale
+                if (typeof field === 'object' && !Array.isArray(field)) {
+                  if (field[locale] && typeof field[locale] === 'string' && field[locale].trim()) return field[locale];
+                  return field.en || field.zh || Object.values(field).find(v => typeof v === 'string' && v.trim()) || '';
+                }
+                // 3. Fallback: return as-is (plain string)
+                return typeof field === 'string' ? field : String(field || '');
               };
               // Match against static blogs.ts for i18n fallback (DB may lack ar translations)
               const staticPost = getBlogBySlug(post.slug);
