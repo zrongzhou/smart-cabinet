@@ -250,7 +250,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
     imageNotAvailable: locale === 'zh' ? '图片暂时无法显示' : locale === 'ar' ? 'الصورة غير متاحة' : 'Image not available',
     contactForPricing: locale === 'zh' ? '联系我们询价' : locale === 'ar' ? 'اتصل بالسعر' : 'Contact for Pricing',
     priceOnRequest: locale === 'zh' ? '价格面议' : locale === 'ar' ? 'السعر قابل للتفاوض' : 'Price on Request',
-    clickImageToZoom: locale === 'zh' ? '点击图片放大' : locale === 'ar' => 'انقر لتكبير الصورة' : 'Click image to zoom',
+    clickImageToZoom: locale === 'zh' ? '点击图片放大' : locale === 'ar' ? 'انقر لتكبير الصورة' : 'Click image to zoom',
   };
 
   return (
