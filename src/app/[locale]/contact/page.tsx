@@ -43,7 +43,7 @@ export default function ContactPage() {
     : [];
   const displayEmail = displayEmails[0];
   const displayPhone = displayPhones[0];
-  const displayWeChat = settings?.socialWechat || 'QiuyanTech';
+  const displayWeChat = settings?.socialWechat || 'QiuyuanTech';
   const displayAddress = settings ? (locale === 'zh' ? (settings.addressZh || '') : locale === 'ar' ? (settings.addressAr || '') : (settings.address || '')) : '';
 
   const [formData, setFormData] = useState({
@@ -92,7 +92,7 @@ export default function ContactPage() {
     },
     {
       icon: MessageCircle,
-      label: locale === 'zh' ? '微信' : locale === 'ar' ? 'ويشات' : 'WeChat',
+      label: locale === 'zh' ? '微信' : locale === 'ar' ? 'ويتشات' : 'WeChat',
       lines: [
         locale === 'zh' ? `微信: ${displayWeChat}` : `WeChat: ${displayWeChat}`,
         locale === 'zh' ? '扫码添加客服微信' : locale === 'ar' ? 'امسح الرمز لإضافة خدمة العملاء' : 'Scan QR code to add customer service',
@@ -182,38 +182,38 @@ export default function ContactPage() {
               </div>
             </div>
 
-            {/* Map - Static image with fallback (OSM iframe often blocked by X-Frame-Options) */}
+            {/* Map - Use iframe embedding OSM (most reliable method) */}
             <div className="mt-6 rounded-2xl overflow-hidden border relative" style={{ borderColor: 'var(--border-color, #e5e7eb)', backgroundColor: 'var(--section-alt-bg, #f0f4ff)' }}>
-              {/* Use an embedded map via img tag with OSM static tile - reliable, no iframe blocking */}
-              <div className="relative w-full" style={{ height: '260px' }}>
-                <img
-                  src="https://static-map.openstreetmap.org/static.php?center=23.20,113.50&zoom=13&size=600x260&maptype=mapnik&markers=23.20,113.50,red"
-                  alt={locale === 'zh' ? '公司位置地图' : locale === 'ar' ? 'خريطة موقع الشركة' : 'Company Location Map'}
-                  className="w-full h-full object-cover"
-                  style={{ filter: 'saturate(1.2) contrast(1.05)' }}
+              {/* Interactive OSM Map via iframe - most reliable method */}
+              <div className="relative w-full" style={{ height: '300px' }}>
+                <iframe
+                  title={locale === 'zh' ? '公司位置' : locale === 'ar' ? 'موقع الشركة' : 'Company Location'}
+                  src="https://www.openstreetmap.org/export/embed.html?bbox=113.45%2C23.15%2C113.55%2C23.25&layer=mapnik&marker=23.20%2C113.50"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  loading="lazy"
                   onError={(e) => {
-                    // Fallback: show a styled placeholder if map fails to load
-                    const target = e.target as HTMLImageElement;
+                    // Fallback to static image if iframe fails
+                    const target = e.target as HTMLIFrameElement;
                     target.style.display = 'none';
                     const fallback = target.parentElement?.querySelector('.map-fallback');
                     if (fallback) (fallback as HTMLElement).style.display = 'flex';
                   }}
                 />
                 <div className="map-fallback absolute inset-0 flex-col items-center justify-center hidden"
-                  style={{
-                    background: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 50%, #93c5fd 100%)',
-                  }}
+                  style={{ background: 'linear-gradient(135deg, #dbeafe 0%, #e0e7ff 50%, #fce7f3 100%)' }}
                 >
-                  <MapPin className="w-10 h-10 text-red-500 mb-3" />
-                  <p className="text-sm font-medium text-blue-800">{displayAddress || (locale === 'zh' ? '中国广东省广州市番禺区' : 'Panyu District, Guangzhou')}</p>
-                  <p className="text-xs text-blue-600 mt-1">23.20°N, 113.50°E</p>
+                  <MapPin className="w-12 h-12 text-red-500 mb-3 animate-bounce" />
+                  <p className="text-sm font-semibold text-gray-700">{displayAddress || 'Panyu District, Guangzhou, China'}</p>
+                  <p className="text-xs text-gray-500 mt-1">📍 23.20°N, 113.50°E</p>
+                  <a href="https://www.openstreetmap.org/?mlat=23.20&mlon=113.50#map=13/23.20/113.50"
+                    target="_blank" rel="noopener noreferrer"
+                    className="mt-3 px-4 py-2 bg-blue-500 text-white text-xs rounded-lg hover:bg-blue-600 transition-colors duration-300 hover:shadow-lg hover:-translate-y-0.5 transform transition-transform"
+                  >
+                    {locale === 'zh' ? '在 OpenStreetMap 中查看' : locale === 'ar' ? 'عرض في الخريطة المفتوحة' : 'View on OpenStreetMap'}
+                  </a>
                 </div>
-                /* Subtle map overlay gradient */
-                <div className="absolute bottom-0 left-0 right-0 h-16 pointer-events-none"
-                  style={{
-                    background: 'linear-gradient(to top, rgba(255,255,255,0.95) 0%, transparent 100%)',
-                  }}
-                />
               </div>
               {/* Fallback address card */}
               <div className="backdrop-blur-sm p-4 border-t" style={{ backgroundColor: 'rgba(255,255,255,0.9)', borderColor: 'var(--border-color, #e5e7eb)' }}>
@@ -250,7 +250,7 @@ export default function ContactPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   {/* Name */}
                   <div>
-                    <label htmlFor="name" className={`block text-sm font-semibold text-gray-700 mb-2`}>
+                    <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">
                       {t('contact.fullName')} <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -266,7 +266,7 @@ export default function ContactPage() {
                   </div>
                   {/* Email */}
                   <div>
-                    <label htmlFor="email" className={`block text-sm font-semibold text-gray-700 mb-2`}>
+                    <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
                       {t('contact.form.email')} <span className="text-red-500">*</span>
                     </label>
                     <input

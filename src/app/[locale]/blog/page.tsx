@@ -19,6 +19,28 @@ function getBlogIcon(category: string) {
   return iconMap[category] || FileText;
 }
 
+// Category gradient map for visual variety (no image fallback)
+const categoryGradientMap: Record<string, string> = {
+  'Industry Trends': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+  'Case Study': 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
+  'Technical Guide': 'linear-gradient(135deg, #F2994A 0%, #F2C94C 100%)',
+  'Best Practice': 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+  'Use Case': 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+  'Customer Story': 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+  'General': 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)',
+};
+
+// Category solid color map for badges
+const categoryColorMap: Record<string, string> = {
+  'Industry Trends': '#667eea',
+  'Case Study': '#11998e',
+  'Technical Guide': '#F2994A',
+  'Best Practice': '#4facfe',
+  'Use Case': '#43e97b',
+  'Customer Story': '#fa709a',
+  'General': '#a18cd1',
+};
+
 // Translate blog category name
 function getCategoryLabel(category: string, locale: string): string {
   const catLabels: Record<string, Record<string, string>> = {
@@ -135,6 +157,16 @@ export default function BlogPage() {
 
       {/* Blog Grid */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <style dangerouslySetInnerHTML={{ __html: `
+          @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          .blog-card {
+            animation: fadeInUp 0.6s ease-out forwards;
+            opacity: 0;
+          }
+        `}} />
         {blogs.length === 0 ? (
           <div className="text-center py-20">
             <FileText className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
@@ -160,7 +192,8 @@ export default function BlogPage() {
 
               return (
                 <a key={post.id} href={detailHref}
-                  className="group bg-white dark:bg-slate-800 rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-2 border border-gray-100 dark:border-slate-700 block"
+                  className="group bg-white dark:bg-slate-800 rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-2 border border-gray-100 dark:border-slate-700 block blog-card"
+                  style={{ animationDelay: `${index * 100}ms` }}
                 >
                   {/* Blog Image */}
                   {post.image ? (
@@ -169,22 +202,38 @@ export default function BlogPage() {
                           className="w-full h-56 object-cover transition-transform duration-500 group-hover:scale-110"
                           loading={isPriority ? 'eager' : 'lazy'}
                         />
+                        {/* Gradient overlay for text readability */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-center justify-center">
-                          <div className="opacity-0 group-hover:opacity-100 bg-white/90 dark:bg-slate-700/90 backdrop-blur-sm text-gray-800 dark:text-white px-3 py-1.5 rounded-full flex items-center gap-1.5 text-xs font-medium shadow-lg">
+                          <div className="opacity-0 group-hover:opacity-100 bg-white/90 dark:bg-slate-700/90 backdrop-blur-sm text-gray-800 dark:text-white px-3 py-1.5 rounded-full flex items-center gap-1.5 text-xs font-medium shadow-lg transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
                             <ArrowRight className="w-3.5 h-3.5" />
                             {t.readMore}
                           </div>
                         </div>
                       </div>
                   ) : (
-                    <div className="h-56 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-slate-700 dark:to-slate-600 flex items-center justify-center">
-                      <BlogIcon className="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto" />
+                    <div 
+                      className="h-56 flex items-center justify-center relative overflow-hidden"
+                      style={{ background: categoryGradientMap[category] || categoryGradientMap['General'] }}
+                    >
+                      {/* Decorative SVG pattern overlay */}
+                      <div className="absolute inset-0 opacity-20" style={{
+                        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+                        backgroundSize: '30px 30px',
+                      }} />
+                      <BlogIcon className="w-20 h-20 text-white/90 relative z-10 drop-shadow-lg" />
+                      <span className="absolute bottom-3 left-0 right-0 text-center text-white/80 text-xs font-medium tracking-wide">
+                        {getCategoryLabel(category, locale)}
+                      </span>
                     </div>
                   )}
                   {/* Blog Info */}
                   <div className="p-5 flex flex-col h-full">
                     <div className="flex items-center gap-2 mb-3">
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-semibold rounded-full">
+                      <span 
+                        className="inline-flex items-center gap-1 px-2.5 py-0.5 text-white text-xs font-semibold rounded-full"
+                        style={{ backgroundColor: categoryColorMap[category] || categoryColorMap['General'] }}
+                      >
                         <BlogIcon className="w-3 h-3" />
                         {getCategoryLabel(category, locale)}
                       </span>
