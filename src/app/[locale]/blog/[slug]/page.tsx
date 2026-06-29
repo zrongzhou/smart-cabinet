@@ -17,17 +17,14 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
   const [recentBlogs, setRecentBlogs] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // === 内联 Blog 图片映射 (v147) — 不依赖外部模块 ===
-
-  // 所有可用的本地图片
-  const BLOG_IMAGES = [
+  // === v148 超简单图片方案：纯索引轮换 + 背景图 ===
+  const BLOG_IMAGE_LIST = [
     '/images/blog/industry-trends.jpg',
     '/images/blog/case-study.jpg',
     '/images/blog/technical-guide.jpg',
     '/images/blog/best-practice.jpg',
     '/images/blog/use-case.jpg',
     '/images/blog/customer-story.jpg',
-    '/images/blog/general.jpg',
     '/images/blog/smart-cabinet-warehouse.jpg',
     '/images/blog/roi-cost-analysis.jpg',
     '/images/blog/rfid-tool-tracking.jpg',
@@ -39,74 +36,27 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
     '/images/blog/future-smart-factory.jpg',
     '/images/blog/ppe-safety-equipment.jpg',
     '/images/blog/buying-guide-smart-cabinet.jpg',
+    '/images/blog/general.jpg',
   ];
 
-  // 按 slug 精确匹配的主题图片
-  const SLUG_IMAGE_MAP: Record<string, string> = {
-    'smart-cabinet-warehouse': '/images/blog/smart-cabinet-warehouse.jpg',
-    'roi-cost-analysis': '/images/blog/roi-cost-analysis.jpg',
-    'rfid-tool-tracking': '/images/blog/rfid-tool-tracking.jpg',
-    'iot-mes-integration': '/images/blog/iot-mes-integration.jpg',
-    'cnc-machining-roi': '/images/blog/cnc-machining-roi.jpg',
-    'aerospace-fod-prevention': '/images/blog/aerospace-fod-prevention.jpg',
-    'ai-industry-4-0': '/images/blog/ai-industry-4-0.jpg',
-    'digital-transformation': '/images/blog/digital-transformation.jpg',
-    'future-smart-factory': '/images/blog/future-smart-factory.jpg',
-    'ppe-safety-equipment': '/images/blog/ppe-safety-equipment.jpg',
-    'buying-guide-smart-cabinet': '/images/blog/buying-guide-smart-cabinet.jpg',
-  };
-
-  // 按分类匹配的图片（key 是 API 返回的小写格式）
-  const CATEGORY_IMAGE_MAP: Record<string, string> = {
-    'industry-trends': '/images/blog/industry-trends.jpg',
-    'case-study': '/images/blog/case-study.jpg',
-    'technical-guide': '/images/blog/technical-guide.jpg',
-    'best-practice': '/images/blog/best-practice.jpg',
-    'use-case': '/images/blog/use-case.jpg',
-    'customer-story': '/images/blog/customer-story.jpg',
-    'general': '/images/blog/general.jpg',
-  };
-
-  // 内联图片选择函数 (v147)
+  // 简单的图片选择函数 (v148) - 只用索引轮换
   function getInlineBlogImage(post: BlogPost, index: number): string {
-    const postSlug = post.slug || '';
-    const postCategory = (post.category || 'general').toLowerCase().trim();
-
-    // 1. 先按 slug 匹配
-    for (const [key, img] of Object.entries(SLUG_IMAGE_MAP)) {
-      if (postSlug.includes(key)) {
-        return img;
-      }
-    }
-
-    // 2. 再按分类匹配
-    if (CATEGORY_IMAGE_MAP[postCategory]) {
-      return CATEGORY_IMAGE_MAP[postCategory];
-    }
-
-    // 3. 最后按索引轮换
-    return BLOG_IMAGES[index % BLOG_IMAGES.length];
+    return BLOG_IMAGE_LIST[index % BLOG_IMAGE_LIST.length];
   }
 
-  // 内联详情页图片选择函数 (v147)
+  // 详情页图片选择 (v148) - 基于 slug 的 hash 确保一致性
   function getInlineBlogDetailImage(post: BlogPost): string {
-    const postSlug = post.slug || '';
-    const postCategory = (post.category || 'general').toLowerCase().trim();
-
-    // 1. 先按 slug 匹配
-    for (const [key, img] of Object.entries(SLUG_IMAGE_MAP)) {
-      if (postSlug.includes(key)) {
-        return img;
-      }
+    const slug = post.slug || '';
+    // 简单的 hash 函数，确保同一 slug 总是返回同一图片
+    let hash = 0;
+    for (let i = 0; i < slug.length; i++) {
+      const char = slug.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32bit integer
     }
-
-    // 2. 再按分类匹配
-    if (CATEGORY_IMAGE_MAP[postCategory]) {
-      return CATEGORY_IMAGE_MAP[postCategory];
-    }
-
-    // 3. 默认返回 general
-    return '/images/blog/general.jpg';
+    const index = Math.abs(hash) % BLOG_IMAGE_LIST.length;
+    console.log(`[v148] Detail page: slug="${slug}" → image="${BLOG_IMAGE_LIST[index]}"`);
+    return BLOG_IMAGE_LIST[index];
   }
 
   // Resolve params (Promise in Next.js 14.1+)
@@ -312,27 +262,36 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
 
   const content = blog.content?.[locale as 'en' | 'zh' | 'ar'] || '';
 
-  // 调试日志 (v147)
-  console.log(`[v147] Detail page: slug="${blog.slug}" category="${(blog.category || 'general').toLowerCase()}" → image="${getInlineBlogDetailImage(blog)}"`);
+  // 调试日志 (v148)
+   console.log(`[v148] Detail page: slug="${blog.slug}" → image="${getInlineBlogDetailImage(blog)}"`);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Page Header */}
-      <section className="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-5xl mx-auto">
-          <a href={`/${locale}/blog`} className="inline-flex items-center gap-2 text-blue-200 hover:text-white transition-colors mb-4">
-            <ArrowLeft className="w-4 h-4" />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 dark:from-slate-900 dark:to-slate-800">
+      {/* Page Header with background image */}
+      <section
+        className="relative bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white py-20 px-4 sm:px-6 lg:px-8 overflow-hidden"
+        style={{
+          backgroundImage: `url(${getInlineBlogDetailImage(blog)})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        {/* Dark overlay for readability */}
+        <div className="absolute inset-0 bg-blue-900/80 backdrop-blur-sm" />
+        <div className="relative z-10 max-w-5xl mx-auto">
+          <a href={`/${locale}/blog`} className="inline-flex items-center gap-2 text-blue-200 hover:text-white transition-colors mb-6 group">
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
             {locale === 'zh' ? '返回博客' : locale === 'ar' ? 'العودة للمدونة' : 'Back to Blog'}
           </a>
-          <h1 className="text-3xl sm:text-4xl font-bold mb-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 leading-tight">
             {locale === 'zh' ? blog.title.zh : locale === 'ar' ? blog.title.ar : blog.title.en}
           </h1>
-          <div className="flex items-center gap-4 text-sm text-blue-200">
-            <span className="flex items-center gap-1.5">
+          <div className="flex flex-wrap items-center gap-6 text-sm text-blue-200">
+            <span className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-full">
               <Calendar className="w-4 h-4" />
               {formatDate(blog.publishedAt || blog.createdAt, locale)}
             </span>
-            <span className="flex items-center gap-1.5">
+            <span className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-full">
               <User className="w-4 h-4" />
               {blog.author || 'Admin'}
             </span>
@@ -342,21 +301,7 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
 
       {/* Blog Content */}
       <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="bg-white rounded-2xl shadow-md p-8 md:p-12">
-          <img
-            src={getInlineBlogDetailImage(blog)}
-            alt={locale === 'zh' ? blog.title.zh : locale === 'ar' ? blog.title.ar : blog.title.en}
-            className="w-full h-64 object-cover rounded-xl mb-8"
-            onError={(e) => {
-              // 简化 onError：只替换 src 到 general.jpg
-              const target = e.target as HTMLImageElement;
-              const fallbackSrc = '/images/blog/general.jpg';
-              if (!target.src.includes(fallbackSrc)) {
-                console.warn(`[v147] Detail image load failed, using fallback: ${target.src}`);
-                target.src = fallbackSrc;
-              }
-            }}
-          />
+        <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl p-8 md:p-12 border border-gray-100 dark:border-slate-700">
 
           {/* Render content (HTML from rich text editor) */}
           <div
@@ -383,40 +328,42 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
       {/* Recent Posts */}
       {recentBlogs.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <h2 className="text-2xl font-bold text-gray-900 mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 flex items-center gap-3">
+            <div className="w-10 h-1 bg-gradient-to-r from-blue-600 to-blue-400 rounded-full"></div>
             {locale === 'zh' ? '最新文章' : locale === 'ar' ? 'أحدث المقالات' : 'Recent Posts'}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {recentBlogs.map((post, idx) => (
-              <a
-                key={post.id}
-                href={`/${locale}/blog/${post.slug}`}
-                className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden"
-              >
-                <img
-                  src={getInlineBlogImage(post, idx)}
-                  alt=""
-                  className="w-full h-48 object-cover"
-                  onError={(e) => {
-                    // 简化 onError：只替换 src 到 general.jpg
-                    const target = e.target as HTMLImageElement;
-                    const fallbackSrc = '/images/blog/general.jpg';
-                    if (!target.src.includes(fallbackSrc)) {
-                      console.warn(`[v147] Recent post image load failed, using fallback: ${target.src}`);
-                      target.src = fallbackSrc;
-                    }
-                  }}
-                />
-                <div className="p-6">
-                  <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2">
-                    {locale === 'zh' ? post.title.zh : locale === 'ar' ? post.title.ar : post.title.en}
-                  </h3>
-                  <p className="text-sm text-gray-500">
-                    {formatDate(post.publishedAt || post.createdAt, locale)}
-                  </p>
-                </div>
-              </a>
-            ))}
+            {recentBlogs.map((post, idx) => {
+              const postImage = getInlineBlogImage(post, idx);
+              return (
+                <a
+                  key={post.id}
+                  href={`/${locale}/blog/${post.slug}`}
+                  className="group bg-white dark:bg-slate-800 rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-1 border border-gray-100 dark:border-slate-700"
+                >
+                  {/* v148 使用背景图方式 */}
+                  <div
+                    className="relative h-48 overflow-hidden"
+                    style={{
+                      backgroundImage: `url(${postImage})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                    }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                      {locale === 'zh' ? post.title.zh : locale === 'ar' ? post.title.ar : post.title.en}
+                    </h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
+                      <Calendar className="w-3.5 h-3.5" />
+                      {formatDate(post.publishedAt || post.createdAt, locale)}
+                    </p>
+                  </div>
+                </a>
+              );
+            })}
           </div>
         </section>
       )}

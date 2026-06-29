@@ -66,17 +66,14 @@ export default function BlogPage() {
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // === 内联 Blog 图片映射 (v147) — 不依赖外部模块 ===
-
-  // 所有可用的本地图片
-  const BLOG_IMAGES = [
+  // === v148 超简单图片方案：纯索引轮换 + 背景图 ===
+  const BLOG_IMAGE_LIST = [
     '/images/blog/industry-trends.jpg',
     '/images/blog/case-study.jpg',
     '/images/blog/technical-guide.jpg',
     '/images/blog/best-practice.jpg',
     '/images/blog/use-case.jpg',
     '/images/blog/customer-story.jpg',
-    '/images/blog/general.jpg',
     '/images/blog/smart-cabinet-warehouse.jpg',
     '/images/blog/roi-cost-analysis.jpg',
     '/images/blog/rfid-tool-tracking.jpg',
@@ -88,46 +85,10 @@ export default function BlogPage() {
     '/images/blog/future-smart-factory.jpg',
     '/images/blog/ppe-safety-equipment.jpg',
     '/images/blog/buying-guide-smart-cabinet.jpg',
+    '/images/blog/general.jpg',
   ];
 
-  // 按 slug 精确匹配的主题图片
-  const SLUG_IMAGE_MAP: Record<string, string> = {
-    'smart-cabinet-warehouse': '/images/blog/smart-cabinet-warehouse.jpg',
-    'roi-cost-analysis': '/images/blog/roi-cost-analysis.jpg',
-    'rfid-tool-tracking': '/images/blog/rfid-tool-tracking.jpg',
-    'iot-mes-integration': '/images/blog/iot-mes-integration.jpg',
-    'cnc-machining-roi': '/images/blog/cnc-machining-roi.jpg',
-    'aerospace-fod-prevention': '/images/blog/aerospace-fod-prevention.jpg',
-    'ai-industry-4-0': '/images/blog/ai-industry-4-0.jpg',
-    'digital-transformation': '/images/blog/digital-transformation.jpg',
-    'future-smart-factory': '/images/blog/future-smart-factory.jpg',
-    'ppe-safety-equipment': '/images/blog/ppe-safety-equipment.jpg',
-    'buying-guide-smart-cabinet': '/images/blog/buying-guide-smart-cabinet.jpg',
-  };
-
-  // 按分类匹配的图片（key 是 API 返回的小写格式）
-  const CATEGORY_IMAGE_MAP: Record<string, string> = {
-    'industry-trends': '/images/blog/industry-trends.jpg',
-    'case-study': '/images/blog/case-study.jpg',
-    'technical-guide': '/images/blog/technical-guide.jpg',
-    'best-practice': '/images/blog/best-practice.jpg',
-    'use-case': '/images/blog/use-case.jpg',
-    'customer-story': '/images/blog/customer-story.jpg',
-    'general': '/images/blog/general.jpg',
-  };
-
-  // 分类名称显示映射（API 返回小写 → 显示名称）
-  const CATEGORY_LABELS: Record<string, { en: string; zh: string; ar: string }> = {
-    'industry-trends': { en: 'Industry Trends', zh: '行业趋势', ar: 'اتجاهات الصناعة' },
-    'case-study': { en: 'Case Study', zh: '案例研究', ar: 'دراسة حالة' },
-    'technical-guide': { en: 'Technical Guide', zh: '技术指南', ar: 'دليل تقني' },
-    'best-practice': { en: 'Best Practice', zh: '最佳实践', ar: 'أفضل الممارسات' },
-    'use-case': { en: 'Use Case', zh: '应用场景', ar: 'حالة الاستخدام' },
-    'customer-story': { en: 'Customer Story', zh: '客户故事', ar: 'قصة العميل' },
-    'general': { en: 'General', zh: '综合', ar: 'عام' },
-  };
-
-  // 分类颜色映射（小写 key）
+  // 分类颜色映射（用于 badge 颜色）
   const CATEGORY_COLOR_MAP: Record<string, string> = {
     'industry-trends': '#667eea',
     'case-study': '#11998e',
@@ -138,7 +99,7 @@ export default function BlogPage() {
     'general': '#a18cd1',
   };
 
-  // 分类图标映射（小写 key）
+  // 分类图标映射
   function getBlogIconByCategory(categoryLower: string) {
     const iconMap: Record<string, any> = {
       'industry-trends': TrendingUp,
@@ -261,36 +222,22 @@ export default function BlogPage() {
                 ? (post.excerpt[locale] || post.excerpt.en || '')
                 : String(post.excerpt || '');
 
-              // === 内联图片选择逻辑 (v147) ===
-              const postSlug = post.slug || '';
+              // === v148 超简单图片方案：纯索引轮换 ===
+              const cardImage = BLOG_IMAGE_LIST[index % BLOG_IMAGE_LIST.length];
+              console.log(`[v148] Blog card ${index}: using image ${cardImage}`);
+
+              // 分类显示
               const postCategory = (post.category || 'general').toLowerCase().trim();
-
-              // 1. 先按 slug 匹配
-              let cardImage: string = '';
-              let slugMatched = false;
-              for (const [key, img] of Object.entries(SLUG_IMAGE_MAP)) {
-                if (postSlug.includes(key)) {
-                  cardImage = img;
-                  slugMatched = true;
-                  break;
-                }
-              }
-
-              // 2. 再按分类匹配
-              if (!slugMatched && CATEGORY_IMAGE_MAP[postCategory]) {
-                cardImage = CATEGORY_IMAGE_MAP[postCategory];
-              }
-
-              // 3. 最后按索引轮换（确保不同卡片显示不同图片）
-              if (!cardImage) {
-                cardImage = BLOG_IMAGES[index % BLOG_IMAGES.length];
-              }
-
-              // 调试日志 (v147)
-              console.log(`[v147] card ${index}: slug="${postSlug}" category="${postCategory}" → image="${cardImage}"`);
-
-              // 分类显示（使用小写 key 查映射）
-              const categoryLabel = CATEGORY_LABELS[postCategory] || CATEGORY_LABELS['general'];
+              const categoryLabelMap: Record<string, { en: string; zh: string; ar: string }> = {
+                'industry-trends': { en: 'Industry Trends', zh: '行业趋势', ar: 'اتجاهات الصناعة' },
+                'case-study': { en: 'Case Study', zh: '案例研究', ar: 'دراسة حالة' },
+                'technical-guide': { en: 'Technical Guide', zh: '技术指南', ar: 'دليل تقني' },
+                'best-practice': { en: 'Best Practice', zh: '最佳实践', ar: 'أفضل الممارسات' },
+                'use-case': { en: 'Use Case', zh: '应用场景', ar: 'حالة الاستخدام' },
+                'customer-story': { en: 'Customer Story', zh: '客户故事', ar: 'قصة العميل' },
+                'general': { en: 'General', zh: '综合', ar: 'عام' },
+              };
+              const categoryLabel = categoryLabelMap[postCategory] || categoryLabelMap['general'];
               const categoryDisplay = categoryLabel[locale as 'en' | 'zh' | 'ar'] || categoryLabel.en;
               const categoryColor = CATEGORY_COLOR_MAP[postCategory] || CATEGORY_COLOR_MAP['general'];
               const BlogIcon = getBlogIconByCategory(postCategory);
@@ -300,24 +247,16 @@ export default function BlogPage() {
                   className="group bg-white dark:bg-slate-800 rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-2 border border-gray-100 dark:border-slate-700 block blog-card"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
-                  {/* Blog Image — always use local images (reliable, no CDN/issues) */}
-                  <div className="relative h-56 overflow-hidden bg-gray-100 dark:bg-slate-700">
-                    <img
-                      src={cardImage}
-                      alt={title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      loading={isPriority ? 'eager' : 'lazy'}
-                      onError={(e) => {
-                        // 简化 onError：只替换 src 到 general.jpg，不隐藏 img
-                        const target = e.target as HTMLImageElement;
-                        const fallbackSrc = '/images/blog/general.jpg';
-                        if (!target.src.includes(fallbackSrc)) {
-                          console.warn(`[v147] Image load failed, using fallback: ${target.src}`);
-                          target.src = fallbackSrc;
-                        }
-                      }}
-                    />
-                    {/* Gradient overlay for text readability - reduced opacity to better show image */}
+                  {/* Blog Image — v148 使用背景图方式（更可靠） */}
+                  <div
+                    className="relative h-56 overflow-hidden bg-gray-100 dark:bg-slate-700"
+                    style={{
+                      backgroundImage: `url(${cardImage})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                    }}
+                  >
+                    {/* Gradient overlay for text readability */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
                     {/* Category badge overlay on image */}
                     <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
