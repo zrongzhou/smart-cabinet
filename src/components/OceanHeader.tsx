@@ -33,13 +33,14 @@ function RisingBubbles() {
   const [bubbles, setBubbles] = useState<Bubble[]>([]);
 
   useEffect(() => {
-    const bbs: Bubble[] = Array.from({ length: 20 }, (_, i) => ({
+    // PERFORMANCE: Reduced from 20 to 5 bubbles
+    const bbs: Bubble[] = Array.from({ length: 5 }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
-      size: 3 + Math.random() * 12,
+      size: 4 + Math.random() * 8,
       delay: Math.random() * 6,
-      duration: 4 + Math.random() * 5,
-      opacity: 0.15 + Math.random() * 0.35,
+      duration: 5 + Math.random() * 4,
+      opacity: 0.15 + Math.random() * 0.25,
     }));
     setBubbles(bbs);
   }, []);
@@ -56,7 +57,7 @@ function RisingBubbles() {
             width: b.size,
             height: b.size,
             background: `radial-gradient(circle at 35% 35%, rgba(255,255,255,${b.opacity + 0.2}), rgba(147,197,253,${b.opacity * 0.5}) transparent)`,
-            boxShadow: `0 0 ${b.size / 2}px rgba(147,197,253,${b.opacity * 0.3})`,
+            willChange: 'transform, opacity', // GPU acceleration
             animation: `ocean-bubble-rise ${b.duration}s ease-in-out infinite`,
             animationDelay: `${b.delay}s`,
           }}
@@ -74,18 +75,17 @@ function FishSchool() {
       'rgba(96,165,250,0.7)',   // blue
       'rgba(167,139,250,0.5)',  // purple
       'rgba(52,211,153,0.6)',   // emerald
-      'rgba(251,207,232,0.55)', // pink
-      'rgba(255,255,255,0.45)', // white
     ];
-    const school: Fish[] = Array.from({ length: 12 }, (_, i) => ({
+    // PERFORMANCE: Reduced from 12 to 3 fish
+    const school: Fish[] = Array.from({ length: 3 }, (_, i) => ({
       id: i,
       x: -10 - Math.random() * 30,
-      y: 20 + Math.random() * 60,
-      size: 6 + Math.random() * 8,
-      speed: 15 + Math.random() * 18,
-      delay: Math.random() * 10,
+      y: 25 + Math.random() * 50,
+      size: 7 + Math.random() * 6,
+      speed: 18 + Math.random() * 15,
+      delay: Math.random() * 8,
       color: colors[i % colors.length],
-      direction: i % 3 === 0 ? -1 : 1, // some swim left
+      direction: 1, // all swim right for better performance
     }));
     setFishes(school);
   }, []);
@@ -97,12 +97,11 @@ function FishSchool() {
           key={f.id}
           className="absolute"
           style={{
-            left: f.direction > 0 ? `${f.x}%` : undefined,
-            right: f.direction < 0 ? `${-f.x}%` : undefined,
+            left: `${f.x}%`,
             top: `${f.y}%`,
+            willChange: 'transform', // GPU acceleration
             animation: `fish-swim ${f.speed}s linear infinite`,
             animationDelay: `${f.delay}s`,
-            transform: f.direction < 0 ? 'scaleX(-1)' : undefined,
           }}
         >
           {/* Fish body — tiny SVG */}
@@ -343,10 +342,8 @@ export default function OceanHeader({
         animationDelay: '8s',
       }} delay="0s" />
 
-      {/* Jellyfish */}
-      <Jellyfish style={{ top: '15%', right: '12%' }} delay="0s" />
-      <Jellyfish style={{ top: '25%', left: '8%', animationDuration: '7s' }} delay="2.5s" />
-      <Jellyfish style={{ top: '45%', right: '25%', animationDuration: '8.5s' }} delay="5s" />
+      {/* Jellyfish - PERFORMANCE: Reduced from 3 to 1 */}
+      <Jellyfish style={{ top: '20%', right: '15%' }} delay="0s" />
 
       {/* Ocean waves at bottom */}
       <OceanWaves />
@@ -396,6 +393,15 @@ export default function OceanHeader({
 
       {/* All CSS Animations for Ocean Theme */}
       <style>{`
+        /* ===== PREFER REDUCED MOTION - Disable all animations for accessibility & performance ===== */
+        @media (prefers-reduced-motion: reduce) {
+          .ocean-header-wrapper * {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+          }
+        }
+
         /* ===== BUBBLE RISE ===== */
         @keyframes ocean-bubble-rise {
           0%   { transform: translateY(0) translateX(0) scale(0.5); opacity: 0; }

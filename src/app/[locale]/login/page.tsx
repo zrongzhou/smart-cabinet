@@ -3,11 +3,13 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale } from '@/lib/i18n';
+import { useAuth } from '@/components/AuthProvider';
 import Link from 'next/link';
 
 export default function LoginPage() {
   const { locale, t } = useLocale();
   const router = useRouter();
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -19,24 +21,14 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
+      // Use AuthProvider.login() to properly update auth state
+      const result = await login(email, password);
 
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        setError(data.error || 'Login failed');
+      if (!result.success) {
+        setError(result.error || 'Login failed');
         setLoading(false);
         return;
       }
-
-      // Save tokens to localStorage
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('refreshToken', data.refreshToken);
-      localStorage.setItem('user', JSON.stringify(data.user));
 
       // Redirect to home or previous page
       const searchParams = new URLSearchParams(window.location.search);
