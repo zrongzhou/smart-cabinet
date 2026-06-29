@@ -1,344 +1,243 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
 // ============================================================
-// OceanHeader v2 — 全新重写版
-// 亮色海洋主题：明亮渐变背景 + 可见鱼群 + 漂浮水母 + 海底焦散光
+// OceanHeader v3 — 抽象粒子海洋
+// 设计理念：Apple/Awwwards 级克制高级感
+// 无具象生物，只有氛围粒子 + 光效 + 波纹
 // ============================================================
 
-// ===== BRIGHT OCEAN BACKGROUND =====
+// ===== PREMIUM OCEAN GRADIENT — 深邃富丽的渐变 =====
 const OCEAN_GRADIENT = `linear-gradient(180deg,
-  #0ea5e9 0%,
-  #0284c7 20%,
-  #0369a1 40%,
-  #075985 60%,
-  #0c4a6e 80%,
-  #082f49 100%)`;
+  #0c4a6e 0%,
+  #075985 18%,
+  #0369a1 35%,
+  #0284c7 52%,
+  #0ea5e9 70%,
+  #38bdf8 85%,
+  #7dd3fc 100%)`;
 
-// ===== FISH SCHOOL — 使用 Canvas 绘制，确保绝对可见 =====
-function FishSwarm() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const context = ctx;
-
-    let animId: number;
-
-    // Fish data
-    interface FishData {
-      x: number;
-      y: number;
-      size: number;
-      speed: number;
-      color: string;
-      dir: number;     // 1=right, -1=left
-      tailPhase: number;
-      yOffset: number; // vertical oscillation
-    }
-
-    const fishColors = [
-      '#fcd34d', // amber/gold
-      '#fb923c', // orange
-      '#f472b6', // pink
-      '#38bdf8', // sky blue
-      '#34d399', // emerald
-      '#c084fc', // purple
-      '#f87171', // red coral
-      '#fbbf24', // yellow
-    ];
-
-    const fishes: FishData[] = Array.from({ length: 14 }, (_, i) => ({
-      x: i % 2 === 0 ? Math.random() * -200 : canvas.width + Math.random() * 200,
-      y: 30 + Math.random() * (canvas.height * 0.6),
-      size: 16 + Math.random() * 18,       // 16-34px — 明显可见
-      speed: 0.4 + Math.random() * 0.8,    // 0.4-1.2 px/frame
-      color: fishColors[i % fishColors.length],
-      dir: i % 2 === 0 ? 1 : -1,
-      tailPhase: Math.random() * Math.PI * 2,
-      yOffset: 15 + Math.random() * 25,     // 上下浮动幅度
-    }));
-
-    function drawFish(f: FishData) {
-      context.save();
-      context.translate(f.x, f.y);
-      if (f.dir < 0) context.scale(-1, 1);
-
-      // Tail wagging
-      f.tailPhase += 0.12;
-      const tailWag = Math.sin(f.tailPhase) * 5;
-
-      // Body shadow
-      context.shadowColor = 'rgba(0,0,0,0.25)';
-      context.shadowBlur = 6;
-      context.shadowOffsetY = 3;
-
-      // Fish body (ellipse)
-      context.fillStyle = f.color;
-      context.beginPath();
-      context.ellipse(0, 0, f.size * 0.55, f.size * 0.3, 0, 0, Math.PI * 2);
-      context.fill();
-
-      // Tail fin
-      context.beginPath();
-      context.moveTo(-f.size * 0.45, 0);
-      context.lineTo(-f.size * 0.72, -f.size * 0.22 + tailWag);
-      context.lineTo(-f.size * 0.68, 0);
-      context.lineTo(-f.size * 0.72, f.size * 0.22 + tailWag);
-      context.closePath();
-      context.fill();
-
-      // Dorsal fin
-      context.fillStyle = f.color;
-      context.globalAlpha = 0.75;
-      context.beginPath();
-      context.moveTo(-f.size * 0.1, -f.size * 0.28);
-      context.quadraticCurveTo(f.size * 0.05, -f.size * 0.45, f.size * 0.2, -f.size * 0.26);
-      context.fill();
-
-      // Pectoral fin
-      context.globalAlpha = 0.5;
-      context.beginPath();
-      context.ellipse(f.size * 0.05, f.size * 0.12, f.size * 0.12, f.size * 0.06, 0.3, 0, Math.PI * 2);
-      context.fill();
-
-      // Eye
-      context.globalAlpha = 1;
-      context.fillStyle = 'white';
-      context.beginPath();
-      context.arc(f.size * 0.28, -f.size * 0.04, f.size * 0.09, 0, Math.PI * 2);
-      context.fill();
-      context.fillStyle = '#1e293b';
-      context.beginPath();
-      context.arc(f.size * 0.3, -f.size * 0.03, f.size * 0.045, 0, Math.PI * 2);
-      context.fill();
-
-      // Highlight on body
-      context.fillStyle = 'rgba(255,255,255,0.35)';
-      context.beginPath();
-      context.ellipse(f.size * 0.05, -f.size * 0.1, f.size * 0.2, f.size * 0.1, -0.3, 0, Math.PI * 2);
-      context.fill();
-
-      context.restore();
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const c = canvas;
-
-    function animate() {
-      context.clearRect(0, 0, c.width, c.height);
-
-      fishes.forEach((f, i) => {
-        // Move
-        f.x += f.speed * f.dir;
-
-        // Gentle vertical sine wave
-        const time = Date.now() * 0.001 + i;
-        f.y += Math.sin(time * 0.8) * 0.3;
-
-        // Wrap around
-        if (f.dir > 0 && f.x > c.width + 50) {
-          f.x = -50;
-          f.y = 30 + Math.random() * (c.height * 0.6);
-        }
-        if (f.dir < 0 && f.x < -50) {
-          f.x = c.width + 50;
-          f.y = 30 + Math.random() * (c.height * 0.6);
-        }
-
-        drawFish(f);
-      });
-
-      animId = requestAnimationFrame(animate);
-    }
-
-    animate();
-
-    return () => cancelAnimationFrame(animId);
-  }, []);
-
+// ============================================================
+// LAYER 1: 氛围光晕 — 大面积模糊光斑，营造深度感
+// ============================================================
+function AmbientGlow() {
   return (
-    <canvas
-      ref={canvasRef}
-      className="absolute inset-0 pointer-events-none"
-      style={{ width: '100%', height: '100%' }}
-    />
-  );
-}
-
-// ===== BEAUTIFUL JELLYFISH — 半透明发光体 + 飘逸触须 =====
-interface JellyfishData {
-  id: number;
-  x: string;   // percentage
-  y: string;   // percentage
-  size: number;
-  hue: number; // color hue for variety
-  delay: number;
-}
-
-function JellyfishV2({ jf }: { jf: JellyfishData }) {
-  return (
-    <div
-      className="absolute pointer-events-none"
-      style={{
-        left: jf.x,
-        top: jf.y,
-        width: jf.size,
-        height: jf.size * 1.3,
-        animation: `jelly-drift-v2 ${7 + jf.id}s ease-in-out infinite`,
-        animationDelay: `${jf.delay}s`,
-      }}
-    >
-      <svg viewBox="0 0 60 78" fill="none" xmlns="http://www.w3.org/2000/svg" style={{
-        filter: 'drop-shadow(0 0 12px hsla(' + jf.hue + ', 70%, 65%, 0.4))',
-        width: '100%',
-        height: '100%',
-      }}>
-        {/* Outer glow */}
-        <ellipse cx="30" cy="24" rx="26" ry="22" fill={`hsla(${jf.hue}, 70%, 70%, 0.08)`} />
-        
-        {/* Bell dome — main body */}
-        <path d="M4 26 C4 8, 56 8, 56 26 C54 32, 36 34, 30 34 C24 34, 6 32, 4 26Z"
-              fill={`url(#jellyBell-${jf.id})`}
-              stroke={`hsla(${jf.hue}, 60%, 80%, 0.3)`}
-              strokeWidth="0.8"
-              className="jelly-bell-v2"
-        />
-
-        {/* Inner bell highlight */}
-        <path d="M10 24 C10 12, 50 12, 50 24 C48 28, 36 29, 30 29 C24 29, 12 28, 10 24Z"
-              fill={`hsla(${jf.hue}, 50%, 90%, 0.15)`}
-        />
-
-        {/* Tentacles — long flowing curves */}
-        {[14, 23, 30, 37, 46].map((tx, ti) => {
-          const swayDir = ti % 2 === 0 ? 1 : -1;
-          const length = 28 + ti * 4 + Math.sin(ti) * 6;
-          const cp1x = tx + swayDir * (6 + ti * 1.5);
-          const cp1y = 46 + ti * 2;
-          const cp2x = tx + swayDir * (4 + ti);
-          const cp2y = 58 + ti * 3;
-          const endX = tx + swayDir * (2 + ti * 0.8);
-          const endY = 44 + length;
-          
-          return (
-            <path
-              key={ti}
-              d={`M ${tx} 34 Q ${cp1x} ${cp1y}, ${cp2x} ${cp2y} T ${endX} ${endY}`}
-              stroke={`hsla(${jf.hue + ti * 8}, 65%, 75%, ${0.4 + ti * 0.07})`}
-              strokeWidth={1.2 + ti * 0.15}
-              strokeLinecap="round"
-              fill="none"
-              className={`jelly-tentacle-v2-${ti}`}
-              style={{ animationDelay: `${ti * 0.3 + jf.delay * 0.5}s` }}
-            />
-          );
-        })}
-
-        {/* Oral arms — shorter, frilly tentacles in center */}
-        {[21, 27, 33, 39].map((tx, ti) => (
-          <path
-            key={'oa' + ti}
-            d={`M ${tx} 33 Q ${tx + (ti % 2 === 0 ? 3 : -3)} 42, ${tx + (ti % 3 === 0 ? 1 : -1)} 52`}
-            stroke={`hsla(${jf.hue}, 55%, 85%, ${0.25 + ti * 0.05})`}
-            strokeWidth="0.9"
-            strokeLinecap="round"
-            fill="none"
-            opacity="0.7"
-          />
-        ))}
-
-        {/* Bell top rim highlight */}
-        <ellipse cx="30" cy="11" rx="18" ry="4" fill={`hsla(${jf.hue}, 60%, 95%, 0.2)`} stroke={`hsla(${jf.hue}, 60%, 85%, 0.25)`} strokeWidth="0.5" />
-
-        {/* Gradient definitions */}
-        <defs>
-          <radialGradient id={`jellyBell-${jf.id}`} cx="48%" cy="35%" r="60%">
-            <stop offset="0%" stopColor={`hsla(${jf.hue}, 75%, 82%, 0.55)`} />
-            <stop offset="55%" stopColor={`hsla(${jf.hue + 20}, 65%, 65%, 0.35)`} />
-            <stop offset="100%" stopColor={`hsla(${jf.hue + 40}, 55%, 55%, 0.15)`} />
-          </radialGradient>
-        </defs>
-      </svg>
+    <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+      {/* Top-left warm glow */}
+      <div className="absolute -top-[10%] -left-[10%] w-[500px] h-[350px] rounded-full"
+           style={{
+             background: 'radial-gradient(circle, rgba(56,189,248,0.20) 0%, transparent 70%)',
+             filter: 'blur(80px)',
+           }}
+      />
+      {/* Bottom-right purple accent */}
+      <div className="absolute -bottom-[5%] -right-[5%] w-[450px] h-[300px] rounded-full"
+           style={{
+             background: 'radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 70%)',
+             filter: 'blur(70px)',
+           }}
+      />
+      {/* Center teal glow */}
+      <div className="absolute top-[40%] left-[30%] w-[400px] h-[280px] rounded-full"
+           style={{
+             background: 'radial-gradient(circle, rgba(6,182,212,0.10) 0%, transparent 65%)',
+             filter: 'blur(90px)',
+           }}
+      />
     </div>
   );
 }
 
-// ===== SEA SPARKLES / PLANKTON — 小亮点粒子让海洋有生气 =====
-interface SparkleParticle {
+// ============================================================
+// LAYER 2: 浮动光点 — 小而精致的亮点粒子（不是鱼！）
+// ============================================================
+interface LightParticle {
   id: number;
   x: number;
   y: number;
   size: number;
+  opacity: number;
   duration: number;
   delay: number;
+  driftX: number;
 }
 
-function SeaSparkles() {
-  const [particles, setParticles] = useState<SparkleParticle[]>([]);
+function FloatingLights() {
+  const [particles, setParticles] = useState<LightParticle[]>([]);
 
   useEffect(() => {
-    setParticles(Array.from({ length: 25 }, (_, i) => ({
+    // 30 个精致光点 — 小、淡、慢
+    const pts: LightParticle[] = Array.from({ length: 30 }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
       y: Math.random() * 100,
-      size: 1.5 + Math.random() * 2.5,
-      duration: 2 + Math.random() * 4,
-      delay: Math.random() * 5,
-    })));
+      size: 1 + Math.random() * 2.5,       // 1-3.5px 很小
+      opacity: 0.2 + Math.random() * 0.5,   // 0.2-0.7 不太亮
+      duration: 4 + Math.random() * 8,       // 4-12s 很慢
+      delay: Math.random() * 6,
+      driftX: (Math.random() - 0.5) * 30,   // 轻微横向漂移
+    }));
+    setParticles(pts);
   }, []);
 
+  if (particles.length === 0) return null;
+
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+    <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
       {particles.map(p => (
-        <div key={p.id} className="absolute rounded-full" style={{
-          left: `${p.x}%`,
-          top: `${p.y}%`,
-          width: p.size,
-          height: p.size,
-          background: 'white',
-          boxShadow: '0 0 4px rgba(255,255,255,0.6)',
-          animation: `sparkle-fade ${p.duration}s ease-in-out infinite`,
-          animationDelay: `${p.delay}s`,
-        }} />
+        <div
+          key={p.id}
+          className="absolute rounded-full"
+          style={{
+            left: `${p.x}%`,
+            top: `${p.y}%`,
+            width: p.size,
+            height: p.size,
+            background: `radial-gradient(circle, rgba(255,255,255,${p.opacity}) 0%, rgba(255,255,255,${p.opacity * 0.3}) 60%, transparent 100%)`,
+            boxShadow: `0 0 ${p.size * 3}px rgba(255,255,255,${p.opacity * 0.25})`,
+            animation: `float-light ${p.duration}s ease-in-out infinite`,
+            animationDelay: `${p.delay}s`,
+            '--drift-x': `${p.driftX}px`,
+          } as React.CSSProperties}
+        />
       ))}
     </div>
   );
 }
 
-// ===== CAUSTIC LIGHTS — 海底焦散光纹（水面折射的光斑效果） =====
-function CausticLights() {
+// ============================================================
+// LAYER 3: 上升气泡 — 极简圆形气泡
+// ============================================================
+interface Bubble {
+  id: number;
+  x: number;
+  size: number;
+  duration: number;
+  delay: number;
+  opacity: number;
+}
+
+function RisingBubbles() {
+  const [bubbles, setBubbles] = useState<Bubble[]>([]);
+
+  useEffect(() => {
+    // 12 个小气泡 — 稀疏、精致
+    const bbs: Bubble[] = Array.from({ length: 12 }, (_, i) => ({
+      id: i,
+      x: 5 + Math.random() * 90,
+      size: 3 + Math.random() * 7,        // 3-10px
+      duration: 6 + Math.random() * 8,     // 6-14s 慢速上升
+      delay: Math.random() * 8,
+      opacity: 0.08 + Math.random() * 0.15, // 很淡
+    }));
+    setBubbles(bbs);
+  }, []);
+
+  if (bubbles.length === 0) return null;
+
   return (
-    <div className="absolute bottom-0 left-0 right-0 h-[120px] pointer-events-none overflow-hidden opacity-[0.15]"
-         style={{ mixBlendMode: 'screen' }}>
-      {/* Animated caustic pattern using overlapping ellipses */}
-      <div className="absolute inset-0">
-        {Array.from({ length: 8 }, (_, i) => (
-          <div key={i} className="absolute rounded-full bg-white"
-               style={{
-                 left: `${i * 13 + Math.random() * 5}%`,
-                 bottom: `${Math.random() * 40}px`,
-                 width: `${60 + Math.random() * 80}px`,
-                 height: `${20 + Math.random() * 25}px`,
-                 borderRadius: '50%',
-                 filter: 'blur(8px)',
-                 animation: `caustic-move ${3 + Math.random() * 3}s ease-in-out infinite alternate`,
-                 animationDelay: `${i * 0.4}s`,
-               }}
-          />
-        ))}
-      </div>
+    <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+      {bubbles.map(b => (
+        <div
+          key={b.id}
+          className="absolute rounded-full"
+          style={{
+            left: `${b.x}%`,
+            bottom: '-12px',
+            width: b.size,
+            height: b.size,
+            background: `radial-gradient(circle at 35% 35%, rgba(255,255,255,${b.opacity + 0.15}), rgba(147,197,253,${b.opacity * 0.5}), transparent 80%)`,
+            border: '0.5px solid rgba(255,255,255,0.1)',
+            animation: `bubble-rise ${b.duration}s ease-in infinite`,
+            animationDelay: `${b.delay}s`,
+          }}
+        />
+      ))}
     </div>
   );
 }
 
+// ============================================================
+// LAYER 4: 底部波纹 — 几何线条波浪（干净利落）
+// ============================================================
+function WaveLines() {
+  return (
+    <div className="absolute bottom-0 left-0 right-0 h-[50px] pointer-events-none overflow-hidden" aria-hidden="true">
+      {/* Wave 1 — back layer, slow */}
+      <svg className="absolute bottom-0 left-0 w-full h-[45px]" preserveAspectRatio="none" viewBox="0 0 1440 45">
+        <path d="M0,22 C360,5 720,38 1080,18 C1260,8 1380,28 1440,22 L1440,45 L0,45 Z"
+              fill="rgba(14,165,233,0.06)">
+          <animate attributeName="d"
+                   dur="10s"
+                   repeatCount="indefinite"
+                   values="M0,22 C360,5 720,38 1080,18 C1260,8 1380,28 1440,22 L1440,45 L0,45 Z;
+                           M0,18 C360,32 720,8 1080,26 C1260,34 1380,12 1440,18 L1440,45 L0,45 Z;
+                           M0,22 C360,5 720,38 1080,18 C1260,8 1380,28 1440,22 L1440,45 L0,45 Z" />
+        </path>
+      </svg>
+
+      {/* Wave 2 — middle layer */}
+      <svg className="absolute bottom-0 left-0 w-full h-[35px]" preserveAspectRatio="none" viewBox="0 0 1440 35">
+        <path d="M0,16 C240,28 480,6 720,20 C960,33 1200,10 1440,16 L1440,35 L0,35 Z"
+              fill="rgba(56,189,248,0.08)">
+          <animate attributeName="d"
+                   dur="7s"
+                   repeatCount="indefinite"
+                   values="M0,16 C240,28 480,6 720,20 C960,33 1200,10 1440,16 L1440,35 L0,35 Z;
+                           M0,10 C240,4 480,26 720,12 C960,6 1200,24 1440,10 L1440,35 L0,35 Z;
+                           M0,16 C240,28 480,6 720,20 C960,33 1200,10 1440,16 L1440,35 L0,35 Z" />
+        </path>
+      </svg>
+
+      {/* Wave 3 — front layer, faster, lighter */}
+      <svg className="absolute bottom-0 left-0 w-full h-[25px]" preserveAspectRatio="none" viewBox="0 0 1440 25">
+        <path d="M0,12 C180,20 360,4 540,14 C720,23 900,8 1080,15 C1260,21 1350,10 1440,12 L1440,25 L0,25 Z"
+              fill="rgba(125,211,252,0.10)">
+          <animate attributeName="d"
+                   dur="5s"
+                   repeatCount="indefinite"
+                   values="M0,12 C180,20 360,4 540,14 C720,23 900,8 1080,15 C1260,21 1350,10 1440,12 L1440,25 L0,25 Z;
+                           M0,8 C180,2 360,16 540,8 C720,2 900,16 1080,8 C1260,4 1350,14 1440,8 L1440,25 L0,25 Z;
+                           M0,12 C180,20 360,4 540,14 C720,23 900,8 1080,15 C1260,21 1350,10 1440,12 L1440,25 L0,25 Z" />
+        </path>
+      </svg>
+    </div>
+  );
+}
+
+// ============================================================
+// LAYER 5: 表面光线折射 — 微妙的光线效果
+// ============================================================
+function SurfaceLightRefraction() {
+  return (
+    <div className="absolute top-0 left-0 right-0 h-[40%] pointer-events-none overflow-hidden opacity-[0.07]"
+         aria-hidden="true"
+         style={{ mixBlendMode: 'screen' }}>
+      {Array.from({ length: 5 }, (_, i) => (
+        <div
+          key={i}
+          className="absolute top-0"
+          style={{
+            left: `${i * 18 + Math.random() * 10}%`,
+            width: `${80 + Math.random() * 60}px`,
+            height: '100%',
+            background: `linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.05) 60%, transparent 100%)`,
+            transform: `skewX(${-8 + i * 4}deg)`,
+            filter: 'blur(12px)',
+            animation: `refraction-sway ${4 + i * 1.5}s ease-in-out infinite alternate`,
+            animationDelay: `${i * 0.6}s`,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+// ============================================================
+// MAIN COMPONENT
+// ============================================================
 export default function OceanHeader({
   title,
   subtitle,
@@ -350,13 +249,6 @@ export default function OceanHeader({
   icon?: React.ReactNode;
   children?: React.ReactNode;
 }) {
-  const jellyfishList: JellyfishData[] = [
-    { id: 0, x: '8%',  y: '20%', size: 52,  hue: 320, delay: 0 },    // pink/magenta
-    { id: 1, x: '78%', y: '12%', size: 62, hue: 280, delay: 1.5 },   // purple
-    { id: 2, x: '55%', y: '58%', size: 42, hue: 200, delay: 3 },     // cyan-blue
-    { id: 3, x: '22%', y: '62%', size: 36, hue: 340, delay: 4.5 },   // hot pink (small)
-  ];
-
   return (
     <section
       className="relative text-white py-20 px-4 sm:px-6 lg:px-8 overflow-hidden"
@@ -368,29 +260,22 @@ export default function OceanHeader({
         background: OCEAN_GRADIENT,
       }}
     >
-      {/* === LAYER 1: Background ambient glow orbs === */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-[10%] left-[10%] w-[400px] h-[250px] rounded-full blur-[100px]"
-             style={{ backgroundColor: 'rgba(56,189,248,0.15)' }} />
-        <div className="absolute bottom-[20%] right-[15%] w-[350px] h-[200px] rounded-full blur-[90px]"
-             style={{ backgroundColor: 'rgba(167,139,250,0.1)' }} />
-        <div className="absolute top-[50%] left-[50%] w-[500px] h-[300px] rounded-full blur-[120px] -translate-x-1/2 -translate-y-1/2"
-             style={{ backgroundColor: 'rgba(6,182,212,0.08)' }} />
-      </div>
+      {/* Layer 1: Ambient glow */}
+      <AmbientGlow />
 
-      {/* === LAYER 2: Sea sparkles (ambient particles) === */}
-      <SeaSparkles />
+      {/* Layer 2: Surface light refraction (top) */}
+      <SurfaceLightRefraction />
 
-      {/* === LAYER 3: Fish swarm (Canvas) === */}
-      <FishSwarm />
+      {/* Layer 3: Floating light particles (ambient) */}
+      <FloatingLights />
 
-      {/* === LAYER 4: Jellyfish (SVG, above fish) === */}
-      {jellyfishList.map(jf => <JellyfishV2 key={jf.id} jf={jf} />)}
+      {/* Layer 4: Rising bubbles */}
+      <RisingBubbles />
 
-      {/* === LAYER 5: Caustic lights (bottom) === */}
-      <CausticLights />
+      {/* Layer 5: Wave lines (bottom) */}
+      <WaveLines />
 
-      {/* === CONTENT (top layer) === */}
+      {/* === CONTENT (top layer, always readable) === */}
       <div className="relative z-10 max-w-5xl mx-auto text-center">
         {icon && (
           <motion.div
@@ -433,7 +318,7 @@ export default function OceanHeader({
         {children}
       </div>
 
-      {/* ===== ALL ANIMATIONS ===== */}
+      {/* ===== ANIMATIONS ===== */}
       <style>{`
         @media (prefers-reduced-motion: reduce) {
           section * {
@@ -442,47 +327,48 @@ export default function OceanHeader({
           }
         }
 
-        /* Jellyfish drift */
-        @keyframes jelly-drift-v2 {
-          0%, 100% { transform: translateY(0) translateX(0) rotate(-2deg); }
-          25%      { transform: translateY(-16px) translateX(8px) rotate(1.5deg); }
-          50%      { transform: translateY(-6px) translateX(-5px) rotate(-1deg); }
-          75%      { transform: translateY(-20px) translateX(6px) rotate(2deg); }
-        }
-
-        /* Jellyfish bell pulse */
-        .jelly-bell-v2 {
-          transform-origin: center bottom;
-          animation: jelly-pulse-v2 3s ease-in-out infinite;
-        }
-        @keyframes jelly-pulse-v2 {
-          0%, 100% { transform: scaleY(1) scaleX(1); }
-          50%      { transform: scaleY(0.93) scaleX(1.04); }
-        }
-
-        /* Jellyfish tentacle sway */
-        ${[0,1,2,3,4].map(i => `
-          .jelly-tentacle-v2-${i} {
-            animation: tentacle-sway-v2 ${2.2 + i * 0.4}s ease-in-out infinite alternate;
-            transform-origin: 0 34px;
+        /* Floating light particles */
+        @keyframes float-light {
+          0%, 100% {
+            transform: translate(0, 0) scale(1);
+            opacity: var(--base-opacity, 0.5);
           }
-        `).join('')}
-
-        @keyframes tentacle-sway-v2 {
-          0%   { transform: rotate(0deg) translateX(0); }
-          100% { transform: rotate(${Math.random() > 0.5 ? '' : '-'}${6 + Math.random() * 8}deg) translateX(${3 + Math.random() * 5}px); }
+          25% {
+            transform: translate(var(--drift-x, 5px), -12px) scale(1.15);
+            opacity: calc(var(--base-opacity, 0.5) * 1.3);
+          }
+          50% {
+            transform: translate(calc(var(--drift-x, 5px) * -0.5), -20px) scale(0.95);
+            opacity: calc(var(--base-opacity, 0.5) * 0.7);
+          }
+          75% {
+            transform: translate(calc(var(--drift-x, 5px) * 0.3), -8px) scale(1.1);
+            opacity: calc(var(--base-opacity, 0.5) * 1.1);
+          }
         }
 
-        /* Sea sparkle fade */
-        @keyframes sparkle-fade {
-          0%, 100% { opacity: 0; transform: scale(0.5); }
-          50%      { opacity: 0.9; transform: scale(1.2); }
+        /* Rising bubble */
+        @keyframes bubble-rise {
+          0% {
+            transform: translateY(0) translateX(0) scale(0.8);
+            opacity: 0;
+          }
+          10% {
+            opacity: 1;
+          }
+          90% {
+            opacity: 0.7;
+          }
+          100% {
+            transform: translateY(-380px) translateX(calc((var(--bubble-drift, 10px) * 1))) scale(1);
+            opacity: 0;
+          }
         }
 
-        /* Caustic light movement */
-        @keyframes caustic-move {
-          0%   { transform: translateX(0) scaleX(1); opacity: 0.4; }
-          100% { transform: translateX(${15 + Math.random() * 20}px) scaleX(1.15); opacity: 0.8; }
+        /* Surface refraction sway */
+        @keyframes refraction-sway {
+          0%   { transform: skewX(-8deg) translateX(0); opacity: 0.7; }
+          100% { transform: skewX(-4deg) translateX(15px); opacity: 1; }
         }
       `}</style>
     </section>
