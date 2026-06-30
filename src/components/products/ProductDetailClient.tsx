@@ -75,15 +75,32 @@ export default function ProductDetailClient({
 
       {/* Product Detail */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="glass-card water-ripple rounded-2xl overflow-hidden"
+        <div className="glass-card water-ripple rounded-2xl overflow-hidden relative"
           onMouseMove={(e: React.MouseEvent) => {
             const rect = e.currentTarget.getBoundingClientRect();
             const x = ((e.clientX - rect.left) / rect.width) * 100;
             const y = ((e.clientY - rect.top) / rect.height) * 100;
             (e.currentTarget as HTMLElement).style.setProperty('--rx', `${x}%`);
             (e.currentTarget as HTMLElement).style.setProperty('--ry', `${y}%`);
+            // 移动透光光斑
+            const glow = e.currentTarget.querySelector('.card-glow-spot') as HTMLElement | null;
+            if (glow) {
+              glow.style.left = `${x}%`;
+              glow.style.top = `${y}%`;
+              glow.style.transform = 'translate(-50%, -50%)';
+            }
+            // 第三波纹跟随鼠标
+            const w3 = e.currentTarget.querySelector('.ripple-wave3') as HTMLElement | null;
+            if (w3) {
+              w3.style.left = `${x}%`;
+              w3.style.top = `${y}%`;
+            }
           }}
         >
+          {/* 透光光斑 */}
+          <div className="card-glow-spot" />
+          {/* 第三层波纹 */}
+          <div className="ripple-wave3" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-6 lg:p-8">
             {/* Left: Image Gallery */}
             <div>
@@ -93,7 +110,18 @@ export default function ProductDetailClient({
                     <div
                       className="relative aspect-square bg-gray-50/80 rounded-xl overflow-hidden cursor-zoom-in group water-ripple"
                       onClick={() => setLightboxOpen(true)}
+                      onMouseMove={(e: React.MouseEvent) => {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        const x = ((e.clientX - rect.left) / rect.width) * 100;
+                        const y = ((e.clientY - rect.top) / rect.height) * 100;
+                        (e.currentTarget as HTMLElement).style.setProperty('--rx', `${x}%`);
+                        (e.currentTarget as HTMLElement).style.setProperty('--ry', `${y}%`);
+                        const w3 = e.currentTarget.querySelector('.ripple-wave3') as HTMLElement | null;
+                        if (w3) { w3.style.left = `${x}%`; w3.style.top = `${y}%`; }
+                      }}
                     >
+                      {/* 图片区第三层波纹 */}
+                      <div className="ripple-wave3" />
                       {mainImageError ? (
                         /* Fallback when image fails to load */
                         <div className="w-full h-full flex flex-col items-center justify-center bg-gray-50">
@@ -443,8 +471,23 @@ export default function ProductDetailClient({
                 <a
                   key={relatedProduct.id}
                   href={`/${locale}/products/${relatedProduct.slug}`}
-                  className="group glass-card water-ripple rounded-2xl overflow-hidden block"
+                  className="group glass-card water-ripple rounded-2xl overflow-hidden block relative"
+                  onMouseMove={(e: React.MouseEvent) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const x = ((e.clientX - rect.left) / rect.width) * 100;
+                    const y = ((e.clientY - rect.top) / rect.height) * 100;
+                    (e.currentTarget as HTMLElement).style.setProperty('--rx', `${x}%`);
+                    (e.currentTarget as HTMLElement).style.setProperty('--ry', `${y}%`);
+                    const glow = e.currentTarget.querySelector('.card-glow-spot') as HTMLElement | null;
+                    if (glow) { glow.style.left = `${x}%`; glow.style.top = `${y}%`; glow.style.transform = 'translate(-50%, -50%)'; }
+                    const w3 = e.currentTarget.querySelector('.ripple-wave3') as HTMLElement | null;
+                    if (w3) { w3.style.left = `${x}%`; w3.style.top = `${y}%`; }
+                  }}
                 >
+                  {/* 透光光斑 */}
+                  <div className="card-glow-spot" />
+                  {/* 第三层波纹 */}
+                  <div className="ripple-wave3" />
                   <div className="relative h-44 overflow-hidden bg-gray-50">
                     {relatedProduct.images?.[0] ? (
                       <SafeImage
