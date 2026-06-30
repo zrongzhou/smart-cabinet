@@ -4,19 +4,17 @@ import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 
 // ============================================================
-// OceanHeader v202 — WebGL Shader 缓流极光 (Gentle Aurora)
+// OceanHeader v203 — 晶莹流光 (Crystal Fluid Aurora)
 //
-// v201 问题诊断（用户截图确认）：
-//   ❌ 颜色偏紫偏脏 — 色相范围含靛紫段(238~248°)，饱和度偏高
-//   ❌ 流动太快 — u_time*0.15 + domain warping速度系数过大
-//   ❌ 跟网站风格不协调 — 工具柜网站需要干净、专业、克制的背景
+// v202 问题：饱和度0.30~0.52 = 灰蓝浑水，无晶莹感
 //
-// v202 改动：
-//   ✅ 色相锁定 200~222度（纯天青→中蓝，彻底去紫）
-//   ✅ 饱和度降至 0.30~0.52（低饱和，高级灰蓝感）
-//   ✅ 亮度提升到 0.52~0.73（明亮干净）
-//   ✅ 整体流速减慢 50%（舒缓不抢眼）
-//   ✅ 去高光闪烁、去暗角（更干净均匀）
+// v203 目标：晶莹剔透的液体流动
+//   ✅ 饱和度 0.50~0.72（高饱和 = 晶莹）
+//   ✅ 亮度 0.54~0.80（透光液体感）
+//   ✅ 明暗反差34%（暗48% vs 亮82%）
+//   ✅ Caustics光折射高光（45%强度，像光线穿过水/冰晶）
+//   ✅ 细碎闪烁微光（水面/晶体表面反射）
+//   ✅ 缓流速度（用户要求不快）
 // ============================================================
 
 interface OceanHeaderProps {
@@ -33,10 +31,8 @@ export default function OceanHeader({ title, subtitle, description, icon, childr
     <section className="relative text-white py-[120px] px-4 sm:px-6 lg:px-8 overflow-hidden"
       style={{ minHeight: '380px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
     >
-      {/* WebGL Shader 层 */}
       <WebGLFluidAurora />
 
-      {/* 底部过渡到白色内容区 */}
       <div className="absolute bottom-0 left-0 right-0 h-[110px] pointer-events-none z-[3]"
         style={{
           background: 'linear-gradient(to top, rgba(248,250,252,1) 0%, rgba(248,250,252,0.55) 55%, transparent 100%)',
@@ -44,7 +40,6 @@ export default function OceanHeader({ title, subtitle, description, icon, childr
         aria-hidden="true"
       />
 
-      {/* 内容区 */}
       <motion.div className="relative z-10 text-center max-w-3xl mx-auto"
         initial={{ opacity: 0, y: 32 }}
         animate={{ opacity: 1, y: 0 }}
@@ -93,13 +88,6 @@ export default function OceanHeader({ title, subtitle, description, icon, childr
   );
 }
 
-// ============================================================
-// WebGLFluidAurora — 缓流极光 (v202)
-//
-// 算法保持不变（Domain Warping 已验证有效）：
-//   Simplex Noise → FBM → Domain Warping → HSL→RGB
-// 只调整：颜色参数 + 流速
-// ============================================================
 function WebGLFluidAurora() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -113,7 +101,6 @@ function WebGLFluidAurora() {
     let animId = 0;
     const startTime = Date.now();
 
-    // ── Vertex Shader ──
     const vsSource = [
       'attribute vec2 a_position;',
       'varying vec2 v_uv;',
@@ -123,7 +110,7 @@ function WebGLFluidAurora() {
       '}'
     ].join('\n');
 
-    // ── Fragment Shader：缓流极光 v202 ──
+    // ── Fragment Shader: v203 Crystal Fluid Aurora ──
     const fsSource = [
       'precision mediump float;',
       'varying vec2 v_uv;',
@@ -131,7 +118,6 @@ function WebGLFluidAurora() {
       'uniform vec2 u_resolution;',
       'uniform vec2 u_aspect;',
 
-      // ── Simplex 2D Noise ──
       'vec3 permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }',
 
       'float snoise(vec2 v) {',
@@ -161,7 +147,6 @@ function WebGLFluidAurora() {
       '  return 130.0 * dot(m, g);',
       '}',
 
-      // ── FBM ──
       'float fbm(vec2 p) {',
       '  float f = 0.0;',
       '  float w = 0.5;',
@@ -174,79 +159,72 @@ function WebGLFluidAurora() {
       '  return f;',
       '}',
 
-      // ── HSL -> RGB ──
       'vec3 hsl2rgb(float h, float s, float l) {',
       '  vec3 rgb = clamp(abs(mod(h*6.0+vec3(0.0,4.0,2.0),6.0)-3.0)-1.0, 0.0, 1.0);',
       '  return l + s * (rgb - 0.5) * (1.0 - abs(2.0 * l - 1.0));',
       '}',
 
-      // ══════════════════════════════════════════════
-      // 主渲染逻辑 —— v202 缓流 + 干净色系
-      // ══════════════════════════════════════════════
       'void main() {',
       '  vec2 uv = v_uv;',
-
-      // 【★ 核心：流速减半】v201: 0.15 → v202: 0.07
       '  float t = u_time * 0.07;',
 
       '  uv.x *= u_aspect.x / u_aspect.y;',
 
-      // ── Domain Warping（流速同步减半）──
       '  vec2 q = vec2(',
-      '    fbm(uv + vec2(0.0, 0.0) + t * 0.15),',     // v201: 0.3
-      '    fbm(uv + vec2(5.2, 1.3) + t * 0.10)',       // v201: 0.2
+      '    fbm(uv + vec2(0.0, 0.0) + t * 0.15),',
+      '    fbm(uv + vec2(5.2, 1.3) + t * 0.10)',
       '  );',
 
       '  vec2 r = vec2(',
-      '    fbm(uv + q * 1.5 + vec2(1.7, 9.2) + t * 0.08),',  // v201: 0.15
-      '    fbm(uv + q * 1.2 + vec2(8.3, 2.8) + t * 0.06)',     // v201: 0.12
+      '    fbm(uv + q * 1.5 + vec2(1.7, 9.2) + t * 0.08),',
+      '    fbm(uv + q * 1.2 + vec2(8.3, 2.8) + t * 0.06)',
       '  );',
 
       '  float f = fbm(uv + r * 1.7);',
 
-      // ══════════════════════════════════════════════
-      // ★★★ v202 颜色映射：干净天蓝色系 ★★★
-      // ══════════════════════════════════════════════
-
-      // 混合权重
-      '  float hueMix = f * 0.45 + r.x * 0.28 + r.y * 0.27;',
+      // ── v203 晶莹色彩映射 ──
+      '  float hueMix = f * 0.42 + r.x * 0.32 + r.y * 0.26;',
       '  hueMix = clamp(hueMix, 0.0, 1.0);',
 
-      // 色相：严格锁定 200~222 度（天青→中蓝，零紫色！）
-      // 200度=干净天蓝, 210度=经典蓝, 222度=中蓝
-      // 对应HSL: 200/360=0.556 ~ 222/360=0.617
-      '  float hue = mix(0.556, 0.617, hueMix);',
-      '  hue += sin(t * 0.15 + f * 0.8) * 0.008;', // 微弱色相漂移 ±0.8%
+      // 色相: 195~225度 (天青→宝石蓝→靛蓝)
+      '  float hue = mix(0.542, 0.625, hueMix);',
+      '  hue += sin(t * 0.12 + f * 1.2) * 0.012;',
 
-      // 饱和度：低！高级灰蓝感（不是鲜艳的彩带）
-      // 0.30 = 几乎中性灰蓝, 0.52 = 温和的蓝色
-      '  float sat = mix(0.30, 0.52, smoothstep(-0.15, 0.5, f));',
+      // 饱和度: 高! 晶莹需要高饱和
+      '  float sat = mix(0.50, 0.72, smoothstep(-0.2, 0.5, f));',
+      '  sat += r.y * 0.05;',
+      '  sat = clamp(sat, 0.48, 0.75);',
 
-      // 亮度：明亮干净（深色区域不低于50%）
-      '  float brightness = mix(0.52, 0.72, smoothstep(-0.35, 0.55, f));',
-      '  brightness += r.x * 0.04;', // 极微弱的明暗变化
-      '  brightness = clamp(brightness, 0.50, 0.74);',
+      // 亮度: 明亮透光 (像光线穿过水/冰晶)
+      '  float brightness = mix(0.54, 0.78, smoothstep(-0.4, 0.55, f));',
+      '  brightness += r.x * 0.07;',
+      '  brightness = clamp(brightness, 0.46, 0.82);',
 
       '  vec3 col = hsl2rgb(hue, sat, brightness);',
 
-      // 高光：用干净的浅天蓝(0.56=202度)，低强度
-      '  float highlight = smoothstep(0.45, 0.70, f) * smoothstep(0.70, 0.45, f);',
-      '  highlight *= smoothstep(0.30, 0.65, r.x);',
-      '  vec3 highlightCol = hsl2rgb(0.56, 0.42, 0.85);', // 浅天蓝，非常柔和
-      '  col = mix(col, highlightCol, highlight * 0.20);', // 高光强度减半
+      // Caustics光折射高光 — 晶莹感的核心!
+      '  float caustics = smoothstep(0.35, 0.75, f) * smoothstep(0.82, 0.35, f);',
+      '  caustics *= smoothstep(0.25, 0.70, r.x) * smoothstep(0.20, 0.60, r.y);',
+      '  caustics = pow(caustics, 1.5);',
+      '  vec3 causticCol = hsl2rgb(0.55, 0.35, 0.92);',
+      '  col = mix(col, causticCol, caustics * 0.45);',
 
-      // 无暗角！让整个画面均匀明亮
-      // 只做极轻微的边缘柔化
+      // 细碎闪烁微光 (水面/晶体表面反射)
+      '  float sparkle = smoothstep(0.55, 0.90, r.x * r.y);',
+      '  sparkle *= smoothstep(-0.1, 0.4, f);',
+      '  vec3 sparkCol = hsl2rgb(0.53, 0.28, 0.96);',
+      '  col = mix(col, sparkCol, sparkle * 0.25);',
+
+      // 极轻柔边缘过渡
       '  vec2 centerUV = v_uv - 0.5;',
-      '  float edge = 1.0 - dot(centerUV, centerUV) * 0.3;',
-      '  edge = smoothstep(0.2, 0.80, edge);',
-      '  col *= 0.88 + edge * 0.12;',
+      '  float edge = 1.0 - dot(centerUV, centerUV) * 0.25;',
+      '  edge = smoothstep(0.15, 0.85, edge);',
+      '  col *= 0.90 + edge * 0.10;',
 
       '  gl_FragColor = vec4(col, 1.0);',
       '}'
     ].join('\n');
 
-    // ── 编译 Shader ──
     const compileShader = (type: number, source: string): WebGLShader | null => {
       const shader = gl.createShader(type);
       if (!shader) return null;
@@ -275,7 +253,6 @@ function WebGLFluidAurora() {
     }
     gl.useProgram(program);
 
-    // ── 全屏四边形 ──
     const vertices = new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]);
     const buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
@@ -285,12 +262,10 @@ function WebGLFluidAurora() {
     gl.enableVertexAttribArray(posLoc);
     gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
 
-    // ── Uniforms ──
     const timeLoc = gl.getUniformLocation(program, 'u_time');
     const resLoc = gl.getUniformLocation(program, 'u_resolution');
     const aspectLoc = gl.getUniformLocation(program, 'u_aspect');
 
-    // ── Resize & Render ──
     const resize = () => {
       const rect = canvas.parentElement!.getBoundingClientRect();
       const dpr = window.devicePixelRatio || 1;
@@ -301,11 +276,9 @@ function WebGLFluidAurora() {
 
     const render = () => {
       const t = (Date.now() - startTime) * 0.001;
-
       gl.uniform1f(timeLoc, t);
       gl.uniform2f(resLoc, canvas.width, canvas.height);
       gl.uniform2f(aspectLoc, canvas.width, canvas.height);
-
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
       animId = requestAnimationFrame(render);
     };
