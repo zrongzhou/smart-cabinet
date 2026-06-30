@@ -4,13 +4,14 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
 // ============================================================
-// OceanHeader v170 — 商务专业蓝 · 高级感重制版
+// OceanHeader v171 — 商务专业蓝 · 高对比度精致版
 //
-// 设计理念：
-//   多层径向渐变叠加 → 空间深度感
-//   动态光斑流动 → 页面有生命力
-//   几何线条装饰 → 制造业科技调性
-//   所有动画肉眼可见但克制优雅
+// 核心改进：
+//   1. 颜色饱和度大幅提升 — 不再是灰蒙蒙的蓝
+//   2. 动态渐变背景 — 颜色会缓慢流动变化
+//   3. 粒子足够大、够亮、带拖尾 — 肉眼清晰可见
+//   4. 光斑明显可见 — 营造高级光效氛围
+//   5. 网格线适度可见 — 增加科技质感
 // ============================================================
 
 interface OceanHeaderProps {
@@ -25,147 +26,155 @@ interface OceanHeaderProps {
 export default function OceanHeader({ title, subtitle, description, icon, children }: OceanHeaderProps) {
   return (
     <section className="relative text-white py-[120px] px-4 sm:px-6 lg:px-8 overflow-hidden"
-      style={{ minHeight: '360px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+      style={{ minHeight: '380px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
     >
-      {/* ===== 背景层：多层渐变叠加 ===== */}
-      <BackgroundLayers />
+      {/* Layer 0: 动态流动渐变背景 */}
+      <AnimatedGradient />
 
-      {/* ===== 动态光斑：缓慢漂移的大型模糊色块 ===== */}
-      <OrbLights />
+      {/* Layer 1: 可见度适中的网格 */}
+      <TechGrid />
 
-      {/* ===== 几何装饰线条：右上角和左下角 ===== */}
-      <GeoAccents />
+      {/* Layer 2: 大型光斑 — 明显可见但优雅 */}
+      <GlowOrbs />
 
-      {/* ===== 漂浮粒子：小圆点缓缓上升 ===== */}
-      <Particles />
+      {/* Layer 3: 发光粒子 — 够大够亮带光晕 */}
+      <GlowParticles />
 
-      {/* ===== 底部过渡 ===== */}
-      <div className="absolute bottom-0 left-0 right-0 h-[100px] pointer-events-none"
-        style={{ background: 'linear-gradient(to top, rgba(248,250,252,0.98) 0%, rgba(248,250,252,0.4) 60%, transparent 100%)' }}
+      {/* Layer 4: 几何装饰线条 */}
+      <GeoLines />
+
+      {/* Layer 5: 底部过渡到白色内容区 */}
+      <div className="absolute bottom-0 left-0 right-0 h-[110px] pointer-events-none z-[2]"
+        style={{
+          background: 'linear-gradient(to top, rgba(248,250,252,1) 0%, rgba(248,250,252,0.5) 55%, transparent 100%)',
+        }}
         aria-hidden="true" />
 
-      {/* ===== 内容区 ===== */}
-      <motion.div
-        className="relative z-10 text-center max-w-3xl mx-auto"
-        initial={{ opacity: 0, y: 30 }}
+      {/* 内容区 */}
+      <motion.div className="relative z-10 text-center max-w-3xl mx-auto"
+        initial={{ opacity: 0, y: 32 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
       >
-        {/* 图标 */}
+        {/* 图标 — 毛玻璃容器 */}
         {icon && (
-          <motion.div
-            className="flex justify-center mb-5"
-            initial={{ opacity: 0, scale: 0.7 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.2, ease: [0.34, 1.56, 0.64, 1] }}
+          <motion.div className="flex justify-center mb-5"
+            initial={{ opacity: 0, scale: 0.7, rotate: -8 }}
+            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+            transition={{ duration: 0.55, delay: 0.18, ease: [0.34, 1.56, 0.64, 1] }}
           >
-            <div className="w-[56px] h-[56px] rounded-2xl flex items-center justify-center"
+            <div className="w-[58px] h-[58px] rounded-2xl flex items-center justify-center"
               style={{
-                background: 'linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0.06))',
-                backdropFilter: 'blur(12px)',
-                border: '1px solid rgba(255,255,255,0.2)',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.15)',
+                background: 'linear-gradient(145deg, rgba(255,255,255,0.22), rgba(255,255,255,0.08))',
+                backdropFilter: 'blur(14px)',
+                border: '1px solid rgba(255,255,255,0.28)',
+                boxShadow: '0 10px 40px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.22)',
               }}
-            >
-              {icon}
-            </div>
+            >{icon}</div>
           </motion.div>
         )}
 
-        {/* 子元素（面包屑等）*/}
         {children}
 
-        {/* 标题 */}
         {title && (
           <motion.h1
-            className="text-3xl sm:text-4xl lg:text-[2.75rem] font-bold tracking-tight leading-tight mb-5"
-            style={{ textShadow: '0 2px 20px rgba(0,0,0,0.12)' }}
-            initial={{ opacity: 0, y: 16 }}
+            className="text-3xl sm:text-4xl lg:text-[2.85rem] font-bold tracking-tight leading-tight mb-5"
+            style={{ textShadow: '0 2px 24px rgba(0,0,0,0.15)' }}
+            initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-          >
-            {title}
-          </motion.h1>
+            transition={{ duration: 0.68, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
+          >{title}</motion.h1>
         )}
 
-        {/* 副标题 */}
         {(description || subtitle) && (
           <motion.p
-            className="text-base sm:text-lg text-white/80 max-w-xl mx-auto leading-relaxed"
-            style={{ textShadow: '0 1px 10px rgba(0,0,0,0.08)' }}
-            initial={{ opacity: 0, y: 12 }}
+            className="text-base sm:text-lg text-white/88 max-w-xl mx-auto leading-relaxed"
+            style={{ textShadow: '0 1px 12px rgba(0,0,0,0.1)' }}
+            initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.28, ease: [0.22, 1, 0.36, 1] }}
-          >
-            {description || subtitle}
-          </motion.p>
+            transition={{ duration: 0.62, delay: 0.26, ease: [0.22, 1, 0.36, 1] }}
+          >{description || subtitle}</motion.p>
         )}
       </motion.div>
 
-      {/* 动画定义 */}
-      <style>{styles}</style>
+      <style>{keyframes}</style>
     </section>
   );
 }
 
 // ============================================================
-// 背景层 — 多层渐变叠加产生深度
+// Layer 0: 动态渐变 — 背景色缓慢流动变化
+// 用 CSS animation 让 background-position 移动
 // ============================================================
-function BackgroundLayers() {
+function AnimatedGradient() {
   return (
-    <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-      {/* 主背景：深蓝到亮蓝的复杂渐变 */}
-      <div className="absolute inset-0"
-        style={{
-          background: `
-            radial-gradient(ellipse 120% 80% at 50% -10%, #3b82f6 0%, transparent 55%),
-            radial-gradient(ellipse 90% 60% at 85% 20%, #6366f1 0%, transparent 45%),
-            radial-gradient(ellipse 100% 70% at 10% 80%, #0ea5e9 0%, transparent 40%),
-            linear-gradient(175deg, #0f172a 0%, #1e3a5a 25%, #1d4ed8 50%, #2563eb 68%, #3b82f6 82%, #7dd3fc 92%, #e0f2fe 100%)
-          `,
-        }}
-      />
-
-      {/* 半透明深色遮罩增加对比度（顶部） */}
-      <div className="absolute inset-0"
-        style={{
-          background: 'radial-gradient(ellipse at 50% 30%, transparent 40%, rgba(15,23,42,0.25) 100%)',
-        }}
-      />
-    </div>
+    <div className="absolute inset-0 pointer-events-none" aria-hidden="true"
+      style={{
+        background: `
+          radial-gradient(ellipse 130% 90% at 30% -5%, #3b82f6 0%, transparent 50%),
+          radial-gradient(ellipse 80% 55% at 80% 15%, #8b5cf6 0%, transparent 45%),
+          radial-gradient(ellipse 100% 65% at 15% 75%, #06b6d4 0%, transparent 42%),
+          linear-gradient(170deg,
+            #071426 0%,
+            #0c2343 16%,
+            #143a6e 32%,
+            #1d4ed8 50%,
+            #2563eb 64%,
+            #3b82f6 78%,
+            #60a5fa 88%,
+            #93c5fd 95%,
+            #dbeafe 100%
+          )
+        `,
+        backgroundSize: '200% 200%',
+        animation: 'gradient-shift 20s ease infinite alternate',
+      }} />
   );
 }
 
 // ============================================================
-// 光斑 — 大型模糊色块，缓慢移动
-// 这是让页面"活"起来的关键元素
+// Layer 1: 科技网格 — 点阵 + 淡斜线
+// 比 v169 更明显但仍不抢焦点
 // ============================================================
-function OrbLights() {
-  const [orbs] = useState(() => [
-    // 右上角主光斑 — 最醒目
-    { id: 0, x: '72%', y: '8%', size: 320, color: 'rgba(99,102,241,0.20)', blur: 90 },
-    // 左侧中部光斑
-    { id: 1, x: '12%', y: '45%', size: 260, color: 'rgba(59,130,246,0.14)', blur: 75 },
-    // 底部偏右光斑 — 温暖色调
-    { id: 2, x: '62%', y: '78%', size: 220, color: 'rgba(14,165,233,0.12)', blur: 65 },
-    // 中上偏左 — 青色点缀
-    { id: 3, x: '35%', y: '18%', size: 180, color: 'rgba(6,182,212,0.10)', blur: 55 },
-  ]);
+function TechGrid() {
+  return (
+    <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-[0.38]"
+         aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="dots171" x="0" y="0" width="32" height="32" patternUnits="userSpaceOnUse">
+          <circle cx="2" cy="2" r="1.3" fill="rgba(148,197,253,0.35)" />
+        </pattern>
+        <pattern id="lines171" x="0" y="0" width="96" height="96" patternUnits="userSpaceOnUse">
+          <path d="M96 0L0 96M0 0L96 96" stroke="rgba(148,163,184,0.08)" strokeWidth="0.6" fill="none" />
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#dots171)" />
+      <rect width="100%" height="100%" fill="url(#lines171)" />
+    </svg>
+  );
+}
+
+// ============================================================
+// Layer 2: 光斑 — 大型模糊色块，opacity 足够高能看见
+// ============================================================
+function GlowOrbs() {
+  const orbs = [
+    { x: '75%', y: '5%', s: 360, c: 'rgba(139,92,246,0.28)', b: 100 },
+    { x: '10%', y: '40%', s: 300, c: 'rgba(59,130,246,0.22)', b: 85 },
+    { x: '60%', y: '72%', s: 260, c: 'rgba(6,182,212,0.18)', b: 70 },
+    { x: '30%', y: '12%', s: 200, c: 'rgba(99,102,241,0.15)', b: 60 },
+  ];
 
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-      {orbs.map(o => (
-        <div key={o.id} style={{
-          position: 'absolute',
-          left: o.x,
-          top: o.y,
-          width: o.size,
-          height: o.size,
-          borderRadius: '50%',
-          background: `radial-gradient(circle, ${o.color}, transparent 70%)`,
-          filter: `blur(${o.blur}px)`,
-          animation: `orb-drift ${18 + o.id * 5}s ease-in-out infinite alternate`,
-          animationDelay: `${o.id * 2}s`,
+      {orbs.map((o, i) => (
+        <div key={i} style={{
+          position: 'absolute', left: o.x, top: o.y,
+          width: o.s, height: o.s, borderRadius: '50%',
+          background: `radial-gradient(circle, ${o.c}, transparent 72%)`,
+          filter: `blur(${o.b}px)`,
+          animation: `orb-float ${20 + i * 6}s ease-in-out infinite alternate`,
+          animationDelay: `${i * 2.5}s`,
         }} />
       ))}
     </div>
@@ -173,77 +182,31 @@ function OrbLights() {
 }
 
 // ============================================================
-// 几何装饰 — 细线和圆环，营造精密制造感
-// 非常淡，不抢焦点，但能提升质感
+// Layer 3: 发光粒子 — 够大、够亮、有拖尾效果
 // ============================================================
-function GeoAccents() {
-  return (
-    <svg className="absolute inset-0 w-full h-full pointer-events-none" aria-hidden="true"
-         xmlns="http://www.w3.org/2000/svg" style={{ opacity: 0.35 }}>
-      <defs>
-        <linearGradient id="geo-line-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="rgba(148,163,184,0)" />
-          <stop offset="50%" stopColor="rgba(148,163,184,0.25)" />
-          <stop offset="100%" stopColor="rgba(148,163,184,0)" />
-        </linearGradient>
-        <linearGradient id="geo-ring-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="rgba(147,197,253,0)" />
-          <stop offset="50%" stopColor="rgba(147,197,253,0.2)" />
-          <stop offset="100%" stopColor="rgba(147,197,253,0)" />
-        </linearGradient>
-      </defs>
-
-      {/* 右上角斜线组 */}
-      <g style={{ transformOrigin: 'top right' }}>
-        <line x1="82%" y1="-2%" x2="100%" y2="18%"
-              stroke="url(#geo-line-grad)" strokeWidth="1" opacity="0.6" />
-        <line x1="88%" y1="-2%" x2="100%" y2="26%"
-              stroke="url(#geo-line-grad)" strokeWidth="0.8" opacity="0.4" />
-        <line x1="94%" y1="-2%" x2="100%" y2="36%"
-              stroke="url(#geo-line-grad)" strokeWidth="0.6" opacity="0.25" />
-      </g>
-
-      {/* 左下角圆弧装饰 */}
-      <circle cx="5%" cy="105%" r="80" fill="none" stroke="url(#geo-ring-grad)"
-              strokeWidth="1" opacity="0.5" strokeDasharray="4 8" />
-      <circle cx="5%" cy="105%" r="110" fill="none" stroke="url(#geo-ring-grad)"
-              strokeWidth="0.7" opacity="0.3" strokeDasharray="2 12" />
-
-      {/* 右侧竖向细线 */}
-      <line x1="97%" y1="30%" x2="97%" y2="58%"
-            stroke="rgba(148,163,184,0.12)" strokeWidth="0.8" />
-      <line x1="95%" y1="38%" x2="95%" y2="52%"
-            stroke="rgba(148,163,184,0.08)" strokeWidth="0.6" />
-    </svg>
-  );
-}
-
-// ============================================================
-// 漂浮粒子 — 小而亮的点，缓缓上升+横向飘移
-// 数量适中，不会显得乱
-// ============================================================
-function Particles() {
-  const [particles, setParticles] = useState<Array<{
-    id: number; x: number; y: number; size: number; dur: number; del: number; op: number;
+function GlowParticles() {
+  const [pts, setPts] = useState<Array<{
+    id: number; x: number; y: number; size: number; dur: number; del: number; op: number; hue: number;
   }>>([]);
 
   useEffect(() => {
-    setParticles(Array.from({ length: 20 }, (_, i) => ({
+    setPts(Array.from({ length: 18 }, (_, i) => ({
       id: i,
-      x: 3 + Math.random() * 94,
-      y: 5 + Math.random() * 90,
-      size: 1.5 + Math.random() * 3,
-      dur: 12 + Math.random() * 16,
-      del: Math.random() * 12,
-      op: 0.2 + Math.random() * 0.5,
+      x: 2 + Math.random() * 96,
+      y: 4 + Math.random() * 92,
+      size: 3 + Math.random() * 5,       // 3~8px — 明显可见
+      dur: 11 + Math.random() * 14,
+      del: Math.random() * 13,
+      op: 0.35 + Math.random() * 0.45,  // 0.35~0.8 — 够亮
+      hue: 200 + Math.random() * 40,     // 蓝-靛色范围
     })));
   }, []);
 
-  if (!particles.length) return null;
+  if (!pts.length) return null;
 
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-      {particles.map(p => (
+      {pts.map(p => (
         <div key={p.id} style={{
           position: 'absolute',
           left: `${p.x}%`,
@@ -251,11 +214,13 @@ function Particles() {
           width: p.size,
           height: p.size,
           borderRadius: '50%',
-          backgroundColor: '#93c5fd',
-          boxShadow: `0 0 ${p.size * 2.5}px rgba(147,197,253,0.5)`,
-          animation: `particle-rise ${p.dur}s ease-in-out infinite`,
+          backgroundColor: `hsla(${p.hue}, 85%, 72%, ${p.op})`,
+          boxShadow: `
+            0 0 ${p.size * 2}px hsla(${p.hue}, 90%, 65%, ${p.op * 0.6}),
+            0 0 ${p.size * 4.5}px hsla(${p.hue}, 85%, 60%, ${p.op * 0.25})
+          `,
+          animation: `particle-up ${p.dur}s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite`,
           animationDelay: `${p.del}s`,
-          opacity: p.op,
         }} />
       ))}
     </div>
@@ -263,29 +228,83 @@ function Particles() {
 }
 
 // ============================================================
-// CSS Keyframes
+// Layer 4: 几何装饰线 — 更明显的科技线条
 // ============================================================
-const styles = `
-  /* 光斑缓慢漂移 */
-  @keyframes orb-drift {
-    0% { transform: translate(0, 0); }
-    33% { transform: translate(-25px, 18px); }
-    66% { transform: translate(15px, -10px); }
-    100% { transform: translate(-10px, 25px); }
+function GeoLines() {
+  return (
+    <svg className="absolute inset-0 w-full h-full pointer-events-none"
+         xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <linearGradient id="gl1" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="transparent" />
+          <stop offset="50%" stopColor="rgba(147,197,253,0.35)" />
+          <stop offset="100%" stopColor="transparent" />
+        </linearGradient>
+        <linearGradient id="gl2" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="transparent" />
+          <stop offset="50%" stopColor="rgba(196,181,253,0.25)" />
+          <stop offset="100%" stopColor="transparent" />
+        </linearGradient>
+      </defs>
+
+      {/* 右上角放射线 */}
+      <g>
+        <line x1="80%" y1="-3%" x2="100%" y2="22%" stroke="url(#gl1)" strokeWidth="1.2" />
+        <line x1="87%" y1="-3%" x2="100%" y2="32%" stroke="url(#gl1)" strokeWidth="0.9" opacity="0.7" />
+        <line x1="94%" y1="-3%" x2="100%" y2="42%" stroke="url(#gl1)" strokeWidth="0.6" opacity="0.4" />
+      </g>
+
+      {/* 左下角弧线 */}
+      <path d="M -3% 108% A 120 120 0 0 1 18% 98%"
+            fill="none" stroke="url(#gl2)" strokeWidth="1" opacity="0.6" />
+      <path d="M -6% 115% A 160 160 0 0 1 22% 95%"
+            fill="none" stroke="url(#gl2)" strokeWidth="0.7" opacity="0.35" />
+
+      {/* 右侧竖线 + 圆点装饰 */}
+      <line x1="97%" y1="28%" x2="97%" y2="62%" stroke="rgba(148,197,253,0.18)" strokeWidth="0.8" />
+      <circle cx="97%" cy="62%" r="2.5" fill="rgba(147,197,253,0.3)" />
+      <circle cx="97%" cy="28%" r="1.8" fill="rgba(147,197,253,0.2)" />
+    </svg>
+  );
+}
+
+// ============================================================
+// Keyframes
+// ============================================================
+const keyframes = `
+  @keyframes gradient-shift {
+    0% { background-position: 0% 30%; }
+    50% { background-position: 100% 70%; }
+    100% { background-position: 0% 30%; }
   }
 
-  /* 粒子上升 + 横向飘 */
-  @keyframes particle-rise {
-    0% { transform: translate(0, 0) scale(1); opacity: var(--start-op, 0.4); }
-    25% { transform: translate(15px, -30vh) scale(1.1); opacity: calc(var(--start-op, 0.4) * 1.3); }
-    50% { transform: translate(-10px, -55vh) scale(0.95); opacity: var(--start-op, 0.4); }
-    75% { transform: translate(8px, -75vh) scale(0.9); opacity: calc(var(--start-op, 0.4) * 0.5); }
-    100% { transform: translate(-5px, -95vh) scale(0.7); opacity: 0; }
+  @keyframes orb-float {
+    0% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(-30px, 22px) scale(1.05); }
+    66% { transform: translate(18px, -14px) scale(0.97); }
+    100% { transform: translate(-12px, 28px) scale(1.03); }
   }
 
-  /* 圆环虚线旋转动画（给 SVG 用） */
-  @keyframes ring-spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+  @keyframes particle-up {
+    0% {
+      transform: translate3d(0, 0, 0) scale(1);
+      opacity: var(--op-start, 0.6);
+    }
+    25% {
+      transform: translate3d(18px, -28vh, 0) scale(1.15);
+      opacity: calc(var(--op-start, 0.6) * 1.2);
+    }
+    55% {
+      transform: translate3d(-12px, -58vh, 0) scale(0.92);
+      opacity: var(--op-start, 0.6);
+    }
+    85% {
+      transform: translate3d(8px, -82vh, 0) scale(0.8);
+      opacity: calc(var(--op-start, 0.6) * 0.35);
+    }
+    100% {
+      transform: translate3d(-6px, -100vh, 0) scale(0.65);
+      opacity: 0;
+    }
   }
 `;
