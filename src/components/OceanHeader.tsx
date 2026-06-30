@@ -4,15 +4,14 @@ import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 
 // ============================================================
-// OceanHeader v195 — Mesh Gradient 流动色场
+// OceanHeader v196 — Canvas 极光流场
 //
-// 彻底放弃所有"形状"(带子/线条/椭圆/光帘)
-// 改用现代 Mesh Gradient 风格：
-//   ✅ 多个巨大径向渐变色斑，缓慢呼吸漂移交融
-//   ✅ 像油彩在水中扩散 —— 有机、流动、无边界
-//   ✅ 参考 Vercel / Linear / Raycast 的 hero 背景
-//   ✅ 色域：天青 + 蓝 + 靛（统一协调）
-//   ✅ 微妙噪点纹理增加质感深度
+// 设计原则：
+//   ✅ 单一 Canvas 驱动所有视觉效果（不依赖 CSS 动画 div）
+//   ✅ 颜色足够亮、对比度足够高（肉眼清晰可见！）
+//   ✅ 光斑大幅移动 + 亮度呼吸 + 色相偏移
+//   ✅ 流光椭圆横穿画面（打破静态分色）
+//   ✅ 天青+蓝+靛 统一协调色域
 //   ✅ 少量精致星光点缀
 // ============================================================
 
@@ -30,14 +29,8 @@ export default function OceanHeader({ title, subtitle, description, icon, childr
     <section className="relative text-white py-[120px] px-4 sm:px-6 lg:px-8 overflow-hidden"
       style={{ minHeight: '380px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
     >
-      {/* Layer 1: Canvas 深海底色 + 动态光斑 */}
-      <MeshCanvas />
-
-      {/* Layer 2: CSS Mesh 色斑层 — 巨大模糊色球缓慢飘移 */}
-      <MeshBlobs />
-
-      {/* Layer 3: 精致星光 */}
-      <Sparkles />
+      {/* 唯一视觉层：Canvas 极光流场 */}
+      <AuroraCanvas />
 
       {/* 底部过渡到白色内容区 */}
       <div className="absolute bottom-0 left-0 right-0 h-[110px] pointer-events-none z-[3]"
@@ -92,16 +85,20 @@ export default function OceanHeader({ title, subtitle, description, icon, childr
           >{description || subtitle}</motion.p>
         )}
       </motion.div>
-
-      <style>{styles}</style>
     </section>
   );
 }
 
 // ============================================================
-// MeshCanvas — 深海底色 + Canvas 动态光晕
+// AuroraCanvas — 单一 Canvas 驱动的极光流场
+//
+// 全部视觉效果由这个 Canvas 实时绘制：
+//   Layer 1: 深蓝渐变底色
+//   Layer 2: 5个大型动态光斑（位置漂移 + 亮度呼吸 + 色相微偏）
+//   Layer 3: 2条流动光带（椭圆横穿画面）
+//   Layer 4: 6颗闪烁星光
 // ============================================================
-function MeshCanvas() {
+function AuroraCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -120,51 +117,123 @@ function MeshCanvas() {
       ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
     };
 
+    // ── 光斑配置 ──
+    const ORBS = [
+      // 主光斑：天青色（最亮最大）
+      { baseHue: 195, sat: 82, light: 58, sizeR: 0.52, xB: 0.48, yB: 0.36,
+        xAmp: 0.15, yAmp: 0.10, xSpd: 0.13, ySpd: 0.10, opMax: 0.42 },
+      // 宝石蓝（右下区域）
+      { baseHue: 220, sat: 78, light: 55, sizeR: 0.42, xB: 0.70, yB: 0.52,
+        xAmp: 0.12, yAmp: 0.14, xSpd: 0.17, ySpd: 0.12, opMax: 0.36 },
+      // 靛蓝（左上方）
+      { baseHue: 238, sat: 72, light: 52, sizeR: 0.38, xB: 0.22, yB: 0.42,
+        xAmp: 0.14, yAmp: 0.11, xSpd: 0.15, ySpd: 0.18, opMax: 0.32 },
+      // 青绿色（右侧边缘）
+      { baseHue: 187, sat: 80, light: 54, sizeR: 0.34, xB: 0.80, yB: 0.30,
+        xAmp: 0.10, yAmp: 0.13, xSpd: 0.20, ySpd: 0.14, opMax: 0.28 },
+      // 淡天青（左下方过渡）
+      { baseHue: 202, sat: 70, light: 62, sizeR: 0.30, xB: 0.16, yB: 0.66,
+        xAmp: 0.11, yAmp: 0.09, xSpd: 0.12, ySpd: 0.16, opMax: 0.24 },
+    ];
+
+    // 星星配置
+    const STARS = [
+      { xr: 0.22, yr: 0.18, sz: 2.5, spd: 2.8, off: 0 },
+      { xr: 0.72, yr: 0.28, sz: 2.0, spd: 3.5, off: -1.2 },
+      { xr: 0.48, yr: 0.12, sz: 3.0, spd: 2.2, off: -2.5 },
+      { xr: 0.12, yr: 0.58, sz: 2.0, spd: 4.0, off: -0.8 },
+      { xr: 0.82, yr: 0.55, sz: 2.5, spd: 3.0, off: -1.8 },
+      { xr: 0.38, yr: 0.70, sz: 1.8, spd: 3.8, off: -3.0 },
+    ];
+
     const draw = () => {
-      time += 0.008;
+      time += 0.012;
       const w = canvas.width / (window.devicePixelRatio || 1);
       const h = canvas.height / (window.devicePixelRatio || 1);
       ctx.clearRect(0, 0, w, h);
 
-      // ── 底色：深蓝渐变（不要太暗） ──
-      const bgGrad = ctx.createLinearGradient(0, 0, w * 0.6, h);
-      bgGrad.addColorStop(0, '#0a1628');
-      bgGrad.addColorStop(0.35, '#0d2137');
-      bgGrad.addColorStop(0.65, '#102a48');
-      bgGrad.addColorStop(1, '#0c1e33');
-      ctx.fillStyle = bgGrad;
+      // ═══ Layer 1: 底色 ═══
+      const bg = ctx.createLinearGradient(0, 0, w * 0.5, h);
+      bg.addColorStop(0, '#071426');
+      bg.addColorStop(0.30, '#0b2040');
+      bg.addColorStop(0.60, '#0e2a54');
+      bg.addColorStop(1, '#091c38');
+      ctx.fillStyle = bg;
       ctx.fillRect(0, 0, w, h);
 
-      // ── 中央主光晕：天青蓝色大范围环境光 ──
-      const cx = w * (0.50 + Math.sin(time * 0.18) * 0.08);
-      const cy = h * (0.42 + Math.cos(time * 0.15) * 0.06);
-      const mainGlow = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(w, h) * 0.6);
-      mainGlow.addColorStop(0, 'rgba(56,189,248,' + (0.14 + Math.sin(time * 0.25) * 0.04) + ')');
-      mainGlow.addColorStop(0.30, 'rgba(59,130,246,0.08)');
-      mainGlow.addColorStop(0.60, 'rgba(99,102,241,0.03)');
-      mainGlow.addColorStop(1, 'transparent');
-      ctx.fillStyle = mainGlow;
-      ctx.fillRect(0, 0, w, h);
+      // ═══ Layer 2: 5个动态光斑 ═══
+      for (let i = 0; i < ORBS.length; i++) {
+        const o = ORBS[i];
+        const ox = w * (o.xB + Math.sin(time * o.xSpd + i * 1.3) * o.xAmp);
+        const oy = h * (o.yB + Math.cos(time * o.ySpd + i * 0.9) * o.yAmp);
+        const baseSz = Math.min(w, h) * o.sizeR;
+        const sz = baseSz * (1 + Math.sin(time * 0.25 + i * 0.7) * 0.15);
+        const hue = o.baseHue + Math.sin(time * 0.08 + i * 1.1) * 8;
+        const breath = Math.sin(time * 0.18 + i * 0.5) * 0.5 + 0.5;
+        const op = o.opMax * (0.55 + breath * 0.45);
 
-      // ── 左上副光晕：靛蓝色 ──
-      const lx = w * (0.20 + Math.cos(time * 0.22) * 0.06);
-      const ly = h * (0.25 + Math.sin(time * 0.18) * 0.05);
-      const leftGlow = ctx.createRadialGradient(lx, ly, 0, lx, ly, w * 0.38);
-      leftGlow.addColorStop(0, 'rgba(99,102,241,' + (0.10 + Math.cos(time * 0.30) * 0.03) + ')');
-      leftGlow.addColorStop(0.45, 'rgba(79,70,229,0.04)');
-      leftGlow.addColorStop(1, 'transparent');
-      ctx.fillStyle = leftGlow;
-      ctx.fillRect(0, 0, w, h);
+        const g = ctx.createRadialGradient(ox, oy, 0, ox, oy, sz);
+        g.addColorStop(0, 'hsla(' + hue + ',' + o.sat + '%,' + o.light + '%,' + op.toFixed(2) + ')');
+        g.addColorStop(0.35, 'hsla(' + hue + ',' + (o.sat - 8) + '%,' + (o.light - 6) + '%,' + (op * 0.45).toFixed(2) + ')');
+        g.addColorStop(0.70, 'hsla(' + (hue + 10) + ',' + (o.sat - 15) + '%,' + (o.light - 12) + '%,' + (op * 0.15).toFixed(2) + ')');
+        g.addColorStop(1, 'transparent');
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, w, h);
+      }
 
-      // ── 右下副光晕：青绿色 ──
-      const rx = w * (0.78 + Math.sin(time * 0.20) * 0.05);
-      const ry = h * (0.68 + Math.cos(time * 0.16) * 0.07);
-      const rightGlow = ctx.createRadialGradient(rx, ry, 0, rx, ry, w * 0.32);
-      rightGlow.addColorStop(0, 'rgba(34,211,238,' + (0.08 + Math.sin(time * 0.28) * 0.03) + ')');
-      rightGlow.addColorStop(0.50, 'rgba(6,182,212,0.03)');
-      rightGlow.addColorStop(1, 'transparent');
-      ctx.fillStyle = rightGlow;
-      ctx.fillRect(0, 0, w, h);
+      // ═══ Layer 3: 流光带 A — 天青→蓝，右→左横穿 ═══
+      const sAx = ((time * 38) % (w * 1.5)) - w * 0.25;
+      const sAy = h * (0.35 + Math.sin(time * 0.2) * 0.15);
+      ctx.save();
+      ctx.translate(sAx, sAy);
+      ctx.scale((w * 0.35) / (h * 0.10), 1);
+      const egA = ctx.createRadialGradient(0, 0, 0, 0, 0, h * 0.10);
+      egA.addColorStop(0, 'rgba(125,211,252,0.24)');
+      egA.addColorStop(0.40, 'rgba(59,130,246,0.16)');
+      egA.addColorStop(0.75, 'rgba(99,102,241,0.06)');
+      egA.addColorStop(1, 'transparent');
+      ctx.fillStyle = egA;
+      ctx.fillRect(-w * 0.35, -h * 0.10, w * 0.70, h * 0.20);
+      ctx.restore();
+
+      // ═══ Layer 3b: 流光带 B — 靛→青，左→右反向横穿 ═══
+      const sBx = w - ((time * 28) % (w * 1.4)) - w * 0.20;
+      const sBy = h * (0.60 + Math.cos(time * 0.16) * 0.12);
+      ctx.save();
+      ctx.translate(sBx, sBy);
+      ctx.scale((w * 0.26) / (h * 0.08), 1);
+      const egB = ctx.createRadialGradient(0, 0, 0, 0, 0, h * 0.08);
+      egB.addColorStop(0, 'rgba(99,102,241,0.20)');
+      egB.addColorStop(0.35, 'rgba(56,189,248,0.13)');
+      egB.addColorStop(0.72, 'rgba(34,211,238,0.05)');
+      egB.addColorStop(1, 'transparent');
+      ctx.fillStyle = egB;
+      ctx.fillRect(-w * 0.26, -h * 0.08, w * 0.52, h * 0.16);
+      ctx.restore();
+
+      // ═══ Layer 4: 星光闪烁 ═══
+      for (let i = 0; i < STARS.length; i++) {
+        const s = STARS[i];
+        const tw = Math.sin(time * s.spd + s.off);
+        const bright = tw > 0 ? tw * tw : 0;
+        if (bright < 0.06) continue;
+
+        const sx = s.xr * w;
+        const sy = s.yr * h;
+        const alpha = bright * 0.92;
+
+        // 外发光晕
+        ctx.beginPath();
+        ctx.arc(sx, sy, s.sz * (1.5 + bright * 2), 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(186,230,253,' + (alpha * 0.25).toFixed(2) + ')';
+        ctx.fill();
+
+        // 核心亮点
+        ctx.beginPath();
+        ctx.arc(sx, sy, s.sz * bright, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(240,248,255,' + alpha.toFixed(2) + ')';
+        ctx.fill();
+      }
 
       animId = requestAnimationFrame(draw);
     };
@@ -180,145 +249,3 @@ function MeshCanvas() {
       style={{ width: '100%', height: '100%' }} />
   );
 }
-
-// ============================================================
-// MeshBlobs — 巨大 CSS 色斑缓慢飘移交融（核心视觉层！）
-//
-// 关键设计原则：
-//   - 每个 blob 是 400~700px 的超大径向渐变圆
-//   - blur 70~120px → 边缘完全融化，无硬边界
-//   - 缓慢的 translate 动画（15~25s 一轮）→ 有机漂浮感
-//   - mix-blend-mode: screen → 色彩叠加发光
-//   - 不同颜色/大小/位置/速度 → 自然不重复
-// ============================================================
-function MeshBlobs() {
-  const blobs = [
-    // Blob A: 主色斑 — 天青蓝（最大最亮）
-    { x: '28%', y: '32%', size: 600, colorA: 'rgba(56,189,248,0.28)', colorB: 'rgba(125,211,252,0.10)', blur: 90,
-      moveX: 80, moveY: 55, duration: 18, delay: 0 },
-    // Blob B: 宝石蓝（右侧）
-    { x: '62%', y: '45%', size: 520, colorA: 'rgba(59,130,246,0.25)', colorB: 'rgba(96,165,250,0.08)', blur: 80,
-      moveX: -60, moveY: 45, duration: 22, delay: -4 },
-    // Blob C: 靛蓝（左上）
-    { x: '18%', y: '55%', size: 480, colorA: 'rgba(99,102,241,0.22)', colorB: 'rgba(139,92,246,0.06)', blur: 75,
-      moveX: 55, moveY: -40, duration: 20, delay: -8 },
-    // Blob D: 青绿（底部）
-    { x: '72%', y: '68%', size: 420, colorA: 'rgba(34,211,238,0.18)', colorB: 'rgba(103,232,249,0.05)', blur: 70,
-      moveX: -45, moveY: -35, duration: 25, delay: -12 },
-    // Blob E: 淡靛（右上小点缀）
-    { x: '82%', y: '22%', size: 340, colorA: 'rgba(129,140,248,0.16)', colorB: 'rgba(165,180,252,0.04)', blur: 65,
-      moveX: -35, moveY: 30, duration: 16, delay: -3 },
-    // Blob F: 天青淡（左侧）
-    { x: '8%', y: '35%', size: 380, colorA: 'rgba(147,197,253,0.14)', colorB: 'rgba(186,230,253,0.04)', blur: 70,
-      moveX: 40, moveY: -30, duration: 24, delay: -7 },
-  ];
-
-  return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden z-[2]" aria-hidden="true">
-      {blobs.map((b, i) => (
-        <div key={i} className="mesh-blob" style={{
-          left: b.x,
-          top: b.y,
-          width: b.size + 'px',
-          height: b.size + 'px',
-          background: 'radial-gradient(circle, ' + b.colorA + ' 0%, ' + b.colorB + ' 45%, transparent 70%)',
-          filter: 'blur(' + b.blur + 'px)',
-          animation: 'mesh-float-' + i + ' ' + b.duration + 's ease-in-out infinite alternate',
-          animationDelay: b.delay + 's',
-        }} />
-      ))}
-    </div>
-  );
-}
-
-// ============================================================
-// Sparkles — 极少量精致星光（不是密集白点！）
-// ============================================================
-function Sparkles() {
-  const stars = [
-    { x: '24%', y: '22%', size: 2.5, color: 'rgba(186,230,253,0.90)', glow: 'rgba(147,197,253,0.40)' },
-    { x: '68%', y: '35%', size: 2, color: 'rgba(165,180,252,0.85)', glow: 'rgba(139,92,246,0.35)' },
-    { x: '45%', y: '15%', size: 3, color: 'rgba(125,211,252,0.88)', glow: 'rgba(56,189,248,0.38)' },
-    { x: '14%', y: '62%', size: 2, color: 'rgba(103,232,249,0.80)', glow: 'rgba(34,211,238,0.30)' },
-    { x: '78%', y: '58%', size: 2.5, color: 'rgba(196,181,253,0.75)', glow: 'rgba(167,139,250,0.28)' },
-  ];
-
-  return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden z-[3]" aria-hidden="true">
-      {stars.map((s, i) => (
-        <div key={i} className="sp-star" style={{
-          left: s.x,
-          top: s.y,
-          width: s.size + 'px',
-          height: s.size + 'px',
-          borderRadius: '50%',
-          background: s.color,
-          boxShadow: '0 0 ' + (s.size * 2.5) + 'px ' + (s.size * 0.8) + 'px ' + s.glow,
-          animation: 'sparkle-twinkle ' + (3 + i * 1.2) + 's ease-in-out infinite',
-          animationDelay: (i * -1.5) + 's',
-        }} />
-      ))}
-    </div>
-  );
-}
-
-const styles = `
-  /* ====== Mesh 色斑动画 ======
-     每个blob有独立的移动轨迹和节奏
-     使用 translate 让巨大的模糊圆缓慢漂移 */
-  .mesh-blob {
-    position: absolute;
-    border-radius: 50%;
-    will-change: transform, opacity;
-    pointer-events: none;
-    opacity: 0.95;
-  }
-
-  @keyframes mesh-float-0 {
-    0%   { transform: translate(0, 0) scale(1); }
-    33%  { transform: translate(80px, 55px) scale(1.08); }
-    66%  { transform: translate(-30px, 30px) scale(0.95); }
-    100% { transform: translate(40px, -20px) scale(1.04); }
-  }
-  @keyframes mesh-float-1 {
-    0%   { transform: translate(0, 0) scale(1); }
-    40%  { transform: translate(-60px, 45px) scale(1.05); }
-    75%  { transform: translate(25px, -15px) scale(0.97); }
-    100% { transform: translate(-35px, 30px) scale(1.02); }
-  }
-  @keyframes mesh-float-2 {
-    0%   { transform: translate(0, 0) scale(1); }
-    35%  { transform: translate(55px, -40px) scale(1.06); }
-    70%  { transform: translate(-20px, 25px) scale(0.94); }
-    100% { transform: translate(35px, -15px) scale(1.03); }
-  }
-  @keyframes mesh-float-3 {
-    0%   { transform: translate(0, 0) scale(1); }
-    45%  { transform: translate(-45px, -35px) scale(1.04); }
-    80%  { transform: translate(20px, 15px) scale(0.98); }
-    100% { transform: translate(-25px, 20px) scale(1.01); }
-  }
-  @keyframes mesh-float-4 {
-    0%   { transform: translate(0, 0) scale(1); }
-    30%  { transform: translate(-35px, 30px) scale(1.05); }
-    65%  { transform: translate(15px, -20px) scale(0.96); }
-    100% { transform: translate(-18px, 12px) scale(1.02); }
-  }
-  @keyframes mesh-float-5 {
-    0%   { transform: translate(0, 0) scale(1); }
-    50%  { transform: translate(40px, -30px) scale(1.04); }
-    85%  { transform: translate(-18px, 18px) scale(0.97); }
-    100% { transform: translate(22px, -10px) scale(1.01); }
-  }
-
-  /* ====== 星光闪烁 ====== */
-  .sp-star {
-    will-change: transform, opacity;
-    pointer-events: none;
-  }
-
-  @keyframes sparkle-twinkle {
-    0%, 100% { opacity: 0.30; transform: scale(0.6); }
-    50%      { opacity: 1; transform: scale(1.3); }
-  }
-`;
