@@ -2,15 +2,14 @@
 import { useEffect, useRef, memo } from 'react';
 
 // ============================================================
-// OceanHeader v206 — 玻璃瓶液体 Crystal Liquid (平衡版)
+// OceanHeader v207 — 玻璃瓶液体 (真正可见蓝色版)
 //
-// v205 问题：底色60~80% + 饱和度0.32~0.54 = 几乎纯白，看不见蓝色
-// v206 目标：
-//   ✅ 一眼就能看到的蓝色透光液体
-//   ✅ 明显的Caustics焦散光斑（晶莹感的核心）
-//   ✅ 玻璃表面Specular高光反射
-//   ✅ 液体厚度明暗变化（体积感）
-//   ✅ 缓慢黏稠流动
+// v204-v206 问题：底色太亮(48~76%) → HSL亮度>50%颜色被冲淡=全白
+// v207 核心修正：
+//   ✅ 底色亮度降到30~54% (HSL<50%才能看见颜色！)
+//   ✅ 饱和度提到55~85% (浓郁液体感)
+//   ✅ Caustics焦散在深蓝底上更明显
+//   ✅ 保持WebGL Domain Warping流动
 // ============================================================
 
 function FluidBackground() {
@@ -22,9 +21,6 @@ function FluidBackground() {
     const gl = canvas.getContext('webgl') as WebGLRenderingContext;
     if (!gl) return;
 
-    // ══════════════════════════════════════
-    // Vertex Shader — 全屏四边形
-    // ══════════════════════════════════════
     const vsSource = `
       attribute vec2 a_pos;
       varying vec2 v_uv;
@@ -34,9 +30,6 @@ function FluidBackground() {
       }
     `;
 
-    // ══════════════════════════════════════
-    // Fragment Shader — 玻璃瓶液体
-    // ══════════════════════════════════════
     const fsSource = [
       'precision mediump float;',
       'varying vec2 v_uv;',
@@ -44,7 +37,6 @@ function FluidBackground() {
       'uniform float u_time;',
       'uniform vec2 u_aspect;',
 
-      // ── Simplex Noise ──
       'vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }',
       'vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }',
       'vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }',
@@ -72,7 +64,6 @@ function FluidBackground() {
       '  return 130.0 * dot(m, g);',
       '}',
 
-      // ── FBM (5层) ──
       'float fbm(vec2 p) {',
       '  float f = 0.0; float w = 0.5;',
       '  mat2 rot = mat2(0.8, 0.6, -0.6, 0.8);',
@@ -83,7 +74,6 @@ function FluidBackground() {
       '  return f;',
       '}',
 
-      // ── HSL→RGB ──
       'vec3 hsl2rgb(float h, float s, float l) {',
       '  vec3 rgb = clamp(abs(mod(h*6.0+vec3(0.0,4.0,2.0),6.0)-3.0)-1.0, 0.0, 1.0);',
       '  return l + s * (rgb - 0.5) * (1.0 - abs(2.0 * l - 1.0));',
@@ -91,10 +81,7 @@ function FluidBackground() {
 
       'void main() {',
       '  vec2 uv = v_uv;',
-
-      // ★ 时间：缓慢黏稠流动 ★
       '  float t = u_time * 0.04;',
-
       '  uv.x *= u_aspect.x / u_aspect.y;',
 
       // ── 大尺度扭曲（玻璃瓶形变）──
@@ -118,70 +105,63 @@ function FluidBackground() {
       '  float f = fbm(suv * 0.8 + r * 1.4 + t * 0.02);',
 
       // ════════════════════════════════════════
-      // ★★★ v206 平衡色彩系统 ★★★
-      // 核心原则：看得见蓝色！不是白色！
+      // ★★★ v207 色彩系统 — 真正可见的蓝色！★★★
+      // HSL关键知识: L>0.50 时颜色被白色冲淡！
+      // L=0.70+S=0.80 ≈ 几乎白色！
+      // L=0.40+S=0.80 = 鲜艳的蓝色！
       // ════════════════════════════════════════
 
-      // 【底色亮度】中等——能清楚看出是浅蓝色背景
-      // v204: 76~93% ❌纯白 | v205: 60~80% ❌太淡 | v206: 50~68% ✅清楚蓝
-      '  float baseL = 0.56 + f * 0.12;',
-      '  baseL += q.x * 0.04;',
-      '  baseL = clamp(baseL, 0.48, 0.68);',
+      // 【底色亮度】30%~54% — 这是能看见蓝色的范围！
+      '  float baseL = 0.38 + f * 0.16;',
+      '  baseL += q.x * 0.05;',
+      '  baseL = clamp(baseL, 0.30, 0.54);',
 
-      // 【色相】天青蓝系
-      // 195度=清澈天青 ~ 215度=经典蓝
-      '  float hue = mix(0.542, 0.597, f * 0.50 + r.x * 0.30 + r.y * 0.20);',
-      '  hue += sin(t * 0.06 + q.x * 2.0) * 0.006;',
+      // 【色相】天青195度 ~ 宝蓝216度
+      '  float hue = mix(0.542, 0.600, f * 0.50 + r.x * 0.30 + r.y * 0.20);',
+      '  hue += sin(t * 0.06 + q.x * 2.0) * 0.008;',
 
-      // 【饱和度】够高！液体要有颜色感
-      // v204: 0.10~0.28 ❌看不见 | v205: 0.32~0.54 ❌太淡 | v206: 0.45~0.70 ✅
-      '  float sat = mix(0.45, 0.70, smoothstep(-0.25, 0.50, f));',
-      '  sat += r.y * 0.05;',
-      '  sat = clamp(sat, 0.42, 0.72);',
+      // 【饱和度】高！55%~85% = 浓郁液体感
+      '  float sat = mix(0.58, 0.82, smoothstep(-0.25, 0.50, f));',
+      '  sat += r.y * 0.06;',
+      '  sat = clamp(sat, 0.55, 0.85);',
 
-      // 【基础色】
+      // 【基础色】— 这一次是真正的蓝色！
       '  vec3 col = hsl2rgb(hue, sat, baseL);',
 
       // ════════════════════════════════════════
-      // Caustics焦散 — 晶莹感的核心！
-      // 模拟光线穿过弯曲玻璃+液体形成的网状光斑
+      // Caustics焦散 — 在深蓝底上更醒目！
       // ════════════════════════════════════════
       '  vec2 causticUV = suv * 4.0 + r * 2.5 + q * 1.8;',
       '  float c1 = sin(causticUV.x * 14.0 + sin(causticUV.y * 10.0 + t * 0.35) * 2.8);',
       '  float c2 = sin(causticUV.y * 12.0 + sin(causticUV.x * 9.0 - t * 0.28) * 2.8);',
       '  float c3 = sin((causticUV.x + causticUV.y) * 8.0 + t * 0.22);',
       '  float caustics = (c1 * c2 * c3 + 1.0) * 0.5;',
-      '  caustics = pow(caustics, 2.2);',
+      '  caustics = pow(caustics, 2.0);',
       '  caustics *= smoothstep(0.08, 0.55, f);',
-
-      // 焦散叠加：冷白色光斑，较强强度
-      '  vec3 causticCol = vec3(0.90, 0.95, 1.0);',
-      '  col = mix(col, causticCol, caustics * 0.45);',
+      '  vec3 causticCol = vec3(0.88, 0.94, 1.0);',
+      '  col = mix(col, causticCol, caustics * 0.50);',  // 底更深→焦散更突出
 
       // ════════════════════════════════════════
-      // Specular高光 — 玻璃表面锐利反光点
+      // Specular高光 — 玻璃表面反光
       // ════════════════════════════════════════
       '  vec2 lightDir = normalize(vec2(-0.4, -0.6));',
       '  vec2 normal = vec2(ddx(f) * 55.0, ddy(f) * 55.0);',
       '  normal = normalize(normal + vec2(0.001));',
       '  float spec = max(0.0, dot(normalize(normal), lightDir));',
       '  spec = pow(spec, 28.0);',
-      '  spec *= smoothstep(0.22, 0.70, f) * 0.55;',
+      '  spec *= smoothstep(0.20, 0.70, f) * 0.58;',
       '  vec3 specCol = vec3(0.95, 0.98, 1.0);',
       '  col = mix(col, specCol, spec);',
 
       // ════════════════════════════════════════
-      // 液体厚度 — 体积感
-      // 厚的地方深蓝，薄的地方透亮
+      // 液体厚度 — 体积感 (调整到新亮度范围)
       // ════════════════════════════════════════
       '  float thickness = smoothstep(-0.45, 0.55, r.y);',
       '  thickness = pow(thickness, 0.72);',
-      '  vec3 deepColor = hsl2rgb(0.56, 0.52, 0.52);',  // 厚处: 较深的天蓝
-      '  col = mix(col, deepColor, (1.0 - thickness) * 0.35);',
+      '  vec3 deepColor = hsl2rgb(0.56, 0.60, 0.38);',  // 厚处: 深邃天蓝
+      '  col = mix(col, deepColor, (1.0 - thickness) * 0.38);',
 
-      // ════════════════════════════════════════
-      // 边缘柔化（极轻微）
-      // ════════════════════════════════════════
+      // 边缘柔化
       '  vec2 centerUV = v_uv - 0.5;',
       '  float edge = 1.0 - dot(centerUV, centerUV) * 0.25;',
       '  edge = smoothstep(0.18, 0.75, edge);',
@@ -194,9 +174,6 @@ function FluidBackground() {
       '}'
     ].join('\n');
 
-    // ══════════════════════════════════════
-    // 编译 & 链接
-    // ══════════════════════════════════════
     const compileShader = (type: number, source: string): WebGLShader | null => {
       const shader = gl.createShader(type);
       if (!shader) return null;
@@ -222,9 +199,6 @@ function FluidBackground() {
       return;
     }
 
-    // ══════════════════════════════════════
-    // 几何体：全屏四边形
-    // ══════════════════════════════════════
     const buf = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buf);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
@@ -238,9 +212,6 @@ function FluidBackground() {
     gl.enableVertexAttribArray(posLoc);
     gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
 
-    // ══════════════════════════════════════
-    // 渲染循环
-    // ══════════════════════════════════════
     const resize = () => {
       const w = Math.max(1, canvas.clientWidth);
       const h = Math.max(1, canvas.clientHeight);
@@ -271,10 +242,7 @@ function FluidBackground() {
 export default memo(function OceanHeader({ title, subtitle, children, icon }: { title: string; subtitle?: string; children?: React.ReactNode; icon?: React.ReactNode }) {
   return (
     <header className="relative overflow-hidden" style={{ background: 'transparent' }}>
-      {/* WebGL 流体背景 */}
       <FluidBackground />
-
-      {/* 星光点缀 */}
       {[{x:'15%',y:'22%'},{x:'82%',y:'15%'},{x:'72%',y:'78%'},{x:'18%',y:'70%'},{x:'48%',y:'12%'}].map((s,i)=>(
         <div key={i} className="absolute pointer-events-none rounded-full" style={{
           left:s.x,top:s.y,
@@ -285,8 +253,6 @@ export default memo(function OceanHeader({ title, subtitle, children, icon }: { 
           animationDelay:`${i*0.5}s`
         }} />
       ))}
-
-      {/* 内容 */}
       <style>{`@keyframes twinkle{0%,100%{opacity:0.5;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}`}</style>
       <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 sm:px-6 md:px-8" style={{ minHeight: '320px', paddingTop: '80px', paddingBottom: '48px' }}>
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 max-w-4xl leading-tight tracking-tight"
