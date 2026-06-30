@@ -4,17 +4,23 @@ import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 
 // ============================================================
-// OceanHeader v203 — 晶莹流光 (Crystal Fluid Aurora)
+// OceanHeader v204 — 玻璃瓶液体 (Glass Bottle Liquid)
 //
-// v202 问题：饱和度0.30~0.52 = 灰蓝浑水，无晶莹感
+// 用户明确描述："晶莹液体在透明玻璃瓶里面缓缓晃动"
 //
-// v203 目标：晶莹剔透的液体流动
-//   ✅ 饱和度 0.50~0.72（高饱和 = 晶莹）
-//   ✅ 亮度 0.54~0.80（透光液体感）
-//   ✅ 明暗反差34%（暗48% vs 亮82%）
-//   ✅ Caustics光折射高光（45%强度，像光线穿过水/冰晶）
-//   ✅ 细碎闪烁微光（水面/晶体表面反射）
-//   ✅ 缓流速度（用户要求不快）
+// 核心视觉特征：
+//   ✅ 透光度高 — 光线穿过液体和玻璃，不是不透明的纹理
+//   ✅ 浅亮底色 — 像光线从背后照进玻璃瓶的效果
+//   ✅ Caustics焦散 — 光线经玻璃+液体的折射形成的光斑图案
+//   ✅ 黏稠缓流 — 像蜂蜜/油在水中缓慢旋转扩散
+//   ✅ 玻璃质感 — 边缘微光、表面反射、轻微色散
+//   ✅ 色调：极淡的青蓝染色的透明液体
+//
+// 技术方案：
+//   - 底层：明亮近白基色(亮度78~92%)
+//   - 中层：Caustics焦散图案(光线折射)
+//   - 上层：缓慢Domain Warping(液体内部流动)
+//   - 高光：玻璃表面反射(specular)
 // ============================================================
 
 interface OceanHeaderProps {
@@ -110,14 +116,15 @@ function WebGLFluidAurora() {
       '}'
     ].join('\n');
 
-    // ── Fragment Shader: v203 Crystal Fluid Aurora ──
+    // ── Fragment Shader: v204 Glass Bottle Liquid ──
     const fsSource = [
-      'precision mediump float;',
+      'precision highp float;',
       'varying vec2 v_uv;',
       'uniform float u_time;',
       'uniform vec2 u_resolution;',
       'uniform vec2 u_aspect;',
 
+      // ═══ Simplex Noise ═══
       'vec3 permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }',
 
       'float snoise(vec2 v) {',
@@ -147,18 +154,20 @@ function WebGLFluidAurora() {
       '  return 130.0 * dot(m, g);',
       '}',
 
+      // FBM - 5层细节
       'float fbm(vec2 p) {',
       '  float f = 0.0;',
       '  float w = 0.5;',
       '  mat2 rot = mat2(0.8, 0.6, -0.6, 0.8);',
       '  for (int i = 0; i < 5; i++) {',
       '    f += w * snoise(p);',
-      '    p = rot * p * 2.0;',
+      '    p = rot * p * 2.03;',
       '    w *= 0.5;',
       '  }',
       '  return f;',
       '}',
 
+      // HSL→RGB
       'vec3 hsl2rgb(float h, float s, float l) {',
       '  vec3 rgb = clamp(abs(mod(h*6.0+vec3(0.0,4.0,2.0),6.0)-3.0)-1.0, 0.0, 1.0);',
       '  return l + s * (rgb - 0.5) * (1.0 - abs(2.0 * l - 1.0));',
@@ -166,60 +175,121 @@ function WebGLFluidAurora() {
 
       'void main() {',
       '  vec2 uv = v_uv;',
-      '  float t = u_time * 0.07;',
+
+      // ★★★ 极慢的时间流速 — 像黏稠液体 ★★★
+      '  float t = u_time * 0.04;',
 
       '  uv.x *= u_aspect.x / u_aspect.y;',
 
+      // ════════════════════════════════════════
+      // 第一层：超大尺度慢速扭曲（瓶子形状感）
+      // ════════════════════════════════════════
+      '  vec2 shapeWarp = vec2(',
+      '    snoise(uv * 1.2 + t * 0.08) * 0.35,',
+      '    snoise(uv * 1.2 + 100.0 + t * 0.06) * 0.35',
+      '  );',
+      '  vec2 suv = uv + shapeWarp;',
+
+      // ════════════════════════════════════════
+      // 第二层：Domain Warping — 液体内部流动
+      // （非常慢！像黏稠液体）
+      // ════════════════════════════════════════
       '  vec2 q = vec2(',
-      '    fbm(uv + vec2(0.0, 0.0) + t * 0.15),',
-      '    fbm(uv + vec2(5.2, 1.3) + t * 0.10)',
+      '    fbm(suv * 1.0 + t * 0.06),',
+      '    fbm(suv * 1.0 + vec2(7.3, 2.1) + t * 0.04)',
       '  );',
 
       '  vec2 r = vec2(',
-      '    fbm(uv + q * 1.5 + vec2(1.7, 9.2) + t * 0.08),',
-      '    fbm(uv + q * 1.2 + vec2(8.3, 2.8) + t * 0.06)',
+      '    fbm(suv * 1.2 + q * 1.6 + vec2(2.9, 8.4) + t * 0.035),',
+      '    fbm(suv * 1.2 + q * 1.3 + vec2(5.1, 3.7) + t * 0.028)',
       '  );',
 
-      '  float f = fbm(uv + r * 1.7);',
+      '  float f = fbm(suv * 0.8 + r * 1.4 + t * 0.02);',
 
-      // ── v203 晶莹色彩映射 ──
-      '  float hueMix = f * 0.42 + r.x * 0.32 + r.y * 0.26;',
-      '  hueMix = clamp(hueMix, 0.0, 1.0);',
+      // ════════════════════════════════════════
+      // ★★★ 核心：玻璃瓶液体颜色系统 ★★★
+      // ════════════════════════════════════════
 
-      // 色相: 195~225度 (天青→宝石蓝→靛蓝)
-      '  float hue = mix(0.542, 0.625, hueMix);',
-      '  hue += sin(t * 0.12 + f * 1.2) * 0.012;',
+      // 【底层】极亮的基色 — 像光照进玻璃瓶
+      // 80%~92% 亮度 = 接近白色但带一点蓝调
+      '  float baseL = 0.80 + f * 0.08;',
+      '  baseL += q.x * 0.04;',
+      '  baseL = clamp(baseL, 0.76, 0.93);',
 
-      // 饱和度: 高! 晶莹需要高饱和
-      '  float sat = mix(0.50, 0.72, smoothstep(-0.2, 0.5, f));',
-      '  sat += r.y * 0.05;',
-      '  sat = clamp(sat, 0.48, 0.75);',
+      // 【色调】极淡的青蓝染色
+      // 198度=淡天青 ~ 212度=天空蓝
+      // 饱和度只有 0.12~0.28 — 几乎是透明液体！
+      '  float hue = mix(0.550, 0.589, f * 0.5 + r.x * 0.3 + r.y * 0.2);',
+      '  hue += sin(t * 0.05 + q.x * 2.0) * 0.006;',
+      '  float sat = mix(0.10, 0.28, smoothstep(-0.3, 0.5, f));',
 
-      // 亮度: 明亮透光 (像光线穿过水/冰晶)
-      '  float brightness = mix(0.54, 0.78, smoothstep(-0.4, 0.55, f));',
-      '  brightness += r.x * 0.07;',
-      '  brightness = clamp(brightness, 0.46, 0.82);',
+      // 【基础色】
+      '  vec3 col = hsl2rgb(hue, sat, baseL);',
 
-      '  vec3 col = hsl2rgb(hue, sat, brightness);',
+      // ════════════════════════════════════════
+      // Caustics焦散效果
+      // 模拟光线穿过弯曲玻璃+液体后的聚焦图案
+      // 这是"晶莹"感的最大来源！
+      // ════════════════════════════════════════
 
-      // Caustics光折射高光 — 晶莹感的核心!
-      '  float caustics = smoothstep(0.35, 0.75, f) * smoothstep(0.82, 0.35, f);',
-      '  caustics *= smoothstep(0.25, 0.70, r.x) * smoothstep(0.20, 0.60, r.y);',
-      '  caustics = pow(caustics, 1.5);',
-      '  vec3 causticCol = hsl2rgb(0.55, 0.35, 0.92);',
-      '  col = mix(col, causticCol, caustics * 0.45);',
+      // 用高频噪声模拟焦散网状结构
+      '  vec2 causticUV = uv * 3.5 + r * 2.0 + q * 1.5;',
+      '  float c1 = sin(causticUV.x * 12.0 + sin(causticUV.y * 8.0 + t * 0.3) * 2.0);',
+      '  float c2 = sin(causticUV.y * 10.0 + sin(causticUV.x * 7.0 - t * 0.25) * 2.0);',
+      '  float c3 = sin((causticUV.x + causticUV.y) * 6.0 + t * 0.18);',
+      '  float caustics = (c1 * c2 * c3 + 1.0) * 0.5;',
+      '  caustics = pow(caustics, 3.0);',       // 锐化成明显的亮斑
+      '  caustics *= smoothstep(0.1, 0.6, f);',  // 只在有液体区域显示
 
-      // 细碎闪烁微光 (水面/晶体表面反射)
-      '  float sparkle = smoothstep(0.55, 0.90, r.x * r.y);',
-      '  sparkle *= smoothstep(-0.1, 0.4, f);',
-      '  vec3 sparkCol = hsl2rgb(0.53, 0.28, 0.96);',
-      '  col = mix(col, sparkCol, sparkle * 0.25);',
+      // 焦散颜色：近白色（光线本身）
+      '  vec3 causticCol = vec3(0.94, 0.97, 1.0);',
+      '  col = mix(col, causticCol, caustics * 0.38);',
 
-      // 极轻柔边缘过渡
+      // ════════════════════════════════════════
+      // 玻璃表面反射 (Specular Highlights)
+      // 模拟玻璃瓶表面的反光点
+      // ════════════════════════════════════════
+
+      // 主光源反射 — 左上角方向的主光源
+      '  vec2 lightDir = normalize(vec2(-0.4, -0.6));',
+      '  vec2 normal = vec2(',
+      '    ddx(f) * 50.0,',
+      '    ddy(f) * 50.0',
+      '  );',
+      '  normal = normalize(normal + vec2(0.001));',
+      '  float spec = max(0.0, dot(normalize(normal), lightDir));',
+      '  spec = pow(spec, 32.0);',               // 锐利的高光
+      '  spec *= smoothstep(0.3, 0.7, f) * 0.55;',
+
+      // 高光颜色：冷白色
+      '  vec3 specCol = vec3(0.96, 0.98, 1.0);',
+      '  col = mix(col, specCol, spec);',
+
+      // ════════════════════════════════════════
+      // 内部光影变化 — 液体厚度不同导致的明暗
+      // ════════════════════════════════════════
+
+      // 模拟液体厚的地方暗、薄的地方亮
+      '  float thickness = smoothstep(-0.5, 0.5, r.y);',
+      '  thickness = pow(thickness, 0.8);',
+      '  vec3 depthColor = hsl2rgb(0.55, 0.20, 0.72);', // 厚处略深
+      '  col = mix(col, depthColor, (1.0 - thickness) * 0.18);',
+
+      // ════════════════════════════════════════
+      // 微妙的边缘光晕（玻璃瓶壁感）
+      // ════════════════════════════════════════
       '  vec2 centerUV = v_uv - 0.5;',
-      '  float edge = 1.0 - dot(centerUV, centerUV) * 0.25;',
-      '  edge = smoothstep(0.15, 0.85, edge);',
-      '  col *= 0.90 + edge * 0.10;',
+      '  float dist = length(centerUV);',
+      '  float rimLight = smoothstep(0.65, 0.95, dist);',
+      '  rimLight *= 0.15;',
+      '  vec3 rimCol = vec3(0.88, 0.94, 1.0);',
+      '  col = mix(col, rimCol, rimLight);',
+
+      // 整体提亮 — 保证不会太暗
+      '  col = col * 1.06;',
+
+      // 非常轻微的全局脉动（像液体呼吸）
+      '  col *= 0.97 + sin(t * 0.15) * 0.03;',
 
       '  gl_FragColor = vec4(col, 1.0);',
       '}'
