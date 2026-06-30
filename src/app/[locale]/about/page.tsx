@@ -1513,61 +1513,60 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ===== SUNRISE BEACH CTA v178 — 专业日出 + 商务蓝融合 ===== */}
+      {/* ===== SUNRISE BEACH CTA v179 — 远日初升 + 商务蓝融合 ===== */}
       <section
         className="py-20 px-4 sm:px-6 lg:px-8 text-white relative overflow-hidden"
         style={{
-          /* v178: 精简为8段平滑过渡 — 深蓝黎明天空 → 淡紫朝霞 → 暖橙地平线 → 金色阳光 */
-          background: 'linear-gradient(180deg, #0f172a 0%, #1e3a5f 12%, #3b5998 24%, #7b8cbf 36%, #e8b4a0 50%, #f5a962 62%, #fbbf24 78%, #fef3c7 92%, #fffbeb 100%)',
+          /* v179: 天空占70% + 地平线过渡 + 沙滩 — 太阳在远处天际线 */
+          background: 'linear-gradient(180deg, #0f172a 0%, #1e3a5f 15%, #2d4a7c 28%, #5a7ab8 42%, #9fb8d8 54%, #d4a994 64%, #e8c09a 72%, #f0c87a 82%, #f5d88e 92%, #fef9e7 100%)',
         }}
       >
-        {/* === v141: DISTANT SUN — 小太阳放远处，营造距离感和空间层次 === */}
-        <div className="absolute bottom-[46%] left-[8%] sm:left-[12%] pointer-events-none">
-          {/* Subtle ambient glow — v178: 更大范围、更柔和的光晕 */}
-          <div className="absolute -inset-[60px] rounded-full" style={{
-            background: 'radial-gradient(circle, rgba(251,191,36,0.18) 0%, rgba(245,158,11,0.08) 20%, rgba(59,130,246,0.04) 45%, transparent 70%)',
-            animation: 'v178-sunGlow 6s ease-in-out infinite alternate',
+        {/* === v179: 远距离小太阳 — 藏在天际线后，营造空间深度 === */}
+        <div className="absolute bottom-[52%] left-[3%] sm:left-[6%] pointer-events-none">
+          {/* 微弱的环境光晕 — 大范围极淡 */}
+          <div className="absolute -inset-[40px] rounded-full" style={{
+            background: 'radial-gradient(circle, rgba(251,191,36,0.08) 0%, rgba(245,158,11,0.03) 25%, transparent 55%)',
+            animation: 'v179-sunGlow 8s ease-in-out infinite alternate',
           }} />
-          {/* Gentle light rays — v178: 更少更柔和的光线 */}
-          <div className="absolute w-32 h-32 sm:w-40 sm:h-40 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-            {[...Array(6)].map((_, i) => {
-              const angle = (i * 360 / 6);
+          {/* 极淡的光线 — 几乎不可见，只有微妙暗示 */}
+          <div className="absolute w-20 h-20 sm:w-28 sm:h-28 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+            {[...Array(5)].map((_, i) => {
+              const angle = (i * 360 / 5);
               return (
                 <div key={i} className="absolute top-1/2 left-1/2 origin-left" style={{
-                  width: `${22 + i * 4}px`,
-                  height: `${1 + (i % 2) * 0.5}px`,
+                  width: `${16 + i * 3}px`,
+                  height: `${0.8 + (i % 2) * 0.3}px`,
                   background: `linear-gradient(90deg,
-                    rgba(255,245,220,0.28) 0%,
-                    rgba(251,191,36,0.10) 30%,
+                    rgba(255,250,230,0.12) 0%,
+                    rgba(251,191,36,0.04) 35%,
                     transparent 100%)`,
                   transform: `rotate(${angle}deg) translateY(-50%)`,
                   borderRadius: '2px',
-                  animation: `v178-rayPulse ${4 + i * 0.2}s ease-in-out infinite alternate`,
-                  animationDelay: `${i * 0.15}s`,
+                  animation: `v179-rayPulse ${5 + i * 0.25}s ease-in-out infinite alternate`,
+                  animationDelay: `${i * 0.2}s`,
                 }} />
               );
             })}
           </div>
-          {/* Main sun body — v178: 更精致的光泽层次 */}
-          <div className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-full" style={{
-            background: 'radial-gradient(circle at 38% 35%, #ffffff 0%, #fffbeb 6%, #fef9c3 16%, #fde047 32%, #facc15 50%, #f59e0b 68%, #d97706 85%, #b45309 100%)',
+          {/* 太阳本体 — v179: 缩小到远距尺寸，亮度降低 */}
+          <div className="relative w-14 h-14 sm:w-[4.5rem] sm:h-[4.5rem] rounded-full" style={{
+            background: 'radial-gradient(circle at 38% 35%, #ffffff 0%, #fffbeb 8%, #fef9c3 20%, #fde047 40%, #facc15 58%, #f59e0b 76%, #d97706 92%, #a16207 100%)',
             boxShadow: `
-              0 0 60px rgba(253,224,71,0.40),
-              0 0 120px rgba(245,158,11,0.20),
-              0 0 200px rgba(217,119,6,0.08),
-              0 0 8px rgba(59,130,246,0.12),
-              inset 3px 3px 14px rgba(255,255,255,0.50),
-              inset -3px -2px 10px rgba(180,83,9,0.12)
+              0 0 30px rgba(253,224,71,0.22),
+              0 0 60px rgba(245,158,11,0.10),
+              0 0 100px rgba(217,119,6,0.04),
+              inset 2px 2px 8px rgba(255,255,255,0.45),
+              inset -2px -1px 6px rgba(180,83,9,0.10)
             `,
-            animation: 'v178-sunBreath 5s ease-in-out infinite alternate',
+            animation: 'v179-sunBreath 7s ease-in-out infinite alternate',
           }}>
-            {/* Inner bright core */}
+            {/* 内部高光核心 */}
             <div className="absolute rounded-full" style={{
-              width: '36%', height: '28%', top: '22%', left: '21%',
-              background: 'radial-gradient(ellipse, rgba(255,255,252,0.98) 0%, rgba(255,255,245,0.45) 70%, transparent 85%)',
+              width: '32%', height: '24%', top: '20%', left: '20%',
+              background: 'radial-gradient(ellipse, rgba(255,255,252,0.95) 0%, rgba(255,255,245,0.35) 70%, transparent 85%)',
             }} />
-            {/* Surface sunspot */}
-            <div className="absolute rounded-full opacity-10" style={{ width: '11%', height: '8%', bottom: '28%', right: '22%', background: 'rgba(180,83,9,0.3)' }} />
+            {/* 表面微斑 */}
+            <div className="absolute rounded-full opacity-08" style={{ width: '9%', height: '6%', bottom: '26%', right: '20%', background: 'rgba(180,83,9,0.25)' }} />
           </div>
 
           {/* ===== v141 NEW: 半遮面云朵 — 云朵遮挡太阳，增加层次 ===== */}
@@ -1888,19 +1887,18 @@ export default function AboutPage() {
           0%{opacity:0.25; transform:rotate(var(--r,0)) translateY(-50%) scaleX(1)}
           100%{opacity:0.65; transform:rotate(var(--r,0)) translateY(-50%) scaleX(1.15)}
         }
-        /* ===== v178 SUNRISE ANIMATIONS — 更流畅专业 ===== */
-        @keyframes v178-sunGlow {
-          0%{opacity:0.25; transform:scale(1); filter:blur(20px)}
-          100%{opacity:0.55; transform:scale(1.12); filter:blur(24px)}
+        /* ===== v179 SUNRISE ANIMATIONS — 远日微动，极柔和 ===== */
+        @keyframes v179-sunGlow {
+          0%{opacity:0.5; transform:scale(1); filter:blur(25px)}
+          100%{opacity:0.9; transform:scale(1.08); filter:blur(30px)}
         }
-        @keyframes v178-rayPulse {
-          0%{opacity:0.18; transform:rotate(var(--r,0)) translateY(-50%) scaleX(1); filter:blur(0.5px)}
-          100%{opacity:0.50; transform:rotate(var(--r,0)) translateY(-50%) scaleX(1.2); filter:blur(0px)}
+        @keyframes v179-rayPulse {
+          0%{opacity:0.4; transform:rotate(var(--r,0)) translateY(-50%) scaleX(1); filter:blur(0.8px)}
+          100%{opacity:0.85; transform:rotate(var(--r,0)) translateY(-50%) scaleX(1.15); filter:blur(0px)}
         }
-        @keyframes v178-sunBreath {
-          0%{transform:scale(1); filter:brightness(1) saturate(1.1)}
-          50%{transform:scale(1.04); filter:brightness(1.05) saturate(1.2)}
-          100%{transform:scale(1.08); filter:brightness(1.08) saturate(1.15)}
+        @keyframes v179-sunBreath {
+          0%{transform:scale(1); filter:brightness(0.95) saturate(1)}
+          100%{transform:scale(1.03); filter:brightness(1) saturate(1.05)}
         }
         @keyframes v135-waveBack {
           0%,100%{transform:translateX(0) translateY(0)}
