@@ -5,11 +5,9 @@ import { motion } from 'framer-motion';
 
 // ============================================================
 // SkyHeader — 深蓝天空 白云飘动 阳光明媚
-// v165: 深蓝渐变天空 + 升级云彩动画（上下浮动+呼吸感+视差）
+// v168: 云彩真正从左到右飘过 + 更明显的动画
 // ============================================================
 
-// 深蓝天空 — 配合网站主色 blue-600/700
-// 从深蓝(blue-900)渐变到明亮蓝(blue-300)，底部淡出到白色
 const SKY_GRADIENT = `linear-gradient(180deg,
   #1e3a8a 0%,
   #1e40af 10%,
@@ -21,23 +19,19 @@ const SKY_GRADIENT = `linear-gradient(180deg,
   #bfdbfe 92%,
   #e0f2fe 100%)`;
 
-// ============================================================
-// LAYER 1: 白云 — 柔和飘动的积云
-// ============================================================
 function Clouds() {
   const [clouds, setClouds] = useState<Array<{
-    id: number; left: string; top: string; width: string; opacity: number;
-    duration: number; delay: number; blur: number; animationName: string;
+    id: number; top: string; size: number; speed: number; delay: number; opacity: number;
   }>>([]);
 
   useEffect(() => {
     setClouds([
-      { id: 0, left: '5%', top: '10%', width: '180px', opacity: 0.9, duration: 45, delay: 0, blur: 1, animationName: 'cloud-drift-near' },
-      { id: 1, left: '60%', top: '5%', width: '220px', opacity: 0.75, duration: 55, delay: 5, blur: 1.5, animationName: 'cloud-drift-mid' },
-      { id: 2, left: '30%', top: '22%', width: '140px', opacity: 0.6, duration: 38, delay: 10, blur: 0.8, animationName: 'cloud-drift-near' },
-      { id: 3, left: '78%', top: '18%', width: '160px', opacity: 0.7, duration: 48, delay: 3, blur: 1.2, animationName: 'cloud-drift-mid' },
-      { id: 4, left: '-5%', top: '30%', width: '200px', opacity: 0.5, duration: 62, delay: 15, blur: 1.5, animationName: 'cloud-drift-far' },
-      { id: 5, left: '45%', top: '35%', width: '120px', opacity: 0.45, duration: 42, delay: 20, blur: 1, animationName: 'cloud-drift-far' },
+      { id: 0, top: '8%', size: 160, speed: 35, delay: 0, opacity: 0.95 },
+      { id: 1, top: '18%', size: 200, speed: 48, delay: -12, opacity: 0.85 },
+      { id: 2, top: '28%', size: 120, speed: 28, delay: -6, opacity: 0.7 },
+      { id: 3, top: '38%', size: 140, speed: 42, delay: -20, opacity: 0.6 },
+      { id: 4, top: '14%', size: 180, speed: 55, delay: -30, opacity: 0.75 },
+      { id: 5, top: '44%', size: 100, speed: 32, delay: -15, opacity: 0.5 },
     ]);
   }, []);
 
@@ -46,27 +40,29 @@ function Clouds() {
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
       {clouds.map(c => (
-        <div key={c.id} className="absolute" style={{
-          left: c.left,
+        <div key={c.id} style={{
+          position: 'absolute',
           top: c.top,
-          filter: `blur(${c.blur}px)`,
+          left: '-220px',
+          width: `${c.size * 1.6}px`,
+          height: `${c.size * 0.7}px`,
           opacity: c.opacity,
-          animation: `${c.animationName} ${c.duration}s ease-in-out infinite alternate`,
+          animation: `cloud-fly ${c.speed}s linear infinite`,
           animationDelay: `${c.delay}s`,
         }}>
-          {/* Fluffy cloud shape using multiple overlapping circles */}
-          <svg width={c.width} height={c.width ? String(Math.max(Number(c.width.replace('px','')) * 0.45, 50)) + 'px' : '80px'} viewBox="0 0 200 90">
+          {/* Fluffy cloud SVG */}
+          <svg width="100%" height="100%" viewBox="0 0 200 90" preserveAspectRatio="xMidYMid meet">
             <defs>
-              <linearGradient id={`cloudGrad${c.id}`} x1="0%" y1="0%" x2="0%" y2="100%">
+              <linearGradient id={`cg${c.id}`} x1="0%" y1="0%" x2="0%" y2="100%">
                 <stop offset="0%" stopColor="#ffffff" stopOpacity="1" />
-                <stop offset="100%" stopColor="#e8f4fc" stopOpacity="0.95" />
+                <stop offset="100%" stopColor="#e8f4fc" stopOpacity="0.92" />
               </linearGradient>
             </defs>
-            <ellipse cx="60" cy="55" rx="50" ry="30" fill={`url(#cloudGrad${c.id})`} />
-            <ellipse cx="105" cy="45" rx="58" ry="36" fill={`url(#cloudGrad${c.id})`} />
-            <ellipse cx="150" cy="52" rx="44" ry="28" fill={`url(#cloudGrad${c.id})`} />
-            <ellipse cx="82" cy="38" rx="40" ry="26" fill={`url(#cloudGrad${c.id})`} />
-            <ellipse cx="128" cy="35" rx="34" ry="22" fill={`url(#cloudGrad${c.id})`} />
+            <ellipse cx="55" cy="55" rx="48" ry="28" fill={`url(#cg${c.id})`} />
+            <ellipse cx="105" cy="44" rx="56" ry="34" fill={`url(#cg${c.id})`} />
+            <ellipse cx="148" cy="52" rx="42" ry="26" fill={`url(#cg${c.id})`} />
+            <ellipse cx="82" cy="36" rx="38" ry="24" fill={`url(#cg${c.id})`} />
+            <ellipse cx="125" cy="33" rx="32" ry="20" fill={`url(#cg${c.id})`} />
           </svg>
         </div>
       ))}
@@ -74,39 +70,33 @@ function Clouds() {
   );
 }
 
-// ============================================================
-// LAYER 2: 阳光光晕 — 温暖的光线从上方洒落
-// ============================================================
 function SunGlow() {
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-      {/* Sun position — upper right */}
+      {/* Sun */}
       <div className="absolute" style={{
-        right: '12%',
-        top: '-4%',
-        width: '180px',
-        height: '180px',
+        right: '10%',
+        top: '-3%',
+        width: '170px',
+        height: '170px',
         background: 'radial-gradient(circle, rgba(255,248,200,0.95) 0%, rgba(255,235,160,0.5) 25%, rgba(255,220,120,0.15) 45%, transparent 70%)',
         borderRadius: '50%',
         filter: 'blur(8px)',
-        animation: 'sun-pulse 6s ease-in-out infinite',
+        animation: 'sun-pulse 5s ease-in-out infinite',
       }} />
-      {/* Light rays from sun */}
+      {/* Light rays */}
       <div className="absolute inset-0" style={{
         background: `
           linear-gradient(135deg, transparent 40%, rgba(255,250,220,0.08) 45%, transparent 50%),
           linear-gradient(160deg, transparent 45%, rgba(255,248,200,0.05) 50%, transparent 55%),
           linear-gradient(110deg, transparent 50%, rgba(255,245,210,0.06) 55%, transparent 60%)
         `,
-        animation: 'rays-shift 8s ease-in-out infinite alternate',
+        animation: 'rays-shift 7s ease-in-out infinite alternate',
       }} />
     </div>
   );
 }
 
-// ============================================================
-// LAYER 3: 底部柔和淡出到纯白（无黑边！无多余条！）
-// ============================================================
 function BottomFade() {
   return (
     <div
@@ -119,9 +109,6 @@ function BottomFade() {
   );
 }
 
-// ============================================================
-// MAIN COMPONENT
-// ============================================================
 export default function SkyHeader({
   title,
   subtitle,
@@ -144,13 +131,8 @@ export default function SkyHeader({
         background: SKY_GRADIENT,
       }}
     >
-      {/* Layer 1: Sun glow + light rays */}
       <SunGlow />
-
-      {/* Layer 2: Drifting white clouds */}
       <Clouds />
-
-      {/* Layer 3: Bottom fade to pure white */}
       <BottomFade />
 
       {/* === CONTENT === */}
@@ -194,51 +176,27 @@ export default function SkyHeader({
         {children}
       </div>
 
-      {/* ===== ANIMATIONS ===== */}
       <style>{`
         @media (prefers-reduced-motion: reduce) {
-          section * {
-            animation-duration: 0.01ms !important;
-            animation-iteration-count: 1 !important;
-          }
+          section * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
         }
 
-        /* Cloud drift — 近景云：大幅飘动 + 上下浮动 + 呼吸感 */
-        @keyframes cloud-drift-near {
-          0%   { transform: translate(-30px, 0px) scale(1); }
-          20%  { transform: translate(-15px, -12px) scale(1.04); }
-          40%  { transform: translate(10px, 6px) scale(0.97); }
-          60%  { transform: translate(25px, -8px) scale(1.03); }
-          80%  { transform: translate(15px, 10px) scale(0.98); }
-          100% { transform: translate(35px, 0px) scale(1); }
+        /* Cloud flies from left to right across the entire screen */
+        @keyframes cloud-fly {
+          0% { transform: translateX(0) translateY(0); }
+          25% { transform: translateX(30vw) translateY(-8px); }
+          50% { transform: translateX(60vw) translateY(5px); }
+          75% { transform: translateX(90vw) translateY(-4px); }
+          100% { transform: translateX(120vw) translateY(0); }
         }
 
-        /* Cloud drift — 中景云：中等速度幅度 */
-        @keyframes cloud-drift-mid {
-          0%   { transform: translate(-20px, 0px) scale(1); }
-          25%  { transform: translate(-10px, -8px) scale(1.03); }
-          50%  { transform: translate(12px, 5px) scale(0.98); }
-          75%  { transform: translate(22px, -4px) scale(1.02); }
-          100% { transform: translate(25px, 0px) scale(1); }
-        }
-
-        /* Cloud drift — 远景云：缓慢小幅飘动（视差效果） */
-        @keyframes cloud-drift-far {
-          0%   { transform: translate(-15px, 0px) scale(1); }
-          30%  { transform: translate(-6px, -5px) scale(1.02); }
-          60%  { transform: translate(10px, 3px) scale(0.99); }
-          100% { transform: translate(18px, 0px) scale(1); }
-        }
-
-        /* Sun gentle pulse */
         @keyframes sun-pulse {
           0%, 100% { transform: scale(1); opacity: 1; }
-          50%      { transform: scale(1.06); opacity: 0.92; }
+          50% { transform: scale(1.08); opacity: 0.88; }
         }
 
-        /* Light rays subtle shift */
         @keyframes rays-shift {
-          0%   { opacity: 0.7; }
+          0% { opacity: 0.6; }
           100% { opacity: 1; }
         }
       `}</style>

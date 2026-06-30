@@ -620,7 +620,9 @@ export default function ProductsPage() {
                     }}
                   >
                     {/* Ripple circle — positioned by onMouseMove */}
-                    <div className="ripple-circle" style={{ width: '400px', height: '400px' }} />
+                    <div className="ripple-circle" style={{ left: 0, top: 0, width: '280px', height: '280px' }} />
+                    {/* Ripple ring — delayed secondary wave */}
+                    <div className="ripple-ring" style={{ left: 0, top: 0, width: '200px', height: '200px' }} />
                     {/* Product Image */}
                     {product.images && product.images[0] ? (
                       <div className="relative h-56 overflow-hidden bg-blue-50">
@@ -757,25 +759,44 @@ export default function ProductsPage() {
           <p className="absolute bottom-4 text-white/60 text-sm">Click anywhere to close</p>
         </div>
       )}
-      {/* Hover water-ripple effect — follows mouse, visible */}
+      {/* Hover water-ripple effect (v168): visible expanding ripple from mouse */}
       <style>{`
         .ripple-card {
           position: relative;
           overflow: hidden;
         }
-        /* Single ripple circle — follows mouse, expands on hover */
         .ripple-card .ripple-circle {
           position: absolute;
           border-radius: 50%;
-          background: radial-gradient(circle, rgba(59,130,246,0.25) 0%, rgba(96,165,250,0.12) 40%, transparent 65%);
+          width: 280px !important;
+          height: 280px !important;
+          background: radial-gradient(circle, rgba(59,130,246,0.18) 0%, rgba(96,165,250,0.10) 35%, transparent 70%);
           transform: translate(-50%, -50%) scale(0);
           opacity: 0;
           pointer-events: none;
           z-index: 1;
-          transition: transform 0.6s ease-out, opacity 0.4s ease-out;
+          transition: transform 0.5s ease-out, opacity 0.3s ease-out;
         }
         .ripple-card:hover .ripple-circle {
-          transform: translate(-50%, -50%) scale(1);
+          transform: translate(-50%, -50%) scale(1.5);
+          opacity: 1;
+        }
+
+        /* Secondary ripple ring — delayed for wave effect */
+        .ripple-card .ripple-ring {
+          position: absolute;
+          border-radius: 50%;
+          width: 200px !important;
+          height: 200px !important;
+          border: 2px solid rgba(59,130,246,0.15);
+          transform: translate(-50%, -50%) scale(0);
+          opacity: 0;
+          pointer-events: none;
+          z-index: 1;
+          transition: transform 0.7s ease-out 0.15s, opacity 0.5s ease-out 0.15s;
+        }
+        .ripple-card:hover .ripple-ring {
+          transform: translate(-50%, -50%) scale(2.5);
           opacity: 1;
         }
       `}</style>

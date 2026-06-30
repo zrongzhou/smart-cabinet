@@ -1818,12 +1818,12 @@ export default function AboutPage() {
         }
         @keyframes v138-sunBreath {
           0%{transform:scale(1); filter:brightness(1) saturate(1.15)}
-          50%{transform:scale(1.03); filter:brightness(1.04) saturate(1.25)}
-          100%{transform:scale(1.05); filter:brightness(1.07) saturate(1.2)}
+          50%{transform:scale(1.06); filter:brightness(1.06) saturate(1.28)}
+          100%{transform:scale(1.12); filter:brightness(1.10) saturate(1.22)}
         }
         @keyframes v135-sunGlow {
           0%{opacity:0.3; transform:scale(1)}
-          100%{opacity:0.55; transform:scale(1.08)}
+          100%{opacity:0.7; transform:scale(1.15)}
         }
         @keyframes v135-rayPulse {
           0%{opacity:0.25; transform:rotate(var(--r,0)) translateY(-50%) scaleX(1)}
@@ -1831,7 +1831,7 @@ export default function AboutPage() {
         }
         @keyframes v135-waveBack {
           0%,100%{transform:translateX(0) translateY(0)}
-          50%{transform:translateX(-22px) translateY(-4px)}
+          50%{transform:translateX(-35px) translateY(-7px)}
         }
         @keyframes v135-waveMid {
           0%,100%{transform:translateX(0) translateY(0)}
@@ -1839,7 +1839,7 @@ export default function AboutPage() {
         }
         @keyframes v135-waveFront {
           0%,100%{transform:translateX(0) translateY(0)}
-          50%{transform:translateX(-18px) translateY(-5px)}
+          50%{transform:translateX(28px) translateY(-8px)}
         }
         @keyframes v135-sparkle {
           0%,100%{opacity:0.18; transform:scale(1)}
