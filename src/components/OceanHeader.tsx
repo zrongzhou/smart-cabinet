@@ -255,9 +255,9 @@ function GeoLines() {
       </g>
 
       {/* 左下角弧线 */}
-      <path d="M -3% 108% A 120 120 0 0 1 18% 98%"
+      <path d="M -20 340 Q 60 310, 140 290"
             fill="none" stroke="url(#gl2)" strokeWidth="1" opacity="0.6" />
-      <path d="M -6% 115% A 160 160 0 0 1 22% 95%"
+      <path d="M -30 360 Q 80 320, 170 280"
             fill="none" stroke="url(#gl2)" strokeWidth="0.7" opacity="0.35" />
 
       {/* 右侧竖线 + 圆点装饰 */}

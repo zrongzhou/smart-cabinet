@@ -75,7 +75,15 @@ export default function ProductDetailClient({
 
       {/* Product Detail */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+        <div className="glass-card water-ripple rounded-2xl overflow-hidden"
+          onMouseMove={(e: React.MouseEvent) => {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            (e.currentTarget as HTMLElement).style.setProperty('--rx', `${x}%`);
+            (e.currentTarget as HTMLElement).style.setProperty('--ry', `${y}%`);
+          }}
+        >
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-6 lg:p-8">
             {/* Left: Image Gallery */}
             <div>
@@ -83,7 +91,7 @@ export default function ProductDetailClient({
                 <>
                     {/* Main Image */}
                     <div
-                      className="relative aspect-square bg-gray-100 rounded-xl overflow-hidden cursor-zoom-in group"
+                      className="relative aspect-square bg-gray-50/80 rounded-xl overflow-hidden cursor-zoom-in group water-ripple"
                       onClick={() => setLightboxOpen(true)}
                     >
                       {mainImageError ? (
@@ -240,7 +248,7 @@ export default function ProductDetailClient({
                 <div className="flex flex-wrap gap-3 mb-8">
                   <a
                     href={`/${locale}/contact`}
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200/50 hover:shadow-blue-300/50 hover:-translate-y-0.5"
                   >
                     {labels.contactUs}
                   </a>
@@ -257,7 +265,7 @@ export default function ProductDetailClient({
                         alert(labels.linkCopied);
                       }
                     }}
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-colors"
+                    className="inline-flex items-center gap-2 px-6 py-3 glass-btn text-gray-700 rounded-xl font-semibold hover:-translate-y-0.5 transition-all"
                   >
                     <Share2 className="w-4 h-4" />
                     {labels.share}
@@ -397,7 +405,7 @@ export default function ProductDetailClient({
                   <div className="prose prose-sm max-w-none">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {featuresArray.map((feature: string, index: number) => (
-                        <div key={index} className="flex items-start gap-3 p-4 bg-white border border-gray-100 rounded-xl hover:shadow-md hover:border-blue-200 transition-all duration-300 group">
+                        <div key={index} className="flex items-start gap-3 p-4 glass-btn rounded-xl hover:shadow-md transition-all duration-300 group">
                           <span className="flex-shrink-0 w-6 h-6 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg flex items-center justify-center text-xs font-bold mt-0.5 group-hover:scale-110 transition-transform">
                             ✓
                           </span>
@@ -435,7 +443,7 @@ export default function ProductDetailClient({
                 <a
                   key={relatedProduct.id}
                   href={`/${locale}/products/${relatedProduct.slug}`}
-                  className="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-blue-200"
+                  className="group glass-card water-ripple rounded-2xl overflow-hidden block"
                 >
                   <div className="relative h-44 overflow-hidden bg-gray-50">
                     {relatedProduct.images?.[0] ? (
