@@ -2,10 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ===== 全局基础样式 ===== */
-body {
-  background-color: #f0f9ff;  /* 浅蓝白 - 其他页面的默认背景 */
-  color: #1e293b;             /* 深灰文字 */
+/* ===== 全局字体栈（无外部依赖，适合国内服务器）===== */
+@layer base {
+  body {
+    font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background-color: #f0f9ff;
+    color: #1e293b;
+  }
 }
 
 /* ===== 首页专用：星空背景 ===== */
