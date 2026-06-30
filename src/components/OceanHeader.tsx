@@ -4,19 +4,19 @@ import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 
 // ============================================================
-// OceanHeader v201 — WebGL Shader 流体极光 (Fluid Aurora) 颜色精修
+// OceanHeader v202 — WebGL Shader 缓流极光 (Gentle Aurora)
 //
-// v200 问题诊断（用户截图确认）：
-//   ❌ 色相范围 0.54~0.67 (195°~240°) — 低端 195° 偏青绿 = 整体发绿
-//   ❌ 亮度下限 0.28 — 深色区域太暗 = "污渍"感
-//   ❌ grain 颗粒 + 暗角过强 = 更脏
+// v201 问题诊断（用户截图确认）：
+//   ❌ 颜色偏紫偏脏 — 色相范围含靛紫段(238~248°)，饱和度偏高
+//   ❌ 流动太快 — u_time*0.15 + domain warping速度系数过大
+//   ❌ 跟网站风格不协调 — 工具柜网站需要干净、专业、克制的背景
 //
-// v201 颜色修复：
-//   ✅ 色相收窄到 0.57~0.69 (205°~248°) — 纯天青→蓝→靛，去掉青绿
-//   ✅ 亮度提到底 0.42~0.70 — 不再有深色污渍
-//   ✅ 去掉 grain 颗粒 — 干净高级感
-//   ✅ 高光改为宝石蓝 — 更协调
-//   ✅ 暗角减弱 — 保持整体明亮
+// v202 改动：
+//   ✅ 色相锁定 200~222度（纯天青→中蓝，彻底去紫）
+//   ✅ 饱和度降至 0.30~0.52（低饱和，高级灰蓝感）
+//   ✅ 亮度提升到 0.52~0.73（明亮干净）
+//   ✅ 整体流速减慢 50%（舒缓不抢眼）
+//   ✅ 去高光闪烁、去暗角（更干净均匀）
 // ============================================================
 
 interface OceanHeaderProps {
@@ -94,13 +94,11 @@ export default function OceanHeader({ title, subtitle, description, icon, childr
 }
 
 // ============================================================
-// WebGLFluidAurora — WebGL + GLSL Fragment Shader 流体极光 (v201颜色精修)
+// WebGLFluidAurora — 缓流极光 (v202)
 //
-// 核心技术不变（v200已验证有效）：
-//   1. Simplex Noise (GLSL内联)
-//   2. Domain Warping（域扭曲）= 真正液体流动 ✅ 用户确认！
-//   3. FBM 多层叠加
-//   4. HSL→RGB 色彩映射（v201重调参数）
+// 算法保持不变（Domain Warping 已验证有效）：
+//   Simplex Noise → FBM → Domain Warping → HSL→RGB
+// 只调整：颜色参数 + 流速
 // ============================================================
 function WebGLFluidAurora() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -115,7 +113,7 @@ function WebGLFluidAurora() {
     let animId = 0;
     const startTime = Date.now();
 
-    // ── Vertex Shader：全屏四边形 ──
+    // ── Vertex Shader ──
     const vsSource = [
       'attribute vec2 a_position;',
       'varying vec2 v_uv;',
@@ -125,7 +123,7 @@ function WebGLFluidAurora() {
       '}'
     ].join('\n');
 
-    // ── Fragment Shader：流体极光 v201 颜色精修版 ──
+    // ── Fragment Shader：缓流极光 v202 ──
     const fsSource = [
       'precision mediump float;',
       'varying vec2 v_uv;',
@@ -176,76 +174,73 @@ function WebGLFluidAurora() {
       '  return f;',
       '}',
 
-      // ── HSL → RGB ──
+      // ── HSL -> RGB ──
       'vec3 hsl2rgb(float h, float s, float l) {',
       '  vec3 rgb = clamp(abs(mod(h*6.0+vec3(0.0,4.0,2.0),6.0)-3.0)-1.0, 0.0, 1.0);',
       '  return l + s * (rgb - 0.5) * (1.0 - abs(2.0 * l - 1.0));',
       '}',
 
       // ══════════════════════════════════════════════
-      // 主渲染逻辑 —— v201 颜色精修
+      // 主渲染逻辑 —— v202 缓流 + 干净色系
       // ══════════════════════════════════════════════
       'void main() {',
       '  vec2 uv = v_uv;',
-      '  float t = u_time * 0.15;',
 
-      // 修正宽高比
+      // 【★ 核心：流速减半】v201: 0.15 → v202: 0.07
+      '  float t = u_time * 0.07;',
+
       '  uv.x *= u_aspect.x / u_aspect.y;',
 
-      // ── Domain Warping（核心！保持v200的流动算法不变）──
+      // ── Domain Warping（流速同步减半）──
       '  vec2 q = vec2(',
-      '    fbm(uv + vec2(0.0, 0.0) + t * 0.3),',
-      '    fbm(uv + vec2(5.2, 1.3) + t * 0.2)',
+      '    fbm(uv + vec2(0.0, 0.0) + t * 0.15),',     // v201: 0.3
+      '    fbm(uv + vec2(5.2, 1.3) + t * 0.10)',       // v201: 0.2
       '  );',
 
       '  vec2 r = vec2(',
-      '    fbm(uv + q * 1.5 + vec2(1.7, 9.2) + t * 0.15),',
-      '    fbm(uv + q * 1.2 + vec2(8.3, 2.8) + t * 0.12)',
+      '    fbm(uv + q * 1.5 + vec2(1.7, 9.2) + t * 0.08),',  // v201: 0.15
+      '    fbm(uv + q * 1.2 + vec2(8.3, 2.8) + t * 0.06)',     // v201: 0.12
       '  );',
 
       '  float f = fbm(uv + r * 1.7);',
 
       // ══════════════════════════════════════════════
-      // ★★★ v201 颜色映射修改区域 ★★★
+      // ★★★ v202 颜色映射：干净天蓝色系 ★★★
       // ══════════════════════════════════════════════
 
-      // 色相混合权重
-      '  float hueMix = f * 0.50 + r.x * 0.30 + r.y * 0.20;',
+      // 混合权重
+      '  float hueMix = f * 0.45 + r.x * 0.28 + r.y * 0.27;',
       '  hueMix = clamp(hueMix, 0.0, 1.0);',
 
-      // 【修改1】色相范围：0.57~0.69 (205°~248°)
-      // v200 是 0.54~0.67 (195°~240°) — 低端偏青绿
-      // 现在收窄到纯正天青蓝→宝石蓝→靛蓝，不再有绿色
-      '  float hue = mix(0.57, 0.69, hueMix);',
-      '  hue += sin(t * 0.25 + f * 1.5) * 0.02;', // 色相漂移缩小到 ±2%
+      // 色相：严格锁定 200~222 度（天青→中蓝，零紫色！）
+      // 200度=干净天蓝, 210度=经典蓝, 222度=中蓝
+      // 对应HSL: 200/360=0.556 ~ 222/360=0.617
+      '  float hue = mix(0.556, 0.617, hueMix);',
+      '  hue += sin(t * 0.15 + f * 0.8) * 0.008;', // 微弱色相漂移 ±0.8%
 
-      // 【修改2】饱和度：微降，更高级不艳俗
-      // v200: 0.52~0.78 → v201: 0.48~0.72
-      '  float sat = mix(0.48, 0.72, smoothstep(-0.2, 0.5, f));',
+      // 饱和度：低！高级灰蓝感（不是鲜艳的彩带）
+      // 0.30 = 几乎中性灰蓝, 0.52 = 温和的蓝色
+      '  float sat = mix(0.30, 0.52, smoothstep(-0.15, 0.5, f));',
 
-      // 【修改3】亮度：大幅提亮！去掉深色污渍
-      // v200: 0.38~0.65, 下限0.28 → v201: 0.45~0.70, 下限0.42
-      '  float brightness = mix(0.45, 0.70, smoothstep(-0.4, 0.55, f));',
-      '  brightness += r.x * 0.06;', // 高光点缀（降低强度）
-      '  brightness = clamp(brightness, 0.42, 0.72);', // 下限从0.28提到0.42！
+      // 亮度：明亮干净（深色区域不低于50%）
+      '  float brightness = mix(0.52, 0.72, smoothstep(-0.35, 0.55, f));',
+      '  brightness += r.x * 0.04;', // 极微弱的明暗变化
+      '  brightness = clamp(brightness, 0.50, 0.74);',
 
       '  vec3 col = hsl2rgb(hue, sat, brightness);',
 
-      // 【修改4】高光：用宝石蓝(0.61=220°)而不是天青(0.53=191°)
-      // 天青偏绿，宝石蓝更纯净协调
-      '  float highlight = smoothstep(0.42, 0.72, f) * smoothstep(0.72, 0.42, f);',
-      '  highlight *= smoothstep(0.35, 0.70, r.x);',
-      '  vec3 highlightCol = hsl2rgb(0.61, 0.62, 0.80);', // 宝石蓝高光
-      '  col = mix(col, highlightCol, highlight * 0.38);',
+      // 高光：用干净的浅天蓝(0.56=202度)，低强度
+      '  float highlight = smoothstep(0.45, 0.70, f) * smoothstep(0.70, 0.45, f);',
+      '  highlight *= smoothstep(0.30, 0.65, r.x);',
+      '  vec3 highlightCol = hsl2rgb(0.56, 0.42, 0.85);', // 浅天蓝，非常柔和
+      '  col = mix(col, highlightCol, highlight * 0.20);', // 高光强度减半
 
-      // 【修改5】暗角：减弱，保持整体明亮
-      // v200: 0.65+0.35*vignette → v201: 0.78+0.22*vignette
+      // 无暗角！让整个画面均匀明亮
+      // 只做极轻微的边缘柔化
       '  vec2 centerUV = v_uv - 0.5;',
-      '  float vignette = 1.0 - dot(centerUV, centerUV) * 0.4;',
-      '  vignette = smoothstep(0.25, 0.85, vignette);',
-      '  col *= 0.78 + vignette * 0.22;',
-
-      // 【修改6】删除 grain 颗粒！v200 的颗粒增加脏感
+      '  float edge = 1.0 - dot(centerUV, centerUV) * 0.3;',
+      '  edge = smoothstep(0.2, 0.80, edge);',
+      '  col *= 0.88 + edge * 0.12;',
 
       '  gl_FragColor = vec4(col, 1.0);',
       '}'
@@ -269,7 +264,6 @@ function WebGLFluidAurora() {
     const fs = compileShader(gl.FRAGMENT_SHADER, fsSource);
     if (!vs || !fs) return;
 
-    // ── 创建程序 ──
     const program = gl.createProgram();
     if (!program) return;
     gl.attachShader(program, vs);
@@ -281,7 +275,7 @@ function WebGLFluidAurora() {
     }
     gl.useProgram(program);
 
-    // ── 全屏四边形顶点数据 ──
+    // ── 全屏四边形 ──
     const vertices = new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]);
     const buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
@@ -291,7 +285,7 @@ function WebGLFluidAurora() {
     gl.enableVertexAttribArray(posLoc);
     gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
 
-    // ── Uniform 位置 ──
+    // ── Uniforms ──
     const timeLoc = gl.getUniformLocation(program, 'u_time');
     const resLoc = gl.getUniformLocation(program, 'u_resolution');
     const aspectLoc = gl.getUniformLocation(program, 'u_aspect');
