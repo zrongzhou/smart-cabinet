@@ -47,6 +47,10 @@ interface SiteSettings {
   // 页脚设置
   footerCopyright: string;
   footerLinks: string;
+
+  // 微信通知设置
+  wechatWebhookUrl: string;
+  wechatNotificationEnabled: boolean;
 }
 
 // Simple Error Boundary for MediaPicker
@@ -104,6 +108,8 @@ export default function AdminSettingsPage() {
     socialWeibo: '',
     footerCopyright: '',
     footerLinks: '',
+    wechatWebhookUrl: '',
+    wechatNotificationEnabled: false,
   });
 
   const [activeTab, setActiveTab] = useState('company');
@@ -111,6 +117,8 @@ export default function AdminSettingsPage() {
   const [uploading, setUploading] = useState<'logo' | 'favicon' | 'ogImage' | null>(null);
   const [showMediaPicker, setShowMediaPicker] = useState(false);
   const [mediaPickerTarget, setMediaPickerTarget] = useState<'logo' | 'favicon' | 'ogImage' | null>(null);
+  const [testingWebhook, setTestingWebhook] = useState(false);
+  const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
 
   // Loading and error states
   const [loading, setLoading] = useState(true);
@@ -123,6 +131,7 @@ export default function AdminSettingsPage() {
     { key: 'contact', label: '联系方式', icon: Mail, description: '邮箱、电话、地址' },
     { key: 'social', label: '社交媒体', icon: Facebook, description: 'Facebook、Twitter等' },
     { key: 'seo', label: 'SEO & 其他', icon: Linkedin, description: 'SEO设置、Favicon' },
+    { key: 'notifications', label: '微信通知', icon: AlertCircle, description: '企业微信群机器人通知设置' },
   ];
 
   // Load settings from API
@@ -257,6 +266,39 @@ export default function AdminSettingsPage() {
       reader.readAsDataURL(file);
     };
     input.click();
+  };
+
+  // Test WeChat webhook
+  const handleTestWebhook = async () => {
+    if (!settings.wechatWebhookUrl) {
+      setTestResult({ success: false, message: 'Please enter the webhook URL first' });
+      return;
+    }
+
+    setTestingWebhook(true);
+    setTestResult(null);
+
+    try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('admin_token') : null;
+      const res = await fetch('/api/admin/settings/test-wechat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token || ''}`,
+        },
+        body: JSON.stringify({ webhookUrl: settings.wechatWebhookUrl }),
+      });
+
+      const data = await res.json();
+      setTestResult({
+        success: data.success,
+        message: data.message,
+      });
+    } catch (err: any) {
+      setTestResult({ success: false, message: err.message || 'Failed to test webhook' });
+    } finally {
+      setTestingWebhook(false);
+    }
   };
 
   // Handle media picker selection
@@ -894,6 +936,106 @@ export default function AdminSettingsPage() {
                         />
                         <p className="mt-1 text-xs text-gray-500">JSON数组格式，每个对象包含label和url字段</p>
                       </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Tab 5: WeChat Notifications */}
+            {activeTab === 'notifications' && (
+              <div className="admin-card p-6 animate-fade-in">
+                <h2 className="text-xl font-bold text-gray-900 mb-6">微信通知设置</h2>
+                <div className="max-w-2xl space-y-6">
+                  {/* Enable/Disable Switch */}
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-base font-semibold text-gray-900">启用微信通知</h3>
+                      <p className="text-sm text-gray-500 mt-1">当有新联系消息时，通过企业微信群机器人发送通知</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setSettings({ ...settings, wechatNotificationEnabled: !settings.wechatNotificationEnabled })}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                        settings.wechatNotificationEnabled ? 'bg-blue-600' : 'bg-gray-200'
+                      }`}
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                          settings.wechatNotificationEnabled ? 'translate-x-6' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  {/* Webhook URL */}
+                  <div className="border-t border-gray-200 pt-6">
+                    <h3 className="text-base font-semibold text-gray-900 mb-4">企业微信群机器人 Webhook</h3>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Webhook URL
+                        </label>
+                        <input
+                          type="text"
+                          value={settings.wechatWebhookUrl}
+                          onChange={(e) => {
+                            setSettings({ ...settings, wechatWebhookUrl: e.target.value });
+                            setTestResult(null);
+                          }}
+                          className="admin-form-input w-full font-mono text-sm"
+                          placeholder="https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=..."
+                        />
+                        <p className="mt-1 text-xs text-gray-500">
+                          在企业微信群中添加机器人，获取 Webhook 地址
+                        </p>
+                      </div>
+
+                      {/* Test Button */}
+                      <div className="flex items-center gap-4">
+                        <button
+                          type="button"
+                          onClick={handleTestWebhook}
+                          disabled={testingWebhook || !settings.wechatWebhookUrl}
+                          className="btn-secondary flex items-center gap-2"
+                        >
+                          {testingWebhook ? (
+                            <>
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                              测试中...
+                            </>
+                          ) : (
+                            <>
+                              <AlertCircle className="w-4 h-4" />
+                              测试发送
+                            </>
+                          )}
+                        </button>
+
+                        {testResult && (
+                          <div className={`flex items-center gap-2 text-sm ${testResult.success ? 'text-green-600' : 'text-red-600'}`}>
+                            {testResult.success ? (
+                              <CheckCircle className="w-4 h-4" />
+                            ) : (
+                              <AlertCircle className="w-4 h-4" />
+                            )}
+                            <span>{testResult.message}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Help Text */}
+                  <div className="border-t border-gray-200 pt-6">
+                    <h3 className="text-base font-semibold text-gray-900 mb-4">使用说明</h3>
+                    <div className="bg-blue-50 rounded-lg p-4 text-sm text-blue-800 space-y-2">
+                      <p>1. 在企业微信中创建一个群聊</p>
+                      <p>2. 点击群设置 → 群机器人 → 添加机器人</p>
+                      <p>3. 设置机器人名称和头像，复制 Webhook 地址</p>
+                      <p>4. 将 Webhook 地址粘贴到上方输入框</p>
+                      <p>5. 点击"测试发送"验证配置是否正确</p>
+                      <p>6. 保存设置后，有新联系消息时会自动发送通知到群</p>
                     </div>
                   </div>
                 </div>

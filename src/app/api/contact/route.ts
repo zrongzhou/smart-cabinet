@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { sendNotification, ContactNotificationData } from '@/lib/notifications';
 
 const prisma = new PrismaClient();
 
@@ -57,6 +58,24 @@ export async function POST(request: NextRequest) {
         locale,
       },
     });
+
+    // Send WeChat notification (non-blocking, don't await)
+    const notificationData: ContactNotificationData = {
+      type: 'contact',
+      id: contactMessage.id,
+      name,
+      email,
+      phone,
+      subject,
+      message,
+      locale,
+      createdAt: contactMessage.createdAt,
+    };
+
+    // Fire and forget - don't block the response
+    sendNotification(notificationData).catch((err) =>
+      console.error('Failed to send notification:', err)
+    );
 
     return NextResponse.json({
       success: true,
