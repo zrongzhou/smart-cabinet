@@ -608,6 +608,13 @@ export default function ProductsPage() {
                     style={{
                       boxShadow: '0 4px 24px rgba(148,163,184,0.12), 0 1px 3px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6)',
                     }}
+                    onMouseMove={(e) => {
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const x = ((e.clientX - rect.left) / rect.width) * 100;
+                      const y = ((e.clientY - rect.top) / rect.height) * 100;
+                      e.currentTarget.style.setProperty('--ripple-x', `${x}%`);
+                      e.currentTarget.style.setProperty('--ripple-y', `${y}%`);
+                    }}
                   >
                     {/* Product Image */}
                     {product.images && product.images[0] ? (
@@ -745,30 +752,56 @@ export default function ProductsPage() {
           <p className="absolute bottom-4 text-white/60 text-sm">Click anywhere to close</p>
         </div>
       )}
-      {/* Hover water-ripple effect (v164) */}
+      {/* Hover water-ripple effect (v165) */}
       <style>{`
-        /* Water ripple on hover for cards */
+        /* Water ripple on hover for cards — follows mouse position */
         .ripple-card {
           position: relative;
           overflow: hidden;
+          --ripple-x: 50%;
+          --ripple-y: 50%;
         }
-        .ripple-card::after {
+        /* Secondary ripple — larger, more transparent, delayed */
+        .ripple-card::before {
           content: '';
           position: absolute;
-          top: 50%;
-          left: 50%;
+          top: var(--ripple-y);
+          left: var(--ripple-x);
           width: 0;
           height: 0;
           border-radius: 50%;
-          background: radial-gradient(circle, rgba(59,130,246,0.12) 0%, rgba(96,165,250,0.06) 40%, transparent 70%);
+          background: radial-gradient(circle, rgba(59,130,246,0.10) 0%, rgba(96,165,250,0.05) 50%, transparent 70%);
+          transform: translate(-50%, -50%) scale(0);
+          opacity: 0;
+          transition: width 0.9s ease-out, height 0.9s ease-out, opacity 0.6s ease;
+          z-index: 1;
+          pointer-events: none;
+        }
+        /* Main ripple — follows mouse exactly */
+        .ripple-card::after {
+          content: '';
+          position: absolute;
+          top: var(--ripple-y);
+          left: var(--ripple-x);
+          width: 0;
+          height: 0;
+          border-radius: 50%;
+          background: radial-gradient(circle, rgba(59,130,246,0.35) 0%, rgba(96,165,250,0.18) 45%, transparent 70%);
           transform: translate(-50%, -50%) scale(0);
           opacity: 0;
           transition: width 0.7s ease-out, height 0.7s ease-out, opacity 0.5s ease;
+          z-index: 2;
+          pointer-events: none;
+        }
+        .ripple-card:hover::before {
+          width: 500px;
+          height: 500px;
+          opacity: 0.5;
         }
         .ripple-card:hover::after {
-          width: 400px;
-          height: 400px;
-          opacity: 1;
+          width: 350px;
+          height: 350px;
+          opacity: 0.7;
         }
 
         /* Filter panel hover shimmer sweep */

@@ -1724,8 +1724,9 @@ export default function AboutPage() {
         </div>
 
         {/* Content — centered, elevated above waves (v140: dark text for bright sky) */}
-        <div className="max-w-4xl mx-auto text-center relative z-10 pt-4 pb-36">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-5 drop-shadow-lg"
+        <div className="max-w-4xl mx-auto text-center relative z-10 pt-4 pb-36"
+          style={{ animation: 'cta-fade-in-up 0.8s ease-out 0.3s both' }}
+        >          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-5 drop-shadow-lg"
             style={{
               color: '#1e293b',
               textShadow: '0 2px 8px rgba(255,255,255,0.6), 0 0 30px rgba(251,191,36,0.15)',
@@ -1737,7 +1738,7 @@ export default function AboutPage() {
 
           {/* Buttons — sunrise themed with enhanced glow (v139) */}
           <div className="flex flex-col sm:flex-row gap-5 justify-center mb-8">
-            <a href={`/${locale}/contact`} className="group relative inline-flex items-center justify-center px-10 py-4.5 font-bold rounded-full overflow-hidden cursor-pointer text-base transition-all duration-500 hover:-translate-y-1.5 hover:scale-[1.03]"
+            <a href={`/${locale}/contact`} className="group relative inline-flex items-center justify-center px-10 py-4.5 font-bold rounded-full overflow-hidden cursor-pointer text-base transition-all duration-500 hover:-translate-y-2 hover:scale-[1.05] hover:shadow-2xl"
               style={{
                 background: 'linear-gradient(135deg,#fffbeb 0%,#fef3c7 30%,#fde68a 60%,#fbbf24 100%)',
                 color: '#92400e',
@@ -1747,7 +1748,7 @@ export default function AboutPage() {
               <span style={{ position:'relative',zIndex:10,display:'inline-flex',alignItems:'center',gap:'6px' }}>{t('nav.contact')}<ChevronRight className="ml-1 w-5 h-5 group-hover:translate-x-1 transition-transform" /></span>
             </a>
             <a href={`tel:${contactPhone.replace(/\s/g,'')}`}
-              className="group relative inline-flex items-center justify-center px-10 py-4.5 font-bold rounded-full overflow-hidden cursor-pointer text-base text-white transition-all duration-500 hover:-translate-y-1.5 hover:scale-[1.03]"
+              className="group relative inline-flex items-center justify-center px-10 py-4.5 font-bold rounded-full overflow-hidden cursor-pointer text-base text-white transition-all duration-500 hover:-translate-y-2 hover:scale-[1.05] hover:shadow-2xl"
               style={{
                 background: 'linear-gradient(135deg,rgba(255,255,255,0.28),rgba(255,255,255,0.12))',
                 border: '1.5px solid rgba(255,255,255,0.45)',
@@ -1873,8 +1874,8 @@ export default function AboutPage() {
         }
         @keyframes v138-hexRotate { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
         @keyframes v138-ringPulse {
-          0%,100%{opacity:0.2; transform:scale(0.96); borderWidth:'1px'}
-          50%{opacity:0.55; transform:scale(1.06); borderWidth:'2px'}
+          0%,100%{opacity:0.2; transform:scale(0.96); border-width: 1px}
+          50%{opacity:0.55; transform:scale(1.06); border-width: 2px}
         }
         @keyframes v138-arcSpin { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
         @keyframes v138-dustFloat {
@@ -1974,6 +1975,12 @@ export default function AboutPage() {
           0%,100%{transform:translate(0,0); opacity:0.8}
           40%{transform:translate(10px,5px); opacity:0.6}
           70%{transform:translate(-6px,-2px); opacity:0.75}
+        }
+
+        /* ===== CTA content fade-in-up animation ===== */
+        @keyframes cta-fade-in-up {
+          0%{opacity:0; transform:translateY(32px)}
+          100%{opacity:1; transform:translateY(0)}
         }
       `}</style>
     </div>

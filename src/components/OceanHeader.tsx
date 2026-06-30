@@ -4,19 +4,22 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
 // ============================================================
-// SkyHeader — 蓝天白云 阳光明媚
-// v164: 彻底告别夜空/海洋，改为明亮晴朗的白天天空
+// SkyHeader — 深蓝天空 白云飘动 阳光明媚
+// v165: 深蓝渐变天空 + 升级云彩动画（上下浮动+呼吸感+视差）
 // ============================================================
 
 const SKY_GRADIENT = `linear-gradient(180deg,
-  #38bdf8 0%,
-  #5cc6ef 12%,
-  #7dd3fc 25%,
-  #a4ddf8 40%,
-  #c5e8fb 55%,
-  #e0f2fe 70%,
-  #eef8ff 85%,
-  #f8fcff 100%)`;
+  #0c4a6e 0%,
+  #0f5288 8%,
+  #1565a0 16%,
+  #1a78b8 25%,
+  #1e8ccf 35%,
+  #2196f3 46%,
+  #42a5f5 58%,
+  #64b5f6 70%,
+  #90caf9 82%,
+  #bbdefb 92%,
+  #e3f2fd 100%)`;
 
 // ============================================================
 // LAYER 1: 白云 — 柔和飘动的积云
@@ -29,12 +32,12 @@ function Clouds() {
 
   useEffect(() => {
     setClouds([
-      { id: 0, left: '5%', top: '10%', width: '180px', opacity: 0.9, duration: 45, delay: 0, blur: 1 },
-      { id: 1, left: '60%', top: '5%', width: '220px', opacity: 0.75, duration: 55, delay: 5, blur: 1.5 },
-      { id: 2, left: '30%', top: '22%', width: '140px', opacity: 0.6, duration: 38, delay: 10, blur: 0.8 },
-      { id: 3, left: '78%', top: '18%', width: '160px', opacity: 0.7, duration: 48, delay: 3, blur: 1.2 },
-      { id: 4, left: '-5%', top: '30%', width: '200px', opacity: 0.5, duration: 62, delay: 15, blur: 1.5 },
-      { id: 5, left: '45%', top: '35%', width: '120px', opacity: 0.45, duration: 42, delay: 20, blur: 1 },
+      { id: 0, left: '5%', top: '10%', width: '180px', opacity: 0.9, duration: 45, delay: 0, blur: 1, animationName: 'cloud-drift-near' },
+      { id: 1, left: '60%', top: '5%', width: '220px', opacity: 0.75, duration: 55, delay: 5, blur: 1.5, animationName: 'cloud-drift-mid' },
+      { id: 2, left: '30%', top: '22%', width: '140px', opacity: 0.6, duration: 38, delay: 10, blur: 0.8, animationName: 'cloud-drift-near' },
+      { id: 3, left: '78%', top: '18%', width: '160px', opacity: 0.7, duration: 48, delay: 3, blur: 1.2, animationName: 'cloud-drift-mid' },
+      { id: 4, left: '-5%', top: '30%', width: '200px', opacity: 0.5, duration: 62, delay: 15, blur: 1.5, animationName: 'cloud-drift-far' },
+      { id: 5, left: '45%', top: '35%', width: '120px', opacity: 0.45, duration: 42, delay: 20, blur: 1, animationName: 'cloud-drift-far' },
     ]);
   }, []);
 
@@ -48,7 +51,7 @@ function Clouds() {
           top: c.top,
           filter: `blur(${c.blur}px)`,
           opacity: c.opacity,
-          animation: `cloud-drift ${c.duration}s ease-in-out infinite alternate`,
+          animation: `${c.animationName} ${c.duration}s ease-in-out infinite alternate`,
           animationDelay: `${c.delay}s`,
         }}>
           {/* Fluffy cloud shape using multiple overlapping circles */}
@@ -200,10 +203,29 @@ export default function SkyHeader({
           }
         }
 
-        /* Cloud drift — slow horizontal float */
-        @keyframes cloud-drift {
-          0%   { transform: translateX(-15px); }
-          100% { transform: translateX(18px); }
+        /* Cloud drift — 近景云：快速大幅飘动 + 上下浮动 + 呼吸感 */
+        @keyframes cloud-drift-near {
+          0%   { transform: translate(-18px, 0px) scale(1); }
+          25%  { transform: translate(-8px, -8px) scale(1.03); }
+          50%  { transform: translate(5px, 4px) scale(0.98); }
+          75%  { transform: translate(15px, -5px) scale(1.02); }
+          100% { transform: translate(20px, 0px) scale(1); }
+        }
+
+        /* Cloud drift — 中景云：中等速度幅度 */
+        @keyframes cloud-drift-mid {
+          0%   { transform: translate(-12px, 0px) scale(1); }
+          30%  { transform: translate(-5px, -5px) scale(1.02); }
+          60%  { transform: translate(8px, 3px) scale(0.99); }
+          100% { transform: translate(14px, 0px) scale(1); }
+        }
+
+        /* Cloud drift — 远景云：缓慢小幅飘动（视差效果） */
+        @keyframes cloud-drift-far {
+          0%   { transform: translate(-8px, 0px) scale(1); }
+          35%  { transform: translate(-3px, -3px) scale(1.01); }
+          65%  { transform: translate(5px, 2px) scale(0.99); }
+          100% { transform: translate(10px, 0px) scale(1); }
         }
 
         /* Sun gentle pulse */
