@@ -1,17 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
 // ============================================================
-// OceanHeader v171 — 商务专业蓝 · 高对比度精致版
+// OceanHeader v183 — 简洁商务风 · 干净渐变 + 微光晕
 //
-// 核心改进：
-//   1. 颜色饱和度大幅提升 — 不再是灰蒙蒙的蓝
-//   2. 动态渐变背景 — 颜色会缓慢流动变化
-//   3. 粒子足够大、够亮、带拖尾 — 肉眼清晰可见
-//   4. 光斑明显可见 — 营造高级光效氛围
-//   5. 网格线适度可见 — 增加科技质感
+// 设计原则：
+//   ✅ 干净的蓝色渐变底色 — 不杂乱
+//   ✅ 几个超大模糊光斑 — 营造层次感但不抢眼
+//   ✅ 极光飘带简化为2条主光带 — 流动感但不花哨
+//   ❌ 删除：点阵网格(小白点元凶) / 漂浮粒子 / 所有噪点
 // ============================================================
 
 interface OceanHeaderProps {
@@ -31,19 +29,13 @@ export default function OceanHeader({ title, subtitle, description, icon, childr
       {/* Layer 0: 动态流动渐变背景 */}
       <AnimatedGradient />
 
-      {/* Layer 1: 可见度适中的网格 */}
-      <TechGrid />
+      {/* Layer 1: 大型柔和光斑 — 仅氛围，不抢焦点 */}
+      <SoftOrbs />
 
-      {/* Layer 2: 大型光斑 — 明显可见但优雅 */}
-      <GlowOrbs />
+      {/* Layer 2: 极光光带 — 简化为2条主带，优雅流动 */}
+      <AuroraFlow />
 
-      {/* Layer 3: 发光粒子 — 够大够亮带光晕 */}
-      <GlowParticles />
-
-      {/* Layer 4: 几何装饰线条 */}
-      <GeoLines />
-
-      {/* Layer 5: 底部过渡到白色内容区 */}
+      {/* Layer 3: 底部过渡到白色内容区 */}
       <div className="absolute bottom-0 left-0 right-0 h-[110px] pointer-events-none z-[2]"
         style={{
           background: 'linear-gradient(to top, rgba(248,250,252,1) 0%, rgba(248,250,252,0.5) 55%, transparent 100%)',
@@ -56,7 +48,6 @@ export default function OceanHeader({ title, subtitle, description, icon, childr
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
       >
-        {/* 图标 — 毛玻璃容器 */}
         {icon && (
           <motion.div className="flex justify-center mb-5"
             initial={{ opacity: 0, scale: 0.7, rotate: -8 }}
@@ -103,66 +94,42 @@ export default function OceanHeader({ title, subtitle, description, icon, childr
 }
 
 // ============================================================
-// Layer 0: 动态渐变 — 背景色缓慢流动变化
-// 用 CSS animation 让 background-position 移动
+// Layer 0: 动态渐变 — 深邃蓝紫渐变，缓慢呼吸
 // ============================================================
 function AnimatedGradient() {
   return (
     <div className="absolute inset-0 pointer-events-none" aria-hidden="true"
       style={{
         background: `
-          radial-gradient(ellipse 130% 90% at 30% -5%, #3b82f6 0%, transparent 50%),
-          radial-gradient(ellipse 80% 55% at 80% 15%, #8b5cf6 0%, transparent 45%),
-          radial-gradient(ellipse 100% 65% at 15% 75%, #06b6d4 0%, transparent 42%),
-          linear-gradient(170deg,
+          radial-gradient(ellipse 120% 80% at 25% -10%, #3b82f6 0%, transparent 50%),
+          radial-gradient(ellipse 90% 60% at 75% 20%, #8b5cf6 0%, transparent 45%),
+          radial-gradient(ellipse 80% 50% at 20% 80%, #06b6d4 0%, transparent 40%),
+          linear-gradient(165deg,
             #071426 0%,
-            #0c2343 16%,
-            #143a6e 32%,
-            #1d4ed8 50%,
-            #2563eb 64%,
-            #3b82f6 78%,
+            #0c2343 15%,
+            #143a6e 30%,
+            #1d4ed8 48%,
+            #2563eb 62%,
+            #3b82f6 76%,
             #60a5fa 88%,
-            #93c5fd 95%,
+            #93c5fd 96%,
             #dbeafe 100%
           )
         `,
         backgroundSize: '200% 200%',
-        animation: 'gradient-shift 20s ease infinite alternate',
+        animation: 'gradient-shift 24s ease infinite alternate',
       }} />
   );
 }
 
 // ============================================================
-// Layer 1: 科技网格 — 点阵 + 淡斜线
-// 比 v169 更明显但仍不抢焦点
+// Layer 1: 柔和光斑 — 3个大而淡的光晕，仅提供深度感
 // ============================================================
-function TechGrid() {
-  return (
-    <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-[0.38]"
-         aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <pattern id="dots171" x="0" y="0" width="32" height="32" patternUnits="userSpaceOnUse">
-          <circle cx="2" cy="2" r="1.3" fill="rgba(148,197,253,0.35)" />
-        </pattern>
-        <pattern id="lines171" x="0" y="0" width="96" height="96" patternUnits="userSpaceOnUse">
-          <path d="M96 0L0 96M0 0L96 96" stroke="rgba(148,163,184,0.08)" strokeWidth="0.6" fill="none" />
-        </pattern>
-      </defs>
-      <rect width="100%" height="100%" fill="url(#dots171)" />
-      <rect width="100%" height="100%" fill="url(#lines171)" />
-    </svg>
-  );
-}
-
-// ============================================================
-// Layer 2: 光斑 — 大型模糊色块，opacity 足够高能看见
-// ============================================================
-function GlowOrbs() {
+function SoftOrbs() {
   const orbs = [
-    { x: '75%', y: '5%', s: 360, c: 'rgba(139,92,246,0.28)', b: 100 },
-    { x: '10%', y: '40%', s: 300, c: 'rgba(59,130,246,0.22)', b: 85 },
-    { x: '60%', y: '72%', s: 260, c: 'rgba(6,182,212,0.18)', b: 70 },
-    { x: '30%', y: '12%', s: 200, c: 'rgba(99,102,241,0.15)', b: 60 },
+    { x: '70%', y: '10%', s: 420, c: 'rgba(139,92,246,0.18)', b: 110 },
+    { x: '15%', y: '50%', s: 350, c: 'rgba(59,130,246,0.14)', b: 90 },
+    { x: '55%', y: '75%', s: 280, c: 'rgba(6,182,212,0.11)', b: 70 },
   ];
 
   return (
@@ -171,10 +138,10 @@ function GlowOrbs() {
         <div key={i} style={{
           position: 'absolute', left: o.x, top: o.y,
           width: o.s, height: o.s, borderRadius: '50%',
-          background: `radial-gradient(circle, ${o.c}, transparent 72%)`,
+          background: `radial-gradient(circle, ${o.c}, transparent 70%)`,
           filter: `blur(${o.b}px)`,
-          animation: `orb-float ${20 + i * 6}s ease-in-out infinite alternate`,
-          animationDelay: `${i * 2.5}s`,
+          animation: `orb-float ${22 + i * 7}s ease-in-out infinite alternate`,
+          animationDelay: `${i * 3}s`,
         }} />
       ))}
     </div>
@@ -182,129 +149,78 @@ function GlowOrbs() {
 }
 
 // ============================================================
-// Layer 3: 发光粒子 — 够大、够亮、有拖尾效果
+// Layer 2: 极光流光 — 2条简洁宽幅光带，缓缓漂移
+// 不再是细碎的多个小飘带，而是大气的主光带
 // ============================================================
-function GlowParticles() {
-  const [pts, setPts] = useState<Array<{
-    id: number; x: number; y: number; size: number; dur: number; del: number; op: number; hue: number;
-  }>>([]);
-
-  useEffect(() => {
-    setPts(Array.from({ length: 18 }, (_, i) => ({
-      id: i,
-      x: 2 + Math.random() * 96,
-      y: 4 + Math.random() * 92,
-      size: 3 + Math.random() * 5,       // 3~8px — 明显可见
-      dur: 11 + Math.random() * 14,
-      del: Math.random() * 13,
-      op: 0.35 + Math.random() * 0.45,  // 0.35~0.8 — 够亮
-      hue: 200 + Math.random() * 40,     // 蓝-靛色范围
-    })));
-  }, []);
-
-  if (!pts.length) return null;
-
+function AuroraFlow() {
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-      {pts.map(p => (
-        <div key={p.id} style={{
-          position: 'absolute',
-          left: `${p.x}%`,
-          bottom: `${p.y}%`,
-          width: p.size,
-          height: p.size,
-          borderRadius: '50%',
-          backgroundColor: `hsla(${p.hue}, 85%, 72%, ${p.op})`,
-          boxShadow: `
-            0 0 ${p.size * 2}px hsla(${p.hue}, 90%, 65%, ${p.op * 0.6}),
-            0 0 ${p.size * 4.5}px hsla(${p.hue}, 85%, 60%, ${p.op * 0.25})
-          `,
-          animation: `particle-up ${p.dur}s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite`,
-          animationDelay: `${p.del}s`,
-        }} />
-      ))}
+      {/* 主光带：横贯中上部，蓝→紫→青渐变 */}
+      <div style={{
+        position: 'absolute',
+        left: '-4%', top: '20%',
+        width: '108%', height: '100px',
+        background: 'linear-gradient(95deg,
+          transparent 0%,
+          rgba(59,130,246,0.16) 10%,
+          rgba(99,102,241,0.22) 30%,
+          rgba(139,92,246,0.18) 50%,
+          rgba(99,102,241,0.20) 70%,
+          rgba(6,182,212,0.14) 90%,
+          transparent 100%
+        )',
+        filter: 'blur(32px)',
+        borderRadius: '50%',
+        animation: 'aurora-flow-a 18s ease-in-out infinite alternate',
+      }} />
+
+      {/* 副光带：中下部，更窄更淡 */}
+      <div style={{
+        position: 'absolute',
+        left: '-6%', top: '58%',
+        width: '112%', height: '65px',
+        background: 'linear-gradient(88deg,
+          transparent 0%,
+          rgba(6,182,212,0.12) 15%,
+          rgba(56,189,248,0.17) 40%,
+          rgba(59,130,246,0.14) 65%,
+          transparent 100%
+        )',
+        filter: 'blur(26px)',
+        borderRadius: '50%',
+        animation: 'aurora-flow-b 22s ease-in-out infinite alternate-reverse',
+        animationDelay: '3s',
+      }} />
     </div>
   );
 }
 
-// ============================================================
-// Layer 4: 几何装饰线 — 更明显的科技线条
-// ============================================================
-function GeoLines() {
-  return (
-    <svg className="absolute inset-0 w-full h-full pointer-events-none"
-         xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <defs>
-        <linearGradient id="gl1" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="transparent" />
-          <stop offset="50%" stopColor="rgba(147,197,253,0.35)" />
-          <stop offset="100%" stopColor="transparent" />
-        </linearGradient>
-        <linearGradient id="gl2" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="transparent" />
-          <stop offset="50%" stopColor="rgba(196,181,253,0.25)" />
-          <stop offset="100%" stopColor="transparent" />
-        </linearGradient>
-      </defs>
-
-      {/* 右上角放射线 */}
-      <g>
-        <line x1="80%" y1="-3%" x2="100%" y2="22%" stroke="url(#gl1)" strokeWidth="1.2" />
-        <line x1="87%" y1="-3%" x2="100%" y2="32%" stroke="url(#gl1)" strokeWidth="0.9" opacity="0.7" />
-        <line x1="94%" y1="-3%" x2="100%" y2="42%" stroke="url(#gl1)" strokeWidth="0.6" opacity="0.4" />
-      </g>
-
-      {/* 左下角弧线 */}
-      <path d="M -20 340 Q 60 310, 140 290"
-            fill="none" stroke="url(#gl2)" strokeWidth="1" opacity="0.6" />
-      <path d="M -30 360 Q 80 320, 170 280"
-            fill="none" stroke="url(#gl2)" strokeWidth="0.7" opacity="0.35" />
-
-      {/* 右侧竖线 + 圆点装饰 */}
-      <line x1="97%" y1="28%" x2="97%" y2="62%" stroke="rgba(148,197,253,0.18)" strokeWidth="0.8" />
-      <circle cx="97%" cy="62%" r="2.5" fill="rgba(147,197,253,0.3)" />
-      <circle cx="97%" cy="28%" r="1.8" fill="rgba(147,197,253,0.2)" />
-    </svg>
-  );
-}
-
-// ============================================================
-// Keyframes
-// ============================================================
 const keyframes = `
+  /* 渐变缓慢移动 */
   @keyframes gradient-shift {
-    0% { background-position: 0% 30%; }
-    50% { background-position: 100% 70%; }
-    100% { background-position: 0% 30%; }
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 50% 50%; }
+    100% { background-position: 100% 50%; }
   }
 
+  /* 光斑极慢漂浮 */
   @keyframes orb-float {
-    0% { transform: translate(0, 0) scale(1); }
-    33% { transform: translate(-30px, 22px) scale(1.05); }
-    66% { transform: translate(18px, -14px) scale(0.97); }
-    100% { transform: translate(-12px, 28px) scale(1.03); }
+    0%   { transform: translate(0, 0); }
+    50%  { transform: translate(15px, -10px); }
+    100% { transform: translate(-8px, 8px); }
   }
 
-  @keyframes particle-up {
-    0% {
-      transform: translate3d(0, 0, 0) scale(1);
-      opacity: var(--op-start, 0.6);
-    }
-    25% {
-      transform: translate3d(18px, -28vh, 0) scale(1.15);
-      opacity: calc(var(--op-start, 0.6) * 1.2);
-    }
-    55% {
-      transform: translate3d(-12px, -58vh, 0) scale(0.92);
-      opacity: var(--op-start, 0.6);
-    }
-    85% {
-      transform: translate3d(8px, -82vh, 0) scale(0.8);
-      opacity: calc(var(--op-start, 0.6) * 0.35);
-    }
-    100% {
-      transform: translate3d(-6px, -100vh, 0) scale(0.65);
-      opacity: 0;
-    }
+  /* 极光主光带漂移 */
+  @keyframes aurora-flow-a {
+    0%   { transform: translateX(0); opacity: 0.82; }
+    40%  { transform: translateX(22px); opacity: 1; }
+    100% { transform: translateX(-10px); opacity: 0.78; }
+  }
+
+  /* 极光副光带反向漂移 */
+  @keyframes aurora-flow-b {
+    0%   { transform: translateX(0); opacity: 0.72; }
+    45%  { transform: translateX(-18px); opacity: 0.92; }
+    100% { transform: translateX(12px); opacity: 0.68; }
   }
 `;
