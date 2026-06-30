@@ -87,7 +87,7 @@ export default function OceanHeader({ title, subtitle, description, icon, childr
             style={{ textShadow: '0 1px 12px rgba(0,0,0,0.1)' }}
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.62, delay: 0.26, ease: [0.22, 1, 0.36, 1] }
+            transition={{ duration: 0.62, delay: 0.26, ease: [0.22, 1, 0.36, 1] }}
           >{description || subtitle}</motion.p>
         )}
       </motion.div>
