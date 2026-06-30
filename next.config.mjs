@@ -79,8 +79,8 @@ const nextConfig = {
     removeConsole: process.env.NODE_ENV === 'production' ? {
       exclude: ['error', 'warn'],
     } : false,
-    // Use SWC for minification (faster than Terser)
-    swcMinify: true,
+    // SWC minification is always enabled in Next.js 14+ (no config needed)
+    // swcMinify: true,  // REMOVED: deprecated in Next.js 14
   },
 
   // Enable compression (Next.js built-in gzip)
