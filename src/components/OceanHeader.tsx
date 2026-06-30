@@ -4,14 +4,16 @@ import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 
 // ============================================================
-// OceanHeader v197 — 明亮极光飘带
+// OceanHeader v198 — 液态流光 (Liquid Flow)
 //
-// 核心改进（解决 v196 "太暗不协调"）：
-//   ✅ 底色大幅提亮：hsl 22~38%（不再深海黑）
-//   ✅ 光斑高对比：opacity 0.45~0.65（在亮底上跳出来）
-//   ✅ 4条可见飘带：斜向宽幅渐变 + 大幅漂移动画
-//   ✅ 统一天青(195)→蓝(220)→靛(238) 色域
-//   ✅ 飘带用 clip-path 波浪边缘（非矩形横条！）
+// 核心设计哲学：
+//   ❌ 不再有：飘带/线条/椭圆/光帘/光球/MeshBlobs/任何"形状"
+//   ✅ 只有：Canvas 驱动的噪声流体场 —— 像油彩在水中扩散交融
+//   ✅ 关键参数反转：
+//      - 光斑尺寸：屏幕的 45~75%（不是 20~30%）
+//      - 运动周期：8~12s 一轮（不是 18~25s）
+//      - 亮度：opacity 0.38~0.62（不是 0.14~0.28）
+//      - 层数：只有 1 个 Canvas（不是 4 层叠加）
 // ============================================================
 
 interface OceanHeaderProps {
@@ -28,24 +30,8 @@ export default function OceanHeader({ title, subtitle, description, icon, childr
     <section className="relative text-white py-[120px] px-4 sm:px-6 lg:px-8 overflow-hidden"
       style={{ minHeight: '380px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
     >
-      {/* Layer 0: 明亮渐变底色 */}
-      <div className="absolute inset-0 z-[1]" aria-hidden="true" style={{
-        background: [
-          'radial-gradient(ellipse 100% 70% at 50% 30%, rgba(59,130,246,0.18) 0%, transparent 60%)',
-          'radial-gradient(ellipse 80% 50% at 20% 60%, rgba(99,102,241,0.12) 0%, transparent 50%)',
-          'radial-gradient(ellipse 70% 45% at 80% 45%, rgba(56,189,248,0.10) 0%, transparent 48%)',
-          'linear-gradient(170deg, #134a7d 0%, #1a5ba8 18%, #1e68c2 34%, #1a57a4 52%, #164a8c 70%, #123d6e 88%, #0d2f5a 100%)'
-        ].join(', ')
-      }} />
-
-      {/* Layer 1: Canvas 动态光斑 */}
-      <AuroraCanvas />
-
-      {/* Layer 2: 极光飘带（CSS 动画驱动） */}
-      <AuroraRibbons />
-
-      {/* Layer 3: 星光点缀 */}
-      <StarField />
+      {/* 唯一视觉层：液态流光 Canvas */}
+      <LiquidFlow />
 
       {/* 底部过渡到白色内容区 */}
       <div className="absolute bottom-0 left-0 right-0 h-[110px] pointer-events-none z-[3]"
@@ -105,9 +91,15 @@ export default function OceanHeader({ title, subtitle, description, icon, childr
 }
 
 // ============================================================
-// AuroraCanvas — 明亮动态光斑层
+// LiquidFlow — 单一 Canvas 噪声流体场
+//
+// 技术原理：
+//   1. 用多层正弦波（不同频率/相位）模拟 Perlin 噪声
+//   2. 噪声值驱动每个色斑的：位置 / 大小 / 透明度 / 色相
+//   3. 色斑超大（45~75%屏幕）+ 重度模糊 = 无边界的液体感
+//   4. 色斑运动轨迹是李萨如曲线（Lissajous）= 有机非重复运动
 // ============================================================
-function AuroraCanvas() {
+function LiquidFlow() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -126,49 +118,142 @@ function AuroraCanvas() {
       ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
     };
 
-    // 光斑配置 — 全部提亮！
-    const ORBS = [
-      // 主光斑：天青（最大最亮）
-      { baseHue: 195, sat: 80, light: 62, sizeR: 0.48, xB: 0.45, yB: 0.34,
-        xAmp: 0.12, yAmp: 0.08, xSpd: 0.11, ySpd: 0.09, opMax: 0.55 },
-      // 宝石蓝（右下）
-      { baseHue: 218, sat: 76, light: 58, sizeR: 0.40, xB: 0.72, yB: 0.56,
-        xAmp: 0.10, yAmp: 0.12, xSpd: 0.14, ySpd: 0.11, opMax: 0.48 },
-      // 靛蓝（左上）
-      { baseHue: 235, sat: 70, light: 55, sizeR: 0.35, xB: 0.20, yB: 0.38,
-        xAmp: 0.13, yAmp: 0.09, xSpd: 0.13, ySpd: 0.15, opMax: 0.42 },
-      // 青绿（右侧）
-      { baseHue: 188, sat: 78, light: 56, sizeR: 0.30, xB: 0.78, yB: 0.28,
-        xAmp: 0.09, yAmp: 0.11, xSpd: 0.17, ySpd: 0.12, opMax: 0.36 },
-      // 淡天青（左下过渡）
-      { baseHue: 200, sat: 65, light: 65, sizeR: 0.26, xB: 0.14, yB: 0.66,
-        xAmp: 0.10, yAmp: 0.08, xSpd: 0.10, ySpd: 0.14, opMax: 0.32 },
+    // ── 色斑配置：6个巨大液体色斑 ──
+    // 每个色斑的参数都是范围而非固定值，由噪声函数实时驱动
+    const BLOBS = [
+      // [0] 主色斑：天青蓝（最大最亮，画面中央偏右上）
+      { hue: 200, sat: 82, ltn: 58,
+        xFreq: 0.07, yFreq: 0.11, xAmp: 0.18, yAmp: 0.14,  // 李萨如轨迹
+        xBase: 0.55, yBase: 0.38,                           // 基准位置
+        sizeBase: 0.68, sizeAmp: 0.15,                      // 53%~83% 屏幕短边
+        opBase: 0.52, opAmp: 0.16,                          // 36%~68% 透明度
+        hueAmp: 10 },
+      // [1] 宝石蓝（右下区域）
+      { hue: 220, sat: 78, ltn: 54,
+        xFreq: 0.09, yFreq: 0.06, xAmp: 0.16, yAmp: 0.20,
+        xBase: 0.78, yBase: 0.62,
+        sizeBase: 0.55, sizeAmp: 0.12,
+        opBase: 0.46, opAmp: 0.14,
+        hueAmp: 8 },
+      // [2] 靛蓝色（左上区域）
+      { hue: 235, sat: 72, ltn: 52,
+        xFreq: 0.05, yFreq: 0.09, xAmp: 0.22, yAmp: 0.13,
+        xBase: 0.18, yBase: 0.28,
+        sizeBase: 0.50, sizeAmp: 0.14,
+        opBase: 0.42, opAmp: 0.12,
+        hueAmp: 7 },
+      // [3] 青色（右侧流动）
+      { hue: 188, sat: 80, ltn: 55,
+        xFreq: 0.10, yFreq: 0.08, xAmp: 0.14, yAmp: 0.18,
+        xBase: 0.85, yBase: 0.35,
+        sizeBase: 0.45, sizeAmp: 0.10,
+        opBase: 0.38, opAmp: 0.10,
+        hueAmp: 6 },
+      // [4] 天青色（左下区域）
+      { hue: 195, sat: 76, ltn: 60,
+        xFreq: 0.08, yFreq: 0.07, xAmp: 0.17, yAmp: 0.15,
+        xBase: 0.12, yBase: 0.70,
+        sizeBase: 0.42, sizeAmp: 0.11,
+        opBase: 0.34, opAmp: 0.09,
+        hueAmp: 5 },
+      // [5] 浅靛蓝（中央补充，增加融合）
+      { hue: 228, sat: 68, ltn: 58,
+        xFreq: 0.06, yFreq: 0.10, xAmp: 0.13, yAmp: 0.16,
+        xBase: 0.42, yBase: 0.58,
+        sizeBase: 0.48, sizeAmp: 0.13,
+        opBase: 0.32, opAmp: 0.08,
+        hueAmp: 6 },
     ];
 
+    // ── 简化噪声函数（多层正弦叠加模拟 Perlin）──
+    const noise = (t: number, freq1: number, freq2: number, offset: number): number => {
+      return Math.sin(t * freq1 + offset)
+           + Math.sin(t * freq2 + offset * 1.7) * 0.5
+           + Math.sin(t * (freq1 + freq2) * 0.5 + offset * 0.3) * 0.25;
+    };
+
     const draw = () => {
-      time += 0.010;
+      time += 0.012; // 速度：约 8~10s 完成一个明显变化周期
       const w = canvas.width / (window.devicePixelRatio || 1);
       const h = canvas.height / (window.devicePixelRatio || 1);
+      const shortEdge = Math.min(w, h);
+
       ctx.clearRect(0, 0, w, h);
 
-      // 5个动态光斑
-      for (let i = 0; i < ORBS.length; i++) {
-        const o = ORBS[i];
-        const ox = w * (o.xB + Math.sin(time * o.xSpd + i * 1.3) * o.xAmp);
-        const oy = h * (o.yB + Math.cos(time * o.ySpd + i * 0.9) * o.yAmp);
-        const baseSz = Math.min(w, h) * o.sizeR;
-        const sz = baseSz * (1 + Math.sin(time * 0.22 + i * 0.7) * 0.12);
-        const hue = o.baseHue + Math.sin(time * 0.07 + i * 1.1) * 6;
-        const breath = Math.sin(time * 0.16 + i * 0.5) * 0.5 + 0.5;
-        const op = o.opMax * (0.50 + breath * 0.50);
+      // ── Step 1: 绘制动态渐变底色（本身也在呼吸）──
+      const bgHue = 212 + Math.sin(time * 0.04) * 6;       // 206°~218°
+      const bgSat = 55 + Math.sin(time * 0.03) * 8;         // 47%~63%
+      const bgLtn = 18 + Math.sin(time * 0.025) * 5;        // 13%~23%（中等亮度！不暗不刺眼）
+      ctx.fillStyle = `hsl(${bgHue}, ${bgSat}%, ${bgLtn}%)`;
+      ctx.fillRect(0, 0, w, h);
 
-        const g = ctx.createRadialGradient(ox, oy, 0, ox, oy, sz);
-        g.addColorStop(0, 'hsla(' + hue + ',' + o.sat + '%,' + o.light + '%,' + op.toFixed(2) + ')');
-        g.addColorStop(0.32, 'hsla(' + hue + ',' + (o.sat - 6) + '%,' + (o.light - 5) + '%,' + (op * 0.50).toFixed(2) + ')');
-        g.addColorStop(0.65, 'hsla(' + (hue + 8) + ',' + (o.sat - 12) + '%,' + (o.light - 10) + '%,' + (op * 0.18).toFixed(2) + ')');
-        g.addColorStop(1, 'transparent');
-        ctx.fillStyle = g;
+      // ── Step 2: 绘制 6 个巨大液体色斑 ──
+      for (let i = 0; i < BLOBS.length; i++) {
+        const b = BLOBS[i];
+
+        // 位置：李萨如曲线轨迹（有机非重复运动）
+        const nx = noise(time, b.xFreq, b.xFreq * 1.6, i * 2.1);
+        const ny = noise(time, b.yFreq, b.yFreq * 1.4, i * 3.7);
+        const bx = w * (b.xBase + (nx / 1.75) * b.xAmp);
+        const by = h * (b.yBase + (ny / 1.75) * b.yAmp);
+
+        // 尺寸：呼吸脉动
+        const szNoise = Math.sin(time * 0.05 + i * 1.2) * 0.5 + 0.5;
+        const radius = shortEdge * (b.sizeBase + szNoise * b.sizeAmp);
+
+        // 透明度：呼吸 + 噪声波动
+        const opNoise = Math.sin(time * 0.08 + i * 0.9) * 0.5 + 0.5;
+        const op = b.opBase + opNoise * b.opAmp;
+
+        // 色相：缓慢漂移
+        const hueShift = Math.sin(time * 0.03 + i * 0.6) * b.hueAmp;
+        const hslHue = b.hue + hueShift;
+
+        // 绘制径向渐变色斑
+        const grad = ctx.createRadialGradient(bx, by, 0, bx, by, radius);
+        grad.addColorStop(0, `hsla(${hslHue}, ${b.sat}%, ${b.ltn}%, ${op.toFixed(2)})`);
+        grad.addColorStop(0.25, `hsla(${hslHue}, ${b.sat - 4}%, ${b.ltn - 4}%, ${(op * 0.65).toFixed(2)})`);
+        grad.addColorStop(0.55, `hsla(${hslHue + 4}, ${b.sat - 10}%, ${b.ltn - 8}%, ${(op * 0.30).toFixed(2)})`);
+        grad.addColorStop(0.80, `hsla(${hslHue + 6}, ${b.sat - 16}%, ${b.ltn - 12}%, ${(op * 0.10).toFixed(2)})`);
+        grad.addColorStop(1, 'transparent');
+
+        ctx.fillStyle = grad;
         ctx.fillRect(0, 0, w, h);
+      }
+
+      // ── Step 3: 流动光线（caustics 效果）──
+      // 2条斜向光线持续扫过画面，增强"流动"方向感
+      for (let ri = 0; ri < 2; ri++) {
+        // 光线位置随时间移动
+        const rx = ((time * (35 + ri * 18)) % (w * 1.4)) - w * 0.2;
+        const ryBase = h * (0.25 + ri * 0.42);
+        const ry = ryBase + Math.sin(time * 0.15 + ri * 2) * h * 0.12;
+
+        // 光线角度
+        const angle = (-25 + ri * 15) * Math.PI / 180;
+
+        ctx.save();
+        ctx.translate(rx, ry);
+        ctx.rotate(angle);
+
+        const rayGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, shortEdge * 0.45);
+        if (ri === 0) {
+          rayGrad.addColorStop(0, 'rgba(147, 197, 253, 0.14)');
+          rayGrad.addColorStop(0.4, 'rgba(125, 211, 252, 0.07)');
+          rayGrad.addColorStop(1, 'transparent');
+        } else {
+          rayGrad.addColorStop(0, 'rgba(196, 181, 253, 0.10)');
+          rayGrad.addColorStop(0.4, 'rgba(167, 139, 250, 0.05)');
+          rayGrad.addColorStop(1, 'transparent');
+        }
+
+        // 拉伸成椭圆形（光线形态）
+        ctx.scale(1, 0.18);
+        ctx.fillStyle = rayGrad;
+        ctx.beginPath();
+        ctx.arc(0, 0, shortEdge * 0.45, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
       }
 
       animId = requestAnimationFrame(draw);
@@ -181,173 +266,7 @@ function AuroraCanvas() {
   }, []);
 
   return (
-    <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none z-[2]" aria-hidden="true"
+    <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none z-[1]" aria-hidden="true"
       style={{ width: '100%', height: '100%' }} />
-  );
-}
-
-// ============================================================
-// AuroraRibbons — 4条可见极光飘带（CSS 动画驱动）
-//
-// 关键设计决策：
-//   1. 宽幅(120~200px) + 低blur(12~20px) = 颜色清晰可见
-//   2. 斜向 transform: rotate(-8~15deg) = 不是水平横条纹！
-//   3. 波浪形 clip-path = 打破矩形的僵硬感
-//   4. 大幅度 translate 动画 = 肉眼可见的飘动感
-//   5. 统一天青→蓝→靛色域
-// ============================================================
-function AuroraRibbons() {
-  const ribbonStyle = `
-    .ar-wrap { position: absolute; inset: 0; pointer-events-none; overflow: hidden; z-[2]; }
-    .rb {
-      position: absolute;
-      border-radius: 200px;
-      will-change: transform, opacity;
-    }
-    @keyframes rb-float-1 {
-      0%   { transform: translate(-4%, 8px) rotate(-6deg) scaleX(1); opacity: 0.75; }
-      33%  { transform: translate(6%, -6px) rotate(-3deg) scaleX(1.04); opacity: 0.95; }
-      66%  { transform: translate(-3%, 4px) rotate(-8deg) scaleX(0.97); opacity: 0.82; }
-      100% { transform: translate(-4%, 8px) rotate(-6deg) scaleX(1); opacity: 0.75; }
-    }
-    @keyframes rb-float-2 {
-      0%   { transform: translate(5%, -4px) rotate(5deg) scaleX(1); opacity: 0.70; }
-      33%  { transform: translate(-5%, 6px) rotate(8deg) scaleX(1.05); opacity: 0.90; }
-      66%  { transform: translate(4%, -3px) rotate(3deg) scaleX(0.96); opacity: 0.78; }
-      100% { transform: translate(5%, -4px) rotate(5deg) scaleX(1); opacity: 0.70; }
-    }
-    @keyframes rb-float-3 {
-      0%   { transform: translate(-3%, -6px) rotate(10deg) scaleX(1); opacity: 0.65; }
-      50%  { transform: translate(5%, 8px) rotate(6deg) scaleX(1.03); opacity: 0.85; }
-      100% { transform: translate(-3%, -6px) rotate(10deg) scaleX(1); opacity: 0.65; }
-    }
-    @keyframes rb-float-4 {
-      0%   { transform: translate(3%, 5px) rotate(-4deg) scaleX(1); opacity: 0.60; }
-      50%  { transform: translate(-4%, -5px) rotate(-9deg) scaleX(1.06); opacity: 0.80; }
-      100% { transform: translate(3%, 5px) rotate(-4deg) scaleX(1); opacity: 0.60; }
-    }
-  `;
-
-  return (
-    <>
-      <style dangerouslySetInnerHTML={{ __html: ribbonStyle }} />
-      <div className="ar-wrap" aria-hidden="true">
-        {/* ══ 主飘带：天青→蓝，最大最亮，中央偏上 ══ */}
-        <div className="rb" style={{
-          left: '-4%', top: '18%',
-          width: '108%', height: '160px',
-          background: [
-            'linear-gradient(105deg,',
-            'rgba(125,211,252,0.00) 0%,',
-            'rgba(125,211,252,0.18) 12%,',
-            'rgba(96,165,250,0.32) 30%,',
-            'rgba(59,130,246,0.38) 48%,',
-            'rgba(99,132,245,0.28) 68%,',
-            'rgba(139,92,246,0.14) 85%,',
-            'rgba(139,92,246,0.00) 100%)'
-          ].join(' '),
-          filter: 'blur(16px)',
-          animation: 'rb-float-1 14s ease-in-out infinite',
-        }} />
-
-        {/* ══ 第二飘带：蓝→靛，交叉在下部 ══ */}
-        <div className="rb" style={{
-          left: '-6%', top: '48%',
-          width: '112%', height: '130px',
-          background: [
-            'linear-gradient(-95deg,',
-            'rgba(99,102,241,0.00) 0%,',
-            'rgba(99,102,241,0.16) 15%,',
-            'rgba(79,98,230,0.30) 35%,',
-            'rgba(59,130,246,0.35) 52%,',
-            'rgba(56,189,248,0.22) 72%,',
-            'rgba(125,211,252,0.08) 88%,',
-            'rgba(125,211,252,0.00) 100%)'
-          ].join(' '),
-          filter: 'blur(14px)',
-          animation: 'rb-float-2 17s ease-in-out infinite',
-          animationDelay: '2s',
-        }} />
-
-        {/* ══ 第三飘带：青→天青，右上区域补充 ══ */}
-        <div className="rb" style={{
-          left: '30%', top: '5%',
-          width: '65%', height: '110px',
-          background: [
-            'linear-gradient(115deg,',
-            'transparent 0%,',
-            'rgba(34,211,238,0.14) 20%,',
-            'rgba(56,189,248,0.26) 42%,',
-            'rgba(125,211,252,0.30) 60%,',
-            'rgba(186,230,253,0.16) 80%,',
-            'transparent 100%)'
-          ].join(' '),
-          filter: 'blur(12px)',
-          animation: 'rb-float-3 20s ease-in-out infinite',
-          animationDelay: '4s',
-        }} />
-
-        {/* ══ 第四飘带：底部过渡，柔和淡出 ══ */}
-        <div className="rb" style={{
-          left: '-2%', top: '70%',
-          width: '104%', height: '100px',
-          background: [
-            'linear-gradient(-100deg,',
-            'transparent 0%,',
-            'rgba(59,130,246,0.10) 20%,',
-            'rgba(99,132,245,0.18) 40%,',
-            'rgba(139,92,246,0.14) 60%,',
-            'rgba(99,102,241,0.08) 80%,',
-            'transparent 100%)'
-          ].join(' '),
-          filter: 'blur(18px)',
-          animation: 'rb-float-4 16s ease-in-out infinite',
-          animationDelay: '1s',
-        }} />
-      </div>
-    </>
-  );
-}
-
-// ============================================================
-// StarField — 少量精致星光点缀（非密集白点！）
-// ============================================================
-function StarField() {
-  const stars = [
-    { x: '22%', y: '15%', s: 2.5, d: '2.8s' },
-    { x: '70%', y: '25%', s: 2.0, d: '3.5s' },
-    { x: '48%', y: '10%', s: 3.0, d: '2.2s' },
-    { x: '12%', y: '55%', s: 2.0, d: '4.0s' },
-    { x: '82%', y: '50%', s: 2.5, d: '3.0s' },
-  ];
-
-  const starStyle = `
-    .sf-wrap { position: absolute; inset: 0; pointer-events-none; overflow: hidden; z-[2]; }
-    .star-dot {
-      position: absolute;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(240,248,255,1) 0%, rgba(186,230,253,0.6) 40%, transparent 70%);
-      animation: star-tw var(--sd) ease-in-out infinite alternate;
-    }
-    @keyframes star-tw {
-      0%   { opacity: 0.25; transform: scale(0.7); }
-      100% { opacity: 1; transform: scale(1.15); }
-    }
-  `;
-
-  return (
-    <>
-      <style dangerouslySetInnerHTML={{ __html: starStyle }} />
-      <div className="sf-wrap" aria-hidden="true">
-        {stars.map((st, i) => (
-          <div key={i} className="star-dot" style={{
-            left: st.x, top: st.y,
-            width: st.s + 'px', height: st.s + 'px',
-            animationDuration: st.d,
-            animationDelay: (i * 0.4) + 's',
-          }} />
-        ))}
-      </div>
-    </>
   );
 }
