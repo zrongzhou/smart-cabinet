@@ -75,6 +75,75 @@ function CountUp({ target, suffix = '', prefix = '', locale = 'en' }: { target: 
   );
 }
 
+// ============================================================
+// v178 DYNAMIC BUBBLE SYSTEM — 随机位置 + 生长 + 破碎效果
+// ============================================================
+interface BubbleFieldProps { cardIndex: number; barColor: string; glowColor: string; textColor: string; }
+
+/** 大气泡：随机位置 + 从小变大 + 渐渐破碎消失 */
+function StatBubbleField({ cardIndex, barColor, glowColor, textColor }: BubbleFieldProps) {
+  const [bubbles, setBubbles] = useState<Array<{ id: number; x: number; y: number; size: number; color: string; delay: number; dur: number }>>([]);
+
+  useEffect(() => {
+    const colors = [barColor, glowColor, textColor];
+    const bbs = Array.from({ length: 3 + (cardIndex % 3) }, (_, i) => ({
+      id: i,
+      x: 5 + Math.random() * 90, // 随机 x% (5%-95%)
+      y: 5 + Math.random() * 90, // 随机 y% (5%-95%)
+      size: 12 + Math.random() * 20, // 12-32px
+      color: colors[i % colors.length],
+      delay: Math.random() * 3, // 0-3s 随机延迟
+      dur: 2.5 + Math.random() * 2.5, // 2.5-5s 周期
+    }));
+    setBubbles(bbs);
+  }, [cardIndex]);
+
+  return (
+    <>
+      {bubbles.map(b => (
+        <div key={b.id} className="absolute rounded-full pointer-events-none" style={{
+          left: `${b.x}%`, top: `${b.y}%`,
+          width: 0, height: 0,
+          ['--bubble-size' as any]: `${b.size}px`,
+          background: `radial-gradient(circle at 35% 30%, rgba(255,255,255,0.95) 0%, ${b.color} 45%, transparent 72%)`,
+          boxShadow: `0 0 ${b.size * 0.8}px ${b.color}`,
+          animation: `v178-bubbleGrowBreak ${b.dur}s ease-in-out infinite`,
+          animationDelay: `${b.delay}s`,
+        }} />
+      ))}
+    </>
+  );
+}
+
+/** 小气泡底部装饰 */
+function MiniBubbleField({ count = 4, barColor, glowColor, textColor }: { count?: number; barColor: string; glowColor: string; textColor: string }) {
+  const [miniBubbles, setMiniBubbles] = useState<Array<{ id: number; size: number; color: string; delay: number }>>([]);
+
+  useEffect(() => {
+    const colors = [barColor, glowColor, textColor];
+    setMiniBubbles(Array.from({ length: count }, (_, i) => ({
+      id: i,
+      size: 6 + Math.random() * 10, // 6-16px
+      color: colors[i % colors.length],
+      delay: Math.random() * 2,
+    })));
+  }, []);
+
+  return (
+    <div className="flex justify-center gap-2 mt-4 opacity-25 group-hover:opacity-50 transition-opacity duration-500">
+      {miniBubbles.map(b => (
+        <div key={b.id} className="rounded-full" style={{
+          width: `${b.size}px`, height: `${b.size}px`,
+          background: `radial-gradient(circle at 35% 30%, rgba(255,255,255,0.9) 0%, ${b.color} 50%, transparent 75%)`,
+          boxShadow: `0 0 ${b.size * 0.6}px ${b.color}`,
+          animation: `v178-miniGrowPop ${1.8 + b.delay}s ease-in-out infinite`,
+          animationDelay: `${b.delay}s`,
+        }} />
+      ))}
+    </div>
+  );
+}
+
 // Timeline item component with connection line animation — enhanced with per-item colors
 function TimelineItem({ year, titleKey, descriptionKey, isLeft, locale, t, index = 0 }: { year: string; titleKey: string; descriptionKey: string; isLeft: boolean; locale: string; t: (key: string) => string; index?: number }) {
   const isRTL = locale === 'ar';
@@ -1077,18 +1146,8 @@ export default function AboutPage() {
                       maskComposite: 'exclude',
                     }} />
 
-                    {/* Large colorful rising bubbles instead of tiny dots (v135) */}
-                    <div className="absolute top-4 right-4 w-7 h-7 rounded-full opacity-25" style={{
-                      background: `radial-gradient(circle at 35% 30%, rgba(255,255,255,0.9) 0%, ${p.barColor} 50%, transparent 75%)`,
-                      boxShadow: `0 0 ${14}px ${p.glowColor}`,
-                      animation: `statBubbleFloat ${3 + index * 0.35}s ease-in-out infinite`,
-                    }} />
-                    <div className="absolute bottom-12 left-5 w-9 h-9 rounded-full opacity-20" style={{
-                      background: `radial-gradient(circle at 40% 35%, rgba(255,255,255,0.85) 0%, ${p.barColor} 45%, transparent 70%)`,
-                      boxShadow: `0 0 ${18}px ${p.glowColor}`,
-                      animation: `statBubbleFloat ${3.8 + index * 0.3}s ease-in-out infinite reverse`,
-                      animationDelay: '1s',
-                    }} />
+                    {/* ===== v178 DYNAMIC BUBBLES — 随机位置 + 生长 + 破碎效果 ===== */}
+                    <StatBubbleField cardIndex={index} barColor={p.barColor} glowColor={p.glowColor} textColor={p.textColor} />
 
                     <div className="relative z-10">
                       {/* Icon — premium glassmorphic container */}
@@ -1138,22 +1197,8 @@ export default function AboutPage() {
                         {t(stat.labelKey)}
                       </p>
 
-                      {/* Bottom decorative large bubbles with color variation (v135) */}
-                      <div className="flex justify-center gap-2.5 mt-4 opacity-25 group-hover:opacity-50 transition-opacity duration-500">
-                        {[...Array(3)].map((_, di) => {
-                          const bubbleHues = [p.barColor, p.glowColor, p.textColor];
-                          const bSize = 8 + di * 3; // 8, 11, 14px
-                          return (
-                          <div key={di} className="rounded-full" style={{
-                            width: `${bSize}px`,
-                            height: `${bSize}px`,
-                            background: `radial-gradient(circle at 35% 30%, rgba(255,255,255,0.9) 0%, ${bubbleHues[di]} 50%, transparent 75%)`,
-                            boxShadow: `0 0 ${bSize * 0.6}px ${bubbleHues[di]}`,
-                            animation: `statBubblePulse ${2 + di * 0.4}s ease-in-out infinite`,
-                            animationDelay: `${di * 0.15}s`,
-                          }} />
-                        )})}
-                      </div>
+                      {/* Bottom mini floating bubbles (v178 — dynamic) */}
+                      <MiniBubbleField count={4} barColor={p.barColor} glowColor={p.glowColor} textColor={p.textColor} />
                     </div>
                   </div>
                 </div>
@@ -1468,52 +1513,53 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ===== SUNRISE BEACH CTA v141 — 远处小太阳 + 云朵半遮面 + 空间层次感 ===== */}
+      {/* ===== SUNRISE BEACH CTA v178 — 专业日出 + 商务蓝融合 ===== */}
       <section
         className="py-20 px-4 sm:px-6 lg:px-8 text-white relative overflow-hidden"
         style={{
-          /* v141: Refined sunrise palette — softer top, warmer mid-gold */
-          background: 'linear-gradient(180deg, #dbeafe 0%, #bfdbfe 5%, #e0f2fe 10%, #fce7f3 16%, #fecdd3 22%, #fed7aa 30%, #fdba74 40%, #fb923c 50%, #f97316 60%, #ea580c 70%, #dc2626 78%, #f59e0b 86%, #fbbf24 92%, #fef3c7 98%, #fffbeb 100%)',
+          /* v178: 精简为8段平滑过渡 — 深蓝黎明天空 → 淡紫朝霞 → 暖橙地平线 → 金色阳光 */
+          background: 'linear-gradient(180deg, #0f172a 0%, #1e3a5f 12%, #3b5998 24%, #7b8cbf 36%, #e8b4a0 50%, #f5a962 62%, #fbbf24 78%, #fef3c7 92%, #fffbeb 100%)',
         }}
       >
         {/* === v141: DISTANT SUN — 小太阳放远处，营造距离感和空间层次 === */}
         <div className="absolute bottom-[46%] left-[8%] sm:left-[12%] pointer-events-none">
-          {/* Subtle ambient glow — reduced for distance effect */}
-          <div className="absolute -inset-[45px] rounded-full" style={{
-            background: 'radial-gradient(circle, rgba(255,250,220,0.2) 0%, rgba(251,191,36,0.08) 25%, rgba(251,146,60,0.03) 50%, transparent 70%)',
-            animation: 'v135-sunGlow 5s ease-in-out infinite alternate',
+          {/* Subtle ambient glow — v178: 更大范围、更柔和的光晕 */}
+          <div className="absolute -inset-[60px] rounded-full" style={{
+            background: 'radial-gradient(circle, rgba(251,191,36,0.18) 0%, rgba(245,158,11,0.08) 20%, rgba(59,130,246,0.04) 45%, transparent 70%)',
+            animation: 'v178-sunGlow 6s ease-in-out infinite alternate',
           }} />
-          {/* Gentle light rays — fewer, softer for distant sun */}
-          <div className="absolute w-28 h-28 sm:w-36 sm:h-36 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-            {[...Array(8)].map((_, i) => {
-              const angle = (i * 360 / 8);
+          {/* Gentle light rays — v178: 更少更柔和的光线 */}
+          <div className="absolute w-32 h-32 sm:w-40 sm:h-40 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+            {[...Array(6)].map((_, i) => {
+              const angle = (i * 360 / 6);
               return (
                 <div key={i} className="absolute top-1/2 left-1/2 origin-left" style={{
-                  width: `${18 + i * 3}px`,
-                  height: `${1.5 + (i % 2) * 0.5}px`,
+                  width: `${22 + i * 4}px`,
+                  height: `${1 + (i % 2) * 0.5}px`,
                   background: `linear-gradient(90deg,
-                    rgba(255,250,220,0.35) 0%,
-                    rgba(251,191,36,0.12) 35%,
+                    rgba(255,245,220,0.28) 0%,
+                    rgba(251,191,36,0.10) 30%,
                     transparent 100%)`,
                   transform: `rotate(${angle}deg) translateY(-50%)`,
                   borderRadius: '2px',
-                  animation: `v135-rayPulse ${3 + i * 0.15}s ease-in-out infinite alternate`,
-                  animationDelay: `${i * 0.12}s`,
+                  animation: `v178-rayPulse ${4 + i * 0.2}s ease-in-out infinite alternate`,
+                  animationDelay: `${i * 0.15}s`,
                 }} />
               );
             })}
           </div>
-          {/* Main sun body — v141: smaller, more distant feel */}
+          {/* Main sun body — v178: 更精致的光泽层次 */}
           <div className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-full" style={{
-            background: 'radial-gradient(circle at 42% 40%, #ffffff 0%, #fffbeb 8%, #fef9c3 20%, #fde047 38%, #facc15 55%, #f59e0b 72%, #d97706 88%, #b45309 100%)',
+            background: 'radial-gradient(circle at 38% 35%, #ffffff 0%, #fffbeb 6%, #fef9c3 16%, #fde047 32%, #facc15 50%, #f59e0b 68%, #d97706 85%, #b45309 100%)',
             boxShadow: `
-              0 0 50px rgba(253,224,71,0.45),
-              0 0 100px rgba(245,158,11,0.25),
-              0 0 180px rgba(217,119,6,0.1),
-              inset 3px 3px 12px rgba(255,255,255,0.45),
-              inset -3px -2px 8px rgba(180,83,9,0.15)
+              0 0 60px rgba(253,224,71,0.40),
+              0 0 120px rgba(245,158,11,0.20),
+              0 0 200px rgba(217,119,6,0.08),
+              0 0 8px rgba(59,130,246,0.12),
+              inset 3px 3px 14px rgba(255,255,255,0.50),
+              inset -3px -2px 10px rgba(180,83,9,0.12)
             `,
-            animation: 'v138-sunBreath 6s ease-in-out infinite alternate',
+            animation: 'v178-sunBreath 5s ease-in-out infinite alternate',
           }}>
             {/* Inner bright core */}
             <div className="absolute rounded-full" style={{
@@ -1783,9 +1829,22 @@ export default function AboutPage() {
           50%{opacity:0.28; transform:translate(-5px,8px) scale(0.9)}
           75%{opacity:0.35; transform:translate(4px,-6px) scale(1.05)}
         }
-        @keyframes statBubblePulse {
-          0%,100%{transform:scale(1); opacity:0.25; box-shadow: 0 0 5px currentColor}
-          50%{transform:scale(1.25); opacity:0.45; box-shadow: 0 0 12px currentColor}
+        /* ===== v178 BUBBLE ANIMATIONS — 生长 + 破碎效果 ===== */
+        @keyframes v178-bubbleGrowBreak {
+          0%   { width: 0; height: 0; opacity: 0; transform: translate(-50%, -50%) scale(0); }
+          12%  { opacity: 0.5; }
+          35%  { width: var(--bubble-size, 24px); height: var(--bubble-size, 24px); opacity: 0.35; transform: translate(-50%, -50%) scale(1); }
+          55%  { opacity: 0.25; transform: translate(-50%, -50%) scale(1.08); }
+          72%  { width: var(--bubble-size, 24px); height: var(--bubble-size, 24px); opacity: 0.18; transform: translate(-50%, -50%) scale(1); }
+          85%  { opacity: 0.08; transform: translate(-50%, -50%) scale(1.3); }
+          100% { width: calc(var(--bubble-size, 24px) * 1.8); height: calc(var(--bubble-size, 24px) * 1.8); opacity: 0; transform: translate(-50%, -50%) scale(0.2); }
+        }
+        @keyframes v178-miniGrowPop {
+          0%   { transform:scale(0); opacity:0; }
+          30%  { transform:scale(1); opacity:0.45; }
+          60%  { transform:scale(1.25); opacity:0.3; }
+          80%  { transform:scale(0.95); opacity:0.15; }
+          100% { transform:scale(0); opacity:0; }
         }
         @keyframes iconRingSpin { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
         @keyframes iconPulse {
@@ -1828,6 +1887,20 @@ export default function AboutPage() {
         @keyframes v135-rayPulse {
           0%{opacity:0.25; transform:rotate(var(--r,0)) translateY(-50%) scaleX(1)}
           100%{opacity:0.65; transform:rotate(var(--r,0)) translateY(-50%) scaleX(1.15)}
+        }
+        /* ===== v178 SUNRISE ANIMATIONS — 更流畅专业 ===== */
+        @keyframes v178-sunGlow {
+          0%{opacity:0.25; transform:scale(1); filter:blur(20px)}
+          100%{opacity:0.55; transform:scale(1.12); filter:blur(24px)}
+        }
+        @keyframes v178-rayPulse {
+          0%{opacity:0.18; transform:rotate(var(--r,0)) translateY(-50%) scaleX(1); filter:blur(0.5px)}
+          100%{opacity:0.50; transform:rotate(var(--r,0)) translateY(-50%) scaleX(1.2); filter:blur(0px)}
+        }
+        @keyframes v178-sunBreath {
+          0%{transform:scale(1); filter:brightness(1) saturate(1.1)}
+          50%{transform:scale(1.04); filter:brightness(1.05) saturate(1.2)}
+          100%{transform:scale(1.08); filter:brightness(1.08) saturate(1.15)}
         }
         @keyframes v135-waveBack {
           0%,100%{transform:translateX(0) translateY(0)}

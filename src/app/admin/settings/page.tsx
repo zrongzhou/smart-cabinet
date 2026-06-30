@@ -408,6 +408,7 @@ export default function AdminSettingsPage() {
                           onChange={(e) => setSettings({ ...settings, companyNameAr: e.target.value })}
                           className="admin-form-input w-full"
                           dir="rtl"
+                          style={{ textAlign: 'right', fontFamily: "'Noto Sans Arabic', 'Segoe UI', Tahoma, sans-serif" }}
                         />
                       </div>
                     </div>
@@ -616,6 +617,7 @@ export default function AdminSettingsPage() {
                         onChange={(e) => setSettings({ ...settings, addressAr: e.target.value })}
                         className="admin-form-input w-full"
                         dir="rtl"
+                        style={{ textAlign: 'right', fontFamily: "'Noto Sans Arabic', 'Segoe UI', Tahoma, sans-serif" }}
                       />
                     </div>
                   </div>
