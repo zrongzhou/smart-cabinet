@@ -4,21 +4,21 @@ import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 
 // ============================================================
-// OceanHeader v189 — 深海流光 · 精简至2层 · 质感优先
+// OceanHeader v190 — 流光溢彩 · 动态优先 · 打破静态
 //
-// v188 反馈："颜色不协调，质感差"
+// v189 反馈："形成两边颜色，没有动态效果"
 // 根因诊断：
-//   ❌ 4个装饰层(Canvas+AuroraField+Ribbons+Orbs)全是模糊色块
-//   ❌ 所有元素 blur 16~28px → 叠加后像一锅蓝色浆糊
-//   ❌ 颜色都在窄蓝范围(185~250°)无对比
-//   ❌ 无任何锐利边缘或纹理 → 廉价感
+//   ❌ 3个光斑位置几乎固定(仅±4~7%微移) → 左边一坨靛、右边一坨青 = 两边分色
+//   ❌ 光束opacity 0.025~0.04 → 完全不可见
+//   ❌ 所有动画都是"慢呼吸" → 肉眼看不出在动
+//   ❌ 无任何横向/纵向流动元素 → 静态感
 //
-// v189 策略：做减法
-//   ✅ 只保留 2 层：Canvas深海流光 + CSS有机光晕
-//   ✅ 删除 AuroraField / FlowingRibbons / FloatingOrbs
-//   ✅ 高对比度：暗底(6~12%) + 亮光斑(65~75%)
-//   ✅ 微妙噪点纹理 → 玻璃/金属质感
-//   ✅ 光线穿透效果(caustics) → 动态焦点
+// v190 策略：让每一帧都不同
+//   ✅ 光斑大范围漂移(±12~18%) + 大幅度脉动
+//   ✅ 流光带横穿画面 — 从右到左缓缓流动
+//   ✅ 底色随时间微妙变化(不是死黑)
+//   ✅ 保留噪点纹理(质感)
+//   ✅ 删除CSS光晕层(改由Canvas统一控制)
 // ============================================================
 
 interface OceanHeaderProps {
@@ -35,13 +35,10 @@ export default function OceanHeader({ title, subtitle, description, icon, childr
     <section className="relative text-white py-[120px] px-4 sm:px-6 lg:px-8 overflow-hidden"
       style={{ minHeight: '380px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
     >
-      {/* Layer 1: Canvas — 深海流光底（唯一动态层） */}
-      <DeepOceanCanvas />
+      {/* Layer 1: Canvas — 全动态流光底 */}
+      <FlowingOcean />
 
-      {/* Layer 2: 有机光晕 — 2个大光斑 + 光束 */}
-      <OrganicGlow />
-
-      {/* Layer 3: 微妙噪点纹理 */}
+      {/* Layer 2: 微妙噪点纹理 */}
       <NoiseTexture />
 
       {/* 底部过渡 */}
@@ -103,10 +100,10 @@ export default function OceanHeader({ title, subtitle, description, icon, childr
 }
 
 // ============================================================
-// Layer 1: DeepOceanCanvas — 深海流光
-// 核心：深暗底色 + 少量高对比度光斑 + 光束穿透
+// FlowingOcean — 全动态Canvas流光
+// 核心：所有元素都在大幅度移动 + 流光带穿越
 // ============================================================
-function DeepOceanCanvas() {
+function FlowingOcean() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -126,81 +123,101 @@ function DeepOceanCanvas() {
     };
 
     const draw = () => {
-      time += 0.004;
+      time += 0.006; // 稍微加快节奏
       const w = canvas.width / (window.devicePixelRatio || 1);
       const h = canvas.height / (window.devicePixelRatio || 1);
       ctx.clearRect(0, 0, w, h);
 
-      // ── 底色：深邃深海渐变（很暗！让光线跳出来）──
-      const bg = ctx.createLinearGradient(0, 0, w * 0.3, h);
-      bg.addColorStop(0, '#040e1a');
-      bg.addColorStop(0.3, '#071829');
-      bg.addColorStop(0.6, '#0a2040');
-      bg.addColorStop(1, '#06162b');
+      // ── 底色：深海洋渐变（微微变化）──
+      const bg = ctx.createLinearGradient(0, 0, w * 0.4, h);
+      bg.addColorStop(0, `hsl(${212 + Math.sin(time * 0.15) * 10}, 50%, ${7 + Math.sin(time * 0.12) * 2}%)`);
+      bg.addColorStop(0.5, `hsl(${218 + Math.cos(time * 0.18) * 8}, 52%, ${10 + Math.cos(time * 0.15) * 2}%)`);
+      bg.addColorStop(1, `hsl(${205 + Math.sin(time * 0.13) * 6}, 48%, ${13 + Math.sin(time * 0.1) * 2}%)`);
       ctx.fillStyle = bg;
       ctx.fillRect(0, 0, w, h);
 
-      // ── 主光源：右上角大面积天青光（唯一最亮的区域）──
-      const sunX = w * (0.68 + Math.sin(time * 0.35) * 0.05);
-      const sunY = h * (0.08 + Math.cos(time * 0.28) * 0.04);
-      const main = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, Math.max(w, h) * 0.7);
-      main.addColorStop(0, `rgba(56, 189, 248, ${0.52 + Math.sin(time * 0.5) * 0.10})`);
-      main.addColorStop(0.15, `rgba(96, 165, 250, ${0.38 + Math.cos(time * 0.4) * 0.06})`);
-      main.addColorStop(0.35, `rgba(59, 130, 246, ${0.22 + Math.sin(time * 0.35) * 0.04})`);
-      main.addColorStop(0.6, `rgba(30, 64, 175, ${0.10 + Math.cos(time * 0.3) * 0.02})`);
+      // ── 流光带：从右向左缓缓穿越画面（最关键的动态元素！）──
+      // 这条光带是横向的，会打破"左右分色"的静态格局
+      const streamX = ((time * 40) % (w * 1.6)) - w * 0.3; // 从右向左持续流动
+      const streamY = h * (0.35 + Math.sin(time * 0.25) * 0.15);
+      ctx.save();
+      ctx.globalAlpha = 0.06 + Math.sin(time * 0.4) * 0.02;
+      const streamGrad = ctx.createLinearGradient(streamX - 200, streamY, streamX + 300, streamY);
+      streamGrad.addColorStop(0, 'transparent');
+      streamGrad.addColorStop(0.3, 'rgba(125, 211, 252, 0.35)');
+      streamGrad.addColorStop(0.5, 'rgba(186, 230, 253, 0.45)');
+      streamGrad.addColorStop(0.7, 'rgba(147, 197, 253, 0.30)');
+      streamGrad.addColorStop(1, 'transparent');
+      ctx.fillStyle = streamGrad;
+      ctx.beginPath();
+      ctx.ellipse(streamX, streamY, w * 0.38, h * 0.22, Math.sin(time * 0.2) * 0.15, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // ── 第二条流光（稍低，反向移动）──
+      const stream2X = ((-time * 28) % (w * 1.5)) - w * 0.25;
+      const stream2Y = h * (0.62 + Math.cos(time * 0.22) * 0.12);
+      ctx.save();
+      ctx.globalAlpha = 0.045 + Math.cos(time * 0.35) * 0.015;
+      const stream2Grad = ctx.createLinearGradient(stream2X - 150, stream2Y, stream2X + 250, stream2Y);
+      stream2Grad.addColorStop(0, 'transparent');
+      stream2Grad.addColorStop(0.35, 'rgba(99, 102, 241, 0.30)');
+      stream2Grad.addColorStop(0.55, 'rgba(129, 140, 248, 0.38)');
+      stream2Grad.addColorStop(0.75, 'rgba(96, 165, 250, 0.25)');
+      stream2Grad.addColorStop(1, 'transparent');
+      ctx.fillStyle = stream2Grad;
+      ctx.beginPath();
+      ctx.ellipse(stream2X, stream2Y, w * 0.32, h * 0.16, Math.cos(time * 0.18) * 0.12, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // ── 主光源：大幅度漂移的光斑（不再固定在右上角！）──
+      const sunX = w * (0.55 + Math.sin(time * 0.28) * 0.20); // ±20%！之前才±5%
+      const sunY = h * (0.15 + Math.cos(time * 0.24) * 0.15); // ±15%
+      const main = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, Math.max(w, h) * 0.65);
+      main.addColorStop(0, `rgba(56, 189, 248, ${0.46 + Math.sin(time * 0.42) * 0.12})`);
+      main.addColorStop(0.18, `rgba(96, 165, 250, ${0.34 + Math.cos(time * 0.36) * 0.08})`);
+      main.addColorStop(0.4, `rgba(59, 130, 246, ${0.20 + Math.sin(time * 0.3) * 0.05})`);
+      main.addColorStop(0.65, `rgba(37, 99, 235, ${0.08})`);
       main.addColorStop(1, 'transparent');
       ctx.fillStyle = main;
       ctx.fillRect(0, 0, w, h);
 
-      // ── 次光源：左侧中部 宝石蓝光 ──
-      const secX = w * (0.1 + Math.cos(time * 0.3) * 0.04);
-      const secY = h * (0.5 + Math.sin(time * 0.35) * 0.05);
+      // ── 次光源：也大幅度移动 ──
+      const secX = w * (0.25 + Math.cos(time * 0.26 + 1.5) * 0.18); // ±18%
+      const secY = h * (0.58 + Math.sin(time * 0.32) * 0.16); // ±16%
       const sec = ctx.createRadialGradient(secX, secY, 0, secX, secY, Math.max(w, h) * 0.5);
-      sec.addColorStop(0, `rgba(99, 102, 241, ${0.34 + Math.sin(time * 0.45 + 1) * 0.08})`);
-      sec.addColorStop(0.2, `rgba(79, 70, 229, ${0.22 + Math.cos(time * 0.4) * 0.04})`);
-      sec.addColorStop(0.5, `rgba(67, 56, 202, ${0.10})`);
+      sec.addColorStop(0, `rgba(99, 102, 241, ${0.30 + Math.sin(time * 0.4 + 1) * 0.09})`);
+      sec.addColorStop(0.25, `rgba(79, 70, 229, ${0.20 + Math.cos(time * 0.35) * 0.05})`);
+      sec.addColorStop(0.55, `rgba(67, 56, 202, ${0.08})`);
       sec.addColorStop(1, 'transparent');
       ctx.fillStyle = sec;
       ctx.fillRect(0, 0, w, h);
 
-      // ── 底部反光：青绿色微光（增加深度）──
-      const botX = w * (0.5 + Math.sin(time * 0.25) * 0.06);
-      const botY = h * (0.88 + Math.cos(time * 0.3) * 0.03);
-      const bot = ctx.createRadialGradient(botX, botY, 0, botX, botY, Math.max(w, h) * 0.4);
-      bot.addColorStop(0, `rgba(6, 182, 212, ${0.18 + Math.sin(time * 0.38) * 0.05})`);
-      bot.addColorStop(0.3, `rgba(34, 211, 238, ${0.10})`);
-      bot.addColorStop(1, 'transparent');
-      ctx.fillStyle = bot;
+      // ── 第三光：底部青绿 ──
+      const triX = w * (0.60 + Math.sin(time * 0.22 + 2) * 0.15); // ±15%
+      const triY = h * (0.82 + Math.cos(time * 0.28) * 0.08); // ±8%
+      const tri = ctx.createRadialGradient(triX, triY, 0, triX, triY, Math.max(w, h) * 0.38);
+      tri.addColorStop(0, `rgba(6, 182, 212, ${0.22 + Math.sin(time * 0.38) * 0.06})`);
+      tri.addColorStop(0.3, `rgba(34, 211, 238, ${0.12})`);
+      tri.addColorStop(0.6, `rgba(56, 189, 248, ${0.05})`);
+      tri.addColorStop(1, 'transparent');
+      ctx.fillStyle = tri;
       ctx.fillRect(0, 0, w, h);
 
-      // ── 光束：从右上角射入的斜向光线 ──
+      // ── 斜向光束（从主光源射出，跟随主光源移动！）──
       ctx.save();
-      ctx.globalAlpha = 0.04 + Math.sin(time * 0.3) * 0.015;
+      ctx.globalAlpha = 0.055 + Math.sin(time * 0.35) * 0.02;
       ctx.beginPath();
-      ctx.moveTo(sunX, sunY);
-      ctx.lineTo(w * (0.2 + Math.sin(time * 0.2) * 0.1), h);
-      ctx.lineTo(w * (0.35 + Math.cos(time * 0.25) * 0.08), h);
+      ctx.moveTo(sunX, sunY + 20);
+      ctx.lineTo(w * (0.05 + Math.sin(time * 0.18) * 0.15), h); // 终点也在动
+      ctx.lineTo(w * (0.25 + Math.cos(time * 0.22) * 0.1), h);
       ctx.closePath();
-      const beamGrad = ctx.createLinearGradient(sunX, sunY, w * 0.28, h);
-      beamGrad.addColorStop(0, 'rgba(186, 230, 253, 0.6)');
-      beamGrad.addColorStop(0.5, 'rgba(125, 211, 252, 0.2)');
+      const beamGrad = ctx.createLinearGradient(sunX, sunY, w * 0.15, h);
+      beamGrad.addColorStop(0, 'rgba(186, 230, 253, 0.55)');
+      beamGrad.addColorStop(0.4, 'rgba(125, 211, 252, 0.25)');
       beamGrad.addColorStop(1, 'transparent');
       ctx.fillStyle = beamGrad;
-      ctx.fill();
-      ctx.restore();
-
-      // ── 第二道光束（更弱）──
-      ctx.save();
-      ctx.globalAlpha = 0.025 + Math.cos(time * 0.25) * 0.01;
-      ctx.beginPath();
-      ctx.moveTo(sunX + 30, sunY + 20);
-      ctx.lineTo(w * (0.4 + Math.cos(time * 0.22) * 0.08), h);
-      ctx.lineTo(w * (0.55 + Math.sin(time * 0.18) * 0.06), h);
-      ctx.closePath();
-      const beam2 = ctx.createLinearGradient(sunX, sunY, w * 0.48, h);
-      beam2.addColorStop(0, 'rgba(147, 197, 253, 0.4)');
-      beam2.addColorStop(1, 'transparent');
-      ctx.fillStyle = beam2;
       ctx.fill();
       ctx.restore();
 
@@ -220,26 +237,7 @@ function DeepOceanCanvas() {
 }
 
 // ============================================================
-// Layer 2: OrganicGlow — 2个静态大光晕 + 脉动
-// 用CSS实现高性能、低开销的光斑呼吸效果
-// ============================================================
-function OrganicGlow() {
-  return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-      {/* 光晕A：右上主光区 — 大而柔和的天青光晕 */}
-      <div className="og-glow og-a" />
-
-      {/* 光晕B：左中副光区 — 靛蓝光晕 */}
-      <div className="og-glow og-b" />
-    </div>
-  );
-}
-
-// ============================================================
-// Layer 3: NoiseTexture — 极细微噪点
-// 用SVG feTurbulence生成非常细密的噪点
-// opacity极低(0.03~0.05)，只提供玻璃/金属质感
-// 不是v181那种粗糙塑料颗粒！
+// NoiseTexture — 极细微噪点（玻璃质感）
 // ============================================================
 function NoiseTexture() {
   return (
@@ -252,59 +250,9 @@ function NoiseTexture() {
         </filter>
       </defs>
       <rect width="100%" height="100%" filter="url(#noise)"
-        style={{ opacity: 0.035, mixBlendMode: 'overlay' }} />
+        style={{ opacity: 0.032, mixBlendMode: 'overlay' }} />
     </svg>
   );
 }
 
-const styles = `
-  /* ====== OrganicGlow: 大光晕呼吸 ====== */
-  .og-glow {
-    position: absolute;
-    border-radius: 50%;
-    will-change: transform, opacity;
-  }
-
-  .og-a {
-    right: -8%;
-    top: -15%;
-    width: 70%;
-    height: 70%;
-    background: radial-gradient(ellipse at center,
-      rgba(56, 189, 248, 0.18) 0%,
-      rgba(96, 165, 250, 0.10) 30%,
-      rgba(59, 130, 246, 0.05) 55%,
-      transparent 70%);
-    filter: blur(48px);
-    animation: og-pulse-a 14s ease-in-out infinite alternate;
-  }
-
-  .og-b {
-    left: -5%;
-    top: 35%;
-    width: 55%;
-    height: 55%;
-    background: radial-gradient(ellipse at center,
-      rgba(99, 102, 241, 0.14) 0%,
-      rgba(79, 70, 229, 0.08) 35%,
-      rgba(67, 56, 202, 0.03) 60%,
-      transparent 72%);
-    filter: blur(42px);
-    animation: og-pulse-b 17s ease-in-out infinite alternate-reverse;
-    animation-delay: 3s;
-  }
-
-  @keyframes og-pulse-a {
-    0%   { transform: scale(1) translate(0, 0); opacity: 0.7; }
-    33%  { transform: scale(1.08) translate(18px, -12px); opacity: 1; }
-    66%  { transform: scale(0.97) translate(-10px, 8px); opacity: 0.82; }
-    100% { transform: scale(1.05) translate(12px, -5px); opacity: 0.92; }
-  }
-
-  @keyframes og-pulse-b {
-    0%   { transform: scale(1) translate(0, 0); opacity: 0.6; }
-    40%  { transform: scale(1.1) translate(-15px, 10px); opacity: 0.9; }
-    75%  { transform: scale(0.95) translate(8px, -6px); opacity: 0.7; }
-    100% { transform: scale(1.04) translate(-8px, 4px); opacity: 0.84; }
-  }
-`;
+const styles = ``;
