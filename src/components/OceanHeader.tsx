@@ -8,18 +8,18 @@ import { motion } from 'framer-motion';
 // v165: 深蓝渐变天空 + 升级云彩动画（上下浮动+呼吸感+视差）
 // ============================================================
 
+// 深蓝天空 — 配合网站主色 blue-600/700
+// 从深蓝(blue-900)渐变到明亮蓝(blue-300)，底部淡出到白色
 const SKY_GRADIENT = `linear-gradient(180deg,
-  #0c4a6e 0%,
-  #0f5288 8%,
-  #1565a0 16%,
-  #1a78b8 25%,
-  #1e8ccf 35%,
-  #2196f3 46%,
-  #42a5f5 58%,
-  #64b5f6 70%,
-  #90caf9 82%,
-  #bbdefb 92%,
-  #e3f2fd 100%)`;
+  #1e3a8a 0%,
+  #1e40af 10%,
+  #1d4ed8 22%,
+  #2563eb 35%,
+  #3b82f6 50%,
+  #60a5fa 65%,
+  #93c5fd 80%,
+  #bfdbfe 92%,
+  #e0f2fe 100%)`;
 
 // ============================================================
 // LAYER 1: 白云 — 柔和飘动的积云
@@ -203,29 +203,31 @@ export default function SkyHeader({
           }
         }
 
-        /* Cloud drift — 近景云：快速大幅飘动 + 上下浮动 + 呼吸感 */
+        /* Cloud drift — 近景云：大幅飘动 + 上下浮动 + 呼吸感 */
         @keyframes cloud-drift-near {
-          0%   { transform: translate(-18px, 0px) scale(1); }
-          25%  { transform: translate(-8px, -8px) scale(1.03); }
-          50%  { transform: translate(5px, 4px) scale(0.98); }
-          75%  { transform: translate(15px, -5px) scale(1.02); }
-          100% { transform: translate(20px, 0px) scale(1); }
+          0%   { transform: translate(-30px, 0px) scale(1); }
+          20%  { transform: translate(-15px, -12px) scale(1.04); }
+          40%  { transform: translate(10px, 6px) scale(0.97); }
+          60%  { transform: translate(25px, -8px) scale(1.03); }
+          80%  { transform: translate(15px, 10px) scale(0.98); }
+          100% { transform: translate(35px, 0px) scale(1); }
         }
 
         /* Cloud drift — 中景云：中等速度幅度 */
         @keyframes cloud-drift-mid {
-          0%   { transform: translate(-12px, 0px) scale(1); }
-          30%  { transform: translate(-5px, -5px) scale(1.02); }
-          60%  { transform: translate(8px, 3px) scale(0.99); }
-          100% { transform: translate(14px, 0px) scale(1); }
+          0%   { transform: translate(-20px, 0px) scale(1); }
+          25%  { transform: translate(-10px, -8px) scale(1.03); }
+          50%  { transform: translate(12px, 5px) scale(0.98); }
+          75%  { transform: translate(22px, -4px) scale(1.02); }
+          100% { transform: translate(25px, 0px) scale(1); }
         }
 
         /* Cloud drift — 远景云：缓慢小幅飘动（视差效果） */
         @keyframes cloud-drift-far {
-          0%   { transform: translate(-8px, 0px) scale(1); }
-          35%  { transform: translate(-3px, -3px) scale(1.01); }
-          65%  { transform: translate(5px, 2px) scale(0.99); }
-          100% { transform: translate(10px, 0px) scale(1); }
+          0%   { transform: translate(-15px, 0px) scale(1); }
+          30%  { transform: translate(-6px, -5px) scale(1.02); }
+          60%  { transform: translate(10px, 3px) scale(0.99); }
+          100% { transform: translate(18px, 0px) scale(1); }
         }
 
         /* Sun gentle pulse */

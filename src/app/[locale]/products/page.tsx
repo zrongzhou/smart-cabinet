@@ -610,12 +610,17 @@ export default function ProductsPage() {
                     }}
                     onMouseMove={(e) => {
                       const rect = e.currentTarget.getBoundingClientRect();
-                      const x = ((e.clientX - rect.left) / rect.width) * 100;
-                      const y = ((e.clientY - rect.top) / rect.height) * 100;
-                      e.currentTarget.style.setProperty('--ripple-x', `${x}%`);
-                      e.currentTarget.style.setProperty('--ripple-y', `${y}%`);
+                      const x = e.clientX - rect.left;
+                      const y = e.clientY - rect.top;
+                      const circle = e.currentTarget.querySelector('.ripple-circle') as HTMLElement | null;
+                      if (circle) {
+                        circle.style.left = `${x}px`;
+                        circle.style.top = `${y}px`;
+                      }
                     }}
                   >
+                    {/* Ripple circle — positioned by onMouseMove */}
+                    <div className="ripple-circle" style={{ width: '400px', height: '400px' }} />
                     {/* Product Image */}
                     {product.images && product.images[0] ? (
                       <div className="relative h-56 overflow-hidden bg-blue-50">
@@ -752,64 +757,26 @@ export default function ProductsPage() {
           <p className="absolute bottom-4 text-white/60 text-sm">Click anywhere to close</p>
         </div>
       )}
-      {/* Hover water-ripple effect (v165) */}
+      {/* Hover water-ripple effect — follows mouse, visible */}
       <style>{`
-        /* Water ripple on hover for cards — follows mouse position */
         .ripple-card {
           position: relative;
           overflow: hidden;
-          --ripple-x: 50%;
-          --ripple-y: 50%;
         }
-        /* Secondary ripple — larger, more transparent, delayed */
-        .ripple-card::before {
-          content: '';
+        /* Single ripple circle — follows mouse, expands on hover */
+        .ripple-card .ripple-circle {
           position: absolute;
-          top: var(--ripple-y);
-          left: var(--ripple-x);
-          width: 0;
-          height: 0;
           border-radius: 50%;
-          background: radial-gradient(circle, rgba(59,130,246,0.10) 0%, rgba(96,165,250,0.05) 50%, transparent 70%);
+          background: radial-gradient(circle, rgba(59,130,246,0.25) 0%, rgba(96,165,250,0.12) 40%, transparent 65%);
           transform: translate(-50%, -50%) scale(0);
           opacity: 0;
-          transition: width 0.9s ease-out, height 0.9s ease-out, opacity 0.6s ease;
+          pointer-events: none;
           z-index: 1;
-          pointer-events: none;
+          transition: transform 0.6s ease-out, opacity 0.4s ease-out;
         }
-        /* Main ripple — follows mouse exactly */
-        .ripple-card::after {
-          content: '';
-          position: absolute;
-          top: var(--ripple-y);
-          left: var(--ripple-x);
-          width: 0;
-          height: 0;
-          border-radius: 50%;
-          background: radial-gradient(circle, rgba(59,130,246,0.35) 0%, rgba(96,165,250,0.18) 45%, transparent 70%);
-          transform: translate(-50%, -50%) scale(0);
-          opacity: 0;
-          transition: width 0.7s ease-out, height 0.7s ease-out, opacity 0.5s ease;
-          z-index: 2;
-          pointer-events: none;
-        }
-        .ripple-card:hover::before {
-          width: 500px;
-          height: 500px;
-          opacity: 0.5;
-        }
-        .ripple-card:hover::after {
-          width: 350px;
-          height: 350px;
-          opacity: 0.7;
-        }
-
-        /* Filter panel hover shimmer sweep */
-        .group:hover .ripple-container {
-          position: absolute;
-          inset: 0;
-          overflow: hidden;
-          border-radius: inherit;
+        .ripple-card:hover .ripple-circle {
+          transform: translate(-50%, -50%) scale(1);
+          opacity: 1;
         }
       `}</style>
     </div>
