@@ -30,11 +30,15 @@ const GRID_COLOR = 'rgba(148,163,184,0.06)';     // 网格线
 
 interface OceanHeaderProps {
   title: string;
-  description?: string;
+  subtitle?: string;
+  description?: string; // alias for subtitle
+  icon?: React.ReactNode;
+  children?: React.ReactNode; // e.g. breadcrumb nav
   locale?: string;
 }
 
-export default function OceanHeader({ title, description }: OceanHeaderProps) {
+export default function OceanHeader({ title, subtitle, description, icon, children, locale }: OceanHeaderProps) {
+  const desc = description || subtitle;
   return (
     <section
       className="relative text-white py-20 px-4 sm:px-6 lg:px-8 overflow-hidden"
@@ -65,6 +69,27 @@ export default function OceanHeader({ title, description }: OceanHeaderProps) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
       >
+        {icon && (
+          <div className="flex justify-center mb-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.15 }}
+              className="w-14 h-14 rounded-xl flex items-center justify-center"
+              style={{
+                background: 'rgba(255,255,255,0.12)',
+                backdropFilter: 'blur(8px)',
+                border: '1px solid rgba(255,255,255,0.18)',
+              }}
+            >
+              {icon}
+            </motion.div>
+          </div>
+        )}
+
+        {/* Children (e.g. breadcrumb) — render before title if present */}
+        {children}
+
         {title && (
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight mb-4"
             style={{ textShadow: '0 2px 16px rgba(0,0,0,0.15)' }}
@@ -72,11 +97,11 @@ export default function OceanHeader({ title, description }: OceanHeaderProps) {
             {title}
           </h1>
         )}
-        {description && (
+        {desc && (
           <p className="text-base sm:text-lg text-blue-100/85 max-w-2xl mx-auto leading-relaxed"
             style={{ textShadow: '0 1px 8px rgba(0,0,0,0.1)' }}
           >
-            {description}
+            {desc}
           </p>
         )}
       </motion.div>
