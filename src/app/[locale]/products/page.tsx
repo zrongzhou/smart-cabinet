@@ -467,9 +467,12 @@ export default function ProductsPage() {
                     onClick={() => handleDimensionChange(type)}
                     className={`relative px-4 py-2.5 rounded-full text-[14px] font-bold transition-all duration-200 inline-flex items-center gap-1.5 water-ripple ${
                       isActive
-                        ? `text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5 ring-1 ring-white/30`
-                        : `glass-btn text-gray-700 hover:-translate-y-0.5`
+                        ? 'text-white shadow-lg shadow-blue-500/25 hover:shadow-xl hover:-translate-y-0.5'
+                        : 'glass-btn text-gray-700 hover:-translate-y-0.5'
                     }`}
+                    style={isActive ? {
+                      background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+                    } : undefined}
                     title={isEmpty ? (locale === 'zh' ? '该维度暂无产品' : 'No products in this dimension') : ''}
                   >
                     {/* Left accent bar for active state */}
@@ -796,18 +799,17 @@ export default function ProductsPage() {
           border-radius: 50%;
           pointer-events: none;
           opacity: 0;
-          transform: translate(-50%, -50%) scale(0);
-          transition: none;
+          transform: translate(-50%, -50%);
+          left: var(--rx, 50%);
+          top: var(--ry, 50%);
         }
 
         /* 主波纹 — 蓝色填充圆 */
         .water-ripple::before {
-          width: 20px; height: 20px;
-          left: var(--rx, 50%);
-          top: var(--ry, 50%);
+          width: 0; height: 0;
           background: radial-gradient(circle,
-            rgba(59,130,246,0.25) 0%,
-            rgba(96,165,250,0.12) 40%,
+            rgba(59,130,246,0.30) 0%,
+            rgba(96,165,250,0.15) 40%,
             transparent 70%
           );
           z-index: 2;
@@ -815,39 +817,39 @@ export default function ProductsPage() {
 
         /* 次波纹 — 环形波纹圈 */
         .water-ripple::after {
-          width: 10px; height: 10px;
-          left: var(--rx, 50%);
-          top: var(--ry, 50%);
-          border: 1.5px solid rgba(147,197,253,0.35);
+          width: 0; height: 0;
+          border: 2px solid rgba(147,197,253,0.45);
           background: transparent;
-          box-shadow: 0 0 12px rgba(59,130,246,0.15);
+          box-shadow: 0 0 16px rgba(59,130,246,0.20);
           z-index: 2;
         }
 
         /* 第三波纹 — 更大的外围涟漪 */
         .ripple-wave3 {
           position: absolute;
-          width: 8px; height: 8px;
+          width: 0; height: 0;
           border-radius: 50%;
-          border: 1px solid rgba(147,197,253,0.2);
+          border: 1.5px solid rgba(147,197,253,0.25);
           pointer-events: none;
           opacity: 0;
-          transform: translate(-50%, -50%) scale(0);
+          transform: translate(-50%, -50%);
+          left: var(--rx, 50%);
+          top: var(--ry, 50%);
           z-index: 2;
         }
 
         /* hover 时触发三层波纹扩散动画 */
         @keyframes ripple-expand-1 {
-          0%   { width: 20px; height: 20px; opacity: 1; }
-          100% { width: 450px; height: 450px; opacity: 0; }
+          0%   { width: 0; height: 0; opacity: 0.8; }
+          100% { width: 420px; height: 420px; opacity: 0; }
         }
         @keyframes ripple-expand-2 {
-          0%   { width: 10px; height: 10px; opacity: 0.9; }
-          100% { width: 380px; height: 380px; opacity: 0; }
+          0%   { width: 0; height: 0; opacity: 0.7; }
+          100% { width: 360px; height: 360px; opacity: 0; }
         }
         @keyframes ripple-expand-3 {
-          0%   { width: 8px; height: 8px; opacity: 0.6; }
-          100% { width: 500px; height: 500px; opacity: 0; }
+          0%   { width: 0; height: 0; opacity: 0.5; }
+          100% { width: 480px; height: 480px; opacity: 0; }
         }
 
         .water-ripple:hover::before {
