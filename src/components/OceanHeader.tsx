@@ -27,7 +27,7 @@ const SKY_GRADIENT = `linear-gradient(180deg,
 function Clouds() {
   const [clouds, setClouds] = useState<Array<{
     id: number; left: string; top: string; width: string; opacity: number;
-    duration: number; delay: number; blur: number;
+    duration: number; delay: number; blur: number; animationName: string;
   }>>([]);
 
   useEffect(() => {
