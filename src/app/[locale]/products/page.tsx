@@ -407,8 +407,7 @@ export default function ProductsPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={locale === 'zh' ? '搜索产品名称、SKU...' : locale === 'ar' ? 'بحث عن المنتجات...' : 'Search products by name, SKU...'}
-              className="w-full pl-11 pr-10 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 outline-none transition-all text-gray-900 bg-blue-50"
-              style={{ borderColor: '#d1d5db' }}
+              className="w-full pl-11 pr-10 py-2.5 glass-input rounded-xl text-sm outline-none transition-all text-gray-900"
             />
             {searchQuery && (
               <button
@@ -420,16 +419,14 @@ export default function ProductsPage() {
             )}
           </div>
 
-          {/* Filter Panel — Enhanced Glass Card Container */}
-          <div className="relative rounded-2xl px-6 py-5 overflow-hidden group" style={{
-            background: 'linear-gradient(135deg, rgba(255,255,255,0.65) 0%, rgba(241,245,249,0.45) 100%)',
-            backdropFilter: 'blur(18px) saturate(1.8)',
-            WebkitBackdropFilter: 'blur(18px) saturate(1.8)',
-            border: '1px solid rgba(226,232,240,0.5)',
-            boxShadow: '0 8px 32px rgba(148,163,184,0.12), inset 0 2px 0 rgba(255,255,255,0.7), inset 0 -1px 0 rgba(226,232,240,0.4)',
-          }}>
-            {/* Hover ripple overlay — water wave on hover */}
-            <span className="ripple-container absolute inset-0 pointer-events-none rounded-2xl overflow-hidden" />
+          {/* Filter Panel — 透光玻璃面板 */}
+          <div className="relative glass-panel water-ripple rounded-2xl px-6 py-5 overflow-hidden"
+            onMouseMove={(e) => {
+              const rect = e.currentTarget.getBoundingClientRect();
+              e.currentTarget.style.setProperty('--rx', `${((e.clientX - rect.left) / rect.width) * 100}%`);
+              e.currentTarget.style.setProperty('--ry', `${((e.clientY - rect.top) / rect.height) * 100}%`);
+            }}
+          >
             {/* Subtle accent bar - shows under active dimension tab instead of top line */}
             <div className="h-1" />
             
@@ -438,12 +435,12 @@ export default function ProductsPage() {
               {/* "All" button */}
               <button
                 onClick={() => handleDimensionChange('all')}
-                className={`relative px-5 py-2.5 rounded-full text-[14px] font-bold transition-all duration-200 inline-flex items-center gap-1.5 ${
+                className={`relative px-5 py-2.5 rounded-full text-[14px] font-bold transition-all duration-200 inline-flex items-center gap-1.5 water-ripple ${
                   activeDimension === 'all'
                     ? 'bg-blue-600 text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5'
-                    : 'text-gray-700 border backdrop-blur-md bg-white/50 hover:bg-white/75 hover:border-blue-400/50 hover:shadow-sm hover:-translate-y-0.5'
+                    : 'glass-btn text-gray-700 hover:-translate-y-0.5'
                 }`}
-                style={activeDimension !== 'all' ? { borderColor: 'rgba(209,213,219,0.6)', borderWidth: '1px' } : undefined}
+                style={activeDimension !== 'all' ? undefined : undefined}
               >
                 <span>{t('products.filterAll') || 'All'}</span>
               </button>
@@ -468,15 +465,11 @@ export default function ProductsPage() {
                   <button
                     key={type}
                     onClick={() => handleDimensionChange(type)}
-                    className={`relative px-4 py-2.5 rounded-full text-[14px] font-bold transition-all duration-200 inline-flex items-center gap-1.5 ${
+                    className={`relative px-4 py-2.5 rounded-full text-[14px] font-bold transition-all duration-200 inline-flex items-center gap-1.5 water-ripple ${
                       isActive
                         ? `text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5 ring-1 ring-white/30`
-                        : `border backdrop-blur-md bg-white/50 text-gray-700 hover:bg-white/75 hover:border-blue-400/50 hover:shadow-sm hover:-translate-y-0.5`
+                        : `glass-btn text-gray-700 hover:-translate-y-0.5`
                     }`}
-                    style={isActive
-                      ? { background: 'linear-gradient(135deg, #2563eb, #1d4ed8)' }
-                      : { borderColor: 'rgba(209,213,219,0.6)', borderWidth: '1px' }
-                    }
                     title={isEmpty ? (locale === 'zh' ? '该维度暂无产品' : 'No products in this dimension') : ''}
                   >
                     {/* Left accent bar for active state */}
@@ -526,15 +519,12 @@ export default function ProductsPage() {
                         <button
                           key={cat.id}
                           onClick={() => toggleCategory(cat.id)}
-                          className={`relative px-3.5 py-[7px] rounded-full text-[12px] font-medium transition-all duration-200 leading-none inline-flex items-center ${
+                          className={`relative px-3.5 py-[7px] rounded-full text-[12px] font-medium transition-all duration-200 leading-none inline-flex items-center water-ripple ${
                             isSelected
                               ? `text-white shadow-md hover:shadow-lg`
-                              : `text-gray-600 border backdrop-blur-md bg-white/40 hover:bg-white/60 hover:border-blue-400/50 hover:shadow-sm`
+                              : `glass-btn text-gray-600 hover:-translate-y-0.5`
                           }`}
-                          style={isSelected ? { backgroundColor: '#2563eb' } : {
-                            borderColor: 'rgba(209,213,219,0.5)',
-                            borderWidth: '1px',
-                          }}
+                          style={isSelected ? { backgroundColor: '#2563eb' } : undefined}
                         >
                             {isSelected && (
                             <span className="inline-block w-1.5 h-1.5 rounded-full bg-white/90 mr-1.5" />
@@ -566,7 +556,7 @@ export default function ProductsPage() {
           {/* Results count */}
           {(searchQuery || activeCategories.length > 0 || activeDimension !== 'all') && (
             <div className="text-center mt-4">
-              <span className="inline-flex items-center px-3.5 py-1 bg-blue-50 text-gray-600 border border-gray-300 rounded-full text-[12px] font-medium">
+              <span className="inline-flex items-center px-3.5 py-1 glass-btn rounded-full text-[12px] font-medium text-gray-600">
                 {locale === 'zh'
                   ? `找到 ${filteredProducts.length} 个产品`
                   : locale === 'ar'
@@ -604,25 +594,34 @@ export default function ProductsPage() {
                 const name = locale === 'zh' ? product.name.zh : locale === 'ar' ? product.name.ar : product.name.en;
                 return (
                   <Link key={product.id} href={detailHref}
-                    className="group relative bg-white/80 backdrop-blur-sm rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-2 border border-gray-200/60 hover:border-blue-600/30 block ripple-card"
-                    style={{
-                      boxShadow: '0 4px 24px rgba(148,163,184,0.12), 0 1px 3px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6)',
-                    }}
+                    className="group relative glass-card water-ripple rounded-2xl overflow-hidden block"
                     onMouseMove={(e) => {
                       const rect = e.currentTarget.getBoundingClientRect();
-                      const x = e.clientX - rect.left;
-                      const y = e.clientY - rect.top;
-                      const circle = e.currentTarget.querySelector('.ripple-circle') as HTMLElement | null;
-                      if (circle) {
-                        circle.style.left = `${x}px`;
-                        circle.style.top = `${y}px`;
+                      const x = ((e.clientX - rect.left) / rect.width) * 100;
+                      const y = ((e.clientY - rect.top) / rect.height) * 100;
+                      e.currentTarget.style.setProperty('--rx', `${x}%`);
+                      e.currentTarget.style.setProperty('--ry', `${y}%`);
+
+                      // 移动透光光斑
+                      const glow = e.currentTarget.querySelector('.card-glow-spot') as HTMLElement | null;
+                      if (glow) {
+                        glow.style.left = `${x}%`;
+                        glow.style.top = `${y}%`;
+                        glow.style.transform = 'translate(-50%, -50%)';
+                      }
+
+                      // 第三波纹跟随鼠标
+                      const w3 = e.currentTarget.querySelector('.ripple-wave3') as HTMLElement | null;
+                      if (w3) {
+                        w3.style.left = `${x}%`;
+                        w3.style.top = `${y}%`;
                       }
                     }}
                   >
-                    {/* Ripple circle — positioned by onMouseMove */}
-                    <div className="ripple-circle" style={{ left: 0, top: 0, width: '280px', height: '280px' }} />
-                    {/* Ripple ring — delayed secondary wave */}
-                    <div className="ripple-ring" style={{ left: 0, top: 0, width: '200px', height: '200px' }} />
+                    {/* 透光光斑 — 跟随鼠标移动 */}
+                    <div className="card-glow-spot" />
+                    {/* 第三层波纹 */}
+                    <div className="ripple-wave3" />
                     {/* Product Image */}
                     {product.images && product.images[0] ? (
                       <div className="relative h-56 overflow-hidden bg-blue-50">
@@ -698,7 +697,7 @@ export default function ProductsPage() {
                 <button
                   onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
-                  className="flex items-center space-x-1 px-4 py-3 rounded-lg border border-gray-300 text-sm font-medium text-gray-600 hover:bg-blue-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors min-h-[44px]"
+                  className="flex items-center space-x-1 px-4 py-3 rounded-lg glass-btn text-sm font-medium text-gray-600 hover:text-blue-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors min-h-[44px]"
                 >
                   <ChevronLeft className="w-4 h-4" />
                   {locale === 'zh' ? '上一页' : locale === 'ar' ? 'السابق' : 'Previous'}
@@ -711,9 +710,8 @@ export default function ProductsPage() {
                     className={`min-w-[44px] min-h-[44px] rounded-lg text-sm font-semibold transition-all duration-200 ${
                       currentPage === page
                         ? 'text-white shadow-md'
-                        : 'hover:bg-blue-50 border border-transparent'
+                        : 'glass-btn hover:text-blue-600'
                     }`}
-                    style={currentPage === page ? { backgroundColor: '#2563eb' } : { color: '#4b5563' }}
                   >
                     {page}
                   </button>
@@ -722,7 +720,7 @@ export default function ProductsPage() {
                 <button
                   onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages}
-                  className="flex items-center space-x-1 px-4 py-3 rounded-lg border border-gray-300 text-sm font-medium text-gray-600 hover:bg-blue-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors min-h-[44px]"
+                  className="flex items-center space-x-1 px-4 py-3 rounded-lg glass-btn text-sm font-medium text-gray-600 hover:text-blue-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors min-h-[44px]"
                 >
                   {locale === 'zh' ? '下一页' : locale === 'ar' ? 'التالي' : 'Next'}
                   <ChevronRight className="w-4 h-4" />
@@ -759,45 +757,263 @@ export default function ProductsPage() {
           <p className="absolute bottom-4 text-white/60 text-sm">Click anywhere to close</p>
         </div>
       )}
-      {/* Hover water-ripple effect (v168): visible expanding ripple from mouse */}
+      {/* 透光玻璃水面质感 — 全局效果系统 */}
       <style>{`
-        .ripple-card {
+        /* ============================================
+           GLASS WATER SURFACE — 核心视觉系统
+           透光玻璃 + 水面波纹 = 高级动态质感
+           ============================================ */
+
+        /* ---- 通用玻璃容器基础 ---- */
+        .glass-surface {
+          background: linear-gradient(
+            135deg,
+            rgba(255,255,255,0.72) 0%,
+            rgba(255,255,255,0.52) 40%,
+            rgba(240,248,255,0.45) 100%
+          );
+          backdrop-filter: blur(16px) saturate(1.4);
+          -webkit-backdrop-filter: blur(16px) saturate(1.4);
+          border: 1px solid rgba(255,255,255,0.6);
+          box-shadow:
+            0 8px 32px rgba(59,130,246,0.08),
+            0 2px 8px rgba(148,163,184,0.06),
+            inset 0 1px 0 rgba(255,255,255,0.7),
+            inset 0 -1px 0 rgba(200,220,255,0.15);
+        }
+
+        /* ---- 水波纹容器（所有需要水波纹的元素加这个class） ---- */
+        .water-ripple {
           position: relative;
           overflow: hidden;
         }
-        .ripple-card .ripple-circle {
+
+        /* 波纹层：多层同心圆从鼠标位置扩散 */
+        .water-ripple::before,
+        .water-ripple::after {
+          content: '';
           position: absolute;
           border-radius: 50%;
-          width: 280px !important;
-          height: 280px !important;
-          background: radial-gradient(circle, rgba(59,130,246,0.18) 0%, rgba(96,165,250,0.10) 35%, transparent 70%);
-          transform: translate(-50%, -50%) scale(0);
-          opacity: 0;
           pointer-events: none;
-          z-index: 1;
-          transition: transform 0.5s ease-out, opacity 0.3s ease-out;
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(0);
+          transition: none;
         }
-        .ripple-card:hover .ripple-circle {
-          transform: translate(-50%, -50%) scale(1.5);
+
+        /* 主波纹 — 蓝色填充圆 */
+        .water-ripple::before {
+          width: 20px; height: 20px;
+          left: var(--rx, 50%);
+          top: var(--ry, 50%);
+          background: radial-gradient(circle,
+            rgba(59,130,246,0.25) 0%,
+            rgba(96,165,250,0.12) 40%,
+            transparent 70%
+          );
+          z-index: 2;
+        }
+
+        /* 次波纹 — 环形波纹圈 */
+        .water-ripple::after {
+          width: 10px; height: 10px;
+          left: var(--rx, 50%);
+          top: var(--ry, 50%);
+          border: 1.5px solid rgba(147,197,253,0.35);
+          background: transparent;
+          box-shadow: 0 0 12px rgba(59,130,246,0.15);
+          z-index: 2;
+        }
+
+        /* 第三波纹 — 更大的外围涟漪 */
+        .ripple-wave3 {
+          position: absolute;
+          width: 8px; height: 8px;
+          border-radius: 50%;
+          border: 1px solid rgba(147,197,253,0.2);
+          pointer-events: none;
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(0);
+          z-index: 2;
+        }
+
+        /* hover 时触发三层波纹扩散动画 */
+        @keyframes ripple-expand-1 {
+          0%   { width: 20px; height: 20px; opacity: 1; }
+          100% { width: 450px; height: 450px; opacity: 0; }
+        }
+        @keyframes ripple-expand-2 {
+          0%   { width: 10px; height: 10px; opacity: 0.9; }
+          100% { width: 380px; height: 380px; opacity: 0; }
+        }
+        @keyframes ripple-expand-3 {
+          0%   { width: 8px; height: 8px; opacity: 0.6; }
+          100% { width: 500px; height: 500px; opacity: 0; }
+        }
+
+        .water-ripple:hover::before {
+          animation: ripple-expand-1 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+        .water-ripple:hover::after {
+          animation: ripple-expand-2 1.1s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.08s forwards;
+        }
+        .water-ripple:hover .ripple-wave3 {
+          animation: ripple-expand-3 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.16s forwards;
+        }
+
+
+        /* ============================================
+           产品卡片 — 玻璃水面卡片
+           ============================================ */
+        .glass-card {
+          background: linear-gradient(
+            145deg,
+            rgba(255,255,255,0.78) 0%,
+            rgba(245,250,255,0.62) 50%,
+            rgba(235,245,255,0.55) 100%
+          );
+          backdrop-filter: blur(18px) saturate(1.5);
+          -webkit-backdrop-filter: blur(18px) saturate(1.5);
+          border: 1px solid rgba(255,255,255,0.65);
+          border-top-color: rgba(255,255,255,0.85);
+          border-left-color: rgba(255,255,255,0.75);
+          box-shadow:
+            0 4px 24px rgba(30,64,175,0.07),
+            0 1px 4px rgba(148,163,184,0.05),
+            0 0 0 1px rgba(200,220,255,0.1),
+            inset 0 1px 0 rgba(255,255,255,0.9),
+            inset 0 -1px 0 rgba(180,210,255,0.12);
+          transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .glass-card:hover {
+          background: linear-gradient(
+            145deg,
+            rgba(255,255,255,0.88) 0%,
+            rgba(248,252,255,0.78) 50%,
+            rgba(238,245,255,0.70) 100%
+          );
+          border-color: rgba(147,197,253,0.45);
+          box-shadow:
+            0 16px 48px rgba(37,99,235,0.14),
+            0 4px 16px rgba(148,163,184,0.08),
+            0 0 0 1px rgba(147,197,253,0.2),
+            inset 0 1px 0 rgba(255,255,255,1),
+            inset 0 -1px 0 rgba(180,215,255,0.2);
+          transform: translateY(-6px) scale(1.01);
+        }
+
+        /* 卡片顶部光泽线 — 增强玻璃感 */
+        .glass-card::before {
+          content: '';
+          position: absolute;
+          top: 0; left: 10%; right: 10%; height: 1px;
+          background: linear-gradient(90deg,
+            transparent, rgba(255,255,255,0.9), transparent);
+          border-radius: 999px;
+          z-index: 5;
+        }
+
+        /* 卡片内光斑 — 随鼠标移动的透光效果 */
+        .glass-card .card-glow-spot {
+          position: absolute;
+          width: 200px; height: 200px;
+          border-radius: 50%;
+          background: radial-gradient(circle,
+            rgba(147,197,253,0.12) 0%,
+            transparent 70%
+          );
+          filter: blur(20px);
+          pointer-events: none;
+          opacity: 0;
+          transition: opacity 0.3s ease;
+          z-index: 1;
+        }
+        .glass-card:hover .card-glow-spot {
           opacity: 1;
         }
 
-        /* Secondary ripple ring — delayed for wave effect */
-        .ripple-card .ripple-ring {
-          position: absolute;
-          border-radius: 50%;
-          width: 200px !important;
-          height: 200px !important;
-          border: 2px solid rgba(59,130,246,0.15);
-          transform: translate(-50%, -50%) scale(0);
-          opacity: 0;
-          pointer-events: none;
-          z-index: 1;
-          transition: transform 0.7s ease-out 0.15s, opacity 0.5s ease-out 0.15s;
+
+        /* ============================================
+           筛选面板 — 玻璃面板
+           ============================================ */
+        .glass-panel {
+          background: linear-gradient(
+            160deg,
+            rgba(255,255,255,0.68) 0%,
+            rgba(248,252,255,0.55) 50%,
+            rgba(235,245,255,0.42) 100%
+          );
+          backdrop-filter: blur(14px) saturate(1.3);
+          -webkit-backdrop-filter: blur(14px) saturate(1.3);
+          border: 1px solid rgba(255,255,255,0.55);
+          box-shadow:
+            0 4px 20px rgba(37,99,235,0.05),
+            inset 0 1px 0 rgba(255,255,255,0.6),
+            inset 0 -1px 0 rgba(190,215,255,0.1);
         }
-        .ripple-card:hover .ripple-ring {
-          transform: translate(-50%, -50%) scale(2.5);
-          opacity: 1;
+
+
+        /* ============================================
+           按钮 — 玻璃按钮
+           ============================================ */
+        .glass-btn {
+          background: linear-gradient(
+            135deg,
+            rgba(255,255,255,0.7) 0%,
+            rgba(248,252,255,0.5) 100%
+          );
+          backdrop-filter: blur(10px) saturate(1.3);
+          -webkit-backdrop-filter: blur(10px) saturate(1.3);
+          border: 1px solid rgba(255,255,255,0.5);
+          box-shadow:
+            0 2px 8px rgba(148,163,184,0.06),
+            inset 0 1px 0 rgba(255,255,255,0.7);
+          transition: all 0.3s ease;
+        }
+
+        .glass-btn:hover {
+          background: linear-gradient(
+            135deg,
+            rgba(255,255,255,0.88) 0%,
+            rgba(240,248,255,0.7) 100%
+          );
+          border-color: rgba(147,197,253,0.35);
+          box-shadow:
+            0 4px 16px rgba(37,99,235,0.1),
+            inset 0 1px 0 rgba(255,255,255,0.9);
+        }
+
+
+        /* ============================================
+           搜索框 — 玻璃输入框
+           ============================================ */
+        .glass-input {
+          background: linear-gradient(
+            135deg,
+            rgba(255,255,255,0.65) 0%,
+            rgba(248,252,255,0.48) 100%
+          );
+          backdrop-filter: blur(12px) saturate(1.3);
+          -webkit-backdrop-filter: blur(12px) saturate(1.3);
+          border: 1px solid rgba(200,215,230,0.4);
+          box-shadow:
+            inset 0 1px 3px rgba(148,163,184,0.08),
+            0 1px 0 rgba(255,255,255,0.6);
+          transition: all 0.3s ease;
+        }
+
+        .glass-input:focus-within,
+        .glass-input:focus {
+          border-color: rgba(96,165,250,0.5);
+          box-shadow:
+            inset 0 1px 3px rgba(148,163,184,0.06),
+            0 0 0 3px rgba(59,130,246,0.08),
+            0 1px 0 rgba(255,255,255,0.6);
+          background: linear-gradient(
+            135deg,
+            rgba(255,255,255,0.82) 0%,
+            rgba(248,252,255,0.62) 100%
+          );
         }
       `}</style>
     </div>
