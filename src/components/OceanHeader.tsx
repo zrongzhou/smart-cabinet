@@ -4,21 +4,19 @@ import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 
 // ============================================================
-// OceanHeader v200 — WebGL Shader 流体极光 (Fluid Aurora)
+// OceanHeader v201 — WebGL Shader 流体极光 (Fluid Aurora) 颜色精修
 //
-// 彻底换方向：放弃 Canvas 2D，改用 WebGL + GLSL Fragment Shader
+// v200 问题诊断（用户截图确认）：
+//   ❌ 色相范围 0.54~0.67 (195°~240°) — 低端 195° 偏青绿 = 整体发绿
+//   ❌ 亮度下限 0.28 — 深色区域太暗 = "污渍"感
+//   ❌ grain 颗粒 + 暗角过强 = 更脏
 //
-// 为什么 WebGL 能做到 Canvas 2D 做不到的：
-//   ✅ 逐像素计算（GPU并行），可以做多层嵌套噪声
-//   ✅ Domain Warping（域扭曲）：噪声驱动噪声 = 真正的液体流动
-//   ✅ 每帧全屏重绘 60fps 无压力
-//   ✅ 颜色插值/混合在像素级别，不是模糊色斑叠加
-//
-// 技术方案：
-//   - 原生 WebGL（无 Three.js 依赖）
-//   - Vertex Shader: 全屏四边形（pass-through）
-//   - Fragment Shader: Simplex Noise + Domain Warping + 色彩映射
-//   - 色域锁定：天青(195°) → 蓝(215°) → 靛(238°)
+// v201 颜色修复：
+//   ✅ 色相收窄到 0.57~0.69 (205°~248°) — 纯天青→蓝→靛，去掉青绿
+//   ✅ 亮度提到底 0.42~0.70 — 不再有深色污渍
+//   ✅ 去掉 grain 颗粒 — 干净高级感
+//   ✅ 高光改为宝石蓝 — 更协调
+//   ✅ 暗角减弱 — 保持整体明亮
 // ============================================================
 
 interface OceanHeaderProps {
@@ -96,14 +94,13 @@ export default function OceanHeader({ title, subtitle, description, icon, childr
 }
 
 // ============================================================
-// WebGLFluidAurora — WebGL + GLSL Fragment Shader 流体极光
+// WebGLFluidAurora — WebGL + GLSL Fragment Shader 流体极光 (v201颜色精修)
 //
-// 核心技术：
-//   1. Simplex Noise (GLSL内联实现)
-//   2. Domain Warping（域扭曲）= 真正液体流动
-//   3. Fractal Brownian Motion (FbM) 多层叠加
-//   4. HSL→RGB 色彩映射（天青蓝靛色域）
-//   5. 时间驱动的动态动画
+// 核心技术不变（v200已验证有效）：
+//   1. Simplex Noise (GLSL内联)
+//   2. Domain Warping（域扭曲）= 真正液体流动 ✅ 用户确认！
+//   3. FBM 多层叠加
+//   4. HSL→RGB 色彩映射（v201重调参数）
 // ============================================================
 function WebGLFluidAurora() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -124,11 +121,11 @@ function WebGLFluidAurora() {
       'varying vec2 v_uv;',
       'void main() {',
       '  gl_Position = vec4(a_position, 0.0, 1.0);',
-      '  v_uv = a_position * 0.5 + 0.5;', // [-1,1] → [0,1]
+      '  v_uv = a_position * 0.5 + 0.5;',
       '}'
     ].join('\n');
 
-    // ── Fragment Shader：流体极光核心 ──
+    // ── Fragment Shader：流体极光 v201 颜色精修版 ──
     const fsSource = [
       'precision mediump float;',
       'varying vec2 v_uv;',
@@ -137,7 +134,6 @@ function WebGLFluidAurora() {
       'uniform vec2 u_aspect;',
 
       // ── Simplex 2D Noise ──
-      // Stefan Gustavson 的经典实现（精简版）
       'vec3 permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }',
 
       'float snoise(vec2 v) {',
@@ -167,7 +163,7 @@ function WebGLFluidAurora() {
       '  return 130.0 * dot(m, g);',
       '}',
 
-      // ── FBM (Fractal Brownian Motion)：多层噪声叠加 ──
+      // ── FBM ──
       'float fbm(vec2 p) {',
       '  float f = 0.0;',
       '  float w = 0.5;',
@@ -180,21 +176,23 @@ function WebGLFluidAurora() {
       '  return f;',
       '}',
 
-      // ── HSL → RGB 转换 ──
+      // ── HSL → RGB ──
       'vec3 hsl2rgb(float h, float s, float l) {',
       '  vec3 rgb = clamp(abs(mod(h*6.0+vec3(0.0,4.0,2.0),6.0)-3.0)-1.0, 0.0, 1.0);',
       '  return l + s * (rgb - 0.5) * (1.0 - abs(2.0 * l - 1.0));',
       '}',
 
-      // ── 主渲染逻辑 ──
+      // ══════════════════════════════════════════════
+      // 主渲染逻辑 —— v201 颜色精修
+      // ══════════════════════════════════════════════
       'void main() {',
       '  vec2 uv = v_uv;',
-      '  float t = u_time * 0.15;', // 整体速度控制
+      '  float t = u_time * 0.15;',
 
       // 修正宽高比
       '  uv.x *= u_aspect.x / u_aspect.y;',
 
-      // ── Domain Warping（核心！噪声扭曲坐标）──
+      // ── Domain Warping（核心！保持v200的流动算法不变）──
       '  vec2 q = vec2(',
       '    fbm(uv + vec2(0.0, 0.0) + t * 0.3),',
       '    fbm(uv + vec2(5.2, 1.3) + t * 0.2)',
@@ -205,43 +203,49 @@ function WebGLFluidAurora() {
       '    fbm(uv + q * 1.2 + vec2(8.3, 2.8) + t * 0.12)',
       '  );',
 
-      // ── 最终噪声值 ──
       '  float f = fbm(uv + r * 1.7);',
 
-      // ── 色彩映射（天青蓝靛色域）──
-      // 用 f 和 r 分量来混合颜色
-      '  float hueMix = f * 0.55 + r.x * 0.25 + r.y * 0.20;',
+      // ══════════════════════════════════════════════
+      // ★★★ v201 颜色映射修改区域 ★★★
+      // ══════════════════════════════════════════════
+
+      // 色相混合权重
+      '  float hueMix = f * 0.50 + r.x * 0.30 + r.y * 0.20;',
       '  hueMix = clamp(hueMix, 0.0, 1.0);',
 
-      // 色相范围：天青(195°) ~ 靛(240°) = HSL 0.54~0.67
-      '  float hue = mix(0.54, 0.67, hueMix);',
-      '  hue += sin(t * 0.3 + f * 2.0) * 0.03;', // 微妙色相漂移 ±3%
+      // 【修改1】色相范围：0.57~0.69 (205°~248°)
+      // v200 是 0.54~0.67 (195°~240°) — 低端偏青绿
+      // 现在收窄到纯正天青蓝→宝石蓝→靛蓝，不再有绿色
+      '  float hue = mix(0.57, 0.69, hueMix);',
+      '  hue += sin(t * 0.25 + f * 1.5) * 0.02;', // 色相漂移缩小到 ±2%
 
-      // 饱和度：流动区域更饱和
-      '  float sat = mix(0.52, 0.78, smoothstep(-0.3, 0.5, f));',
+      // 【修改2】饱和度：微降，更高级不艳俗
+      // v200: 0.52~0.78 → v201: 0.48~0.72
+      '  float sat = mix(0.48, 0.72, smoothstep(-0.2, 0.5, f));',
 
-      // 亮度：核心区域亮，边缘暗（但整体偏亮！）
-      '  float brightness = mix(0.38, 0.65, smoothstep(-0.5, 0.6, f));',
-      '  brightness += r.x * 0.08;', // 扭曲增加高光
-      '  brightness = clamp(brightness, 0.28, 0.72);',
+      // 【修改3】亮度：大幅提亮！去掉深色污渍
+      // v200: 0.38~0.65, 下限0.28 → v201: 0.45~0.70, 下限0.42
+      '  float brightness = mix(0.45, 0.70, smoothstep(-0.4, 0.55, f));',
+      '  brightness += r.x * 0.06;', // 高光点缀（降低强度）
+      '  brightness = clamp(brightness, 0.42, 0.72);', // 下限从0.28提到0.42！
 
       '  vec3 col = hsl2rgb(hue, sat, brightness);',
 
-      // ── 高光点缀（最亮的"光斑"）──
-      '  float highlight = smoothstep(0.45, 0.75, f) * smoothstep(0.75, 0.45, f);',
-      '  highlight *= smoothstep(0.3, 0.7, r.x);',
-      '  vec3 highlightCol = hsl2rgb(0.53, 0.65, 0.78);', // 天青高光
-      '  col = mix(col, highlightCol, highlight * 0.45);',
+      // 【修改4】高光：用宝石蓝(0.61=220°)而不是天青(0.53=191°)
+      // 天青偏绿，宝石蓝更纯净协调
+      '  float highlight = smoothstep(0.42, 0.72, f) * smoothstep(0.72, 0.42, f);',
+      '  highlight *= smoothstep(0.35, 0.70, r.x);',
+      '  vec3 highlightCol = hsl2rgb(0.61, 0.62, 0.80);', // 宝石蓝高光
+      '  col = mix(col, highlightCol, highlight * 0.38);',
 
-      // ── 暗角效果（聚焦视觉中心）──
+      // 【修改5】暗角：减弱，保持整体明亮
+      // v200: 0.65+0.35*vignette → v201: 0.78+0.22*vignette
       '  vec2 centerUV = v_uv - 0.5;',
-      '  float vignette = 1.0 - dot(centerUV, centerUV) * 0.5;',
-      '  vignette = smoothstep(0.3, 0.9, vignette);',
-      '  col *= 0.65 + vignette * 0.35;',
+      '  float vignette = 1.0 - dot(centerUV, centerUV) * 0.4;',
+      '  vignette = smoothstep(0.25, 0.85, vignette);',
+      '  col *= 0.78 + vignette * 0.22;',
 
-      // ── 细微颗粒感（增加质感，避免太"塑料"）──
-      '  float grain = snoise(uv * 200.0 + t * 50.0) * 0.015;',
-      '  col += grain;',
+      // 【修改6】删除 grain 颗粒！v200 的颗粒增加脏感
 
       '  gl_FragColor = vec4(col, 1.0);',
       '}'
