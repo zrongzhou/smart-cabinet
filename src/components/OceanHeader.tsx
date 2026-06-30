@@ -4,202 +4,256 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
 // ============================================================
-// SkyHeader — 深蓝天空 白云飘动 阳光明媚
-// v168: 云彩真正从左到右飘过 + 更明显的动画
+// OceanHeader v169 — 商务专业蓝 · 适度动效版
+// 设计理念：
+//   - 深蓝渐变配合网站主色调(blue-600/700)
+//   - 几何网格 + 光线流动 = 科技制造感
+//   - 无卡通元素、无具象图案
+//   - 动画克制但可见（光点漂浮 + 光线扫描 + 内容淡入）
 // ============================================================
 
-const SKY_GRADIENT = `linear-gradient(180deg,
-  #1e3a8a 0%,
-  #1e40af 10%,
-  #1d4ed8 22%,
-  #2563eb 35%,
-  #3b82f6 50%,
-  #60a5fa 65%,
-  #93c5fd 80%,
-  #bfdbfe 92%,
-  #e0f2fe 100%)`;
+// ===== 主渐变 — 深邃专业蓝 =====
+const HEADER_GRADIENT = `linear-gradient(180deg,
+  #0f172a 0%,
+  #1e3a5f 15%,
+  #1e40af 35%,
+  #2563eb 55%,
+  #3b82f6 72%,
+  #60a5fa 85%,
+  #93c5fd 95%,
+  #dbeafe 100%)`;
 
-function Clouds() {
-  const [clouds, setClouds] = useState<Array<{
-    id: number; top: string; size: number; speed: number; delay: number; opacity: number;
+// ===== 配色常量 =====
+const ACCENT_BLUE = 'rgba(96,165,250,0.35)';    // 浮点颜色
+const LIGHT_RAY = 'rgba(147,197,253,0.12)';      // 扫描光线
+const GRID_COLOR = 'rgba(148,163,184,0.06)';     // 网格线
+
+interface OceanHeaderProps {
+  title: string;
+  description?: string;
+  locale?: string;
+}
+
+export default function OceanHeader({ title, description }: OceanHeaderProps) {
+  return (
+    <section
+      className="relative text-white py-20 px-4 sm:px-6 lg:px-8 overflow-hidden"
+      style={{
+        minHeight: '320px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: HEADER_GRADIENT,
+      }}
+    >
+      {/* Layer 1: 几何网格背景 — 营造科技/制造感 */}
+      <GridBackground />
+
+      {/* Layer 2: 缓慢移动的光线束 */}
+      <LightRays />
+
+      {/* Layer 3: 漂浮光点 — 增加层次和生命感 */}
+      <FloatingDots />
+
+      {/* Layer 4: 底部高光过渡 — 平滑融入页面内容 */}
+      <BottomGlow />
+
+      {/* Layer 5: 文字内容 — 带入场动画 */}
+      <motion.div
+        className="relative z-10 text-center max-w-3xl mx-auto"
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
+      >
+        {title && (
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight mb-4"
+            style={{ textShadow: '0 2px 16px rgba(0,0,0,0.15)' }}
+          >
+            {title}
+          </h1>
+        )}
+        {description && (
+          <p className="text-base sm:text-lg text-blue-100/85 max-w-2xl mx-auto leading-relaxed"
+            style={{ textShadow: '0 1px 8px rgba(0,0,0,0.1)' }}
+          >
+            {description}
+          </p>
+        )}
+      </motion.div>
+
+      {/* 全局 CSS 动画定义 */}
+      <style>{keyframeStyles}</style>
+    </section>
+  );
+}
+
+// ============================================================
+// Layer 1: 几何网格 — 点阵 + 斜线，非常淡，营造精密制造氛围
+// ============================================================
+function GridBackground() {
+  return (
+    <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+      {/* SVG 点阵网格 */}
+      <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" className="absolute inset-0">
+        <defs>
+          <pattern id="dot-grid" x="0" y="0" width="36" height="36" patternUnits="userSpaceOnUse">
+            <circle cx="2" cy="2" r="1.2" fill={GRID_COLOR} />
+          </pattern>
+          <pattern id="line-grid" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse">
+            <path d="M80 0L0 80M0 0L80 80" stroke={GRID_COLOR} strokeWidth="0.5" fill="none" />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#dot-grid)" opacity="0.6" />
+        <rect width="100%" height="100%" fill="url(#line-grid)" opacity="0.4" />
+      </svg>
+
+      {/* 左侧大面积柔和光晕 — 增加深度 */}
+      <div
+        className="absolute -top-[20%] -left-[15%] w-[550px] h-[400px] rounded-full"
+        style={{
+          background: 'radial-gradient(circle, rgba(59,130,246,0.18) 0%, transparent 70%)',
+          filter: 'blur(70px)',
+        }}
+      />
+
+      {/* 右下角微弱对比色光晕 */}
+      <div
+        className="absolute -bottom-[10%] -right-[10%] w-[450px] h-[320px] rounded-full"
+        style={{
+          background: 'radial-gradient(circle, rgba(99,102,241,0.10) 0%, transparent 70%)',
+          filter: 'blur(60px)',
+        }}
+      />
+    </div>
+  );
+}
+
+// ============================================================
+// Layer 2: 光线束 — 从右上到左下的缓慢扫描光线
+// ============================================================
+function LightRays() {
+  const [rays, setRays] = useState<Array<{
+    id: number; top: string; width: string; angle: number;
+    duration: number; delay: number; opacity: number;
   }>>([]);
 
   useEffect(() => {
-    setClouds([
-      { id: 0, top: '8%', size: 160, speed: 35, delay: 0, opacity: 0.95 },
-      { id: 1, top: '18%', size: 200, speed: 48, delay: -12, opacity: 0.85 },
-      { id: 2, top: '28%', size: 120, speed: 28, delay: -6, opacity: 0.7 },
-      { id: 3, top: '38%', size: 140, speed: 42, delay: -20, opacity: 0.6 },
-      { id: 4, top: '14%', size: 180, speed: 55, delay: -30, opacity: 0.75 },
-      { id: 5, top: '44%', size: 100, speed: 32, delay: -15, opacity: 0.5 },
+    setRays([
+      { id: 0, top: '-8%', width: '280px', angle: -28, duration: 14, delay: 0, opacity: 0.08 },
+      { id: 1, top: '12%', width: '200px', angle: -22, duration: 18, delay: 4, opacity: 0.06 },
+      { id: 2, top: '35%', width: '320px', angle: -32, duration: 22, delay: 9, opacity: 0.05 },
     ]);
   }, []);
 
-  if (clouds.length === 0) return null;
+  if (rays.length === 0) return null;
 
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-      {clouds.map(c => (
-        <div key={c.id} style={{
-          position: 'absolute',
-          top: c.top,
-          left: '-220px',
-          width: `${c.size * 1.6}px`,
-          height: `${c.size * 0.7}px`,
-          opacity: c.opacity,
-          animation: `cloud-fly ${c.speed}s linear infinite`,
-          animationDelay: `${c.delay}s`,
-        }}>
-          {/* Fluffy cloud SVG */}
-          <svg width="100%" height="100%" viewBox="0 0 200 90" preserveAspectRatio="xMidYMid meet">
-            <defs>
-              <linearGradient id={`cg${c.id}`} x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="#ffffff" stopOpacity="1" />
-                <stop offset="100%" stopColor="#e8f4fc" stopOpacity="0.92" />
-              </linearGradient>
-            </defs>
-            <ellipse cx="55" cy="55" rx="48" ry="28" fill={`url(#cg${c.id})`} />
-            <ellipse cx="105" cy="44" rx="56" ry="34" fill={`url(#cg${c.id})`} />
-            <ellipse cx="148" cy="52" rx="42" ry="26" fill={`url(#cg${c.id})`} />
-            <ellipse cx="82" cy="36" rx="38" ry="24" fill={`url(#cg${c.id})`} />
-            <ellipse cx="125" cy="33" rx="32" ry="20" fill={`url(#cg${c.id})`} />
-          </svg>
+      {rays.map((r) => (
+        <div key={r.id} style={{ position: 'absolute', top: r.top, right: '-15%' }}>
+          <div
+            style={{
+              width: r.width,
+              height: '500px',
+              background: `linear-gradient(${r.angle}deg,
+                transparent 0%,
+                ${LIGHT_RAY} 30%,
+                ${LIGHT_RAY} 55%,
+                transparent 100%)`,
+              transformOrigin: 'top right',
+              animation: `ray-sweep ${r.duration}s ease-in-out infinite`,
+              animationDelay: `${r.delay}s`,
+              opacity: r.opacity,
+            }}
+          />
         </div>
       ))}
     </div>
   );
 }
 
-function SunGlow() {
+// ============================================================
+// Layer 3: 漂浮光点 — 不同大小/速度/透明度，自然随机分布
+// ============================================================
+function FloatingDots() {
+  const [dots, setDots] = useState<Array<{
+    id: number; x: number; y: number; size: number;
+    duration: number; delay: number; opacity: number;
+  }>>([]);
+
+  useEffect(() => {
+    setDots(Array.from({ length: 24 }, (_, i) => ({
+      id: i,
+      x: 4 + Math.random() * 92,
+      y: 4 + Math.random() * 88,
+      size: 2 + Math.random() * 4,
+      duration: 10 + Math.random() * 14,
+      delay: Math.random() * 10,
+      opacity: 0.15 + Math.random() * 0.45,
+    })));
+  }, []);
+
+  if (dots.length === 0) return null;
+
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-      {/* Sun */}
-      <div className="absolute" style={{
-        right: '10%',
-        top: '-3%',
-        width: '170px',
-        height: '170px',
-        background: 'radial-gradient(circle, rgba(255,248,200,0.95) 0%, rgba(255,235,160,0.5) 25%, rgba(255,220,120,0.15) 45%, transparent 70%)',
-        borderRadius: '50%',
-        filter: 'blur(8px)',
-        animation: 'sun-pulse 5s ease-in-out infinite',
-      }} />
-      {/* Light rays */}
-      <div className="absolute inset-0" style={{
-        background: `
-          linear-gradient(135deg, transparent 40%, rgba(255,250,220,0.08) 45%, transparent 50%),
-          linear-gradient(160deg, transparent 45%, rgba(255,248,200,0.05) 50%, transparent 55%),
-          linear-gradient(110deg, transparent 50%, rgba(255,245,210,0.06) 55%, transparent 60%)
-        `,
-        animation: 'rays-shift 7s ease-in-out infinite alternate',
-      }} />
+      {dots.map(d => (
+        <div
+          key={d.id}
+          className="rounded-full"
+          style={{
+            position: 'absolute',
+            left: `${d.x}%`,
+            top: `${d.y}%`,
+            width: d.size,
+            height: d.size,
+            background: `radial-gradient(circle, ${ACCENT_BLUE}, transparent)`,
+            boxShadow: `0 0 ${d.size * 3}px ${ACCENT_BLUR}`,
+            animation: `dot-float-up ${d.duration}s ease-in-out infinite`,
+            animationDelay: `${d.delay}s`,
+            opacity: d.opacity,
+          }}
+        />
+      ))}
     </div>
   );
 }
 
-function BottomFade() {
+const ACCENT_BLUR = 'rgba(96,165,250,0.08)';
+
+// ============================================================
+// Layer 4: 底部高光过渡 — 渐变淡出融入下方白色内容区
+// ============================================================
+function BottomGlow() {
   return (
     <div
-      className="absolute bottom-0 left-0 right-0 h-[50px] pointer-events-none"
+      className="absolute bottom-0 left-0 right-0 pointer-events-none"
       aria-hidden="true"
       style={{
-        background: 'linear-gradient(180deg, rgba(232,245,254,0) 0%, rgba(240,249,255,0.3) 50%, #ffffff 100%)',
+        height: '120px',
+        background: 'linear-gradient(to top, rgba(219,234,254,0.95), transparent)',
       }}
     />
   );
 }
 
-export default function SkyHeader({
-  title,
-  subtitle,
-  icon,
-  children,
-}: {
-  title: string;
-  subtitle?: string;
-  icon?: React.ReactNode;
-  children?: React.ReactNode;
-}) {
-  return (
-    <section
-      className="relative text-gray-800 py-20 px-4 sm:px-6 lg:px-8 overflow-hidden"
-      style={{
-        minHeight: '320px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: SKY_GRADIENT,
-      }}
-    >
-      <SunGlow />
-      <Clouds />
-      <BottomFade />
+// ============================================================
+// Keyframes — 所有动画定义
+// ============================================================
+const keyframeStyles = `
+  /* 光线扫描 — 从右上缓慢滑过 */
+  @keyframes ray-sweep {
+    0% { transform: translateX(0) scaleX(0.6); opacity: 0; }
+    25% { opacity: 1; transform: translateX(-40vw) scaleX(1); }
+    75% { transform: translateX(-90vw) scaleX(1); opacity: 0.8; }
+    100% { transform: translateX(-140vw) scaleX(0.4); opacity: 0; }
+  }
 
-      {/* === CONTENT === */}
-      <div className="relative z-10 max-w-5xl mx-auto text-center">
-        {icon && (
-          <motion.div
-            initial={{ scale: 0, rotate: -180 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{ type: 'spring', stiffness: 150, damping: 12, delay: 0.2 }}
-            className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-5 mx-auto shadow-lg"
-            style={{
-              background: 'rgba(255,255,255,0.55)',
-              border: '1px solid rgba(255,255,255,0.7)',
-              backdropFilter: 'blur(8px)',
-              boxShadow: '0 8px 32px rgba(96,165,250,0.2), 0 2px 8px rgba(96,165,250,0.1)',
-            }}
-          >
-            {icon}
-          </motion.div>
-        )}
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-          className="text-4xl sm:text-5xl font-bold mb-4 text-gray-800"
-          style={{ textShadow: '0 2px 12px rgba(255,255,255,0.8)' }}
-        >
-          {title}
-        </motion.h1>
-        {subtitle && (
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.15 }}
-            className="text-xl text-gray-600/90"
-            style={{ textShadow: '0 1px 6px rgba(255,255,255,0.6)' }}
-          >
-            {subtitle}
-          </motion.p>
-        )}
-        {children}
-      </div>
-
-      <style>{`
-        @media (prefers-reduced-motion: reduce) {
-          section * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
-        }
-
-        /* Cloud flies from left to right across the entire screen */
-        @keyframes cloud-fly {
-          0% { transform: translateX(0) translateY(0); }
-          25% { transform: translateX(30vw) translateY(-8px); }
-          50% { transform: translateX(60vw) translateY(5px); }
-          75% { transform: translateX(90vw) translateY(-4px); }
-          100% { transform: translateX(120vw) translateY(0); }
-        }
-
-        @keyframes sun-pulse {
-          0%, 100% { transform: scale(1); opacity: 1; }
-          50% { transform: scale(1.08); opacity: 0.88; }
-        }
-
-        @keyframes rays-shift {
-          0% { opacity: 0.6; }
-          100% { opacity: 1; }
-        }
-      `}</style>
-    </section>
-  );
-}
+  /* 光点漂浮 — 缓慢上升 + 轻微横向漂移 */
+  @keyframes dot-float-up {
+    0% { transform: translate(0, 0); opacity: var(--start-opacity, 0.3); }
+    30% { transform: translate(12px, -25px); opacity: calc(var(--start-opacity, 0.3) * 1.2); }
+    60% { transform: translate(-8px, -50px); opacity: var(--start-opacity, 0.3); }
+    100% { transform: translate(6px, -80px); opacity: 0; }
+  }
+`;
