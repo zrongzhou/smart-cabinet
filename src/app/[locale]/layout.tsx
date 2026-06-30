@@ -77,7 +77,7 @@ export default function LocaleLayout({ children, params: { locale } }: LocaleLay
             '@type': 'ContactPoint',
             telephone: '+86-156-2216-0659',
             contactType: 'sales',
-            email: 'sabrina@wstoolcabinet.com',
+            email: 'sabina@wstoolcabinet.com',
           },
         }} />
 

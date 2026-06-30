@@ -34,7 +34,7 @@ export default function ContactPage() {
   const rawWhatsAppNumbers = settings?.contactWhatsAppNumbers || (settings?.contactWhatsApp ? [settings.contactWhatsApp] : []);
   const displayEmails = (rawEmails && Array.isArray(rawEmails) && rawEmails.length > 0)
     ? rawEmails.filter(e => e && e.trim())
-    : (settings?.contactEmail ? [settings.contactEmail] : ['sabrina@wstoolcabinet.com']);
+    : (settings?.contactEmail ? [settings.contactEmail] : ['sabina@wstoolcabinet.com']);
   const displayPhones = (rawPhones && Array.isArray(rawPhones) && rawPhones.length > 0)
     ? rawPhones.filter(p => p && p.trim())
     : (settings?.contactPhone ? [settings.contactPhone] : ['+86 156 2216 0659']);

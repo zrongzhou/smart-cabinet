@@ -621,7 +621,7 @@ const DEFAULT_SETTINGS: SiteSettings = {
   companyNameAr: 'قوانغتشو تشيويان لتكنولوجيا المحدودة',
   logo: '',
   favicon: '',
-  contactEmail: 'sabrina@wstoolcabinet.com',
+  contactEmail: 'sabina@wstoolcabinet.com',
   contactPhone: '+86 156 2216 0659',
   contactWhatsApp: '+86 156 2216 0659',
   address: 'Panyu District, Guangzhou, Guangdong Province, China',

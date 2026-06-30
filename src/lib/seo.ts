@@ -206,7 +206,7 @@ export function jsonLdOrganization() {
       '@type': 'ContactPoint',
       telephone: '+86-156-2216-0659',
       contactType: 'sales',
-      email: 'sabrina@wstoolcabinet.com',
+      email: 'sabina@wstoolcabinet.com',
       availableLanguage: ['English', 'Chinese', 'Arabic'],
     },
     address: {
@@ -350,7 +350,7 @@ export function jsonLdLocalBusiness() {
     ...(baseUrl && { url: baseUrl }),
     ...(baseUrl && { logo: `${baseUrl}/images/about/company-logo.png` }),
     telephone: '+86-156-2216-0659',
-    email: 'sabrina@wstoolcabinet.com',
+    email: 'sabina@wstoolcabinet.com',
     address: {
       '@type': 'PostalAddress',
       streetAddress: 'No.131 Jinlong Road, Dalong Street',

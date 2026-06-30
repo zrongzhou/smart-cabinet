@@ -72,7 +72,7 @@ export default function CtaSection() {
     loadSettings();
   }, []);
 
-  const contactEmail = settings?.contactEmail || 'sabrina@wstoolcabinet.com';
+  const contactEmail = settings?.contactEmail || 'sabina@wstoolcabinet.com';
   const contactPhone = settings?.contactPhone || '+86 156 2216 0659';
 
   return (

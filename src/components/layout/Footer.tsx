@@ -79,7 +79,7 @@ export default function Footer() {
   // Support multi-value contact info (arrays from admin settings)
   const displayEmails = (settings?.contactEmails && Array.isArray(settings.contactEmails) && settings.contactEmails.length > 0)
     ? settings.contactEmails.filter(e => e && e.trim())
-    : (settings?.contactEmail ? [settings.contactEmail] : ['sabrina@wstoolcabinet.com']);
+    : (settings?.contactEmail ? [settings.contactEmail] : ['sabina@wstoolcabinet.com']);
   const displayPhones = (settings?.contactPhones && Array.isArray(settings.contactPhones) && settings.contactPhones.length > 0)
     ? settings.contactPhones.filter(p => p && p.trim())
     : (settings?.contactPhone ? [settings.contactPhone] : ['+86 156 2216 0659']);

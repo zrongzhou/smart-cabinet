@@ -82,6 +82,8 @@ export interface SiteSettings {
   socialWeibo: string;
   footerCopyright: string;
   footerLinks: string;
+  wechatWebhookUrl: string;
+  wechatNotificationEnabled: boolean;
 }
 
 export interface Tag {
@@ -161,10 +163,10 @@ const DEFAULT_SETTINGS: SiteSettings = {
   companyNameAr: 'قوانغتشو تشيويان لتكنولوجيا المحدودة',
   logo: '',
   favicon: '',
-  contactEmail: 'sabrina@wstoolcabinet.com',
+  contactEmail: 'sabina@wstoolcabinet.com',
   contactPhone: '+86 156 2216 0659',
   contactWhatsApp: '+86 156 2216 0659',
-  contactEmails: ['sabrina@wstoolcabinet.com'],
+  contactEmails: ['sabina@wstoolcabinet.com'],
   contactPhones: ['+86 156 2216 0659'],
   contactWhatsAppNumbers: ['+86 156 2216 0659'],
   address: 'Panyu District, Guangzhou, Guangdong Province, China',
@@ -183,6 +185,8 @@ const DEFAULT_SETTINGS: SiteSettings = {
   socialWeibo: '',
   footerCopyright: '\u00A9 2024 Guangzhou Qiuyan Technology Co., Ltd. All rights reserved.',
   footerLinks: '[{"label":"Privacy Policy","url":"/privacy"},{"label":"Terms of Service","url":"/terms"}]',
+  wechatWebhookUrl: '',
+  wechatNotificationEnabled: false,
 };
 
 // ============================================================

@@ -382,6 +382,6 @@
   "notifications.help2": "2. 点击群设置 → 群机器人 → 添加机器人",
   "notifications.help3": "3. 设置机器人名称和头像，复制 Webhook 地址",
   "notifications.help4": "4. 将 Webhook 地址粘贴到上方输入框",
-  "notifications.help5": "5. 点击"测试发送"验证配置是否正确",
+  "notifications.help5": "5. 点击\"测试发送\"验证配置是否正确",
   "notifications.help6": "6. 保存设置后，有新联系消息时会自动发送通知到群"
 }

@@ -141,7 +141,7 @@ const DEFAULT_BLOCKS: Record<string, ContentBlock[]> = {
     { id: 'faq-header-1', type: 'text', title: { zh: 'FAQ 标题', en: 'FAQ Header', ar: 'رأس الأسئلة الشائعة' }, content: { titleZh: '常见问题解答', titleEn: 'Frequently Asked Questions', titleAr: '' }, images: [], order: 0, status: 'active' },
   ],
   contact: [
-    { id: 'contact-info-1', type: 'text', title: { zh: '联系信息', en: 'Contact Info', ar: 'معلومات الاتصال' }, content: { addressZh: '中国广东省广州市番禺区', addressEn: 'Panyu District, Guangzhou, China', email: 'sabrina@wstoolcabinet.com', phone: '+86 156 2216 0659' }, images: [], order: 0, status: 'active' },
+    { id: 'contact-info-1', type: 'text', title: { zh: '联系信息', en: 'Contact Info', ar: 'معلومات الاتصال' }, content: { addressZh: '中国广东省广州市番禺区', addressEn: 'Panyu District, Guangzhou, China', email: 'sabina@wstoolcabinet.com', phone: '+86 156 2216 0659' }, images: [], order: 0, status: 'active' },
   ],
 };
 
