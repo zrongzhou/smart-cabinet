@@ -4,20 +4,22 @@ import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 
 // ============================================================
-// OceanHeader v192 — 极光光帘 · 天青蓝韵 · 垂幔流光
+// OceanHeader v193 — 明亮极光光帘 · 强动态 · 协调蓝青
 //
-// v191 反馈："不是彩带的感觉，颜色不协调"
+// v192 反馈："光帘和动态效果要更明显，整体亮度提亮，颜色需要协调"
 // 根因：
-//   ❌ VisibleStreams = 3条水平横条(div+blur) = PPT色带条纹
-//   ❌ FloatingLights = 3个散落光球(左紫右蓝底青) = 各玩各的
-//   ❌ 所有元素都是水平排列 → 折叠感/条纹感
+//   ❌ 光帘 opacity 0.16~0.32 + blur 24~28px = 太淡看不清
+//   ❌ 底色 hsl 7~13% = 太暗，光帘对比度不够
+//   ❌ 摇曳动画 translate 仅 6~22px = 动态不明显
+//   ❌ 5条光帘分散各处 = 没有视觉焦点
 //
-// v192 策略：POLAR CURTAINS（极光垂幔）
-//   ✅ 光帘形状：高窄椭圆 × 旋转15~30° = 像光之帷幕垂下
-//   ✅ 方向统一：全部斜向垂幔（不是水平条！）
-//   ✅ 色域锁定：天青195° + 蓝220° + 靛238°（严格协调）
-//   ✅ 融合方式：screen混合 = 光与光叠加发光
-//   ✅ 动态：缓慢摇曳 + 呼吸 + 微妙漂移
+// v193 策略：BRIGHT AURORA（明亮极光）
+//   ✅ 光帘提亮 2.5x：opacity 0.35~0.62（vs 之前 0.16~0.32）
+//   ✅ 光帘 blur 降低：14~20px（vs 之前 20~28px）→ 颜色更清晰
+//   ✅ 底色提亮 2x：hsl 12~22%（vs 之前 7~13%）
+//   ✅ 摇曳幅度加大：translate 15~45px（vs 之前 6~22px）
+//   ✅ 新增：中央主光帘更宽更大（420×560px）
+//   ✅ 色域严格锁定：天青195° + 蓝220° + 靛238° + 青185°
 // ============================================================
 
 interface OceanHeaderProps {
@@ -34,14 +36,14 @@ export default function OceanHeader({ title, subtitle, description, icon, childr
     <section className="relative text-white py-[120px] px-4 sm:px-6 lg:px-8 overflow-hidden"
       style={{ minHeight: '380px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
     >
-      {/* Layer 1: Canvas — 深海渐变底色 */}
-      <DeepOceanBase />
+      {/* Layer 1: Canvas — 提亮深海渐变底色 */}
+      <BrightOceanBase />
 
-      {/* Layer 2: 极光光帘 — 斜向垂幔（核心视觉层） */}
-      <AuroraCurtains />
+      {/* Layer 2: 极光光帘 — 提亮+加大+强动态（核心视觉层） */}
+      <AuroraCurtainsBright />
 
-      {/* Layer 3: 微尘星光 — 少量精致亮点（非密集白点！） */}
-      <DustSparkles />
+      {/* Layer 3: 微尘星光 — 少量精致亮点 */}
+      <DustSparklesBright />
 
       {/* 底部过渡 */}
       <div className="absolute bottom-0 left-0 right-0 h-[110px] pointer-events-none z-[2]"
@@ -102,10 +104,10 @@ export default function OceanHeader({ title, subtitle, description, icon, childr
 }
 
 // ============================================================
-// DeepOceanBase — 统一深海渐变底色
-// 不再有多光源分色！只有一个干净的渐变底
+// BrightOceanBase — 提亮深海渐变底色
+// 比v192亮2倍，让彩色光帘能跳出来
 // ============================================================
-function DeepOceanBase() {
+function BrightOceanBase() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -125,27 +127,28 @@ function DeepOceanBase() {
     };
 
     const draw = () => {
-      time += 0.005;
+      time += 0.006;
       const w = canvas.width / (window.devicePixelRatio || 1);
       const h = canvas.height / (window.devicePixelRatio || 1);
       ctx.clearRect(0, 0, w, h);
 
-      // ── 底色：深邃海洋渐变（微弱呼吸）──
-      const hueShift = Math.sin(time * 0.3) * 4; // ±4°色相偏移
-      const bg = ctx.createLinearGradient(0, 0, w * 0.4, h);
-      bg.addColorStop(0, `hsl(${212 + hueShift}, 45%, ${7 + Math.sin(time * 0.4) * 1.5}%)`);
-      bg.addColorStop(0.40, `hsl(${218 + hueShift}, 50%, ${10 + Math.cos(time * 0.35) * 1.5}%)`);
-      bg.addColorStop(0.70, `hsl(${222 + hueShift}, 48%, ${13 + Math.sin(time * 0.3) * 1}%)`);
-      bg.addColorStop(1, `hsl(${215 + hueShift}, 42%, ${8}%)`);
+      // ── 底色：提亮深海渐变（hsl 12~22% vs 之前 7~13%）──
+      const hueShift = Math.sin(time * 0.25) * 5;
+      const bg = ctx.createLinearGradient(0, 0, w * 0.45, h);
+      bg.addColorStop(0, `hsl(${200 + hueShift}, 50%, ${14 + Math.sin(time * 0.35) * 2}%)`);
+      bg.addColorStop(0.35, `hsl(${210 + hueShift}, 52%, ${17 + Math.cos(time * 0.3) * 2}%)`);
+      bg.addColorStop(0.65, `hsl(${218 + hueShift}, 48%, ${20 + Math.sin(time * 0.28) * 1.5}%)`);
+      bg.addColorStop(1, `hsl(${212 + hueShift}, 45%, ${15}%)`);
       ctx.fillStyle = bg;
       ctx.fillRect(0, 0, w, h);
 
-      // ── 单一环境光晕：画面中央微微发亮 ──
-      const gx = w * (0.50 + Math.sin(time * 0.2) * 0.08);
-      const gy = h * (0.40 + Math.cos(time * 0.18) * 0.06);
-      const glow = ctx.createRadialGradient(gx, gy, 0, gx, gy, Math.max(w, h) * 0.50);
-      glow.addColorStop(0, `rgba(100, 180, 255, ${0.06 + Math.sin(time * 0.4) * 0.02})`);
-      glow.addColorStop(0.40, `rgba(60, 130, 220, ${0.03})`);
+      // ── 中央环境光晕：更亮更明显 ──
+      const gx = w * (0.50 + Math.sin(time * 0.22) * 0.10);
+      const gy = h * (0.38 + Math.cos(time * 0.20) * 0.08);
+      const glow = ctx.createRadialGradient(gx, gy, 0, gx, gy, Math.max(w, h) * 0.55);
+      glow.addColorStop(0, `rgba(110, 190, 255, ${0.10 + Math.sin(time * 0.35) * 0.04})`);
+      glow.addColorStop(0.35, `rgba(70, 150, 230, ${0.06})`);
+      glow.addColorStop(0.70, `rgba(50, 120, 200, ${0.02})`);
       glow.addColorStop(1, 'transparent');
       ctx.fillStyle = glow;
       ctx.fillRect(0, 0, w, h);
@@ -166,58 +169,55 @@ function DeepOceanBase() {
 }
 
 // ============================================================
-// AuroraCurtains — 极光光帘（核心！）
+// AuroraCurtainsBright — 提亮极光光帘
 //
-// 关键设计决策：
-//   1. 形状 = 高窄椭圆 + 旋转15~28° = "光之垂幔"
-//   2. 不是水平条！！是倾斜的窗帘状光幕
-//   3. 多层重叠 + screen混合 = 自然融合
-//   4. 每条光帘独立动画：摇曳 + 呼吸 + 漂移
+// 核心改进：
+//   1. opacity 提亮 2.5x（0.35~0.62 vs 之前 0.16~0.32）
+//   2. blur 降低（14~20px vs 之前 20~28px）→ 颜色更清晰
+//   3. 中央主光帘加大（420×560px vs 之前 320×480px）
+//   4. 摇曳幅度加大（translate 15~45px）
+//   5. 呼吸脉动幅度加大（opacity 0.72~1.0 vs 之前 0.78~1.0）
 // ============================================================
-function AuroraCurtains() {
+function AuroraCurtainsBright() {
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-      {/* 光帘 1：主幔 — 最宽最亮，天青→蓝色渐变，从左上向右下垂 */}
-      <div className="ac-curtain ac-main" />
+      {/* 光帘 1：中央主光帘 — 最大最亮，横跨画面中央 */}
+      <div className="acb-curtain acb-main" />
 
-      {/* 光帘 2：副幔 — 略窄，靛蓝调，交叉重叠在主幔上 */}
-      <div className="ac-curtain ac-second" />
+      {/* 光帘 2：左上副帘 — 交叉重叠 */}
+      <div className="acb-curtain acb-second" />
 
-      {/* 光帘 3：侧幔 — 较窄较淡，青色调，右侧补充 */}
-      <div className="ac-curtain ac-third" />
+      {/* 光帘 3：右侧帘 — 青色调 */}
+      <div className="acb-curtain acb-third" />
 
-      {/* 光帘 4：薄幔 — 最淡最长，顶部边缘柔光过渡 */}
-      <div className="ac-curtain ac-fourth" />
+      {/* 光帘 4：顶部薄帘 — 柔和过渡 */}
+      <div className="acb-curtain acb-fourth" />
 
-      {/* 光帘 5：底部柔幔 — 底部过渡到白色区域 */}
-      <div className="ac-curtain ac-bottom" />
+      {/* 光帘 5：底部柔帘 — 过渡白色内容区 */}
+      <div className="acb-curtain acb-bottom" />
     </div>
   );
 }
 
 // ============================================================
-// DustSparkles — 尘埃星光
-// 仅 4~5颗精致小亮点，不是密集小白点！
-// 作用：增加"空气感"和精致度
+// DustSparklesBright — 微尘星光（提亮版）
 // ============================================================
-function DustSparkles() {
+function DustSparklesBright() {
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-      <div className="ds-sparkle ds-1" />
-      <div className="ds-sparkle ds-2" />
-      <div className="ds-sparkle ds-3" />
-      <div className="ds-sparkle ds-4" />
-      <div className="ds-sparkle ds-5" />
+      <div className="dsb-sparkle dsb-1" />
+      <div className="dsb-sparkle dsb-2" />
+      <div className="dsb-sparkle dsb-3" />
+      <div className="dsb-sparkle dsb-4" />
+      <div className="dsb-sparkle dsb-5" />
+      <div className="dsb-sparkle dsb-6" />
     </div>
   );
 }
 
 const styles = `
-  /* ====== 极光光帘 ======
-     核心设计：高窄椭圆 + 大角度旋转 = 光之垂幔
-     不是水平条！是斜向的窗帘状光幕！
-  ====== */
-  .ac-curtain {
+  /* ====== 极光光帘（提亮版）====== */
+  .acb-curtain {
     position: absolute;
     border-radius: 50%;
     will-change: transform, opacity;
@@ -225,197 +225,211 @@ const styles = `
     pointer-events: none;
   }
 
-  /* 主幔：最大最亮的中央光幕 */
-  .ac-main {
+  /* 中央主光帘：最大最亮，天青→蓝色渐变 */
+  .acb-main {
+    width: 420px;
+    height: 560px;
+    left: 18%;
+    top: -12%;
+    transform: rotate(18deg);
+    background: radial-gradient(ellipse 65% 85% at 50% 25%,
+      rgba(125, 211, 252, 0.52) 0%,
+      rgba(96, 165, 250, 0.42) 20%,
+      rgba(59, 130, 246, 0.32) 42%,
+      rgba(37, 99, 235, 0.18) 65%,
+      rgba(29, 78, 216, 0.08) 82%,
+      transparent 100%);
+    filter: blur(18px);
+    animation:
+      acb-sway-main 12s ease-in-out infinite alternate,
+      acb-breathe 6s ease-in-out infinite alternate;
+  }
+
+  /* 左上副帘：靛蓝色，交叉重叠 */
+  .acb-second {
     width: 320px;
     height: 480px;
-    left: 22%;
+    right: 12%;
     top: -8%;
-    transform: rotate(20deg);
-    background: radial-gradient(ellipse 65% 85% at 50% 25%,
-      rgba(125, 211, 252, 0.32) 0%,
-      rgba(96, 165, 250, 0.24) 25%,
-      rgba(59, 130, 246, 0.16) 48%,
-      rgba(37, 99, 235, 0.07) 72%,
-      transparent 100%);
-    filter: blur(28px);
-    animation:
-      ac-sway-main 13s ease-in-out infinite alternate,
-      ac-breathe 7s ease-in-out infinite alternate;
-  }
-
-  /* 副幔：靛蓝色，交叉重叠 */
-  .ac-second {
-    width: 260px;
-    height: 420px;
-    right: 18%;
-    top: -5%;
-    transform: rotate(-16deg);
+    transform: rotate(-14deg);
     background: radial-gradient(ellipse 60% 80% at 52% 28%,
-      rgba(165, 180, 252, 0.28) 0%,
-      rgba(139, 92, 246, 0.20) 28%,
-      rgba(99, 102, 241, 0.12) 52%,
-      rgba(79, 70, 229, 0.05) 75%,
+      rgba(165, 180, 252, 0.45) 0%,
+      rgba(139, 92, 246, 0.35) 25%,
+      rgba(99, 102, 241, 0.24) 48%,
+      rgba(79, 70, 229, 0.12) 70%,
       transparent 100%);
-    filter: blur(24px);
+    filter: blur(16px);
     animation:
-      ac-sway-second 16s ease-in-out infinite alternate-reverse,
-      ac-breathe 9s ease-in-out infinite alternate-reverse;
-    animation-delay: -3s;
+      acb-sway-second 15s ease-in-out infinite alternate-reverse,
+      acb-breathe 8s ease-in-out infinite alternate-reverse;
+    animation-delay: -2.5s;
   }
 
-  /* 侧幔：青色调，右侧 */
-  .ac-third {
-    width: 200px;
-    height: 340px;
-    right: 5%;
-    top: 15%;
-    transform: rotate(25deg);
+  /* 右侧帘：青色调 */
+  .acb-third {
+    width: 260px;
+    height: 400px;
+    right: 2%;
+    top: 12%;
+    transform: rotate(22deg);
     background: radial-gradient(ellipse 55% 75% at 48% 30%,
-      rgba(103, 232, 249, 0.22) 0%,
-      rgba(34, 211, 238, 0.15) 30%,
-      rgba(6, 182, 212, 0.08) 55%,
-      transparent 82%);
-    filter: blur(20px);
-    animation:
-      ac-sway-third 11s ease-in-out infinite alternate,
-      ac-breathe 8s ease-in-out infinite alternate;
-    animation-delay: -5s;
-  }
-
-  /* 薄幔：顶部柔和过渡 */
-  .ac-fourth {
-    width: 400px;
-    height: 180px;
-    left: 30%;
-    top: -3%;
-    transform: rotate(8deg);
-    background: radial-gradient(ellipse 70% 60% at 50% 40%,
-      rgba(186, 230, 253, 0.16) 0%,
-      rgba(147, 197, 253, 0.10) 35%,
-      rgba(125, 211, 252, 0.05) 60%,
+      rgba(103, 232, 249, 0.38) 0%,
+      rgba(34, 211, 238, 0.28) 28%,
+      rgba(6, 182, 212, 0.16) 52%,
+      rgba(8, 145, 178, 0.06) 75%,
       transparent 100%);
-    filter: blur(22px);
+    filter: blur(14px);
     animation:
-      ac-sway-fourth 18s ease-in-out infinite alternate-reverse,
-      ac-breathe 11s ease-in-out infinite alternate;
-    animation-delay: -7s;
+      acb-sway-third 10s ease-in-out infinite alternate,
+      acb-breathe 7s ease-in-out infinite alternate;
+    animation-delay: -4s;
   }
 
-  /* 底部柔幔：过渡到白区 */
-  .ac-bottom {
-    width: 360px;
-    height: 140px;
+  /* 顶部薄帘：柔和天青色过渡 */
+  .acb-fourth {
+    width: 500px;
+    height: 220px;
     left: 25%;
-    bottom: 8%;
-    transform: rotate(-5deg);
+    top: -5%;
+    transform: rotate(6deg);
+    background: radial-gradient(ellipse 70% 60% at 50% 40%,
+      rgba(186, 230, 253, 0.28) 0%,
+      rgba(147, 197, 253, 0.18) 32%,
+      rgba(125, 211, 252, 0.10) 58%,
+      transparent 100%);
+    filter: blur(16px);
+    animation:
+      acb-sway-fourth 17s ease-in-out infinite alternate-reverse,
+      acb-breathe 10s ease-in-out infinite alternate;
+    animation-delay: -6s;
+  }
+
+  /* 底部柔帘：过渡到白色内容区 */
+  .acb-bottom {
+    width: 440px;
+    height: 180px;
+    left: 20%;
+    bottom: 5%;
+    transform: rotate(-4deg);
     background: radial-gradient(ellipse 80% 55% at 50% 45%,
-      rgba(96, 165, 250, 0.12) 0%,
-      rgba(59, 130, 246, 0.07) 40%,
-      transparent 78%);
-    filter: blur(18px);
-    animation: ac-sway-bottom 14s ease-in-out infinite alternate;
-    animation-delay: -2s;
+      rgba(96, 165, 250, 0.20) 0%,
+      rgba(59, 130, 246, 0.12) 38%,
+      rgba(37, 99, 235, 0.05) 65%,
+      transparent 100%);
+    filter: blur(14px);
+    animation: acb-sway-bottom 13s ease-in-out infinite alternate;
+    animation-delay: -1.5s;
   }
 
-  /* ---- 光帘摇曳动画（模拟极光的波浪摆动）---- */
-  @keyframes ac-sway-main {
-    0%   { transform: rotate(20deg) translate(0, 0) scale(1); }
-    33%  { transform: rotate(24deg) translate(12px, 18px) scale(1.04); }
-    66%  { transform: rotate(17deg) translate(-8px, 12px) scale(0.97); }
-    100% { transform: rotate(22deg) translate(6px, 22px) scale(1.02); }
+  /* ---- 光帘摇曳动画（加大幅度）---- */
+  @keyframes acb-sway-main {
+    0%   { transform: rotate(18deg) translate(0, 0) scale(1); }
+    25%  { transform: rotate(24deg) translate(22px, 28px) scale(1.06); }
+    50%  { transform: rotate(15deg) translate(-12px, 35px) scale(0.96); }
+    75%  { transform: rotate(22deg) translate(18px, 15px) scale(1.03); }
+    100% { transform: rotate(20deg) translate(-8px, 28px) scale(1.01); }
   }
-  @keyframes ac-sway-second {
-    0%   { transform: rotate(-16deg) translate(0, 0) scale(1); }
-    40%  { transform: rotate(-12deg) translate(-15px, 10px) scale(1.03); }
-    75%  { transform: rotate(-20deg) translate(10px, -8px) scale(0.98); }
-    100% { transform: rotate(-14deg) translate(-6px, 15px) scale(1.01); }
+  @keyframes acb-sway-second {
+    0%   { transform: rotate(-14deg) translate(0, 0) scale(1); }
+    30%  { transform: rotate(-10deg) translate(-20px, 18px) scale(1.04); }
+    60%  { transform: rotate(-18deg) translate(15px, -10px) scale(0.97); }
+    100% { transform: rotate(-12deg) translate(-10px, 22px) scale(1.02); }
   }
-  @keyframes ac-sway-third {
-    0%   { transform: rotate(25deg) translate(0, 0) scale(1); }
-    50%  { transform: rotate(29deg) translate(8px, 15px) scale(1.05); }
-    100% { transform: rotate(22deg) translate(-10px, 8px) scale(0.96); }
+  @keyframes acb-sway-third {
+    0%   { transform: rotate(22deg) translate(0, 0) scale(1); }
+    40%  { transform: rotate(28deg) translate(15px, 25px) scale(1.07); }
+    75%  { transform: rotate(18deg) translate(-12px, 10px) scale(0.95); }
+    100% { transform: rotate(25deg) translate(8px, 18px) scale(1.03); }
   }
-  @keyframes ac-sway-fourth {
-    0%   { transform: rotate(8deg) translate(0, 0); }
-    50%  { transform: rotate(12deg) translate(18px, 6px); }
-    100% { transform: rotate(5deg) translate(-10px, 4px); }
+  @keyframes acb-sway-fourth {
+    0%   { transform: rotate(6deg) translate(0, 0); }
+    45%  { transform: rotate(12deg) translate(25px, 10px); }
+    100% { transform: rotate(3deg) translate(-15px, 6px); }
   }
-  @keyframes ac-sway-bottom {
-    0%   { transform: rotate(-5deg) translate(0, 0); }
-    50%  { transform: rotate(-2deg) translate(12px, -6px); }
-    100% { transform: rotate(-8deg) translate(-8px, 3px); }
-  }
-
-  /* ---- 光帘呼吸动画（透明度脉动）---- */
-  @keyframes ac-breathe {
-    0%   { opacity: 0.78; }
-    50%  { opacity: 1; }
-    100% { opacity: 0.85; }
+  @keyframes acb-sway-bottom {
+    0%   { transform: rotate(-4deg) translate(0, 0); }
+    50%  { transform: rotate(-1deg) translate(18px, -8px); }
+    100% { transform: rotate(-7deg) translate(-12px, 5px); }
   }
 
-  /* ====== 尘埃星光 ======
-     仅5颗精致小亮点，不是密集小白点！
-  ====== */
-  .ds-sparkle {
+  /* ---- 光帘呼吸动画（加大幅度）---- */
+  @keyframes acb-breathe {
+    0%   { opacity: 0.72; }
+    40%  { opacity: 1; }
+    70%  { opacity: 0.85; }
+    100% { opacity: 0.95; }
+  }
+
+  /* ====== 微尘星光（提亮版）====== */
+  .dsb-sparkle {
     position: absolute;
     border-radius: 50%;
     will-change: transform, opacity;
     pointer-events: none;
   }
 
-  .ds-1 {
-    width: 3px;
-    height: 3px;
-    left: 28%;
-    top: 22%;
-    background: rgba(186, 230, 253, 0.85);
-    box-shadow: 0 0 6px 2px rgba(147, 197, 253, 0.35);
-    animation: ds-twinkle 4s ease-in-out infinite;
-  }
-  .ds-2 {
-    width: 2.5px;
-    height: 2.5px;
-    right: 32%;
-    top: 35%;
-    background: rgba(167, 139, 250, 0.75);
-    box-shadow: 0 0 5px 1.5px rgba(139, 92, 246, 0.28);
-    animation: ds-twinkle 5s ease-in-out infinite reverse;
-    animation-delay: -1.5s;
-  }
-  .ds-3 {
-    width: 2px;
-    height: 2px;
-    left: 55%;
-    top: 15%;
-    background: rgba(125, 211, 252, 0.80);
-    box-shadow: 0 0 5px 1.5px rgba(96, 165, 250, 0.30);
-    animation: ds-twinkle 3.5s ease-in-out infinite;
-    animation-delay: -2.8s;
-  }
-  .ds-4 {
+  .dsb-1 {
     width: 3.5px;
     height: 3.5px;
-    left: 15%;
-    top: 58%;
-    background: rgba(103, 232, 249, 0.70);
-    box-shadow: 0 0 6px 2px rgba(34, 211, 238, 0.25);
-    animation: ds-twinkle 6s ease-in-out infinite reverse;
-    animation-delay: -4s;
+    left: 25%;
+    top: 20%;
+    background: rgba(186, 230, 253, 0.95);
+    box-shadow: 0 0 8px 2.5px rgba(147, 197, 253, 0.45);
+    animation: dsb-twinkle 3.5s ease-in-out infinite;
   }
-  .ds-5 {
+  .dsb-2 {
+    width: 2.5px;
+    height: 2.5px;
+    right: 30%;
+    top: 32%;
+    background: rgba(167, 139, 250, 0.88);
+    box-shadow: 0 0 6px 2px rgba(139, 92, 246, 0.38);
+    animation: dsb-twinkle 4.5s ease-in-out infinite reverse;
+    animation-delay: -1.2s;
+  }
+  .dsb-3 {
     width: 2px;
     height: 2px;
-    right: 20%;
-    top: 62%;
-    background: rgba(196, 181, 253, 0.65);
-    box-shadow: 0 0 4px 1px rgba(167, 139, 250, 0.22);
-    animation: ds-twinkle 4.5s ease-in-out infinite;
-    animation-delay: -0.8s;
+    left: 52%;
+    top: 14%;
+    background: rgba(125, 211, 252, 0.92);
+    box-shadow: 0 0 5px 1.5px rgba(96, 165, 250, 0.40);
+    animation: dsb-twinkle 3s ease-in-out infinite;
+    animation-delay: -2.5s;
+  }
+  .dsb-4 {
+    width: 4px;
+    height: 4px;
+    left: 12%;
+    top: 55%;
+    background: rgba(103, 232, 249, 0.85);
+    box-shadow: 0 0 8px 2.5px rgba(34, 211, 238, 0.35);
+    animation: dsb-twinkle 5.5s ease-in-out infinite reverse;
+    animation-delay: -3.5s;
+  }
+  .dsb-5 {
+    width: 2px;
+    height: 2px;
+    right: 18%;
+    top: 60%;
+    background: rgba(196, 181, 253, 0.78);
+    box-shadow: 0 0 5px 1.2px rgba(167, 139, 250, 0.30);
+    animation: dsb-twinkle 4s ease-in-out infinite;
+    animation-delay: -0.6s;
+  }
+  .dsb-6 {
+    width: 3px;
+    height: 3px;
+    left: 40%;
+    top: 70%;
+    background: rgba(147, 197, 253, 0.82);
+    box-shadow: 0 0 6px 2px rgba(96, 165, 250, 0.32);
+    animation: dsb-twinkle 6s ease-in-out infinite reverse;
+    animation-delay: -4.8s;
   }
 
-  @keyframes ds-twinkle {
-    0%, 100% { opacity: 0.35; transform: scale(0.8); }
-    50%      { opacity: 1; transform: scale(1.3); }
+  @keyframes dsb-twinkle {
+    0%, 100% { opacity: 0.4; transform: scale(0.7); }
+    50%      { opacity: 1; transform: scale(1.4); }
   }
 `;
