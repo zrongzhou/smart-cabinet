@@ -100,22 +100,12 @@ function AnimatedGradient() {
   return (
     <div className="absolute inset-0 pointer-events-none" aria-hidden="true"
       style={{
-        background: `
-          radial-gradient(ellipse 120% 80% at 25% -10%, #3b82f6 0%, transparent 50%),
-          radial-gradient(ellipse 90% 60% at 75% 20%, #8b5cf6 0%, transparent 45%),
-          radial-gradient(ellipse 80% 50% at 20% 80%, #06b6d4 0%, transparent 40%),
-          linear-gradient(165deg,
-            #071426 0%,
-            #0c2343 15%,
-            #143a6e 30%,
-            #1d4ed8 48%,
-            #2563eb 62%,
-            #3b82f6 76%,
-            #60a5fa 88%,
-            #93c5fd 96%,
-            #dbeafe 100%
-          )
-        `,
+        background: [
+          'radial-gradient(ellipse 120% 80% at 25% -10%, #3b82f6 0%, transparent 50%)',
+          'radial-gradient(ellipse 90% 60% at 75% 20%, #8b5cf6 0%, transparent 45%)',
+          'radial-gradient(ellipse 80% 50% at 20% 80%, #06b6d4 0%, transparent 40%)',
+          'linear-gradient(165deg, #071426 0%, #0c2343 15%, #143a6e 30%, #1d4ed8 48%, #2563eb 62%, #3b82f6 76%, #60a5fa 88%, #93c5fd 96%, #dbeafe 100%)',
+        ].join(', '),
         backgroundSize: '200% 200%',
         animation: 'gradient-shift 24s ease infinite alternate',
       }} />
@@ -150,7 +140,6 @@ function SoftOrbs() {
 
 // ============================================================
 // Layer 2: 极光流光 — 2条简洁宽幅光带，缓缓漂移
-// 不再是细碎的多个小飘带，而是大气的主光带
 // ============================================================
 function AuroraFlow() {
   return (
@@ -160,15 +149,7 @@ function AuroraFlow() {
         position: 'absolute',
         left: '-4%', top: '20%',
         width: '108%', height: '100px',
-        background: 'linear-gradient(95deg,
-          transparent 0%,
-          rgba(59,130,246,0.16) 10%,
-          rgba(99,102,241,0.22) 30%,
-          rgba(139,92,246,0.18) 50%,
-          rgba(99,102,241,0.20) 70%,
-          rgba(6,182,212,0.14) 90%,
-          transparent 100%
-        )',
+        background: ['linear-gradient(95deg, transparent 0%, rgba(59,130,246,0.16) 10%, rgba(99,102,241,0.22) 30%, rgba(139,92,246,0.18) 50%, rgba(99,102,246,0.20) 70%, rgba(6,182,212,0.14) 90%, transparent 100%)'].join(' '),
         filter: 'blur(32px)',
         borderRadius: '50%',
         animation: 'aurora-flow-a 18s ease-in-out infinite alternate',
@@ -179,13 +160,7 @@ function AuroraFlow() {
         position: 'absolute',
         left: '-6%', top: '58%',
         width: '112%', height: '65px',
-        background: 'linear-gradient(88deg,
-          transparent 0%,
-          rgba(6,182,212,0.12) 15%,
-          rgba(56,189,248,0.17) 40%,
-          rgba(59,130,246,0.14) 65%,
-          transparent 100%
-        )',
+        background: ['linear-gradient(88deg, transparent 0%, rgba(6,182,212,0.12) 15%, rgba(56,189,248,0.17) 40%, rgba(59,130,246,0.14) 65%, transparent 100%)'].join(' '),
         filter: 'blur(26px)',
         borderRadius: '50%',
         animation: 'aurora-flow-b 22s ease-in-out infinite alternate-reverse',
