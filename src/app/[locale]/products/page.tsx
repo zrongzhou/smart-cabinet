@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
-import { Package, Layers, Box, Building2, Settings, Wrench, Cpu, Shield, Lock, Star, Heart, Truck, Factory, Zap, Clock, Globe, Database, FileText, Image, ZoomIn, Search, ChevronLeft, ChevronRight, ExternalLink, Archive, Briefcase, Code, Cog, Puzzle, Bot, BrainCircuit } from 'lucide-react';
+import { Package, LayoutGrid, Layers, Box, Building2, Settings, Wrench, Cpu, Shield, Lock, Star, Heart, Truck, Factory, Zap, Clock, Globe, Database, FileText, Image, ZoomIn, Search, ChevronLeft, ChevronRight, ExternalLink, Archive, Briefcase, Code, Cog, Puzzle, Bot, BrainCircuit } from 'lucide-react';
 import { useLocale } from '@/lib/i18n';
 import { Product, Category } from '@/lib/api';
 import { getBaseUrl } from '@/data/unified-data';
@@ -435,14 +435,28 @@ export default function ProductsPage() {
               {/* "All" button */}
               <button
                 onClick={() => handleDimensionChange('all')}
-                className={`relative px-5 py-2.5 rounded-full text-[14px] font-bold transition-all duration-200 inline-flex items-center gap-1.5 water-ripple ${
+                className={`relative px-4 py-2.5 rounded-full text-[14px] font-bold transition-all duration-200 inline-flex items-center gap-1.5 water-ripple ${
                   activeDimension === 'all'
-                    ? 'bg-blue-600 text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5'
+                    ? 'text-white shadow-lg shadow-blue-500/25 hover:shadow-xl hover:-translate-y-0.5'
                     : 'glass-btn text-gray-700 hover:-translate-y-0.5'
                 }`}
-                style={activeDimension !== 'all' ? undefined : undefined}
+                style={activeDimension === 'all' ? {
+                  background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+                } : undefined}
               >
-                <span>{t('products.filterAll') || 'All'}</span>
+                {/* Left accent bar for active state */}
+                {activeDimension === 'all' && (
+                  <div className="absolute left-0 top-1.5 bottom-1.5 w-[3px] bg-white/60 rounded-r" />
+                )}
+                <LayoutGrid className="w-[14px] h-[14px] flex-shrink-0"
+                  style={{ color: activeDimension === 'all' ? '#ffffff' : '#2563eb' }} />
+                <span style={activeDimension !== 'all' ? { color: 'inherit' } : undefined}>
+                  {t('products.filterAll') || 'All'}
+                </span>
+                <span className={`text-[11px] font-normal tabular-nums ml-0.5`}
+                  style={{ color: activeDimension === 'all' ? 'rgba(255,255,255,0.7)' : '#6b7280' }}>
+                  ({products.length})
+                </span>
               </button>
               {categoryTypes.map((type) => {
                 const count = dimensionProductCount[type] || 0;
