@@ -1526,31 +1526,82 @@ export default function AboutPage() {
           background: 'linear-gradient(180deg, #3b82f6 0%, #60a5fa 25%, #93c5fd 45%, #dbeafe 60%, #ecfdf5 75%, #bbf7d0 90%, #86efac 100%)',
         }}
       >
-        {/* === 背景装饰层 === */}
-        {/* 太阳光晕 — 温暖脉冲 */}
-        <div className="absolute top-[5%] right-[10%] w-[300px] h-[300px] rounded-full pointer-events-none" style={{
-          background: 'radial-gradient(circle, rgba(255, 248, 220, 0.6) 0%, rgba(254, 243, 199, 0.3) 40%, transparent 70%)',
+        {/* === 背景装饰层 v256 — 高质感版 === */}
+        
+        {/* 太阳光晕 — 右上角暖光 */}
+        <div className="absolute -top-[5%] right-[8%] w-[400px] h-[400px] rounded-full pointer-events-none" style={{
+          background: 'radial-gradient(circle, rgba(255,248,220,0.85) 0%, rgba(254,215,170,0.45) 20%, rgba(251,191,36,0.15) 45%, transparent 70%)',
           animation: 'cta-sunPulse 8s ease-in-out infinite alternate',
         }} />
-        {/* 白云装饰 — 3朵 */}
-        {[...Array(3)].map((_, i) => (
-          <div key={i} className="absolute pointer-events-none" style={{
-            left: `${10 + i * 35}%`,
-            top: `${8 + i * 5}%`,
-            width: `${100 + i * 30}px`,
-            height: `${35 + i * 10}px`,
-            background: 'rgba(255, 255, 255, 0.7)',
-            borderRadius: '50%',
-            filter: 'blur(20px)',
-            animation: `cta-cloudFloat ${12 + i * 3}s ease-in-out infinite alternate`,
+        
+        {/* 天空光斑 — 左上淡蓝 */}
+        <div className="absolute top-[2%] left-[-3%] w-[350px] h-[280px] rounded-full pointer-events-none" style={{
+          background: 'radial-gradient(ellipse at center, rgba(147,197,253,0.35) 0%, rgba(191,219,254,0.18) 50%, transparent 75%)',
+          filter: 'blur(2px)',
+        }} />
+        
+        {/* 清晰的蓬松云朵（多椭圆叠加，无模糊） */}
+        {/* 云朵1 — 左上大 */}
+        <div className="absolute pointer-events-none" style={{ left: '5%', top: '6%', width: '180px', height: '60px' }}>
+          <div style={{ position:'absolute', inset:0, borderRadius:'999px', background:'rgba(255,255,255,0.82)' }} />
+          <div style={{ position:'absolute', left:'22px', top:'-12px', width:'80px', height:'44px', borderRadius:'999px', background:'rgba(255,255,255,0.88)' }} />
+          <div style={{ position:'absolute', right:'28px', top:'-8px', width:'65px', height:'38px', borderRadius:'999px', background:'rgba(255,255,255,0.84)' }} />
+          <div style={{ position:'absolute', left:'48px', bottom:'-10px', width:'55px', height:'30px', borderRadius:'999px', background:'rgba(255,255,255,0.72)' }} />
+        </div>
+        {/* 云朵2 — 右上中 */}
+        <div className="absolute pointer-events-none" style={{ right: '12%', top: '14%', width: '140px', height: '46px' }}>
+          <div style={{ position:'absolute', inset:0, borderRadius:'999px', background:'rgba(255,255,255,0.78)' }} />
+          <div style={{ position:'absolute', left:'16px', top:'-9px', width:'60px', height:'34px', borderRadius:'999px', background:'rgba(255,255,255,0.86)' }} />
+          <div style={{ position:'absolute', right:'20px', top:'-6px', width:'50px', height:'28px', borderRadius:'999px', background:'rgba(255,255,255,0.76)' }} />
+        </div>
+        {/* 云朵3 — 中间偏右小 */}
+        <div className="absolute pointer-events-none" style={{ right: '35%', top: '32%', width: '100px', height: '34px' }}>
+          <div style={{ position:'absolute', inset:0, borderRadius:'999px', background:'rgba(255,255,255,0.68)' }} />
+          <div style={{ position:'absolute', left:'12px', top:'-7px', width:'42px', height:'26px', borderRadius:'999px', background:'rgba(255,255,255,0.78)' }} />
+        </div>
+        
+        {/* 远山剪影 — 清晰轮廓线 */}
+        <svg className="absolute bottom-[12%] left-[-2%] w-[104%] h-[90px] pointer-events-none" viewBox="0 0 1200 90" preserveAspectRatio="none">
+          <path d="M0,90 L0,55 Q100,25 200,40 Q320,10 420,35 Q520,5 620,30 Q720,8 820,28 Q920,12 1020,38 Q1100,20 1200,45 L1200,90 Z"
+            fill="rgba(71,112,140,0.13)" />
+          <path d="M0,90 L0,65 Q150,45 300,58 Q450,38 600,52 Q750,42 900,55 Q1050,40 1200,62 L1200,90 Z"
+            fill="rgba(74,124,156,0.09)" opacity="0.7" />
+        </svg>
+        
+        {/* 草地层叠 — 多层渐变模拟草地厚度 */}
+        <div className="absolute bottom-0 left-0 right-0 h-[55px] pointer-events-none" style={{
+          background: `linear-gradient(to top,
+            rgba(22,101,52,0.28) 0%,
+            rgba(22,163,74,0.18) 35%,
+            rgba(134,239,172,0.10) 70%,
+            transparent 100%)`,
+        }} />
+        {/* 草地高光条纹 */}
+        {[...Array(8)].map((_, i) => (
+          <div key={i} className="absolute bottom-0 pointer-events-none rounded-t-full" style={{
+            left: `${i * 13 + 3}%`,
+            width: `${6 + (i % 3) * 3}px`,
+            height: `${28 + (i % 4) * 6}px`,
+            background: 'linear-gradient(to top, rgba(134,239,172,0.25), transparent)',
+            transform: `rotate(${-2 + i * 1}deg)`,
           }} />
         ))}
-        {/* 草地波浪 — 底部 */}
-        <div className="absolute bottom-0 left-0 right-0 h-20 pointer-events-none" style={{
-          background: 'linear-gradient(to top, rgba(34, 160, 94, 0.2), transparent)',
-        }} />
+        
+        {/* 微光粒子 — 清晰的小光点 */}
+        {[...Array(10)].map((_, i) => (
+          <div key={`spark-${i}`} className="absolute rounded-full pointer-events-none" style={{
+            width: `${2 + (i % 2)}px`,
+            height: `${2 + (i % 2)}px`,
+            left: `${5 + i * 10 + (i % 3) * 3}%`,
+            top: `${12 + (i * 7) % 65}%`,
+            background: i % 3 === 0 ? 'rgba(255,255,255,0.9)' : 'rgba(255,250,230,0.7)',
+            boxShadow: i % 3 === 0 ? '0 0 4px rgba(255,255,255,0.5)' : 'none',
+            animation: `cta-sparkle ${2 + i * 0.4}s ease-in-out infinite alternate`,
+            animationDelay: `${i * 0.3}s`,
+          }} />
+        ))}
 
-        {/* === 内容区 === */}
+        {/* 内容区 */}
         <div className="max-w-4xl mx-auto text-center relative z-10">
           {/* 标题 */}
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-5 leading-tight" style={{ color: '#0f172a' }}>
@@ -1676,12 +1727,16 @@ export default function AboutPage() {
 
         /* ===== CTA v255 — 蓝天草原主题动画 ===== */
         @keyframes cta-sunPulse {
-          0%{opacity:0.6; transform:scale(1)}
-          100%{opacity:1; transform:scale(1.12)}
+          0%{opacity:0.7; transform:scale(1)}
+          100%{opacity:1; transform:scale(1.08)}
         }
         @keyframes cta-cloudFloat {
           0%{transform:translateX(0) translateY(0)}
           100%{transform:translateX(15px) translateY(-5px)}
+        }
+        @keyframes cta-sparkle {
+          0%{opacity:0.3; transform:scale(0.8)}
+          100%{opacity:1; transform:scale(1.2)}
         }
 
         /* ===== Subtle wave separator animations ===== */
