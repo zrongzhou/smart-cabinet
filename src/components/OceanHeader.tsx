@@ -2,19 +2,22 @@
 import { useEffect, useRef, memo } from 'react';
 
 // ============================================================
-// OceanHeader v242 鈥?Independent Breathing Cycle + Meteor Boost
+// OceanHeader v243 - Deep Blue Palette Fix (Brand-Aligned Colors)
 //
-// v242 Changes (BREATHING FIX):
-// - CRITICAL FIX: Independent 8-second breathing cycle (sin wave, range 0.3-1.0)
-// - Meteor boost added (+0.15 per active meteor, max +0.5)
-// - Expanded color range: #000b1a (0,11,26) 鈫?#60a5fa (96,165,250)
-// - Vertical gradient direction for enhanced "whole" effect
-// - Removed drawBreathing() overlay (no longer needed)
-// - Breathing now visible EVEN WITHOUT meteors (independent cycle)
+// v243 Changes (COLOR FIX):
+// - CRITICAL FIX: Color range narrowed to deep blues only (#020617 -> #1e3a8a)
+// - NO more sky-blue/washed-out bright phase (was #60a5fa - looked like baby blue)
+// - 5-stop gradient for depth and richness (not flat PPT background)
+// - Breathing amplitude reduced: 0.15-0.65 (was 0.3-1.0), capped at 0.75
+// - Slower breathing cycle: 10s (was 8s) for more elegant feel
+// - Meteor boost reduced: +0.10 each (was +0.15)
 //
-// v241 Features (preserved):
+// v242 Features (preserved):
+// - Independent breathing cycle (sin wave, no dependency on meteors)
 // - Direct background color interpolation (no overlay)
 // - 14 meteors for higher activity levels
+//
+// v241 Features (preserved):
 // - Frame-rate independent animation (using dt)
 //
 // v240 Features (preserved):
@@ -86,7 +89,7 @@ function StarryScene() {
   } | null>(null);
   const lastTimeRef = useRef<number>(0);
 
-  // 鈹€鈹€ Initialize Star Dots (50-80 items) 鈹€鈹€
+  // Initialize Star Dots (50-80 items)
   const initStars = (w: number, h: number): StarDot[] => {
     const stars: StarDot[] = [];
     const count = 50 + Math.floor(Math.random() * 30);
@@ -107,7 +110,7 @@ function StarryScene() {
     return stars;
   };
 
-  // 鈹€鈹€ Initialize Meteor System (14 items for higher activity) 鈹€鈹€
+  // Initialize Meteor System (14 items for higher activity)
   const METEOR_COUNT = 14;
 
   const createMeteor = (w: number, h: number): Meteor => {
@@ -161,7 +164,7 @@ function StarryScene() {
     return meteors;
   };
 
-  // 鈹€鈹€ Initialize Glass Beams (3-5 static decorative items) 鈹€鈹€
+  // Initialize Glass Beams (3-5 static decorative items)
   const initGlassBeams = (w: number, h: number): GlassBeam[] => {
     const beams: GlassBeam[] = [];
     const count = 3 + Math.floor(Math.random() * 2);
@@ -190,7 +193,7 @@ function StarryScene() {
     return beams;
   };
 
-  // 鈹€鈹€ Initialize Bokeh Spots (8-15 items) 鈹€鈹€
+  // Initialize Bokeh Spots (8-15 items)
   const initBokeh = (w: number, h: number): BokehSpot[] => {
     const spots: BokehSpot[] = [];
     const count = 8 + Math.floor(Math.random() * 7);
@@ -224,26 +227,38 @@ function StarryScene() {
     return spots;
   };
 
-  // 鈹€鈹€ Draw Background with Activity-Based Color Interpolation 鈹€鈹€
+  // Draw Background with Activity-Based Color Interpolation
   const drawBackground = (ctx: CanvasRenderingContext2D, w: number, h: number, activityLevel: number) => {
-    // Color interpolation range (expanded for noticeable breathing effect)
-    // Dark: #000b1a (rgb 0, 11, 26)
-    // Bright: #60a5fa (rgb 96, 165, 250)
-    const r = Math.round(0 + (96 - 0) * activityLevel);
-    const g = Math.round(11 + (165 - 11) * activityLevel);
-    const b = Math.round(26 + (250 - 26) * activityLevel);
+    // v243: Deep blue palette (matches industrial brand style)
+    // Dark: #020617 (rgb 2, 6, 23) - near-black navy
+    // Bright: #1e3a8a (rgb 30, 58, 138) - deep royal blue (NOT sky blue!)
+    // This keeps the dark atmosphere while still showing breathing
+    
+    const baseR = 2;
+    const baseG = 6;
+    const baseB = 23;
+    
+    const maxR = 30;   // was 96 - much darker!
+    const maxG = 58;   // was 165
+    const maxB = 138;  // was 250
+    
+    const r = Math.round(baseR + (maxR - baseR) * activityLevel);
+    const g = Math.round(baseG + (maxG - baseG) * activityLevel);
+    const b = Math.round(baseB + (maxB - baseB) * activityLevel);
 
-    // Create multi-layer gradient for enhanced "whole" effect (vertical direction)
+    // 5-stop vertical gradient for depth and richness (not flat PPT look)
     const gradient = ctx.createLinearGradient(0, 0, 0, h);
-    gradient.addColorStop(0, `rgb(${r}, ${g}, ${b})`);
-    gradient.addColorStop(0.5, `rgb(${Math.min(255, r+20)}, ${Math.min(255, g+20)}, ${Math.min(255, b+20)})`);
-    gradient.addColorStop(1, `rgb(${Math.min(255, r+40)}, ${Math.min(255, g+40)}, ${Math.min(255, b+40)})`);
+    gradient.addColorStop(0,   `rgb(${Math.max(0, r-4)}, ${Math.max(0, g-2)}, ${b})`);        // slightly darker top
+    gradient.addColorStop(0.25, `rgb(${r}, ${g}, ${b})`);                                 // base
+    gradient.addColorStop(0.5,  `rgb(${Math.min(255, r+12)}, ${Math.min(255, g+18)}, ${Math.min(255, b+28)})`);  // mid glow
+    gradient.addColorStop(0.75, `rgb(${Math.min(255, r+6)}, ${Math.min(255, g+10)}, ${Math.min(255, b+16)})`);  // transition
+    gradient.addColorStop(1,   `rgb(${Math.max(0, r-2)}, ${g}, ${Math.max(0, b-4)})`);     // slightly darker bottom
 
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, w, h);
   };
 
-  // 鈹€鈹€ Draw Bokeh Spots 鈹€鈹€
+  // Draw Bokeh Spots
   const drawBokeh = (ctx: CanvasRenderingContext2D, bokeh: BokehSpot[], t: number, w: number, h: number) => {
     bokeh.forEach((spot) => {
       spot.driftX += spot.driftSpeedX;
@@ -276,7 +291,7 @@ function StarryScene() {
     });
   };
 
-  // 鈹€鈹€ Draw Glass-like Beam (multi-layer gradient) 鈹€鈹€
+  // Draw Glass-like Beam (multi-layer gradient)
   const drawGlassBeam = (
     ctx: CanvasRenderingContext2D,
     x1: number, y1: number,
@@ -334,7 +349,7 @@ function StarryScene() {
     }
   };
 
-  // 鈹€鈹€ Draw Glass Beams 鈹€鈹€
+  // Draw Glass Beams
   const drawGlassBeams = (ctx: CanvasRenderingContext2D, beams: GlassBeam[], t: number) => {
     ctx.save();
     const centerX = ctx.canvas.width * 0.3;
@@ -360,7 +375,7 @@ function StarryScene() {
     ctx.restore();
   };
 
-  // 鈹€鈹€ Update and Draw Meteors 鈹€鈹€
+  // Update and Draw Meteors
   const updateAndDrawMeteors = (ctx: CanvasRenderingContext2D, meteors: Meteor[], dt: number, w: number, h: number) => {
     meteors.forEach((m, i) => {
       if (!m.active) {
@@ -404,7 +419,7 @@ function StarryScene() {
     });
   };
 
-  // 鈹€鈹€ Draw Star Dots 鈹€鈹€
+  // Draw Star Dots
   const drawStars = (ctx: CanvasRenderingContext2D, stars: StarDot[], t: number) => {
     stars.forEach((star) => {
       const twinkle = Math.sin(t * star.twinkleSpeed + star.pulse);
@@ -419,7 +434,7 @@ function StarryScene() {
     });
   };
 
-  // 鈹€鈹€ Main Animation Loop 鈹€鈹€
+  // Main Animation Loop
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -488,19 +503,20 @@ function StarryScene() {
       const w = rect.width;
       const h = rect.height;
 
-      // Calculate base breathing (independent sin wave, 8-second cycle, range 0.3-1.0)
-      const breathCycle = (t % 8) / 8;  // 0-1, 8-second cycle
-      const baseActivity = 0.3 + 0.7 * (0.5 + 0.5 * Math.sin(breathCycle * Math.PI * 2 - Math.PI / 2));  // 0.3-1.0
+      // Calculate base breathing (independent sin wave, 10-second cycle, range 0.15-0.65)
+      // v243: Reduced amplitude to stay within deep blue palette (never goes too bright)
+      const breathCycle = (t % 10) / 10;  // 0-1, 10-second cycle (slower = more elegant)
+      const baseActivity = 0.15 + 0.50 * (0.5 + 0.5 * Math.sin(breathCycle * Math.PI * 2 - Math.PI / 2));  // 0.15-0.65
 
-      // Meteor linkage boost (each active meteor +0.15)
+      // Meteor linkage boost (each active meteor +0.10, reduced from 0.15)
       const activeCount = state.meteors.filter(m => m.active).length;
-      const meteorBoost = Math.min(0.5, activeCount * 0.15);  // max +0.5
+      const meteorBoost = Math.min(0.35, activeCount * 0.10);  // max +0.35 (was 0.5)
 
-      // Combine: base breathing + meteor boost
-      state.targetActivity = Math.min(1.0, baseActivity + meteorBoost);
+      // Combine: base breathing + meteor boost (capped at 0.75 to never go too bright)
+      state.targetActivity = Math.min(0.75, baseActivity + meteorBoost);
 
-      // Smooth interpolation (increased response speed)
-      state.activityLevel += (state.targetActivity - state.activityLevel) * 0.08;
+      // Smooth interpolation (slightly faster for responsive feel)
+      state.activityLevel += (state.targetActivity - state.activityLevel) * 0.06;
 
       // When approaching 0, force to 0 to avoid floating point issues
       if (state.targetActivity < 0.01 && state.activityLevel < 0.02) {
