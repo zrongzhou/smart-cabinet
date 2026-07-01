@@ -2,27 +2,20 @@
 import { useEffect, useRef, memo } from 'react';
 
 // ============================================================
-// OceanHeader v229 — Aurora Soul (极光之魂) ★ 让亮部真正亮起来
+// OceanHeader v230 — Ice Crystal / Aquatic Theme
 //
-// ★ v229 修复记录 ★
-//
-// v228 问题:
-//   - 颜色在暗里打转，亮部不够亮
-//   - 光球基础颜色太暗，全亮时还是偏暗
-//   - 底色太暗 (#0f172a)，亮不起来
-//
-// v229 修复方案:
-//   ① 用 filter: brightness() 让亮部真正亮起来
-//   ② 提高光球基础颜色亮度 (改用更亮的蓝)
-//   ③ 提高底色亮度 (渐变终点从 #0f172a 改为 #1e3a8a)
-//   ④ 让 breathing 更陡峭 (45% 帧直接到最亮)
-//   ⑤ 保留 wrapper + inner 分离架构 (v228 的修复不能丢)
+// Complete refactor based on user reference images:
+// - Geometric crystal shapes (clip-path) instead of blur orbs
+// - Specular highlights (sharp bright dots)
+// - Bubbles with radial gradient edges
+// - Light rays with bloom effect
+// - Multi-layer translucent overlays
 // ============================================================
 
-function AuroraSoul() {
+function IceCrystalScene() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  // ── 极简Canvas噪声 (只做底层有机纹理, 不是主角!) ──
+  // ── Subtle Caustic Pattern (underwater light pattern) ──
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -37,11 +30,6 @@ function AuroraSoul() {
       canvas.height = Math.max(1, rect.height * dpr);
     }
 
-    function noise(x: number, y: number): number {
-      const n = Math.sin(x * 12.9898 + y * 78.233) * 43758.5453;
-      return (n - Math.floor(n)) * 2 - 1;
-    }
-
     function render(time: number) {
       if (!canvas) return;
       const rect = canvas.getBoundingClientRect();
@@ -49,35 +37,27 @@ function AuroraSoul() {
 
       resize();
       const w = canvas.width, h = canvas.height;
-      const t = time * 0.0008;
+      const t = time * 0.0003;
 
       ctx.clearRect(0, 0, w, h);
 
-      // 只画6个大而柔和的光斑 (不是逐像素FBM!)
-      const orbs = [
-        { x: 0.25 + Math.sin(t * 0.7) * 0.08, y: 0.30 + Math.cos(t * 0.5) * 0.06, r: 0.35, hue: 220 },
-        { x: 0.70 + Math.sin(t * 0.5 + 1) * 0.10, y: 0.25 + Math.cos(t * 0.6) * 0.07, r: 0.30, hue: 200 },
-        { x: 0.45 + Math.sin(t * 0.6 + 2) * 0.07, y: 0.65 + Math.cos(t * 0.4) * 0.08, r: 0.38, hue: 235 },
-        { x: 0.15 + Math.sin(t * 0.8 + 3) * 0.09, y: 0.70 + Math.cos(t * 0.55) * 0.05, r: 0.28, hue: 195 },
-        { x: 0.82 + Math.sin(t * 0.45 + 4) * 0.06, y: 0.60 + Math.cos(t * 0.65) * 0.09, r: 0.32, hue: 215 },
-        { x: 0.55 + Math.sin(t * 0.55 + 5) * 0.11, y: 0.42 + Math.cos(t * 0.48) * 0.07, r: 0.25, hue: 205 },
+      // Draw subtle caustic light patterns (underwater effect)
+      const caustics = [
+        { x: 0.3, y: 0.4, r: 0.25, phase: 0 },
+        { x: 0.6, y: 0.3, r: 0.20, phase: 1.5 },
+        { x: 0.45, y: 0.65, r: 0.22, phase: 3.0 },
+        { x: 0.2, y: 0.55, r: 0.18, phase: 4.5 },
       ];
 
-      orbs.forEach((orb) => {
-        const ox = orb.x * w;
-        const oy = orb.y * h;
-        const or = Math.max(orb.r * w, orb.r * h);
+      caustics.forEach((caustic) => {
+        const cx = (caustic.x + Math.sin(t * 0.5 + caustic.phase) * 0.03) * w;
+        const cy = (caustic.y + Math.cos(t * 0.4 + caustic.phase) * 0.03) * h;
+        const cr = Math.max(caustic.r * w, caustic.r * h);
 
-        // 每个光斑有微妙的色相偏移 (随时间变化)
-        const hueDrift = Math.sin(t * 0.3 + orb.hue) * 12;
-        const sat = 60 + Math.sin(t * 0.4 + orb.x * 10) * 15;
-        const light = 45 + Math.cos(t * 0.25 + orb.y * 10) * 12;
-
-        const grad = ctx.createRadialGradient(ox, oy, 0, ox, oy, or);
-        grad.addColorStop(0, `hsla(${orb.hue + hueDrift}, ${sat}%, ${light + 25}%, 0.30)`);
-        grad.addColorStop(0.4, `hsla(${orb.hue + hueDrift + 5}, ${sat - 5}%, ${light + 15}%, 0.18)`);
-        grad.addColorStop(0.7, `hsla(${orb.hue + hueDrift + 10}, ${sat - 10}%, ${light + 5}%, 0.08)`);
-        grad.addColorStop(1, `hsla(${orb.hue}, ${sat}%, ${light}%, 0)`);
+        const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, cr);
+        grad.addColorStop(0, `rgba(186, 230, 253, ${0.06 + Math.sin(t + caustic.phase) * 0.02})`);
+        grad.addColorStop(0.5, `rgba(147, 197, 253, ${0.03 + Math.cos(t * 0.7 + caustic.phase) * 0.015})`);
+        grad.addColorStop(1, 'transparent');
 
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, w, h);
@@ -91,312 +71,328 @@ function AuroraSoul() {
     return () => cancelAnimationFrame(animId);
   }, []);
 
-  // ── CSS动画光球的参数 (wrapper + inner分离架构) ──
-  const cssOrbs = [
+  // ── Crystal Shapes Configuration ──
+  const crystals = [
     {
-      wrapperClass: 'aurora-orb-wrapper-1',
-      innerClass: 'aurora-orb-1',
-      wrapperDelay: '0s',
-      innerDelay: '0s',
+      id: 1,
+      clipPath: 'polygon(50% 0%, 85% 25%, 85% 75%, 50% 100%, 15% 75%, 15% 25%)',
+      width: '28vw',
+      height: '35vh',
+      left: '5%',
+      top: '10%',
+      gradient: 'linear-gradient(135deg, rgba(147, 197, 253, 0.55) 0%, rgba(96, 165, 250, 0.35) 40%, rgba(59, 130, 246, 0.18) 70%, transparent 100%)',
+      backdropBlur: '6px',
+      animation: 'crystal-float-1 18s ease-in-out infinite',
+      animationDelay: '0s',
+      borderColor: 'rgba(255, 255, 255, 0.35)',
     },
     {
-      wrapperClass: 'aurora-orb-wrapper-2',
-      innerClass: 'aurora-orb-2',
-      wrapperDelay: '0s',
-      innerDelay: '-2s',
+      id: 2,
+      clipPath: 'polygon(30% 0%, 70% 0%, 100% 50%, 70% 100%, 30% 100%, 0% 50%)',
+      width: '22vw',
+      height: '28vh',
+      right: '8%',
+      top: '15%',
+      gradient: 'linear-gradient(225deg, rgba(165, 180, 252, 0.50) 0%, rgba(147, 197, 253, 0.32) 45%, rgba(96, 165, 250, 0.15) 75%, transparent 100%)',
+      backdropBlur: '5px',
+      animation: 'crystal-float-2 22s ease-in-out infinite',
+      animationDelay: '-3s',
+      borderColor: 'rgba(255, 255, 255, 0.3)',
     },
     {
-      wrapperClass: 'aurora-orb-wrapper-3',
-      innerClass: 'aurora-orb-3',
-      wrapperDelay: '0s',
-      innerDelay: '-4s',
+      id: 3,
+      clipPath: 'polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)',
+      width: '32vw',
+      height: '30vh',
+      left: '20%',
+      bottom: '5%',
+      gradient: 'linear-gradient(160deg, rgba(103, 232, 249, 0.48) 0%, rgba(147, 197, 253, 0.30) 50%, rgba(96, 165, 250, 0.12) 80%, transparent 100%)',
+      backdropBlur: '7px',
+      animation: 'crystal-float-3 20s ease-in-out infinite',
+      animationDelay: '-6s',
+      borderColor: 'rgba(255, 255, 255, 0.28)',
     },
     {
-      wrapperClass: 'aurora-orb-wrapper-4',
-      innerClass: 'aurora-orb-4',
-      wrapperDelay: '0s',
-      innerDelay: '-1s',
+      id: 4,
+      clipPath: 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)',
+      width: '18vw',
+      height: '24vh',
+      right: '15%',
+      bottom: '12%',
+      gradient: 'linear-gradient(200deg, rgba(196, 181, 253, 0.42) 0%, rgba(147, 197, 253, 0.28) 55%, rgba(96, 165, 250, 0.10) 85%, transparent 100%)',
+      backdropBlur: '5px',
+      animation: 'crystal-float-4 24s ease-in-out infinite',
+      animationDelay: '-9s',
+      borderColor: 'rgba(255, 255, 255, 0.25)',
     },
   ];
 
-  // ── 星点 ──
-  const stars = Array.from({ length: 14 }, (_, i) => ({
-    x: 8 + ((i * 17 + 3) % 84),
-    y: 10 + ((i * 23 + 7) % 80),
-    size: 1 + (i % 3),
-    delay: `${-(i * 1.7)}s`,
-    dur: `${2.5 + (i % 4) * 1.2}s`,
+  // ── Bubbles Configuration ──
+  const bubbles = Array.from({ length: 18 }, (_, i) => ({
+    id: `bubble-${i}`,
+    left: `${5 + ((i * 37) % 90)}%`,
+    top: `${15 + ((i * 41) % 70)}%`,
+    size: 6 + (i % 11),
+    animationDuration: `${10 + (i % 8) * 2}s`,
+    animationDelay: `${-(i * 1.3)}s`,
+    opacity: 0.35 + (i % 4) * 0.1,
+  }));
+
+  // ── Specular Highlights Configuration ──
+  const speculars = Array.from({ length: 12 }, (_, i) => ({
+    id: `spec-${i}`,
+    left: `${3 + ((i * 31) % 94)}%`,
+    top: `${5 + ((i * 43) % 88)}%`,
+    size: 3 + (i % 5),
+    animationDuration: `${2.5 + (i % 3) * 0.8}s`,
+    animationDelay: `${-(i * 0.9)}s`,
+    opacity: 0.6 + (i % 3) * 0.13,
   }));
 
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-      {/* ===== Layer 0: 多色渐变底色 (提高亮度! 不是单一蓝色!) ===== */}
+      {/* ===== Layer 0: Deep Blue Gradient Background ===== */}
       <div
         className="absolute inset-0"
         style={{
           background: `
-            linear-gradient(165deg,
-              #0c1929 0%,
-              #1e3a5f 18%,
-              #1d4ed8 38%,
-              #1e40af 52%,
-              #1e3a8a 68%,
-              #2563eb 82%,
-              #1e3a8a 100%
+            radial-gradient(ellipse at 30% 20%, 
+              #1e3a8a 0%, 
+              #1e40af 25%, 
+              #1d4ed8 45%, 
+              #1e3a5f 65%, 
+              #0f172a 100%
             )
           `,
         }}
       />
 
-      {/* ===== Layer 1: 极简Canvas噪声 (低alpha, 只是纹理!) ===== */}
+      {/* ===== Layer 1: Subtle Caustic Canvas ===== */}
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 w-full h-full opacity-[0.55]"
-        style={{ mixBlendMode: 'screen' }}
+        className="absolute inset-0 w-full h-full"
+        style={{ mixBlendMode: 'screen', opacity: 0.6 }}
       />
 
-      {/* ===== Layer 2: CSS动画光球 (wrapper + inner分离架构!) ===== */}
-      {cssOrbs.map((orb, i) => (
+      {/* ===== Layer 2: Crystal Shapes ===== */}
+      {crystals.map((crystal) => (
         <div
-          key={`wrapper-${i}`}
-          className={`absolute ${orb.wrapperClass}`}
-          style={{ animationDelay: orb.wrapperDelay }}
+          key={`crystal-${crystal.id}`}
+          className="absolute"
+          style={{
+            clipPath: crystal.clipPath,
+            width: crystal.width,
+            height: crystal.height,
+            left: crystal.left || 'auto',
+            right: crystal.right || 'auto',
+            top: crystal.top || 'auto',
+            bottom: crystal.bottom || 'auto',
+            background: crystal.gradient,
+            backdropFilter: `blur(${crystal.backdropBlur})`,
+            WebkitBackdropFilter: `blur(${crystal.backdropBlur})`,
+            border: `1px solid ${crystal.borderColor}`,
+            animation: crystal.animation,
+            animationDelay: crystal.animationDelay,
+          }}
         >
+          {/* Inner highlight streak */}
           <div
-            className={`absolute inset-0 rounded-full ${orb.innerClass}`}
-            style={{ animationDelay: orb.innerDelay }}
+            className="absolute inset-0"
+            style={{
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, transparent 50%)',
+              clipPath: crystal.clipPath,
+            }}
           />
         </div>
       ))}
 
-      {/* ===== Layer 3: 流动光带 ===== */}
-      <div className="aurora-beam aurora-beam-1" />
-      <div className="aurora-beam aurora-beam-2" />
-
-      {/* ===== Layer 4: 中央高光 (模拟光源) ===== */}
-      <div className="aurora-glow-center" />
-
-      {/* ===== Layer 5: 星点闪烁 ===== */}
-      {stars.map((star, i) => (
+      {/* ===== Layer 3: Bubbles ===== */}
+      {bubbles.map((bubble) => (
         <div
-          key={`star-${i}`}
-          className="absolute rounded-full bg-white aurora-star"
+          key={bubble.id}
+          className="absolute rounded-full"
           style={{
-            left: `${star.x}%`,
-            top: `${star.y}%`,
-            width: star.size,
-            height: star.size,
-            animationDelay: star.delay,
-            animationDuration: star.dur,
+            left: bubble.left,
+            top: bubble.top,
+            width: bubble.size,
+            height: bubble.size,
+            background: `radial-gradient(circle at 30% 30%, 
+              rgba(255, 255, 255, ${bubble.opacity + 0.3}), 
+              rgba(191, 219, 254, ${bubble.opacity * 0.7}) 40%, 
+              rgba(96, 165, 250, ${bubble.opacity * 0.4}) 70%, 
+              transparent 100%
+            )`,
+            border: '1px solid rgba(255, 255, 255, 0.45)',
+            animation: `bubble-float ${bubble.animationDuration} ease-in-out infinite`,
+            animationDelay: bubble.animationDelay,
           }}
         />
       ))}
 
-      {/* ===== 关键帧样式 (内联style标签) ===== */}
-      <style>{`
-        /* ============================================================
-           光球架构说明:
-           - wrapper div: 只控制 transform: translate() (漂移动画)
-           - inner div: 只控制 opacity + transform: scale() + filter (呼吸动画)
-           这样两个动画不会冲突!
-           ============================================================ */
+      {/* ===== Layer 4: Specular Highlights (Sharp Bright Dots) ===== */}
+      {speculars.map((spec) => (
+        <div
+          key={spec.id}
+          className="absolute rounded-full"
+          style={{
+            left: spec.left,
+            top: spec.top,
+            width: spec.size,
+            height: spec.size,
+            background: `radial-gradient(circle at 30% 30%, 
+              rgba(255, 255, 255, 0.95), 
+              rgba(224, 242, 254, 0.7) 45%, 
+              transparent 70%
+            )`,
+            filter: 'blur(0.5px)',
+            animation: `specular-twinkle ${spec.animationDuration} ease-in-out infinite`,
+            animationDelay: spec.animationDelay,
+          }}
+        />
+      ))}
 
-        /* ── 光球wrapper: 只负责漂移 (控制 transform/translate) ── */
-        .aurora-orb-wrapper-1 {
-          left: -10%; top: -8%;
-          width: 55vw; height: 40vh;
-          animation: aurora-float-1 10s ease-in-out infinite alternate;
-        }
-        .aurora-orb-wrapper-2 {
-          right: -12%; top: 18%;
-          width: 48vw; height: 38vh;
-          animation: aurora-float-2 12s ease-in-out infinite alternate;
-        }
-        .aurora-orb-wrapper-3 {
-          left: 18%; bottom: -15%;
-          width: 52vw; height: 42vh;
-          animation: aurora-float-3 14s ease-in-out infinite alternate;
-        }
-        .aurora-orb-wrapper-4 {
-          right: 5%; bottom: 5%;
-          width: 40vw; height: 32vh;
-          animation: aurora-float-4 11s ease-in-out infinite alternate;
-        }
-
-        /* ── 光球inner: 只负责呼吸 (控制 opacity + scale + filter) ── */
-        .aurora-orb-1 {
-          background: radial-gradient(ellipse at center,
-            rgba(147, 197, 253, 0.85) 0%,
-            rgba(96, 165, 250, 0.65) 35%,
-            rgba(59, 130, 246, 0.40) 65%,
-            transparent 100%
-          );
-          animation: aurora-pulse-1 6s ease-in-out infinite;
-          filter: blur(25px) brightness(0.5);
-        }
-        .aurora-orb-2 {
-          background: radial-gradient(ellipse at center,
-            rgba(147, 197, 253, 0.80) 0%,
-            rgba(96, 165, 250, 0.60) 40%,
-            rgba(59, 130, 246, 0.35) 70%,
-            transparent 100%
-          );
-          animation: aurora-pulse-2 7s ease-in-out infinite;
-          filter: blur(20px) brightness(0.5);
-        }
-        .aurora-orb-3 {
-          background: radial-gradient(ellipse at center,
-            rgba(125, 211, 252, 0.82) 0%,
-            rgba(56, 189, 248, 0.62) 38%,
-            rgba(14, 165, 233, 0.38) 68%,
-            transparent 100%
-          );
-          animation: aurora-pulse-3 8s ease-in-out infinite;
-          filter: blur(30px) brightness(0.5);
-        }
-        .aurora-orb-4 {
-          background: radial-gradient(ellipse at center,
-            rgba(147, 197, 253, 0.78) 0%,
-            rgba(96, 165, 250, 0.58) 45%,
-            rgba(59, 130, 246, 0.32) 75%,
-            transparent 100%
-          );
-          animation: aurora-pulse-4 6.5s ease-in-out infinite;
-          filter: blur(22px) brightness(0.5);
-        }
-
-        /* ── 光球漂移路径 (只控制 translate, 不控制 scale!) ── */
-        @keyframes aurora-float-1 {
-          0%   { transform: translate(0%, 0%); }
-          33%  { transform: translate(8%, 5%); }
-          66%  { transform: translate(-4%, 8%); }
-          100% { transform: translate(6%, 3%); }
-        }
-        @keyframes aurora-float-2 {
-          0%   { transform: translate(0%, 0%); }
-          33%  { transform: translate(-10%, 4%); }
-          66%  { transform: translate(5%, -6%); }
-          100% { transform: translate(-3%, 7%); }
-        }
-        @keyframes aurora-float-3 {
-          0%   { transform: translate(0%, 0%); }
-          33%  { transform: translate(6%, -8%); }
-          66%  { transform: translate(-8%, -3%); }
-          100% { transform: translate(4%, 5%); }
-        }
-        @keyframes aurora-float-4 {
-          0%   { transform: translate(0%, 0%); }
-          33%  { transform: translate(-6%, -5%); }
-          66%  { transform: translate(8%, 3%); }
-          100% { transform: translate(-4%, -2%); }
-        }
-
-        /* ── 光球呼吸动画 (控制 opacity + scale + filter:brightness!) ── */
-        @keyframes aurora-pulse-1 {
-          0%   { opacity: 0.08; filter: blur(25px) brightness(0.3); transform: scale(0.85); }
-          25%  { opacity: 0.50; filter: blur(25px) brightness(0.8); transform: scale(0.98); }
-          45%  { opacity: 1.0;  filter: blur(20px) brightness(2.2); transform: scale(1.18); }
-          70%  { opacity: 0.35; filter: blur(25px) brightness(0.7); transform: scale(1.0); }
-          100% { opacity: 0.08; filter: blur(25px) brightness(0.3); transform: scale(0.85); }
-        }
-        @keyframes aurora-pulse-2 {
-          0%   { opacity: 0.10; filter: blur(20px) brightness(0.3); transform: scale(0.88); }
-          30%  { opacity: 0.55; filter: blur(20px) brightness(0.9); transform: scale(1.02); }
-          50%  { opacity: 1.0;  filter: blur(18px) brightness(2.0); transform: scale(1.15); }
-          75%  { opacity: 0.40; filter: blur(20px) brightness(0.8); transform: scale(0.98); }
-          100% { opacity: 0.10; filter: blur(20px) brightness(0.3); transform: scale(0.88); }
-        }
-        @keyframes aurora-pulse-3 {
-          0%   { opacity: 0.08; filter: blur(30px) brightness(0.3); transform: scale(0.86); }
-          28%  { opacity: 0.48; filter: blur(30px) brightness(0.8); transform: scale(0.98); }
-          48%  { opacity: 1.0;  filter: blur(25px) brightness(2.5); transform: scale(1.12); }
-          72%  { opacity: 0.38; filter: blur(30px) brightness(0.7); transform: scale(1.02); }
-          100% { opacity: 0.08; filter: blur(30px) brightness(0.3); transform: scale(0.86); }
-        }
-        @keyframes aurora-pulse-4 {
-          0%   { opacity: 0.09; filter: blur(22px) brightness(0.3); transform: scale(0.84); }
-          22%  { opacity: 0.42; filter: blur(22px) brightness(0.7); transform: scale(0.96); }
-          45%  { opacity: 1.0;  filter: blur(18px) brightness(2.3); transform: scale(1.16); }
-          68%  { opacity: 0.36; filter: blur(22px) brightness(0.8); transform: scale(1.01); }
-          100% { opacity: 0.09; filter: blur(22px) brightness(0.3); transform: scale(0.84); }
-        }
-
-        /* ── 流动光带 ── */
-        .aurora-beam {
-          position: absolute;
-          pointer-events: none;
-        }
-        .aurora-beam-1 {
-          left: -10%; top: 10%;
-          width: 70vw; height: 4px;
-          background: linear-gradient(90deg,
-            transparent 0%,
-            rgba(191, 219, 254, 0.85) 15%,
-            rgba(147, 197, 253, 1.0) 40%,
-            rgba(96, 165, 250, 0.95) 60%,
-            rgba(191, 219, 254, 0.85) 85%,
-            transparent 100%
-          );
-          animation: beam-sweep-1 7s ease-in-out infinite;
-          filter: blur(2px) brightness(1.2);
-        }
-        .aurora-beam-2 {
-          right: -8%; top: 45%;
-          width: 55vw; height: 3px;
-          background: linear-gradient(90deg,
-            transparent 0%,
-            rgba(191, 219, 254, 0.75) 20%,
-            rgba(147, 197, 253, 0.95) 50%,
-            rgba(96, 165, 250, 0.85) 75%,
-            transparent 100%
-          );
-          animation: beam-sweep-2 8s ease-in-out infinite;
-          filter: blur(2px) brightness(1.1);
-        }
-        @keyframes beam-sweep-1 {
-          0%   { transform: rotate(-24deg) translateX(-5%); opacity: 0.10; filter: blur(2px) brightness(0.5); }
-          25%  { transform: rotate(-22deg) translateX(-1%); opacity: 0.45; filter: blur(2px) brightness(1.0); }
-          48%  { transform: rotate(-19deg) translateX(4%); opacity: 1.0; filter: blur(1px) brightness(2.0); }
-          72%  { transform: rotate(-23deg) translateX(6%); opacity: 0.30; filter: blur(2px) brightness(0.9); }
-          100% { transform: rotate(-26deg) translateX(8%); opacity: 0.10; filter: blur(2px) brightness(0.5); }
-        }
-        @keyframes beam-sweep-2 {
-          0%   { transform: rotate(18deg) translateX(5%); opacity: 0.08; filter: blur(2px) brightness(0.5); }
-          28%  { transform: rotate(20deg) translateX(2%); opacity: 0.35; filter: blur(2px) brightness(1.0); }
-          50%  { transform: rotate(23deg) translateX(-2%); opacity: 1.0; filter: blur(1px) brightness(1.8); }
-          73%  { transform: rotate(20deg) translateX(-5%); opacity: 0.25; filter: blur(2px) brightness(0.9); }
-          100% { transform: rotate(15deg) translateX(-8%); opacity: 0.08; filter: blur(2px) brightness(0.5); }
-        }
-
-        /* ── 中央高光 (光源感 ★ 提高亮度!) ── */
-        .aurora-glow-center {
-          position: absolute;
-          left: 50%; top: 28%;
-          width: 55vw; height: 38vh;
-          background: radial-gradient(ellipse at center,
-            rgba(191, 219, 254, 0.55) 0%,
-            rgba(147, 197, 253, 0.40) 30%,
-            rgba(96, 165, 250, 0.20) 55%,
+      {/* ===== Layer 5: Light Rays ===== */}
+      <div
+        className="absolute"
+        style={{
+          left: '-15%',
+          top: '-20%',
+          width: '90vw',
+          height: '120vh',
+          background: `linear-gradient(125deg, 
+            transparent 0%, 
+            rgba(255, 255, 255, 0.05) 15%, 
+            rgba(191, 219, 254, 0.09) 35%, 
+            rgba(147, 197, 253, 0.06) 55%, 
+            transparent 75%
+          )`,
+          transform: 'rotate(-28deg)',
+          transformOrigin: 'top left',
+          animation: 'ray-sweep-1 25s ease-in-out infinite',
+        }}
+      />
+      <div
+        className="absolute"
+        style={{
+          right: '-10%',
+          top: '-15%',
+          width: '70vw',
+          height: '110vh',
+          background: `linear-gradient(215deg, 
+            transparent 0%, 
+            rgba(255, 255, 255, 0.04) 20%, 
+            rgba(196, 181, 253, 0.07) 40%, 
+            rgba(147, 197, 253, 0.05) 60%, 
             transparent 80%
-          );
-          animation: center-glow 7s ease-in-out infinite;
-          filter: blur(35px) brightness(0.6);
+          )`,
+          transform: 'rotate(18deg)',
+          transformOrigin: 'top right',
+          animation: 'ray-sweep-2 28s ease-in-out infinite',
+        }}
+      />
+
+      {/* ===== Layer 6: Bloom Glow ===== */}
+      <div
+        className="absolute"
+        style={{
+          left: '25%',
+          top: '5%',
+          width: '55vw',
+          height: '55vh',
+          background: `radial-gradient(ellipse at center, 
+            rgba(191, 219, 254, 0.22) 0%, 
+            rgba(147, 197, 253, 0.12) 35%, 
+            rgba(96, 165, 250, 0.06) 60%, 
+            transparent 80%
+          )`,
+          filter: 'blur(50px)',
+          animation: 'bloom-pulse 12s ease-in-out infinite',
+        }}
+      />
+      <div
+        className="absolute"
+        style={{
+          right: '15%',
+          bottom: '10%',
+          width: '40vw',
+          height: '40vh',
+          background: `radial-gradient(ellipse at center, 
+            rgba(196, 181, 253, 0.18) 0%, 
+            rgba(165, 180, 252, 0.10) 40%, 
+            transparent 75%
+          )`,
+          filter: 'blur(45px)',
+          animation: 'bloom-pulse-2 15s ease-in-out infinite',
+        }}
+      />
+
+      {/* ===== Inline Styles for Animations ===== */}
+      <style>{`
+        /* ── Crystal Floating Animations ── */
+        @keyframes crystal-float-1 {
+          0%   { transform: translate(0%, 0%) rotate(0deg) scale(1.0); opacity: 0.75; }
+          25%  { transform: translate(3%, 2%) rotate(1.5deg) scale(1.02); opacity: 0.85; }
+          50%  { transform: translate(-2%, 4%) rotate(-1deg) scale(0.98); opacity: 0.80; }
+          75%  { transform: translate(4%, -1%) rotate(2deg) scale(1.03); opacity: 0.88; }
+          100% { transform: translate(0%, 0%) rotate(0deg) scale(1.0); opacity: 0.75; }
         }
-        @keyframes center-glow {
-          0%   { opacity: 0.10; filter: blur(35px) brightness(0.3); transform: translate(-50%, -50%) scale(0.85); }
-          25%  { opacity: 0.55; filter: blur(35px) brightness(0.9); transform: translate(-49%, -51%) scale(1.0); }
-          45%  { opacity: 1.0;  filter: blur(28px) brightness(2.0); transform: translate(-48%, -52%) scale(1.25); }
-          70%  { opacity: 0.45; filter: blur(35px) brightness(0.8); transform: translate(-51%, -49%) scale(1.05); }
-          100% { opacity: 0.10; filter: blur(35px) brightness(0.3); transform: translate(-50%, -50%) scale(0.85); }
+        @keyframes crystal-float-2 {
+          0%   { transform: translate(0%, 0%) rotate(0deg) scale(1.0); opacity: 0.70; }
+          30%  { transform: translate(-4%, 3%) rotate(-2deg) scale(1.03); opacity: 0.82; }
+          55%  { transform: translate(2%, -2%) rotate(1.8deg) scale(0.97); opacity: 0.76; }
+          80%  { transform: translate(-3%, 4%) rotate(-1.5deg) scale(1.01); opacity: 0.84; }
+          100% { transform: translate(0%, 0%) rotate(0deg) scale(1.0); opacity: 0.70; }
+        }
+        @keyframes crystal-float-3 {
+          0%   { transform: translate(0%, 0%) rotate(0deg) scale(1.0); opacity: 0.72; }
+          20%  { transform: translate(5%, 1%) rotate(1.2deg) scale(1.01); opacity: 0.80; }
+          45%  { transform: translate(-3%, 5%) rotate(-2.2deg) scale(0.99); opacity: 0.78; }
+          70%  { transform: translate(4%, -3%) rotate(1.8deg) scale(1.02); opacity: 0.85; }
+          100% { transform: translate(0%, 0%) rotate(0deg) scale(1.0); opacity: 0.72; }
+        }
+        @keyframes crystal-float-4 {
+          0%   { transform: translate(0%, 0%) rotate(0deg) scale(1.0); opacity: 0.68; }
+          35%  { transform: translate(-5%, -2%) rotate(-1.8deg) scale(1.04); opacity: 0.78; }
+          60%  { transform: translate(3%, 3%) rotate(2.2deg) scale(0.96); opacity: 0.74; }
+          85%  { transform: translate(-2%, 5%) rotate(-1deg) scale(1.02); opacity: 0.80; }
+          100% { transform: translate(0%, 0%) rotate(0deg) scale(1.0); opacity: 0.68; }
         }
 
-        /* ── 星点闪烁 ── */
-        .aurora-star {
-          animation: star-twinkle var(--dur, 3s) ease-in-out infinite;
+        /* ── Bubble Float Animation ── */
+        @keyframes bubble-float {
+          0%   { transform: translateY(0px) translateX(0px) scale(1.0); opacity: 0.5; }
+          25%  { transform: translateY(-25px) translateX(3px) scale(1.05); opacity: 0.7; }
+          50%  { transform: translateY(-50px) translateX(-2px) scale(0.98); opacity: 0.6; }
+          75%  { transform: translateY(-75px) translateX(4px) scale(1.03); opacity: 0.75; }
+          100% { transform: translateY(-100px) translateX(0px) scale(1.0); opacity: 0.5; }
         }
-        @keyframes star-twinkle {
-          0%, 100% { opacity: 0; transform: scale(0.3); }
-          50%      { opacity: 0.90; transform: scale(1.3); }
+
+        /* ── Specular Highlight Twinkle ── */
+        @keyframes specular-twinkle {
+          0%, 100% { opacity: 0.4; transform: scale(0.8); }
+          50%      { opacity: 1.0; transform: scale(1.3); }
+        }
+
+        /* ── Light Ray Sweep ── */
+        @keyframes ray-sweep-1 {
+          0%   { transform: rotate(-28deg); opacity: 0.5; }
+          50%  { transform: rotate(-23deg); opacity: 0.85; }
+          100% { transform: rotate(-28deg); opacity: 0.5; }
+        }
+        @keyframes ray-sweep-2 {
+          0%   { transform: rotate(18deg); opacity: 0.45; }
+          50%  { transform: rotate(23deg); opacity: 0.75; }
+          100% { transform: rotate(18deg); opacity: 0.45; }
+        }
+
+        /* ── Bloom Pulse ── */
+        @keyframes bloom-pulse {
+          0%, 100% { opacity: 0.5; transform: scale(1.0); }
+          50%      { opacity: 0.85; transform: scale(1.12); }
+        }
+        @keyframes bloom-pulse-2 {
+          0%, 100% { opacity: 0.45; transform: scale(1.0); }
+          50%      { opacity: 0.75; transform: scale(1.08); }
         }
       `}</style>
     </div>
@@ -412,9 +408,9 @@ export default memo(function OceanHeader({ title, subtitle, children, icon }: {
   return (
     <header
       className="relative overflow-hidden"
-      style={{ background: '#1e3a8a' }}
+      style={{ background: '#0f172a' }}
     >
-      <AuroraSoul />
+      <IceCrystalScene />
 
       {/* 标题内容 */}
       <div className="relative z-10 px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
