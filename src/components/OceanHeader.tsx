@@ -2,20 +2,21 @@
 import { useEffect, useRef, memo } from 'react';
 
 // ============================================================
-// OceanHeader v228 �?Aurora Soul (极光之魂) �?修复画面静止Bug
+// OceanHeader v229 — Aurora Soul (极光之魂) ★ 让亮部真正亮起来
 //
-// �?v228 修复记录 �?//
-// v226/v227 问题:
-//   - CSS transform 属性冲突导致光球漂移动画失�?//   - 光球基础alpha太低 (0.36~0.50)，可见度不足
-//   - blur太大 (40~55px)，细节被吃掉
-//   - 动画周期太长 (14~22s + 9s)，变化无法感�?//
-// v228 修复方案:
-//   �?�?wrapper div 分离 transform 动画 (float控制translate, pulse控制scale+opacity)
-//   �?大幅提高光球基础alpha (0.65~0.80)
-//   �?降低 blur (20~35px)
-//   �?缩短动画周期 (float 10~14s, pulse 6~8s)
-//   �?加大呼吸幅度 (0.08~1.0)
-//   �?保持蓝色系配�?+ 现有架构
+// ★ v229 修复记录 ★
+//
+// v228 问题:
+//   - 颜色在暗里打转，亮部不够亮
+//   - 光球基础颜色太暗，全亮时还是偏暗
+//   - 底色太暗 (#0f172a)，亮不起来
+//
+// v229 修复方案:
+//   ① 用 filter: brightness() 让亮部真正亮起来
+//   ② 提高光球基础颜色亮度 (改用更亮的蓝)
+//   ③ 提高底色亮度 (渐变终点从 #0f172a 改为 #1e3a8a)
+//   ④ 让 breathing 更陡峭 (45% 帧直接到最亮)
+//   ⑤ 保留 wrapper + inner 分离架构 (v228 的修复不能丢)
 // ============================================================
 
 function AuroraSoul() {
@@ -67,7 +68,7 @@ function AuroraSoul() {
         const oy = orb.y * h;
         const or = Math.max(orb.r * w, orb.r * h);
 
-        // 每个光斑有微妙的色相偏移 (随时间变�?
+        // 每个光斑有微妙的色相偏移 (随时间变化)
         const hueDrift = Math.sin(t * 0.3 + orb.hue) * 12;
         const sat = 60 + Math.sin(t * 0.4 + orb.x * 10) * 15;
         const light = 45 + Math.cos(t * 0.25 + orb.y * 10) * 12;
@@ -90,7 +91,7 @@ function AuroraSoul() {
     return () => cancelAnimationFrame(animId);
   }, []);
 
-  // ── CSS动画光球的参�?(wrapper + inner分离架构) ──
+  // ── CSS动画光球的参数 (wrapper + inner分离架构) ──
   const cssOrbs = [
     {
       wrapperClass: 'aurora-orb-wrapper-1',
@@ -129,7 +130,7 @@ function AuroraSoul() {
 
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-      {/* ===== Layer 0: 多色渐变底色 (CSS, 不是单一蓝色!) ===== */}
+      {/* ===== Layer 0: 多色渐变底色 (提高亮度! 不是单一蓝色!) ===== */}
       <div
         className="absolute inset-0"
         style={{
@@ -140,8 +141,8 @@ function AuroraSoul() {
               #1d4ed8 38%,
               #1e40af 52%,
               #1e3a8a 68%,
-              #172554 82%,
-              #0f172a 100%
+              #2563eb 82%,
+              #1e3a8a 100%
             )
           `,
         }}
@@ -191,16 +192,16 @@ function AuroraSoul() {
         />
       ))}
 
-      {/* ===== 关键帧样�?(内联style标签) ===== */}
+      {/* ===== 关键帧样式 (内联style标签) ===== */}
       <style>{`
         /* ============================================================
            光球架构说明:
-           - wrapper div: 只控�?transform: translate() (漂移动画)
-           - inner div: 只控�?opacity + transform: scale() (呼吸动画)
+           - wrapper div: 只控制 transform: translate() (漂移动画)
+           - inner div: 只控制 opacity + transform: scale() + filter (呼吸动画)
            这样两个动画不会冲突!
            ============================================================ */
 
-        /* ── 光球wrapper: 只负责漂�?(控制 transform/translate) ── */
+        /* ── 光球wrapper: 只负责漂移 (控制 transform/translate) ── */
         .aurora-orb-wrapper-1 {
           left: -10%; top: -8%;
           width: 55vw; height: 40vh;
@@ -222,49 +223,49 @@ function AuroraSoul() {
           animation: aurora-float-4 11s ease-in-out infinite alternate;
         }
 
-        /* ── 光球inner: 只负责呼�?(控制 opacity + scale) ── */
+        /* ── 光球inner: 只负责呼吸 (控制 opacity + scale + filter) ── */
         .aurora-orb-1 {
           background: radial-gradient(ellipse at center,
-            rgba(96, 165, 250, 0.80) 0%,
-            rgba(59, 130, 246, 0.60) 35%,
-            rgba(37, 99, 235, 0.35) 65%,
+            rgba(147, 197, 253, 0.85) 0%,
+            rgba(96, 165, 250, 0.65) 35%,
+            rgba(59, 130, 246, 0.40) 65%,
             transparent 100%
           );
           animation: aurora-pulse-1 6s ease-in-out infinite;
-          filter: blur(25px);
+          filter: blur(25px) brightness(0.5);
         }
         .aurora-orb-2 {
           background: radial-gradient(ellipse at center,
-            rgba(96, 165, 250, 0.75) 0%,
-            rgba(59, 130, 246, 0.55) 40%,
-            rgba(37, 99, 235, 0.30) 70%,
+            rgba(147, 197, 253, 0.80) 0%,
+            rgba(96, 165, 250, 0.60) 40%,
+            rgba(59, 130, 246, 0.35) 70%,
             transparent 100%
           );
           animation: aurora-pulse-2 7s ease-in-out infinite;
-          filter: blur(20px);
+          filter: blur(20px) brightness(0.5);
         }
         .aurora-orb-3 {
           background: radial-gradient(ellipse at center,
-            rgba(56, 189, 248, 0.78) 0%,
-            rgba(14, 165, 233, 0.58) 38%,
-            rgba(2, 132, 199, 0.32) 68%,
+            rgba(125, 211, 252, 0.82) 0%,
+            rgba(56, 189, 248, 0.62) 38%,
+            rgba(14, 165, 233, 0.38) 68%,
             transparent 100%
           );
           animation: aurora-pulse-3 8s ease-in-out infinite;
-          filter: blur(30px);
+          filter: blur(30px) brightness(0.5);
         }
         .aurora-orb-4 {
           background: radial-gradient(ellipse at center,
-            rgba(96, 165, 250, 0.72) 0%,
-            rgba(59, 130, 246, 0.52) 45%,
-            rgba(37, 99, 235, 0.28) 75%,
+            rgba(147, 197, 253, 0.78) 0%,
+            rgba(96, 165, 250, 0.58) 45%,
+            rgba(59, 130, 246, 0.32) 75%,
             transparent 100%
           );
           animation: aurora-pulse-4 6.5s ease-in-out infinite;
-          filter: blur(22px);
+          filter: blur(22px) brightness(0.5);
         }
 
-        /* ── 光球漂移路径 (只控�?translate, 不控�?scale!) ── */
+        /* ── 光球漂移路径 (只控制 translate, 不控制 scale!) ── */
         @keyframes aurora-float-1 {
           0%   { transform: translate(0%, 0%); }
           33%  { transform: translate(8%, 5%); }
@@ -290,106 +291,103 @@ function AuroraSoul() {
           100% { transform: translate(-4%, -2%); }
         }
 
-        /* ── 光球呼吸动画 (只控�?opacity + scale, 不控�?translate!) ── */
+        /* ── 光球呼吸动画 (控制 opacity + scale + filter:brightness!) ── */
         @keyframes aurora-pulse-1 {
-          0%   { opacity: 0.08; transform: scale(0.85); }
-          25%  { opacity: 0.45; transform: scale(0.95); }
-          45%  { opacity: 1.0;  transform: scale(1.15); }
-          70%  { opacity: 0.35; transform: scale(1.0); }
-          100% { opacity: 0.08; transform: scale(0.85); }
+          0%   { opacity: 0.08; filter: blur(25px) brightness(0.3); transform: scale(0.85); }
+          25%  { opacity: 0.50; filter: blur(25px) brightness(0.8); transform: scale(0.98); }
+          45%  { opacity: 1.0;  filter: blur(20px) brightness(2.2); transform: scale(1.18); }
+          70%  { opacity: 0.35; filter: blur(25px) brightness(0.7); transform: scale(1.0); }
+          100% { opacity: 0.08; filter: blur(25px) brightness(0.3); transform: scale(0.85); }
         }
         @keyframes aurora-pulse-2 {
-          0%   { opacity: 0.10; transform: scale(0.90); }
-          30%  { opacity: 0.50; transform: scale(1.0); }
-          50%  { opacity: 1.0;  transform: scale(1.12); }
-          75%  { opacity: 0.40; transform: scale(0.98); }
-          100% { opacity: 0.10; transform: scale(0.90); }
+          0%   { opacity: 0.10; filter: blur(20px) brightness(0.3); transform: scale(0.88); }
+          30%  { opacity: 0.55; filter: blur(20px) brightness(0.9); transform: scale(1.02); }
+          50%  { opacity: 1.0;  filter: blur(18px) brightness(2.0); transform: scale(1.15); }
+          75%  { opacity: 0.40; filter: blur(20px) brightness(0.8); transform: scale(0.98); }
+          100% { opacity: 0.10; filter: blur(20px) brightness(0.3); transform: scale(0.88); }
         }
         @keyframes aurora-pulse-3 {
-          0%   { opacity: 0.08; transform: scale(0.88); }
-          28%  { opacity: 0.48; transform: scale(0.96); }
-          48%  { opacity: 1.0;  transform: scale(1.10); }
-          72%  { opacity: 0.38; transform: scale(1.02); }
-          100% { opacity: 0.08; transform: scale(0.88); }
+          0%   { opacity: 0.08; filter: blur(30px) brightness(0.3); transform: scale(0.86); }
+          28%  { opacity: 0.48; filter: blur(30px) brightness(0.8); transform: scale(0.98); }
+          48%  { opacity: 1.0;  filter: blur(25px) brightness(2.5); transform: scale(1.12); }
+          72%  { opacity: 0.38; filter: blur(30px) brightness(0.7); transform: scale(1.02); }
+          100% { opacity: 0.08; filter: blur(30px) brightness(0.3); transform: scale(0.86); }
         }
         @keyframes aurora-pulse-4 {
-          0%   { opacity: 0.09; transform: scale(0.86); }
-          22%  { opacity: 0.42; transform: scale(0.94); }
-          45%  { opacity: 1.0;  transform: scale(1.14); }
-          68%  { opacity: 0.36; transform: scale(1.01); }
-          100% { opacity: 0.09; transform: scale(0.86); }
+          0%   { opacity: 0.09; filter: blur(22px) brightness(0.3); transform: scale(0.84); }
+          22%  { opacity: 0.42; filter: blur(22px) brightness(0.7); transform: scale(0.96); }
+          45%  { opacity: 1.0;  filter: blur(18px) brightness(2.3); transform: scale(1.16); }
+          68%  { opacity: 0.36; filter: blur(22px) brightness(0.8); transform: scale(1.01); }
+          100% { opacity: 0.09; filter: blur(22px) brightness(0.3); transform: scale(0.84); }
         }
 
-        /* ── 流动光带 (检查是否有transform冲突) ── */
+        /* ── 流动光带 ── */
         .aurora-beam {
           position: absolute;
           pointer-events: none;
-          opacity: 0.22;
         }
         .aurora-beam-1 {
           left: -10%; top: 10%;
           width: 70vw; height: 4px;
           background: linear-gradient(90deg,
             transparent 0%,
-            rgba(191, 219, 254, 0.75) 15%,
-            rgba(147, 197, 253, 0.95) 40%,
-            rgba(96, 165, 250, 0.85) 60%,
-            rgba(191, 219, 254, 0.75) 85%,
+            rgba(191, 219, 254, 0.85) 15%,
+            rgba(147, 197, 253, 1.0) 40%,
+            rgba(96, 165, 250, 0.95) 60%,
+            rgba(191, 219, 254, 0.85) 85%,
             transparent 100%
           );
           animation: beam-sweep-1 7s ease-in-out infinite;
-          filter: blur(3px);
+          filter: blur(2px) brightness(1.2);
         }
         .aurora-beam-2 {
           right: -8%; top: 45%;
           width: 55vw; height: 3px;
           background: linear-gradient(90deg,
             transparent 0%,
-            rgba(191, 219, 254, 0.65) 20%,
-            rgba(147, 197, 253, 0.85) 50%,
-            rgba(96, 165, 250, 0.75) 75%,
+            rgba(191, 219, 254, 0.75) 20%,
+            rgba(147, 197, 253, 0.95) 50%,
+            rgba(96, 165, 250, 0.85) 75%,
             transparent 100%
           );
           animation: beam-sweep-2 8s ease-in-out infinite;
-          filter: blur(2px);
+          filter: blur(2px) brightness(1.1);
         }
-        /* 光带动画: 只用一个animation, 所以没有冲�?*/
         @keyframes beam-sweep-1 {
-          0%   { transform: rotate(-24deg) translateX(-5%); opacity: 0.10; }
-          25%  { transform: rotate(-22deg) translateX(-1%); opacity: 0.32; }
-          48%  { transform: rotate(-19deg) translateX(4%); opacity: 0.65; }
-          72%  { transform: rotate(-23deg) translateX(6%); opacity: 0.25; }
-          100% { transform: rotate(-26deg) translateX(8%); opacity: 0.10; }
+          0%   { transform: rotate(-24deg) translateX(-5%); opacity: 0.10; filter: blur(2px) brightness(0.5); }
+          25%  { transform: rotate(-22deg) translateX(-1%); opacity: 0.45; filter: blur(2px) brightness(1.0); }
+          48%  { transform: rotate(-19deg) translateX(4%); opacity: 1.0; filter: blur(1px) brightness(2.0); }
+          72%  { transform: rotate(-23deg) translateX(6%); opacity: 0.30; filter: blur(2px) brightness(0.9); }
+          100% { transform: rotate(-26deg) translateX(8%); opacity: 0.10; filter: blur(2px) brightness(0.5); }
         }
         @keyframes beam-sweep-2 {
-          0%   { transform: rotate(18deg) translateX(5%); opacity: 0.08; }
-          28%  { transform: rotate(20deg) translateX(2%); opacity: 0.28; }
-          50%  { transform: rotate(23deg) translateX(-2%); opacity: 0.58; }
-          73%  { transform: rotate(20deg) translateX(-5%); opacity: 0.22; }
-          100% { transform: rotate(15deg) translateX(-8%); opacity: 0.08; }
+          0%   { transform: rotate(18deg) translateX(5%); opacity: 0.08; filter: blur(2px) brightness(0.5); }
+          28%  { transform: rotate(20deg) translateX(2%); opacity: 0.35; filter: blur(2px) brightness(1.0); }
+          50%  { transform: rotate(23deg) translateX(-2%); opacity: 1.0; filter: blur(1px) brightness(1.8); }
+          73%  { transform: rotate(20deg) translateX(-5%); opacity: 0.25; filter: blur(2px) brightness(0.9); }
+          100% { transform: rotate(15deg) translateX(-8%); opacity: 0.08; filter: blur(2px) brightness(0.5); }
         }
 
-        /* ── 中央高光 (光源�? ── */
+        /* ── 中央高光 (光源感 ★ 提高亮度!) ── */
         .aurora-glow-center {
           position: absolute;
           left: 50%; top: 28%;
           width: 55vw; height: 38vh;
           background: radial-gradient(ellipse at center,
-            rgba(191, 219, 254, 0.45) 0%,
-            rgba(147, 197, 253, 0.30) 30%,
-            rgba(96, 165, 250, 0.15) 55%,
+            rgba(191, 219, 254, 0.55) 0%,
+            rgba(147, 197, 253, 0.40) 30%,
+            rgba(96, 165, 250, 0.20) 55%,
             transparent 80%
           );
           animation: center-glow 7s ease-in-out infinite;
-          filter: blur(35px);
+          filter: blur(35px) brightness(0.6);
         }
-        /* 中央高光: 只用一个animation, 所以没有冲�?*/
         @keyframes center-glow {
-          0%   { opacity: 0.10; transform: translate(-50%, -50%) scale(0.85); }
-          25%  { opacity: 0.50; transform: translate(-49%, -51%) scale(0.95); }
-          45%  { opacity: 1.0;  transform: translate(-48%, -52%) scale(1.20); }
-          70%  { opacity: 0.45; transform: translate(-51%, -49%) scale(1.05); }
-          100% { opacity: 0.10; transform: translate(-50%, -50%) scale(0.85); }
+          0%   { opacity: 0.10; filter: blur(35px) brightness(0.3); transform: translate(-50%, -50%) scale(0.85); }
+          25%  { opacity: 0.55; filter: blur(35px) brightness(0.9); transform: translate(-49%, -51%) scale(1.0); }
+          45%  { opacity: 1.0;  filter: blur(28px) brightness(2.0); transform: translate(-48%, -52%) scale(1.25); }
+          70%  { opacity: 0.45; filter: blur(35px) brightness(0.8); transform: translate(-51%, -49%) scale(1.05); }
+          100% { opacity: 0.10; filter: blur(35px) brightness(0.3); transform: translate(-50%, -50%) scale(0.85); }
         }
 
         /* ── 星点闪烁 ── */
@@ -398,7 +396,7 @@ function AuroraSoul() {
         }
         @keyframes star-twinkle {
           0%, 100% { opacity: 0; transform: scale(0.3); }
-          50%      { opacity: 0.85; transform: scale(1.2); }
+          50%      { opacity: 0.90; transform: scale(1.3); }
         }
       `}</style>
     </div>
@@ -414,7 +412,7 @@ export default memo(function OceanHeader({ title, subtitle, children, icon }: {
   return (
     <header
       className="relative overflow-hidden"
-      style={{ background: '#0f172a' }}
+      style={{ background: '#1e3a8a' }}
     >
       <AuroraSoul />
 
