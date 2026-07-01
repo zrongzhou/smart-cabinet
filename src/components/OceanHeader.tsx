@@ -2,15 +2,16 @@
 import { useEffect, useRef, memo } from 'react';
 
 // ============================================================
-// OceanHeader v235 — Canvas 2D Faceted Crystal
+// OceanHeader v236 — Water Drops + Frost + Multi-color Cubes
+// (based on 7 reference images)
 //
-// Complete refactor from CSS to Canvas 2D:
-// - 3D polygon crystals (2-3 faces each with brightness distinction)
-// - Long highlight lines (not dots!) along edges
-// - 8-12 laser beams radiating from top-left
-// - Crystal edge outlines (1-2px white/light blue)
-// - Small bubbles/light dots (15-25 across canvas)
-// - BRIGHT background (#3b82f6/#2563eb, NOT #0f172a!)
+// v236 Features:
+// - Isometric 3D cubes (3 visible faces with brightness distinction)
+// - Water dropets on crystal surfaces (8-15 per crystal)
+// - Frost texture (30-50 tiny white dots per crystal)
+// - Bright multi-color background (purple→pink→blue→cyan)
+// - Bubble system (20-30 across canvas)
+// - Sharp specular highlights
 // ============================================================
 
 interface Point {
@@ -21,26 +22,18 @@ interface Point {
 interface CrystalFace {
   points: Point[];
   fillColor: string;
-  fillAlpha: number;
   strokeColor: string;
   lineWidth: number;
 }
 
-interface Crystal {
-  faces: CrystalFace[];
-  highlightLines: HighlightLine[];
-  centerX: number;
-  centerY: number;
-}
-
-interface HighlightLine {
-  x1: number;
-  y1: number;
-  x2: number;
-  y2: number;
-  color: string;
-  alpha: number;
-  width: number;
+interface WaterDropet {
+  x: number;
+  y: number;
+  radius: number;
+  offsetX: number;
+  offsetY: number;
+  speedX: number;
+  speedY: number;
 }
 
 interface Bubble {
@@ -53,222 +46,209 @@ interface Bubble {
   pulse: number;
 }
 
+interface Crystal {
+  faces: CrystalFace[];
+  dropets: WaterDropet[];
+  frostDots: Point[];
+  centerX: number;
+  centerY: number;
+}
+
+function hexToRgba(hex: string, alpha: number): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function rotatePoint(point: Point, center: Point, angle: number): Point {
+  const cosA = Math.cos(angle);
+  const sinA = Math.sin(angle);
+  const dx = point.x - center.x;
+  const dy = point.y - center.y;
+  return {
+    x: center.x + dx * cosA - dy * sinA,
+    y: center.y + dx * sinA + dy * cosA,
+  };
+}
+
+function getPolygonBounds(face: Point[]): { minX: number; maxX: number; minY: number; maxY: number } {
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  face.forEach(p => {
+    minX = Math.min(minX, p.x);
+    maxX = Math.max(maxX, p.x);
+    minY = Math.min(minY, p.y);
+    maxY = Math.max(maxY, p.y);
+  });
+  return { minX, maxX, minY, maxY };
+}
+
+function isPointInPolygon(x: number, y: number, polygon: Point[]): boolean {
+  let inside = false;
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const xi = polygon[i].x, yi = polygon[i].y;
+    const xj = polygon[j].x, yj = polygon[j].y;
+
+    const intersect = ((yi > y) !== (yj > y)) &&
+      (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
+
+function createIsometricCube(
+  centerX: number, centerY: number, size: number,
+  colors: { top: string; left: string; right: string },
+  angle: number
+): Crystal {
+  const hSize = size * 0.5;
+  const vSize = size * 0.3;
+
+  const topCenter = { x: centerX, y: centerY - vSize * 0.5 };
+  const top = [
+    rotatePoint({ x: centerX - hSize, y: topCenter.y }, topCenter, angle),
+    rotatePoint({ x: centerX, y: topCenter.y - vSize }, topCenter, angle),
+    rotatePoint({ x: centerX + hSize, y: topCenter.y }, topCenter, angle),
+    rotatePoint({ x: centerX, y: topCenter.y + vSize }, topCenter, angle),
+  ];
+
+  const left = [
+    top[0],
+    top[3],
+    { x: top[3].x - hSize * 0.3, y: top[3].y + vSize },
+    { x: top[0].x - hSize * 0.3, y: top[0].y + vSize },
+  ];
+
+  const right = [
+    top[3],
+    top[2],
+    { x: top[2].x + hSize * 0.3, y: top[2].y + vSize },
+    { x: top[3].x + hSize * 0.3, y: top[3].y + vSize },
+  ];
+
+  const dropets = generateWaterDropets(top, 10);
+  const frostDots = [
+    ...generateFrostDots(top, 15),
+    ...generateFrostDots(left, 10),
+    ...generateFrostDots(right, 10),
+  ];
+
+  return {
+    centerX,
+    centerY,
+    faces: [
+      { points: top, fillColor: colors.top, strokeColor: 'rgba(255,255,255,0.55)', lineWidth: 1.5 },
+      { points: left, fillColor: colors.left, strokeColor: 'rgba(255,255,255,0.45)', lineWidth: 1.2 },
+      { points: right, fillColor: colors.right, strokeColor: 'rgba(255,255,255,0.40)', lineWidth: 1.0 },
+    ],
+    dropets,
+    frostDots,
+  };
+}
+
+function generateWaterDropets(face: Point[], count: number): WaterDropet[] {
+  const dropets: WaterDropet[] = [];
+  const bounds = getPolygonBounds(face);
+
+  for (let i = 0; i < count; i++) {
+    let attempts = 0;
+    let x, y;
+    do {
+      x = bounds.minX + Math.random() * (bounds.maxX - bounds.minX);
+      y = bounds.minY + Math.random() * (bounds.maxY - bounds.minY);
+      attempts++;
+    } while (attempts < 10 && !isPointInPolygon(x, y, face));
+
+    if (attempts < 10) {
+      dropets.push({
+        x,
+        y,
+        radius: 3 + Math.random() * 9,
+        offsetX: 0,
+        offsetY: 0,
+        speedX: (Math.random() - 0.5) * 0.15,
+        speedY: (Math.random() - 0.5) * 0.15,
+      });
+    }
+  }
+  return dropets;
+}
+
+function generateFrostDots(face: Point[], count: number): Point[] {
+  const dots: Point[] = [];
+  const bounds = getPolygonBounds(face);
+
+  for (let i = 0; i < count; i++) {
+    let attempts = 0;
+    let x, y;
+    do {
+      x = bounds.minX + Math.random() * (bounds.maxX - bounds.minX);
+      y = bounds.minY + Math.random() * (bounds.maxY - bounds.minY);
+      attempts++;
+    } while (attempts < 10 && !isPointInPolygon(x, y, face));
+
+    if (attempts < 10) {
+      dots.push({ x, y });
+    }
+  }
+  return dots;
+}
+
 function IceCrystalScene() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
   const animationStateRef = useRef<{
     crystals: Crystal[];
-    laserBeams: Point[][];
     bubbles: Bubble[];
     time: number;
   } | null>(null);
 
-  // ── Initialize Crystal Geometries ──
   const initCrystals = (w: number, h: number): Crystal[] => {
+    const cubeSize = w * 0.12;
+    const isoAngle = Math.PI / 6;
+
     return [
-      // Crystal 1 (Left-Center, Largest) - Pentagon + 2 side faces
-      {
-        centerX: 0.22 * w,
-        centerY: 0.35 * h,
-        faces: [
-          // Front face (bright)
-          {
-            points: [
-              { x: 0.10 * w, y: 0.20 * h },
-              { x: 0.35 * w, y: 0.12 * h },
-              { x: 0.42 * w, y: 0.35 * h },
-              { x: 0.28 * w, y: 0.55 * h },
-              { x: 0.08 * w, y: 0.42 * h },
-            ],
-            fillColor: 'rgba(147, 197, 253, 0.38)',
-            fillAlpha: 0.38,
-            strokeColor: 'rgba(255, 255, 255, 0.50)',
-            lineWidth: 1.5,
-          },
-          // Side face 1 (darker)
-          {
-            points: [
-              { x: 0.35 * w, y: 0.12 * h },
-              { x: 0.48 * w, y: 0.22 * h },
-              { x: 0.45 * w, y: 0.45 * h },
-              { x: 0.42 * w, y: 0.35 * h },
-            ],
-            fillColor: 'rgba(96, 165, 250, 0.28)',
-            fillAlpha: 0.28,
-            strokeColor: 'rgba(255, 255, 255, 0.38)',
-            lineWidth: 1.2,
-          },
-          // Side face 2 (darkest)
-          {
-            points: [
-              { x: 0.28 * w, y: 0.55 * h },
-              { x: 0.42 * w, y: 0.35 * h },
-              { x: 0.45 * w, y: 0.45 * h },
-              { x: 0.38 * w, y: 0.65 * h },
-              { x: 0.18 * w, y: 0.58 * h },
-            ],
-            fillColor: 'rgba(59, 130, 246, 0.25)',
-            fillAlpha: 0.25,
-            strokeColor: 'rgba(255, 255, 255, 0.35)',
-            lineWidth: 1.0,
-          },
-        ],
-        highlightLines: [
-          { x1: 0.12 * w, y1: 0.22 * h, x2: 0.25 * w, y2: 0.18 * h, color: 'rgba(255,255,255,0.65)', alpha: 0.65, width: 2 },
-          { x1: 0.15 * w, y1: 0.30 * h, x2: 0.32 * w, y2: 0.25 * h, color: 'rgba(255,255,255,0.58)', alpha: 0.58, width: 1.5 },
-          { x1: 0.20 * w, y1: 0.42 * h, x2: 0.38 * w, y2: 0.38 * h, color: 'rgba(255,255,255,0.62)', alpha: 0.62, width: 2.5 },
-        ],
-      },
-      // Crystal 2 (Top-Right) - Hexagon + side face
-      {
-        centerX: 0.72 * w,
-        centerY: 0.22 * h,
-        faces: [
-          // Front face
-          {
-            points: [
-              { x: 0.60 * w, y: 0.15 * h },
-              { x: 0.78 * w, y: 0.15 * h },
-              { x: 0.85 * w, y: 0.32 * h },
-              { x: 0.78 * w, y: 0.48 * h },
-              { x: 0.60 * w, y: 0.48 * h },
-              { x: 0.53 * w, y: 0.32 * h },
-            ],
-            fillColor: 'rgba(125, 211, 252, 0.35)',
-            fillAlpha: 0.35,
-            strokeColor: 'rgba(255, 255, 255, 0.48)',
-            lineWidth: 1.5,
-          },
-          // Side face
-          {
-            points: [
-              { x: 0.78 * w, y: 0.15 * h },
-              { x: 0.88 * w, y: 0.25 * h },
-              { x: 0.85 * w, y: 0.45 * h },
-              { x: 0.78 * w, y: 0.48 * h },
-            ],
-            fillColor: 'rgba(103, 232, 249, 0.25)',
-            fillAlpha: 0.25,
-            strokeColor: 'rgba(255, 255, 255, 0.35)',
-            lineWidth: 1.0,
-          },
-        ],
-        highlightLines: [
-          { x1: 0.62 * w, y1: 0.18 * h, x2: 0.75 * w, y2: 0.16 * h, color: 'rgba(255,255,255,0.60)', alpha: 0.60, width: 2 },
-          { x1: 0.65 * w, y1: 0.30 * h, x2: 0.82 * w, y2: 0.28 * h, color: 'rgba(255,255,255,0.55)', alpha: 0.55, width: 1.5 },
-        ],
-      },
-      // Crystal 3 (Bottom-Right) - Diamond + side face (BRIGHTEST)
-      {
-        centerX: 0.75 * w,
-        centerY: 0.65 * h,
-        faces: [
-          // Front face (brightest!)
-          {
-            points: [
-              { x: 0.65 * w, y: 0.55 * h },
-              { x: 0.85 * w, y: 0.55 * h },
-              { x: 0.92 * w, y: 0.72 * h },
-              { x: 0.85 * w, y: 0.88 * h },
-              { x: 0.65 * w, y: 0.88 * h },
-              { x: 0.58 * w, y: 0.72 * h },
-            ],
-            fillColor: 'rgba(224, 242, 254, 0.32)',
-            fillAlpha: 0.32,
-            strokeColor: 'rgba(255, 255, 255, 0.52)',
-            lineWidth: 1.5,
-          },
-          // Side face
-          {
-            points: [
-              { x: 0.85 * w, y: 0.55 * h },
-              { x: 0.95 * w, y: 0.62 * h },
-              { x: 0.92 * w, y: 0.80 * h },
-              { x: 0.85 * w, y: 0.88 * h },
-            ],
-            fillColor: 'rgba(186, 230, 253, 0.25)',
-            fillAlpha: 0.25,
-            strokeColor: 'rgba(255, 255, 255, 0.38)',
-            lineWidth: 1.0,
-          },
-        ],
-        highlightLines: [
-          { x1: 0.68 * w, y1: 0.58 * h, x2: 0.82 * w, y2: 0.57 * h, color: 'rgba(255,255,255,0.68)', alpha: 0.68, width: 2.5 },
-          { x1: 0.70 * w, y1: 0.70 * h, x2: 0.88 * w, y2: 0.68 * h, color: 'rgba(255,255,255,0.58)', alpha: 0.58, width: 2 },
-        ],
-      },
+      createIsometricCube(0.20 * w, 0.35 * h, cubeSize * 1.2, { top: '#93c5fd', left: '#60a5fa', right: '#3b82f6' }, isoAngle),
+      createIsometricCube(0.70 * w, 0.25 * h, cubeSize * 0.9, { top: '#c4b5fd', left: '#a78bfa', right: '#7c3aed' }, isoAngle),
+      createIsometricCube(0.72 * w, 0.65 * h, cubeSize * 1.0, { top: '#67e8f9', left: '#22d3ee', right: '#06b6d4' }, isoAngle),
+      createIsometricCube(0.45 * w, 0.55 * h, cubeSize * 0.7, { top: '#a7f3d0', left: '#6ee7b7', right: '#059669' }, isoAngle),
     ];
   };
 
-  // ── Initialize Laser Beams ──
-  const initLaserBeams = (w: number, h: number): Point[][] => {
-    return [
-      [{ x: 0.05 * w, y: 0.10 * h }, { x: 0.45 * w, y: 0.90 * h }],
-      [{ x: 0.0 * w, y: 0.25 * h }, { x: 0.55 * w, y: 0.95 * h }],
-      [{ x: 0.15 * w, y: 0.0 * h }, { x: 0.60 * w, y: 0.85 * h }],
-      [{ x: 0.08 * w, y: 0.40 * h }, { x: 0.65 * w, y: 1.0 * h }],
-      [{ x: 0.20 * w, y: 0.05 * h }, { x: 0.70 * w, y: 0.88 * h }],
-      [{ x: 0.02 * w, y: 0.50 * h }, { x: 0.52 * w, y: 1.05 * h }],
-      [{ x: 0.12 * w, y: 0.18 * h }, { x: 0.75 * w, y: 0.92 * h }],
-      [{ x: 0.0 * w, y: 0.35 * h }, { x: 0.62 * w, y: 1.02 * h }],
-      [{ x: 0.18 * w, y: 0.02 * h }, { x: 0.80 * w, y: 0.82 * h }],
-      [{ x: 0.06 * w, y: 0.60 * h }, { x: 0.58 * w, y: 1.08 * h }],
-    ];
-  };
-
-  // ── Initialize Bubbles ──
   const initBubbles = (w: number, h: number): Bubble[] => {
     const bubbles: Bubble[] = [];
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 25; i++) {
       bubbles.push({
         x: Math.random() * w,
         y: Math.random() * h,
-        radius: 3 + Math.random() * 5,
-        speedY: 0.2 + Math.random() * 0.3,
-        speedX: (Math.random() - 0.5) * 0.15,
-        alpha: 0.3 + Math.random() * 0.4,
+        radius: 4 + Math.random() * 14,
+        speedY: 0.15 + Math.random() * 0.25,
+        speedX: (Math.random() - 0.5) * 0.12,
+        alpha: 0.25 + Math.random() * 0.35,
         pulse: Math.random() * Math.PI * 2,
       });
     }
     return bubbles;
   };
 
-  // ── Draw Background ──
-  const drawBackground = (ctx: CanvasRenderingContext2D, w: number, h: number, _t: number) => {
-    const bgGrad = ctx.createRadialGradient(w * 0.5, h * 0.4, 0, w * 0.5, h * 0.4, w * 0.7);
-    bgGrad.addColorStop(0, '#3b82f6');
-    bgGrad.addColorStop(0.5, '#2563eb');
-    bgGrad.addColorStop(1, '#1e40af');
+  const drawBackground = (ctx: CanvasRenderingContext2D, w: number, h: number) => {
+    const bgGrad = ctx.createLinearGradient(0, 0, w, h);
+    bgGrad.addColorStop(0, '#a78bfa');
+    bgGrad.addColorStop(0.3, '#f0abfc');
+    bgGrad.addColorStop(0.6, '#93c5fd');
+    bgGrad.addColorStop(1, '#67e8f9');
     ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, w, h);
+
+    const haloGrad = ctx.createRadialGradient(w * 0.4, h * 0.3, 0, w * 0.4, h * 0.3, w * 0.6);
+    haloGrad.addColorStop(0, 'rgba(255,255,255,0.15)');
+    haloGrad.addColorStop(1, 'transparent');
+    ctx.fillStyle = haloGrad;
     ctx.fillRect(0, 0, w, h);
   };
 
-  // ── Draw Laser Beams ──
-  const drawLaserBeams = (ctx: CanvasRenderingContext2D, beams: Point[][], t: number, w: number, h: number) => {
-    const rotationAngle = Math.sin(t * 0.3) * 0.05; // ±~3° rotation
-    
-    ctx.save();
-    ctx.translate(w * 0.15, h * 0.2);
-    ctx.rotate(rotationAngle);
-    ctx.translate(-w * 0.15, -h * 0.2);
-
-    beams.forEach((beam, i) => {
-      const alpha = 0.04 + Math.sin(t * 0.5 + i * 0.8) * 0.02;
-      ctx.beginPath();
-      ctx.moveTo(beam[0].x, beam[0].y);
-      ctx.lineTo(beam[1].x, beam[1].y);
-      ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
-      ctx.lineWidth = 1 + (i % 2);
-      ctx.stroke();
-    });
-
-    ctx.restore();
-  };
-
-  // ── Draw Crystal ──
   const drawCrystal = (ctx: CanvasRenderingContext2D, crystal: Crystal, t: number) => {
-    // Draw faces
-    crystal.faces.forEach((face) => {
+    crystal.faces.forEach((face, faceIdx) => {
       ctx.beginPath();
       ctx.moveTo(face.points[0].x, face.points[0].y);
       for (let i = 1; i < face.points.length; i++) {
@@ -276,148 +256,159 @@ function IceCrystalScene() {
       }
       ctx.closePath();
 
-      // Fill with subtle animation
-      const alpha = face.fillAlpha + Math.sin(t * 0.8) * 0.03;
-      const fillAlpha = Math.max(0.15, alpha);
-      ctx.fillStyle = face.fillColor.replace(/[\d.]+\)$/, `${fillAlpha.toFixed(2)})`);
+      const baseColor = face.fillColor;
+      const alphaOffset = Math.sin(t * 0.6 + faceIdx * 0.5) * 0.03;
+      const baseAlpha = 0.7;
+      ctx.fillStyle = hexToRgba(baseColor, Math.max(0.4, Math.min(1, baseAlpha + alphaOffset)));
       ctx.fill();
 
-      // Stroke outline
       ctx.strokeStyle = face.strokeColor;
       ctx.lineWidth = face.lineWidth;
       ctx.stroke();
     });
 
-    // Draw highlight lines
-    crystal.highlightLines.forEach((line) => {
-      const pulseAlpha = line.alpha + Math.sin(t * 1.2) * 0.15;
-      const alpha = Math.max(0.3, Math.min(0.9, pulseAlpha));
-      
+    ctx.fillStyle = 'rgba(255,255,255,0.25)';
+    crystal.frostDots.forEach((dot) => {
+      const pulse = Math.sin(t * 0.8 + dot.x * 0.1) * 0.1;
       ctx.beginPath();
-      ctx.moveTo(line.x1, line.y1);
-      ctx.lineTo(line.x2, line.y2);
-      ctx.strokeStyle = line.color.replace(/[\d.]+\)$/, `${alpha.toFixed(2)})`);
-      ctx.lineWidth = line.width;
-      ctx.stroke();
+      ctx.arc(dot.x, dot.y, 0.5 + pulse, 0, Math.PI * 2);
+      ctx.fill();
     });
-  };
 
-  // ── Draw Bubbles ──
-  const drawBubbles = (ctx: CanvasRenderingContext2D, bubbles: Bubble[], t: number, w: number, h: number) => {
-    bubbles.forEach((bubble) => {
-      // Animate position
-      bubble.y -= bubble.speedY;
-      bubble.x += bubble.speedX + Math.sin(t * 0.5 + bubble.pulse) * 0.2;
-      
-      // Wrap around
-      if (bubble.y < -10) {
-        bubble.y = h + 10;
-        bubble.x = Math.random() * w;
-      }
-      if (bubble.x < -10) bubble.x = w + 10;
-      if (bubble.x > w + 10) bubble.x = -10;
+    crystal.dropets.forEach((droplet) => {
+      droplet.offsetX += droplet.speedX;
+      droplet.offsetY += droplet.speedY;
+      if (Math.abs(droplet.offsetX) > 5) droplet.speedX *= -1;
+      if (Math.abs(droplet.offsetY) > 5) droplet.speedY *= -1;
 
-      // Draw bubble
-      const pulse = Math.sin(t * 0.8 + bubble.pulse) * 0.15;
-      const alpha = Math.max(0.2, Math.min(0.7, bubble.alpha + pulse));
+      const dx = droplet.x + droplet.offsetX;
+      const dy = droplet.y + droplet.offsetY;
+
+      const grad = ctx.createRadialGradient(dx - droplet.radius * 0.3, dy - droplet.radius * 0.3, 0, dx, dy, droplet.radius);
+      grad.addColorStop(0, 'rgba(255,255,255,0.85)');
+      grad.addColorStop(0.4, 'rgba(255,255,255,0.5)');
+      grad.addColorStop(1, 'transparent');
 
       ctx.beginPath();
-      ctx.arc(bubble.x, bubble.y, bubble.radius, 0, Math.PI * 2);
-      
-      // Radial gradient for 3D effect
-      const grad = ctx.createRadialGradient(
-        bubble.x - bubble.radius * 0.3,
-        bubble.y - bubble.radius * 0.3,
-        0,
-        bubble.x,
-        bubble.y,
-        bubble.radius
-      );
-      grad.addColorStop(0, `rgba(255, 255, 255, ${alpha})`);
-      grad.addColorStop(0.5, `rgba(191, 219, 254, ${alpha * 0.6})`);
-      grad.addColorStop(1, 'transparent');
-      
+      ctx.arc(dx, dy, droplet.radius, 0, Math.PI * 2);
       ctx.fillStyle = grad;
       ctx.fill();
 
-      // Border
-      ctx.strokeStyle = `rgba(255, 255, 255, ${alpha * 0.5})`;
-      ctx.lineWidth = 0.5;
+      ctx.strokeStyle = 'rgba(255,255,255,0.55)';
+      ctx.lineWidth = 1;
       ctx.stroke();
     });
   };
 
-  // ── Draw Sparkle Dots ──
+  const drawBubbles = (ctx: CanvasRenderingContext2D, bubbles: Bubble[], t: number, w: number, h: number) => {
+    bubbles.forEach((bubble) => {
+      bubble.y -= bubble.speedY;
+      bubble.x += bubble.speedX + Math.sin(t * 0.5 + bubble.pulse) * 0.15;
+
+      if (bubble.y < -20) {
+        bubble.y = h + 20;
+        bubble.x = Math.random() * w;
+      }
+      if (bubble.x < -20) bubble.x = w + 20;
+      if (bubble.x > w + 20) bubble.x = -20;
+
+      const pulse = Math.sin(t * 0.8 + bubble.pulse) * 0.12;
+      const alpha = Math.max(0.15, Math.min(0.6, bubble.alpha + pulse));
+
+      const grad = ctx.createRadialGradient(bubble.x - bubble.radius * 0.3, bubble.y - bubble.radius * 0.3, 0, bubble.x, bubble.y, bubble.radius);
+      grad.addColorStop(0, `rgba(255,255,255,${alpha})`);
+      grad.addColorStop(0.5, `rgba(191,219,254,${alpha * 0.6})`);
+      grad.addColorStop(1, 'transparent');
+
+      ctx.beginPath();
+      ctx.arc(bubble.x, bubble.y, bubble.radius, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      ctx.strokeStyle = `rgba(255,255,255,${alpha * 0.55})`;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    });
+  };
+
   const drawSparkles = (ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     const sparkles = [
-      { x: 0.15, y: 0.25, size: 2 },
-      { x: 0.45, y: 0.18, size: 1.5 },
-      { x: 0.30, y: 0.65, size: 2.5 },
-      { x: 0.70, y: 0.35, size: 2 },
-      { x: 0.85, y: 0.70, size: 1.5 },
-      { x: 0.55, y: 0.82, size: 2 },
-      { x: 0.25, y: 0.80, size: 1.8 },
-      { x: 0.65, y: 0.15, size: 2.2 },
+      { x: 0.18, y: 0.22, size: 2.5 },
+      { x: 0.42, y: 0.15, size: 1.8 },
+      { x: 0.28, y: 0.62, size: 2.2 },
+      { x: 0.68, y: 0.32, size: 2.0 },
+      { x: 0.82, y: 0.68, size: 1.8 },
+      { x: 0.52, y: 0.78, size: 2.5 },
+      { x: 0.22, y: 0.75, size: 2.0 },
+      { x: 0.62, y: 0.12, size: 2.2 },
+      { x: 0.35, y: 0.45, size: 1.5 },
+      { x: 0.78, y: 0.48, size: 2.0 },
     ];
 
     sparkles.forEach((sparkle, i) => {
-      const flash = Math.sin(t * 2.5 + i * 1.3);
-      const alpha = flash > 0.85 ? (flash - 0.85) * 6.67 : 0;
-      
+      const flash = Math.sin(t * 2.2 + i * 1.5);
+      const alpha = flash > 0.82 ? (flash - 0.82) * 5.56 : 0;
+
       if (alpha > 0) {
         ctx.beginPath();
         ctx.arc(sparkle.x * w, sparkle.y * h, sparkle.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+        ctx.fillStyle = `rgba(255,255,255,${alpha})`;
         ctx.fill();
-        
-        // Glow
+
         ctx.beginPath();
         ctx.arc(sparkle.x * w, sparkle.y * h, sparkle.size * 3, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.3})`;
+        ctx.fillStyle = `rgba(255,255,255,${alpha * 0.25})`;
         ctx.fill();
       }
     });
   };
 
-  // ── Main Animation Loop ──
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    
+
     const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
     ctxRef.current = ctx;
-    
+
     let animId = 0;
 
     function resize() {
       const currentCanvas = canvasRef.current;
-      const currentCtx = ctxRef.current;
-      if (!currentCanvas || !currentCtx) return;
-      
+      if (!currentCanvas) return;
+
       const rect = currentCanvas.getBoundingClientRect();
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       currentCanvas.width = Math.max(1, rect.width * dpr);
       currentCanvas.height = Math.max(1, rect.height * dpr);
+
+      const currentCtx = ctxRef.current;
+      if (!currentCtx) return;
       currentCtx.scale(dpr, dpr);
-      
-      // Re-initialize geometries on resize
+
       const w = rect.width;
       const h = rect.height;
       animationStateRef.current = {
         crystals: initCrystals(w, h),
-        laserBeams: initLaserBeams(w, h),
         bubbles: initBubbles(w, h),
         time: 0,
       };
     }
 
     function animate(time: number) {
-      const currentCanvas = canvasRef.current;
       const currentCtx = ctxRef.current;
-      if (!currentCanvas || !currentCtx) return;
-      
-      const rect = currentCanvas.getBoundingClientRect();
+      if (!currentCtx) {
+        animId = requestAnimationFrame(animate);
+        return;
+      }
+
+      const canvas = canvasRef.current;
+      if (!canvas) {
+        animId = requestAnimationFrame(animate);
+        return;
+      }
+
+      const rect = canvas.getBoundingClientRect();
       if (rect.width === 0) {
         animId = requestAnimationFrame(animate);
         return;
@@ -427,8 +418,13 @@ function IceCrystalScene() {
         resize();
       }
 
-      const state = animationStateRef.current!;
-      const t = time * 0.001; // Convert to seconds
+      const state = animationStateRef.current;
+      if (!state) {
+        animId = requestAnimationFrame(animate);
+        return;
+      }
+
+      const t = time * 0.001;
       state.time = t;
 
       const w = rect.width;
@@ -436,22 +432,14 @@ function IceCrystalScene() {
 
       currentCtx.clearRect(0, 0, w, h);
 
-      // 1. Draw background
-      drawBackground(currentCtx, w, h, t);
+      drawBackground(currentCtx, w, h);
+      drawBubbles(currentCtx, state.bubbles, t, w, h);
 
-      // 2. Draw laser beams
-      drawLaserBeams(currentCtx, state.laserBeams, t, w, h);
-
-      // 3. Draw crystals
       state.crystals.forEach((crystal) => {
         drawCrystal(currentCtx, crystal, t);
       });
 
-      // 4. Draw sparkle dots
       drawSparkles(currentCtx, t, w, h);
-
-      // 5. Draw bubbles
-      drawBubbles(currentCtx, state.bubbles, t, w, h);
 
       animId = requestAnimationFrame(animate);
     }
@@ -462,7 +450,7 @@ function IceCrystalScene() {
     const resizeObserver = new ResizeObserver(() => {
       resize();
     });
-    resizeObserver.observe(canvas);
+    resizeObserver.observe(canvasRef.current!);
 
     return () => {
       cancelAnimationFrame(animId);
@@ -477,19 +465,6 @@ function IceCrystalScene() {
         className="absolute inset-0 w-full h-full"
         style={{ display: 'block' }}
       />
-
-      {/* Caustic effect overlay (subtle) */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background: `
-            radial-gradient(ellipse at 30% 40%, rgba(147, 197, 253, 0.08) 0%, transparent 50%),
-            radial-gradient(ellipse at 70% 60%, rgba(103, 232, 249, 0.06) 0%, transparent 50%
-          `,
-          mixBlendMode: 'screen',
-          opacity: 0.4,
-        }}
-      />
     </div>
   );
 }
@@ -503,11 +478,10 @@ export default memo(function OceanHeader({ title, subtitle, children, icon }: {
   return (
     <header
       className="relative overflow-hidden"
-      style={{ background: '#2563eb' }}  // BRIGHT blue, not dark!
+      style={{ background: 'linear-gradient(135deg, #a78bfa 0%, #f0abfc 30%, #93c5fd 60%, #67e8f9 100%)' }}
     >
       <IceCrystalScene />
 
-      {/* Title Content */}
       <div className="relative z-10 px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
         <div className="mx-auto max-w-4xl text-center">
           {icon && (
@@ -519,7 +493,7 @@ export default memo(function OceanHeader({ title, subtitle, children, icon }: {
             {title}
           </h1>
           {subtitle && (
-            <p className="mt-4 text-xl text-blue-100 sm:text-2xl drop-shadow">
+            <p className="mt-4 text-xl text-purple-100 sm:text-2xl drop-shadow">
               {subtitle}
             </p>
           )}
