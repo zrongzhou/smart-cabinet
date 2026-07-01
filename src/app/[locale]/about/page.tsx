@@ -1519,115 +1519,201 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ===== CTA v255 — 蓝天草原主题 ===== */}
+      {/* ===== CTA v258 — 电影级蓝天草原（去卡通化） ===== */}
       <section
         className="py-24 px-4 sm:px-6 lg:px-8 text-gray-900 relative overflow-hidden"
         style={{
-          background: 'linear-gradient(180deg, #3b82f6 0%, #60a5fa 25%, #93c5fd 45%, #dbeafe 60%, #ecfdf5 75%, #bbf7d0 90%, #86efac 100%)',
+          background: 'linear-gradient(180deg, #16314f 0%, #234a73 12%, #2f5f93 26%, #3b7fc4 40%, #66a4dd 54%, #9cc4ea 66%, #c3ddf5 76%, #e2f0fb 84%, #eaf6ec 92%, #cfe8c4 100%)',
         }}
       >
-        {/* === 背景装饰层 v257 — 高质感 + 动画版 === */}
-        
-        {/* 太阳光晕 — 右上角暖光（强呼吸） */}
-        <div className="absolute -top-[5%] right-[8%] w-[400px] h-[400px] rounded-full pointer-events-none" style={{
-          background: 'radial-gradient(circle, rgba(255,248,220,0.85) 0%, rgba(254,215,170,0.45) 20%, rgba(251,191,36,0.15) 45%, transparent 70%)',
-          animation: 'cta-sunPulse 5s ease-in-out infinite alternate',
+        {/* === 背景装饰层 v258 — 电影级自然风光 === */}
+
+        {/* 大气雾霾层（空气散射） — 多层超大模糊椭圆 */}
+        <div className="absolute inset-0 pointer-events-none" style={{ overflow: 'hidden' }}>
+          <div className="absolute" style={{ left: '-12%', top: '-8%', width: '62%', height: '52%', borderRadius: '50%', background: 'radial-gradient(ellipse at center, rgba(196,218,246,0.5) 0%, transparent 70%)', filter: 'blur(60px)' }} />
+          <div className="absolute" style={{ right: '-16%', top: '-12%', width: '72%', height: '56%', borderRadius: '50%', background: 'radial-gradient(ellipse at center, rgba(222,236,255,0.42) 0%, transparent 70%)', filter: 'blur(80px)' }} />
+          <div className="absolute" style={{ left: '18%', bottom: '-22%', width: '84%', height: '46%', borderRadius: '50%', background: 'radial-gradient(ellipse at center, rgba(206,228,247,0.36) 0%, transparent 70%)', filter: 'blur(50px)' }} />
+        </div>
+
+        {/* 天空暗角 vignette — 四角稍暗，中心稍亮 */}
+        <div className="absolute inset-0 pointer-events-none" style={{
+          background: 'radial-gradient(ellipse 92% 82% at 50% 44%, rgba(255,255,255,0.05) 0%, transparent 52%, rgba(18,38,58,0.14) 100%)',
         }} />
-        
+
         {/* 天空光斑 — 左上淡蓝（缓慢脉动） */}
-        <div className="absolute top-[2%] left-[-3%] w-[350px] h-[280px] rounded-full pointer-events-none" style={{
-          background: 'radial-gradient(ellipse at center, rgba(147,197,253,0.35) 0%, rgba(191,219,254,0.18) 50%, transparent 75%)',
-          filter: 'blur(2px)',
+        <div className="absolute top-[1%] left-[-3%] w-[360px] h-[290px] rounded-full pointer-events-none" style={{
+          background: 'radial-gradient(ellipse at center, rgba(150,200,255,0.32) 0%, rgba(191,219,254,0.16) 50%, transparent 75%)',
+          filter: 'blur(3px)',
           animation: 'cta-skyGlow 7s ease-in-out infinite alternate',
         }} />
-        
-        {/* 清晰的蓬松云朵（多椭圆叠加 + 飘动动画） */}
+
+        {/* 太阳 + 光线系统（右上角） */}
+        <div className="absolute pointer-events-none" style={{ top: '-4%', right: '4%', width: '560px', height: '560px' }}>
+          {/* 体积光 — 宽斜条（右上→左下） */}
+          <div className="absolute" style={{
+            left: '50%', top: '50%', width: '200px', height: '960px', marginLeft: '-100px',
+            background: 'linear-gradient(180deg, rgba(255,252,240,0.10) 0%, rgba(255,250,235,0.04) 42%, transparent 76%)',
+            filter: 'blur(38px)', transformOrigin: 'top center', transform: 'rotate(-40deg)',
+            animation: 'cta-godray 14s ease-in-out infinite alternate',
+          }} />
+          {/* 光线射线 — conic-gradient 旋转光束 */}
+          <div className="absolute" style={{
+            left: '50%', top: '50%', width: '1000px', height: '1000px', marginLeft: '-500px', marginTop: '-500px',
+            borderRadius: '50%',
+            background: 'conic-gradient(from 0deg, rgba(255,252,240,0.06) 0deg, transparent 9deg, transparent 23deg, rgba(255,252,240,0.05) 31deg, transparent 39deg, transparent 53deg, rgba(255,252,240,0.06) 61deg, transparent 73deg, transparent 87deg, rgba(255,252,240,0.05) 95deg, transparent 100deg)',
+            WebkitMaskImage: 'radial-gradient(circle, transparent 8%, black 9%, black 62%, transparent 72%)',
+            maskImage: 'radial-gradient(circle, transparent 8%, black 9%, black 62%, transparent 72%)',
+            animation: 'cta-raySpin 32s linear infinite',
+          }} />
+          {/* 太阳核心 — 径向渐变 白→淡黄→透明 */}
+          <div className="absolute" style={{
+            left: '50%', top: '50%', width: '230px', height: '230px', marginLeft: '-115px', marginTop: '-115px',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(255,255,255,0.96) 0%, rgba(255,250,230,0.85) 12%, rgba(255,243,205,0.5) 30%, rgba(254,225,160,0.2) 55%, transparent 76%)',
+            animation: 'cta-sunPulse 5s ease-in-out infinite alternate',
+          }} />
+          {/* 镜头光晕 lens flare — 太阳左下方 */}
+          <div className="absolute" style={{
+            left: '20%', top: '64%', width: '48px', height: '48px', borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(255,250,230,0.45) 0%, rgba(255,248,220,0.18) 50%, transparent 75%)',
+            filter: 'blur(2px)',
+          }} />
+          <div className="absolute" style={{
+            left: '8%', top: '78%', width: '26px', height: '26px', borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(255,248,225,0.4) 0%, transparent 70%)',
+          }} />
+        </div>
+
+        {/* 远山剪影 — 3层层叠雾气山脉 */}
+        <svg className="absolute pointer-events-none" style={{ left: '-2%', bottom: '6%', width: '104%', height: '210px' }} viewBox="0 0 1200 220" preserveAspectRatio="none">
+          {/* 最远层 — 最淡最高 */}
+          <path d="M0,150 Q60,118 120,136 Q200,82 280,120 Q360,58 440,112 Q520,72 600,116 Q690,64 770,110 Q860,78 940,120 Q1030,72 1110,116 Q1160,96 1200,118 L1200,220 L0,220 Z"
+            fill="rgba(100,130,160,0.12)" />
+          {/* 中间层 — 中等 */}
+          <path d="M0,176 Q80,148 160,166 Q260,118 360,156 Q470,108 580,154 Q690,124 800,158 Q910,134 1020,164 Q1120,140 1200,166 L1200,220 L0,220 Z"
+            fill="rgba(80,110,140,0.18)" />
+          {/* 最近层 — 最深最低 */}
+          <path d="M0,198 Q100,178 200,192 Q320,158 440,188 Q560,164 680,190 Q800,168 920,190 Q1060,170 1200,192 L1200,220 L0,220 Z"
+            fill="rgba(60,90,120,0.22)" />
+        </svg>
+        {/* 雾气带 — 层间水平渐变模糊 */}
+        <div className="absolute pointer-events-none" style={{ left: '-2%', bottom: '20%', width: '104%', height: '34px', background: 'linear-gradient(180deg, transparent, rgba(206,226,245,0.14), transparent)', filter: 'blur(18px)', animation: 'cta-fogDrift 16s ease-in-out infinite alternate' }} />
+        <div className="absolute pointer-events-none" style={{ left: '-2%', bottom: '11%', width: '104%', height: '30px', background: 'linear-gradient(180deg, transparent, rgba(198,220,242,0.12), transparent)', filter: 'blur(16px)' }} />
+
+        {/* 体积云 — 3朵多层结构（阴影底/主云体/高光/底部暗部） */}
         {/* 云朵1 — 左上大（慢速飘动） */}
-        <div className="absolute pointer-events-none" style={{ 
-          left: '5%', top: '6%', width: '180px', height: '60px',
-          animation: 'cta-cloudDrift1 18s ease-in-out infinite alternate',
+        <div className="absolute pointer-events-none" style={{
+          left: '3%', top: '6%', width: '320px', height: '130px',
+          filter: 'drop-shadow(0 10px 18px rgba(90,130,170,0.18))',
+          animation: 'cta-cloudDrift1 26s ease-in-out infinite alternate',
         }}>
-          <div style={{ position:'absolute', inset:0, borderRadius:'999px', background:'rgba(255,255,255,0.82)' }} />
-          <div style={{ position:'absolute', left:'22px', top:'-12px', width:'80px', height:'44px', borderRadius:'999px', background:'rgba(255,255,255,0.88)' }} />
-          <div style={{ position:'absolute', right:'28px', top:'-8px', width:'65px', height:'38px', borderRadius:'999px', background:'rgba(255,255,255,0.84)' }} />
-          <div style={{ position:'absolute', left:'48px', bottom:'-10px', width:'55px', height:'30px', borderRadius:'999px', background:'rgba(255,255,255,0.72)' }} />
+          <div style={{ position: 'absolute', left: '14px', top: '34px', width: '290px', height: '74px', borderRadius: '999px', background: 'rgba(190,208,230,0.45)', filter: 'blur(8px)' }} />
+          <div style={{ position: 'absolute', left: '0', top: '10px', width: '320px', height: '80px', borderRadius: '999px', background: 'linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(232,242,252,0.78) 100%)' }} />
+          <div style={{ position: 'absolute', left: '44px', top: '-28px', width: '128px', height: '84px', borderRadius: '999px', background: 'linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(228,240,252,0.8) 100%)' }} />
+          <div style={{ position: 'absolute', left: '158px', top: '-36px', width: '116px', height: '90px', borderRadius: '999px', background: 'linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(224,238,250,0.78) 100%)' }} />
+          <div style={{ position: 'absolute', right: '28px', top: '-14px', width: '88px', height: '66px', borderRadius: '999px', background: 'linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(226,239,251,0.78) 100%)' }} />
+          <div style={{ position: 'absolute', left: '158px', top: '-30px', width: '74px', height: '42px', borderRadius: '999px', background: 'rgba(255,255,255,0.95)', filter: 'blur(1px)' }} />
+          <div style={{ position: 'absolute', left: '64px', bottom: '-6px', width: '176px', height: '34px', borderRadius: '999px', background: 'rgba(176,198,222,0.4)', filter: 'blur(3px)' }} />
         </div>
         {/* 云朵2 — 右上中（中速飘动） */}
-        <div className="absolute pointer-events-none" style={{ 
-          right: '12%', top: '14%', width: '140px', height: '46px',
-          animation: 'cta-cloudDrift2 14s ease-in-out infinite alternate',
+        <div className="absolute pointer-events-none" style={{
+          right: '8%', top: '13%', width: '260px', height: '108px',
+          filter: 'drop-shadow(0 9px 16px rgba(90,130,170,0.16))',
+          animation: 'cta-cloudDrift2 22s ease-in-out infinite alternate',
         }}>
-          <div style={{ position:'absolute', inset:0, borderRadius:'999px', background:'rgba(255,255,255,0.78)' }} />
-          <div style={{ position:'absolute', left:'16px', top:'-9px', width:'60px', height:'34px', borderRadius:'999px', background:'rgba(255,255,255,0.86)' }} />
-          <div style={{ position:'absolute', right:'20px', top:'-6px', width:'50px', height:'28px', borderRadius:'999px', background:'rgba(255,255,255,0.76)' }} />
+          <div style={{ position: 'absolute', left: '12px', top: '28px', width: '236px', height: '62px', borderRadius: '999px', background: 'rgba(190,208,230,0.42)', filter: 'blur(7px)' }} />
+          <div style={{ position: 'absolute', left: '0', top: '8px', width: '260px', height: '66px', borderRadius: '999px', background: 'linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(230,241,252,0.76) 100%)' }} />
+          <div style={{ position: 'absolute', left: '36px', top: '-24px', width: '104px', height: '70px', borderRadius: '999px', background: 'linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(226,239,251,0.78) 100%)' }} />
+          <div style={{ position: 'absolute', right: '34px', top: '-18px', width: '84px', height: '58px', borderRadius: '999px', background: 'linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(224,238,250,0.76) 100%)' }} />
+          <div style={{ position: 'absolute', left: '120px', top: '-26px', width: '60px', height: '38px', borderRadius: '999px', background: 'rgba(255,255,255,0.95)', filter: 'blur(1px)' }} />
+          <div style={{ position: 'absolute', left: '52px', bottom: '-4px', width: '150px', height: '28px', borderRadius: '999px', background: 'rgba(176,198,222,0.38)', filter: 'blur(3px)' }} />
         </div>
-        {/* 云朵3 — 中间偏右小（快速飘动） */}
-        <div className="absolute pointer-events-none" style={{ 
-          right: '35%', top: '32%', width: '100px', height: '34px',
-          animation: 'cta-cloudDrift3 11s ease-in-out infinite alternate',
+        {/* 云朵3 — 中间偏右（快速飘动） */}
+        <div className="absolute pointer-events-none" style={{
+          right: '32%', top: '24%', width: '200px', height: '86px',
+          filter: 'drop-shadow(0 8px 14px rgba(90,130,170,0.15))',
+          animation: 'cta-cloudDrift3 18s ease-in-out infinite alternate',
         }}>
-          <div style={{ position:'absolute', inset:0, borderRadius:'999px', background:'rgba(255,255,255,0.68)' }} />
-          <div style={{ position:'absolute', left:'12px', top:'-7px', width:'42px', height:'26px', borderRadius:'999px', background:'rgba(255,255,255,0.78)' }} />
+          <div style={{ position: 'absolute', left: '10px', top: '22px', width: '182px', height: '50px', borderRadius: '999px', background: 'rgba(190,208,230,0.4)', filter: 'blur(6px)' }} />
+          <div style={{ position: 'absolute', left: '0', top: '6px', width: '200px', height: '54px', borderRadius: '999px', background: 'linear-gradient(180deg, rgba(255,255,255,0.88) 0%, rgba(228,240,252,0.74) 100%)' }} />
+          <div style={{ position: 'absolute', left: '28px', top: '-20px', width: '82px', height: '56px', borderRadius: '999px', background: 'linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(224,238,250,0.76) 100%)' }} />
+          <div style={{ position: 'absolute', right: '26px', top: '-14px', width: '66px', height: '46px', borderRadius: '999px', background: 'linear-gradient(180deg, rgba(255,255,255,0.88) 0%, rgba(226,239,251,0.74) 100%)' }} />
+          <div style={{ position: 'absolute', left: '92px', top: '-20px', width: '48px', height: '30px', borderRadius: '999px', background: 'rgba(255,255,255,0.95)', filter: 'blur(1px)' }} />
+          <div style={{ position: 'absolute', left: '40px', bottom: '-4px', width: '118px', height: '22px', borderRadius: '999px', background: 'rgba(176,198,222,0.36)', filter: 'blur(3px)' }} />
         </div>
-        
-        {/* 远山剪影 — 清晰轮廓线 */}
-        <svg className="absolute bottom-[12%] left-[-2%] w-[104%] h-[90px] pointer-events-none" viewBox="0 0 1200 90" preserveAspectRatio="none">
-          <path d="M0,90 L0,55 Q100,25 200,40 Q320,10 420,35 Q520,5 620,30 Q720,8 820,28 Q920,12 1020,38 Q1100,20 1200,45 L1200,90 Z"
-            fill="rgba(71,112,140,0.13)" />
-          <path d="M0,90 L0,65 Q150,45 300,58 Q450,38 600,52 Q750,42 900,55 Q1050,40 1200,62 L1200,90 Z"
-            fill="rgba(74,124,156,0.09)" opacity="0.7" />
-        </svg>
-        
-        {/* 草地层叠 — 多层渐变模拟草地厚度 */}
-        <div className="absolute bottom-0 left-0 right-0 h-[55px] pointer-events-none" style={{
-          background: `linear-gradient(to top,
-            rgba(22,101,52,0.28) 0%,
-            rgba(22,163,74,0.18) 35%,
-            rgba(134,239,172,0.10) 70%,
-            transparent 100%)`,
-        }} />
-        {/* 草地高光条纹（带摇摆动画） */}
-        {[...Array(8)].map((_, i) => (
-          <div key={i} className="absolute bottom-0 pointer-events-none rounded-t-full" style={{
-            left: `${i * 13 + 3}%`,
-            width: `${6 + (i % 3) * 3}px`,
-            height: `${28 + (i % 4) * 6}px`,
-            background: 'linear-gradient(to top, rgba(134,239,172,0.25), transparent)',
-            transform: `rotate(${-2 + i * 1}deg)`,
-            animation: `cta-grassSway ${2.5 + i * 0.3}s ease-in-out infinite alternate`,
-            animationDelay: `${i * 0.15}s`,
-            transformOrigin: 'bottom center',
-          }} />
-        ))}
-        
-        {/* 微光粒子 — 更大更亮 + 闪烁动画 */}
-        {[...Array(14)].map((_, i) => (
-          <div key={`spark-${i}`} className="absolute rounded-full pointer-events-none" style={{
-            width: `${3 + (i % 3)}px`,
-            height: `${3 + (i % 3)}px`,
-            left: `${5 + i * 7 + (i % 4) * 2}%`,
-            top: `${10 + (i * 5.5) % 70}%`,
-            background: i % 3 === 0 ? 'rgba(255,255,255,0.95)' : i % 3 === 1 ? 'rgba(255,250,220,0.85)' : 'rgba(200,230,255,0.8)',
-            boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.25)',
-            animation: `cta-sparkle ${1.5 + i * 0.25}s ease-in-out infinite alternate`,
-            animationDelay: `${i * 0.22}s`,
-          }} />
-        ))}
 
         {/* 飞鸟剪影 — 2只飞过天空 */}
-        <svg className="absolute pointer-events-none" style={{ 
-          right: '20%', top: '18%', width: '32px', height: '16px',
-          animation: 'cta-birdFly 16s linear infinite',
-        }} viewBox="0 0 32 16">
-          <path d="M0,8 Q8,0 16,8 Q24,0 32,8 Q24,6 16,10 Q8,6 0,8Z" fill="rgba(50,60,70,0.35)" />
+        <svg className="absolute pointer-events-none" style={{ right: '20%', top: '18%', width: '32px', height: '16px', animation: 'cta-birdFly 16s linear infinite' }} viewBox="0 0 32 16">
+          <path d="M0,8 Q8,0 16,8 Q24,0 32,8 Q24,6 16,10 Q8,6 0,8Z" fill="rgba(50,60,70,0.32)" />
         </svg>
-        <svg className="absolute pointer-events-none" style={{ 
-          left: '15%', top: '28%', width: '24px', height: '12px',
-          animation: 'cta-birdFly2 20s linear infinite',
-          animationDelay: '-7s',
-        }} viewBox="0 0 32 16">
-          <path d="M0,8 Q8,0 16,8 Q24,0 32,8 Q24,6 16,10 Q8,6 0,8Z" fill="rgba(50,60,70,0.25)" />
+        <svg className="absolute pointer-events-none" style={{ left: '15%', top: '28%', width: '24px', height: '12px', animation: 'cta-birdFly2 20s linear infinite', animationDelay: '-7s' }} viewBox="0 0 32 16">
+          <path d="M0,8 Q8,0 16,8 Q24,0 32,8 Q24,6 16,10 Q8,6 0,8Z" fill="rgba(50,60,70,0.22)" />
         </svg>
+
+        {/* 草地层叠 — 4层波浪形自然田野 */}
+        <svg className="absolute bottom-0 left-0 w-full pointer-events-none" style={{ height: '230px' }} viewBox="0 0 1200 230" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="ctaGrass1" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="rgba(140,200,146,0.5)" />
+              <stop offset="100%" stopColor="rgba(112,182,122,0.68)" />
+            </linearGradient>
+            <linearGradient id="ctaGrass2" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="rgba(98,174,112,0.66)" />
+              <stop offset="100%" stopColor="rgba(72,152,94,0.82)" />
+            </linearGradient>
+            <linearGradient id="ctaGrass3" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="rgba(62,142,84,0.8)" />
+              <stop offset="100%" stopColor="rgba(42,122,68,0.9)" />
+            </linearGradient>
+            <linearGradient id="ctaGrass4" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="rgba(36,112,62,0.88)" />
+              <stop offset="100%" stopColor="rgba(22,90,48,0.96)" />
+            </linearGradient>
+          </defs>
+          {/* 远景草地 — 最淡 */}
+          <path d="M0,72 Q90,52 180,68 Q280,46 380,66 Q480,48 580,68 Q690,50 790,68 Q890,48 990,66 Q1080,52 1200,66 L1200,230 L0,230 Z" fill="url(#ctaGrass1)" />
+          {/* 中景草地 — 中等 */}
+          <path d="M0,112 Q110,94 220,110 Q330,88 450,108 Q560,92 680,110 Q800,90 920,110 Q1040,94 1200,112 L1200,230 L0,230 Z" fill="url(#ctaGrass2)" />
+          {/* 近景草地 — 深绿 */}
+          <path d="M0,152 Q100,136 210,152 Q320,132 440,150 Q560,134 690,152 Q810,134 940,152 Q1060,136 1200,152 L1200,230 L0,230 Z" fill="url(#ctaGrass3)" />
+          {/* 最前景草地 — 最深 + 草丛细节 */}
+          <path d="M0,190 Q120,178 240,190 Q360,174 500,190 Q620,176 760,190 Q880,176 1020,190 Q1120,180 1200,190 L1200,230 L0,230 Z" fill="url(#ctaGrass4)" />
+          <path d="M180,190 Q186,176 190,166 Q194,176 198,190 Z" fill="rgba(20,80,44,0.95)" style={{ transformBox: 'fill-box', transformOrigin: 'bottom center', animation: 'cta-grassSway 2.8s ease-in-out infinite alternate' }} />
+          <path d="M520,190 Q528,172 534,158 Q540,172 546,190 Z" fill="rgba(20,80,44,0.95)" style={{ transformBox: 'fill-box', transformOrigin: 'bottom center', animation: 'cta-grassSway 3.1s ease-in-out infinite alternate', animationDelay: '0.4s' }} />
+          <path d="M880,190 Q888,174 894,162 Q900,174 906,190 Z" fill="rgba(20,80,44,0.95)" style={{ transformBox: 'fill-box', transformOrigin: 'bottom center', animation: 'cta-grassSway 2.6s ease-in-out infinite alternate', animationDelay: '0.8s' }} />
+        </svg>
+
+        {/* 大气粒子 — 8个（灰尘/花粉 + 光尘） */}
+        {[...Array(8)].map((_, i) => {
+          const isDust = i < 5;
+          return (
+            <div key={`cta-particle-${i}`} className="absolute rounded-full pointer-events-none" style={{
+              width: `${isDust ? 5 + (i % 2) : 4 + (i % 2)}px`,
+              height: `${isDust ? 4 + (i % 2) : 4}px`,
+              left: `${4 + (i * 12) % 92}%`,
+              top: `${8 + (i * 9) % 58}%`,
+              borderRadius: isDust ? '62% 38% 56% 44%' : '50%',
+              background: isDust ? 'rgba(208,178,118,0.5)' : 'rgba(255,250,232,0.85)',
+              boxShadow: isDust ? 'none' : '0 0 8px rgba(255,248,222,0.5)',
+              filter: isDust ? 'blur(0.4px)' : 'none',
+              animation: isDust ? `cta-dustFloat ${9 + i * 1.5}s ease-in-out infinite alternate` : `cta-sparkle ${2.4 + i * 0.4}s ease-in-out infinite alternate`,
+              animationDelay: `${i * 0.3}s`,
+            }} />
+          );
+        })}
+
+        {/* 胶片颗粒噪点 — 极淡 */}
+        <div className="absolute inset-0 pointer-events-none" style={{
+          backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22160%22 height=%22160%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%222%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23n)%22 opacity=%220.5%22/%3E%3C/svg%3E")',
+          backgroundSize: '160px 160px',
+          opacity: 0.05,
+          mixBlendMode: 'overlay',
+        }} />
+
+        {/* 环境光遮蔽 AO — 底部角落微微加深 */}
+        <div className="absolute inset-0 pointer-events-none" style={{
+          background: 'radial-gradient(ellipse 80% 42% at 50% 108%, rgba(18,48,38,0.2) 0%, transparent 60%)',
+        }} />
 
         {/* 内容区 */}
         <div className="max-w-4xl mx-auto text-center relative z-10">
@@ -1649,12 +1735,12 @@ export default function AboutPage() {
                 boxShadow: '0 8px 32px rgba(16,185,129,0.35), 0 0 0 1px rgba(255,255,255,0.15) inset',
               }}
             >
-              <span style={{ display:'inline-flex',alignItems:'center',gap:'6px' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                 {t('nav.contact')}
                 <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </span>
             </a>
-            <a href={`tel:${contactPhone.replace(/\s/g,'')}`}
+            <a href={`tel:${contactPhone.replace(/\s/g, '')}`}
               className="group relative inline-flex items-center justify-center px-8 py-4 font-semibold rounded-xl cursor-pointer text-base transition-all duration-300 hover:-translate-y-0.5"
               style={{
                 background: 'rgba(255,255,255,0.75)',
@@ -1682,7 +1768,7 @@ export default function AboutPage() {
 
         {/* 底部渐变淡出 — 平滑过渡到 Footer */}
         <div className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none" style={{
-          background: 'linear-gradient(to bottom, transparent, rgba(255,255,255,0.03))',
+          background: 'linear-gradient(to bottom, transparent, rgba(255,255,255,0.04))',
         }} />
       </section>
 
@@ -1753,57 +1839,78 @@ export default function AboutPage() {
           75%{opacity:0.65; transform:translate(5px,-8px)}
         }
 
-        /* ===== CTA v257 — 蓝天草原主题动画（完整动态版） ===== */
-        
+        /* ===== CTA v258 — 电影级蓝天草原主题动画 ===== */
+
         /* 太阳光晕 — 强呼吸效果 */
         @keyframes cta-sunPulse {
-          0%{opacity:0.6; transform:scale(0.95)}
-          100%{opacity:1; transform:scale(1.15)}
+          0%{opacity:0.7; transform:scale(0.96)}
+          100%{opacity:1; transform:scale(1.12)}
         }
         /* 天空光斑 — 缓慢脉动 */
         @keyframes cta-skyGlow {
-          0%{opacity:0.5; transform:scale(1)}
+          0%{opacity:0.55; transform:scale(1)}
           100%{opacity:1; transform:scale(1.08)}
         }
         /* 云朵飘动 — 每朵云不同轨迹 */
         @keyframes cta-cloudDrift1 {
           0%{transform:translateX(0) translateY(0)}
-          50%{transform:translateX(20px) translateY(-8px)}
-          100%{transform:translateX(35px) translateY(-4px)}
+          50%{transform:translateX(22px) translateY(-8px)}
+          100%{transform:translateX(38px) translateY(-4px)}
         }
         @keyframes cta-cloudDrift2 {
           0%{transform:translateX(0) translateY(0)}
-          50%{transform:translateX(-18px) translateY(-10px)}
-          100%{transform:translateX(-30px) translateY(-3px)}
+          50%{transform:translateX(-20px) translateY(-10px)}
+          100%{transform:translateX(-32px) translateY(-3px)}
         }
         @keyframes cta-cloudDrift3 {
           0%{transform:translateX(0) translateY(0)}
-          40%{transform:translateX(12px) translateY(-6px)}
-          100%{transform:translateX(22px) translateY(-2px)}
+          40%{transform:translateX(14px) translateY(-6px)}
+          100%{transform:translateX(24px) translateY(-2px)}
         }
-        /* 草地摇摆 — 风吹效果 */
+        /* 草地摇摆 — 风吹效果（前景草丛） */
         @keyframes cta-grassSway {
-          0%{transform:rotate(-2deg) skewX(0deg); opacity:0.6}
-          100%{transform:rotate(3deg) skewX(1.5deg); opacity:1}
+          0%{transform:rotate(-3deg) skewX(0deg)}
+          100%{transform:rotate(3deg) skewX(1.5deg)}
         }
         /* 微光粒子闪烁 */
         @keyframes cta-sparkle {
-          0%{opacity:0.15; transform:scale(0.4) translate(0, 0)}
+          0%{opacity:0.18; transform:scale(0.5) translate(0, 0)}
           60%{opacity:1; transform:scale(1.3) translate(2px, -3px)}
-          100%{opacity:0.35; transform:scale(0.7) translate(-1px, -1px)}
+          100%{opacity:0.4; transform:scale(0.8) translate(-1px, -1px)}
         }
         /* 飞鸟飞过 */
         @keyframes cta-birdFly {
           0%{transform:translateX(0) translateY(0); opacity:0}
-          5%{opacity:0.35}
-          90%{opacity:0.35}
+          5%{opacity:0.32}
+          90%{opacity:0.32}
           100%{transform:translateX(-280px) translateY(30px); opacity:0}
         }
         @keyframes cta-birdFly2 {
           0%{transform:translateX(0) translateY(0); opacity:0}
-          5%{opacity:0.25}
-          90%{opacity:0.25}
+          5%{opacity:0.22}
+          90%{opacity:0.22}
           100%{transform:translateX(220px) translateY(-20px); opacity:0}
+        }
+        /* 光线射线 — 旋转 */
+        @keyframes cta-raySpin {
+          0%{transform:rotate(0deg)}
+          100%{transform:rotate(360deg)}
+        }
+        /* 体积光 — 缓慢呼吸 */
+        @keyframes cta-godray {
+          0%{opacity:0.55; transform:rotate(-40deg) scaleY(0.96)}
+          100%{opacity:1; transform:rotate(-40deg) scaleY(1.05)}
+        }
+        /* 灰尘/花粉粒子 — 缓慢飘浮 */
+        @keyframes cta-dustFloat {
+          0%{transform:translate(0,0) translateY(0); opacity:0.25}
+          50%{transform:translate(5px,-14px); opacity:0.55}
+          100%{transform:translate(-4px,-26px); opacity:0.2}
+        }
+        /* 雾气带 — 缓慢漂移 */
+        @keyframes cta-fogDrift {
+          0%{transform:translateX(-3%)}
+          100%{transform:translateX(3%)}
         }
 
         /* ===== Subtle wave separator animations ===== */
