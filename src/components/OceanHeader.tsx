@@ -2,13 +2,13 @@
 import { useEffect, useRef, memo } from 'react';
 
 // ============================================================
-// OceanHeader v249 - Maximum Pure Blue (Brighter & More Blue)
+// OceanHeader v250 - True Deep Blue (User Feedback Fixed)
 //
-// v249 Changes (MAX BRIGHTNESS + PURE BLUE):
-// - CRITICAL FIX: Bright color changed from #1e87ff to #0a8cff (rgb 10,140,255)
-// - Reduced R 30→10 (almost no purple tint, maximum pure blue)
-// - Increased G 135→140 (even brighter but still blue)
-// - Breathing cap removed: 0.95 → 1.0 (no limit, full brightness reachable)
+// v250 Changes (TRUE DEEP BLUE - NOT sky blue / shallow blue):
+// - CRITICAL FIX: Bright color changed from #0a8cff to #0050ff (rgb 0,80,255)
+// - Reduced R 10→0 (ZERO red = truest deep blue, no purple at all)
+// - Reduced G 140→80 (reduce shallow feel, TRUE deep blue like ocean)
+// - B=255 (max saturation, purest blue possible)
 //
 // v243 Features (preserved):
 // - Deep blue palette (not sky blue / baby blue)
@@ -232,17 +232,17 @@ function StarryScene() {
 
   // Draw Background with Activity-Based Color Interpolation
   const drawBackground = (ctx: CanvasRenderingContext2D, w: number, h: number, activityLevel: number) => {
-    // v249: Even brighter & more pure blue (user feedback: "brighter & more blue, close but need more")
+    // v250: True Deep Blue (user feedback: "not bright enough, not blue enough, want that deep blue")
     // Dark: #020617 (rgb 2, 6, 23) - near-black navy
-    // Bright: #0a8cff (rgb 10, 140, 255) - maximum pure blue (almost no red, vivid green for brightness)
-    // Key fix: R 30→10 (almost no purple tint), G 135→140 (even brighter), B=255 (max saturation)
+    // Bright: #0050ff (rgb 0, 80, 255) - TRUE deep blue (no red, moderate green, max blue)
+    // Key fix: R 10→0 (ZERO red = purest blue), G 140→80 (reduce shallow feel, true deep blue)
     const baseR = 2;
     const baseG = 6;
     const baseB = 23;
     
-    const maxR = 10;   // minimal R = purest blue (no purple tint)
-    const maxG = 140;  // higher G = brighter but still blue (not sky blue)
-    const maxB = 255;  // max B = pure blue saturation
+    const maxR = 0;     // ZERO red = truest deep blue (no purple tint at all)
+    const maxG = 80;    // moderate G = true deep blue (not shallow/sky blue)
+    const maxB = 255;   // max B = pure blue saturation
     
     const r = Math.round(baseR + (maxR - baseR) * activityLevel);
     const g = Math.round(baseG + (maxG - baseG) * activityLevel);
