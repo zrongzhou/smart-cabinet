@@ -2,13 +2,13 @@
 import { useEffect, useRef, memo } from 'react';
 
 // ============================================================
-// OceanHeader v244 - Vibrant Blue + Center Glow (Depth Fix)
+// OceanHeader v248 - Brighter & More Pure Blue
 //
-// v244 Changes (DEPTH + BRIGHTNESS FIX):
-// - CRITICAL FIX: Bright color changed from #1e3a8a to #3b82f6 (Tailwind blue-500, vibrant not dark)
-// - Added center glow overlay (radial gradient, adds depth and volume)
-// - 7-stop gradient (was 5-stop) for enhanced depth
-// - Breathing cap increased: 0.75 → 0.85 (user feedback: "bright color still too dark")
+// v248 Changes (BRIGHTNESS + COLOR FIX):
+// - CRITICAL FIX: Bright color changed from #2979ff to #1e87ff (rgb 30,135,255)
+// - Reduced R 41→30 (less purple, more pure blue)
+// - Increased G 121→135 (brighter but still blue)
+// - Breathing cap increased: 0.85 → 0.95 (user feedback: "brighter & more blue")
 //
 // v243 Features (preserved):
 // - Deep blue palette (not sky blue / baby blue)
@@ -232,16 +232,16 @@ function StarryScene() {
 
   // Draw Background with Activity-Based Color Interpolation
   const drawBackground = (ctx: CanvasRenderingContext2D, w: number, h: number, activityLevel: number) => {
-    // v247: Vue-style blue (user feedback: "not blue enough, not bright enough")
+    // v248: Brighter & more pure blue (user feedback: "brighter & more blue")
     // Dark: #020617 (rgb 2, 6, 23) - near-black navy
-    // Bright: #2979ff (rgb 41, 121, 255) - Vue brand blue (vibrant & deep)
-    // Key fix: Reduced R 77→41, reduced G 137→121 (more blue saturation, less purple/washed feel)
+    // Bright: #1e87ff (rgb 30, 135, 255) - pure bright blue (less purple, more vivid)
+    // Key fix: R 41→30 (less purple), G 121→135 (brighter), B=255 (max blue)
     const baseR = 2;
     const baseG = 6;
     const baseB = 23;
     
-    const maxR = 41;   // lower R = less purple tint
-    const maxG = 121;  // lower G = less "shallow blue" feel
+    const maxR = 30;   // even lower R = more pure blue (less purple tint)
+    const maxG = 135;  // higher G = brighter (but still blue, not sky blue)
     const maxB = 255;  // max B = pure blue saturation
     
     const r = Math.round(baseR + (maxR - baseR) * activityLevel);
@@ -518,7 +518,7 @@ function StarryScene() {
 
       // Combine: base breathing + meteor boost (capped at 0.85 for vibrant blue)
       // v244: Increased cap from 0.75 to 0.85 (user feedback: "bright color still too dark")
-      state.targetActivity = Math.min(0.85, baseActivity + meteorBoost);
+      state.targetActivity = Math.min(0.95, baseActivity + meteorBoost);  // v248: increased cap for brighter effect
 
       // Smooth interpolation (slightly faster for responsive feel)
       state.activityLevel += (state.targetActivity - state.activityLevel) * 0.06;
