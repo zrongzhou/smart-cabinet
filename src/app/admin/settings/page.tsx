@@ -51,6 +51,8 @@ interface SiteSettings {
   // 微信通知设置
   wechatWebhookUrl: string;
   wechatNotificationEnabled: boolean;
+  wechatPersonalEnabled: boolean;
+  wechatPersonalSendKey: string;
 }
 
 // Simple Error Boundary for MediaPicker
@@ -110,6 +112,8 @@ export default function AdminSettingsPage() {
     footerLinks: '',
     wechatWebhookUrl: '',
     wechatNotificationEnabled: false,
+    wechatPersonalEnabled: false,
+    wechatPersonalSendKey: '',
   });
 
   const [activeTab, setActiveTab] = useState('company');
@@ -966,6 +970,47 @@ export default function AdminSettingsPage() {
                         }`}
                       />
                     </button>
+                  </div>
+
+                  {/* 个人微信通知（Server酱） */}
+                  <div className="border-t border-gray-200 pt-6">
+                    <h3 className="text-base font-semibold text-gray-900 mb-2">个人微信通知（Server酱）</h3>
+                    <p className="text-sm text-gray-500 mb-4">通过 Server酱 推送通知到个人微信（需绑定微信关注号）</p>
+
+                    {/* Enable Switch */}
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-sm font-medium text-gray-700">启用个人微信通知</span>
+                      <button
+                        type="button"
+                        onClick={() => setSettings({ ...settings, wechatPersonalEnabled: !settings.wechatPersonalEnabled })}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                          settings.wechatPersonalEnabled ? 'bg-blue-600' : 'bg-gray-200'
+                        }`}
+                      >
+                        <span
+                          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                            settings.wechatPersonalEnabled ? 'translate-x-6' : 'translate-x-1'
+                          }`}
+                        />
+                      </button>
+                    </div>
+
+                    {/* SendKey Input */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Server酱 SendKey</label>
+                      <input
+                        type="text"
+                        value={settings.wechatPersonalSendKey || ''}
+                        onChange={(e) => setSettings({ ...settings, wechatPersonalSendKey: e.target.value })}
+                        className="admin-form-input w-full font-mono text-sm"
+                        placeholder="SCTxxxxxxxxxx（从 ftqq.com 获取）"
+                      />
+                      <p className="mt-1 text-xs text-gray-500">
+                        1. 访问 sct.ftqq.com 注册/登录<br />
+                        2. 创建一个 SendKey 并复制到这里<br />
+                        3. 用微信扫描绑定 Server酱公众号即可接收消息
+                      </p>
+                    </div>
                   </div>
 
                   {/* Webhook URL */}

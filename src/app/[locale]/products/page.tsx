@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Package, LayoutGrid, Layers, Box, Building2, Settings, Wrench, Cpu, Shield, Lock, Star, Heart, Truck, Factory, Zap, Clock, Globe, Database, FileText, Image, ZoomIn, Search, ChevronLeft, ChevronRight, ExternalLink, Archive, Briefcase, Code, Cog, Puzzle, Bot, BrainCircuit } from 'lucide-react';
 import { useLocale } from '@/lib/i18n';
@@ -111,6 +111,9 @@ export default function ProductsPage() {
   const [customDimLabelsI18n, setCustomDimLabelsI18n] = useState<Record<string, {zh?: string, en?: string, ar?: string}>>({});
   /** Custom icons from admin DB/API — overrides built-in defaults */
   const [customDimIcons, setCustomDimIcons] = useState<Record<string, {icon?: string}>>({});
+
+  // Ref to the products grid section — used to scroll into view on mobile when a filter is applied
+  const productsGridRef = useRef<HTMLElement | null>(null);
 
   // Load custom dimension labels — API (DB) as PRIMARY, localStorage as cache/fallback
   useEffect(() => {
@@ -227,6 +230,14 @@ export default function ProductsPage() {
   useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery, activeDimension, activeCategories]);
+
+  // Scroll the products grid into view when the active category selection changes,
+  // so the grid is never hidden behind the sticky filter panel on mobile.
+  useEffect(() => {
+    if (activeCategories.length > 0 && productsGridRef.current) {
+      productsGridRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [activeCategories]);
 
   // Get category types for filter display - show all types (built-in + custom)
   const builtInTypeOrder = ['cabinet-type', 'managed-items', 'industry', 'custom-solution'];
@@ -391,7 +402,7 @@ export default function ProductsPage() {
       />
 
       {/* Primary Dimension Filter + Search — Enhanced Glass Effect */}
-      <section className="sticky top-16 z-40" style={{
+      <section className="sticky top-16 z-40 max-h-[60vh] overflow-y-auto md:max-h-none md:overflow-visible" style={{
         background: 'linear-gradient(180deg, rgba(255,255,255,0.72) 0%, rgba(248,250,252,0.65) 100%)',
         backdropFilter: 'blur(24px) saturate(1.9)',
         WebkitBackdropFilter: 'blur(24px) saturate(1.9)',
@@ -586,7 +597,7 @@ export default function ProductsPage() {
       </section>
 
       {/* Products Grid */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <section ref={productsGridRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 min-h-[50vh]">
         {filteredProducts.length === 0 ? (
           <div className="text-center py-20">
                         <Package className="w-16 h-16 mx-auto mb-4" style={{ color: '#9ca3af' }} />

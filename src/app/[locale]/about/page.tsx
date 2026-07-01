@@ -1600,20 +1600,31 @@ export default function AboutPage() {
         <div className="absolute pointer-events-none" style={{ left: '-2%', bottom: '20%', width: '104%', height: '34px', background: 'linear-gradient(180deg, transparent, rgba(206,226,245,0.14), transparent)', filter: 'blur(18px)', animation: 'cta-fogDrift 16s ease-in-out infinite alternate' }} />
         <div className="absolute pointer-events-none" style={{ left: '-2%', bottom: '11%', width: '104%', height: '30px', background: 'linear-gradient(180deg, transparent, rgba(198,220,242,0.12), transparent)', filter: 'blur(16px)' }} />
 
-        {/* 体积云 — 3朵多层结构（阴影底/主云体/高光/底部暗部） */}
+        {/* 体积云 — 3朵多层结构（阴影底/主云体/受光高光/底部暗部/絮状凸起） */}
         {/* 云朵1 — 左上大（慢速飘动） */}
         <div className="absolute pointer-events-none" style={{
           left: '3%', top: '6%', width: '320px', height: '130px',
           filter: 'drop-shadow(0 10px 18px rgba(90,130,170,0.18))',
           animation: 'cta-cloudDrift1 26s ease-in-out infinite alternate',
         }}>
-          <div style={{ position: 'absolute', left: '14px', top: '34px', width: '290px', height: '74px', borderRadius: '999px', background: 'rgba(190,208,230,0.45)', filter: 'blur(8px)' }} />
-          <div style={{ position: 'absolute', left: '0', top: '10px', width: '320px', height: '80px', borderRadius: '999px', background: 'linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(232,242,252,0.78) 100%)' }} />
-          <div style={{ position: 'absolute', left: '44px', top: '-28px', width: '128px', height: '84px', borderRadius: '999px', background: 'linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(228,240,252,0.8) 100%)' }} />
-          <div style={{ position: 'absolute', left: '158px', top: '-36px', width: '116px', height: '90px', borderRadius: '999px', background: 'linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(224,238,250,0.78) 100%)' }} />
-          <div style={{ position: 'absolute', right: '28px', top: '-14px', width: '88px', height: '66px', borderRadius: '999px', background: 'linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(226,239,251,0.78) 100%)' }} />
-          <div style={{ position: 'absolute', left: '158px', top: '-30px', width: '74px', height: '42px', borderRadius: '999px', background: 'rgba(255,255,255,0.95)', filter: 'blur(1px)' }} />
-          <div style={{ position: 'absolute', left: '64px', bottom: '-6px', width: '176px', height: '34px', borderRadius: '999px', background: 'rgba(176,198,222,0.4)', filter: 'blur(3px)' }} />
+          {/* 底部背光暗部（灰蓝，增强模糊与透明度） */}
+          <div style={{ position: 'absolute', left: '6px', top: '46px', width: '304px', height: '64px', borderRadius: '50% 50% 55% 45% / 60% 55% 45% 40%', background: 'rgba(170,190,210,0.55)', filter: 'blur(10px)' }} />
+          {/* 主云体底座（中调浅灰白） */}
+          <div style={{ position: 'absolute', left: '8px', top: '28px', width: '300px', height: '72px', borderRadius: '62% 38% 56% 44% / 56% 60% 40% 44%', background: 'linear-gradient(180deg, rgba(230,240,250,0.85) 0%, rgba(200,218,236,0.78) 100%)' }} />
+          {/* 主体大块（受光面近白） */}
+          <div style={{ position: 'absolute', left: '4px', top: '14px', width: '190px', height: '70px', borderRadius: '66% 34% 60% 40% / 58% 62% 38% 42%', background: 'linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(228,240,252,0.82) 100%)' }} />
+          {/* 中块（受光面） */}
+          <div style={{ position: 'absolute', left: '120px', top: '6px', width: '150px', height: '82px', borderRadius: '44% 56% 48% 52% / 52% 46% 54% 48%', background: 'linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(224,238,250,0.8) 100%)' }} />
+          {/* 右端块（受光面） */}
+          <div style={{ position: 'absolute', right: '10px', top: '22px', width: '96px', height: '60px', borderRadius: '58% 42% 50% 50% / 50% 58% 42% 50%', background: 'linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(222,237,250,0.78) 100%)' }} />
+          {/* 顶部高光小凸起 1 */}
+          <div style={{ position: 'absolute', left: '46px', top: '-28px', width: '74px', height: '66px', borderRadius: '54% 46% 60% 40% / 46% 58% 42% 54%', background: 'linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(230,242,252,0.8) 100%)' }} />
+          {/* 顶部高光小凸起 2（絮状） */}
+          <div style={{ position: 'absolute', left: '150px', top: '-34px', width: '58px', height: '56px', borderRadius: '48% 52% 44% 56% / 56% 44% 52% 48%', background: 'linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(226,239,251,0.78) 100%)' }} />
+          {/* 絮状小凸起 3 */}
+          <div style={{ position: 'absolute', left: '196px', top: '-18px', width: '46px', height: '44px', borderRadius: '52% 48% 54% 46% / 48% 54% 46% 52%', background: 'rgba(255,255,255,0.92)', filter: 'blur(0.5px)' }} />
+          {/* 底部暗部加强（背光灰蓝） */}
+          <div style={{ position: 'absolute', left: '40px', bottom: '-8px', width: '200px', height: '40px', borderRadius: '60% 40% 55% 45% / 50% 60% 40% 50%', background: 'rgba(150,176,204,0.5)', filter: 'blur(5px)' }} />
         </div>
         {/* 云朵2 — 右上中（中速飘动） */}
         <div className="absolute pointer-events-none" style={{
@@ -1621,12 +1632,22 @@ export default function AboutPage() {
           filter: 'drop-shadow(0 9px 16px rgba(90,130,170,0.16))',
           animation: 'cta-cloudDrift2 22s ease-in-out infinite alternate',
         }}>
-          <div style={{ position: 'absolute', left: '12px', top: '28px', width: '236px', height: '62px', borderRadius: '999px', background: 'rgba(190,208,230,0.42)', filter: 'blur(7px)' }} />
-          <div style={{ position: 'absolute', left: '0', top: '8px', width: '260px', height: '66px', borderRadius: '999px', background: 'linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(230,241,252,0.76) 100%)' }} />
-          <div style={{ position: 'absolute', left: '36px', top: '-24px', width: '104px', height: '70px', borderRadius: '999px', background: 'linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(226,239,251,0.78) 100%)' }} />
-          <div style={{ position: 'absolute', right: '34px', top: '-18px', width: '84px', height: '58px', borderRadius: '999px', background: 'linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(224,238,250,0.76) 100%)' }} />
-          <div style={{ position: 'absolute', left: '120px', top: '-26px', width: '60px', height: '38px', borderRadius: '999px', background: 'rgba(255,255,255,0.95)', filter: 'blur(1px)' }} />
-          <div style={{ position: 'absolute', left: '52px', bottom: '-4px', width: '150px', height: '28px', borderRadius: '999px', background: 'rgba(176,198,222,0.38)', filter: 'blur(3px)' }} />
+          {/* 底部背光暗部 */}
+          <div style={{ position: 'absolute', left: '6px', top: '38px', width: '246px', height: '52px', borderRadius: '52% 48% 56% 44% / 58% 54% 46% 42%', background: 'rgba(170,190,210,0.52)', filter: 'blur(9px)' }} />
+          {/* 主云体底座（中调） */}
+          <div style={{ position: 'absolute', left: '6px', top: '22px', width: '246px', height: '58px', borderRadius: '60% 40% 54% 46% / 54% 58% 42% 46%', background: 'linear-gradient(180deg, rgba(230,240,250,0.84) 0%, rgba(198,216,234,0.76) 100%)' }} />
+          {/* 主体大块（受光面） */}
+          <div style={{ position: 'absolute', left: '2px', top: '10px', width: '150px', height: '58px', borderRadius: '64% 36% 58% 42% / 56% 60% 40% 44%', background: 'linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(226,239,251,0.8) 100%)' }} />
+          {/* 中块（受光面） */}
+          <div style={{ position: 'absolute', left: '96px', top: '4px', width: '124px', height: '70px', borderRadius: '46% 54% 50% 50% / 52% 48% 52% 48%', background: 'linear-gradient(180deg, rgba(255,255,255,0.93) 0%, rgba(224,238,250,0.78) 100%)' }} />
+          {/* 右端块（受光面） */}
+          <div style={{ position: 'absolute', right: '8px', top: '18px', width: '78px', height: '50px', borderRadius: '56% 44% 52% 48% / 48% 56% 44% 52%', background: 'linear-gradient(180deg, rgba(255,255,255,0.91) 0%, rgba(222,237,250,0.76) 100%)' }} />
+          {/* 顶部高光小凸起 1 */}
+          <div style={{ position: 'absolute', left: '38px', top: '-22px', width: '60px', height: '54px', borderRadius: '52% 48% 58% 42% / 46% 58% 42% 54%', background: 'linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(228,240,252,0.8) 100%)' }} />
+          {/* 絮状小凸起 2 */}
+          <div style={{ position: 'absolute', left: '118px', top: '-26px', width: '46px', height: '44px', borderRadius: '48% 52% 46% 54% / 54% 46% 52% 48%', background: 'rgba(255,255,255,0.92)', filter: 'blur(0.5px)' }} />
+          {/* 底部暗部加强 */}
+          <div style={{ position: 'absolute', left: '34px', bottom: '-6px', width: '170px', height: '34px', borderRadius: '58% 42% 54% 46% / 50% 60% 40% 50%', background: 'rgba(150,176,204,0.48)', filter: 'blur(5px)' }} />
         </div>
         {/* 云朵3 — 中间偏右（快速飘动） */}
         <div className="absolute pointer-events-none" style={{
@@ -1634,12 +1655,22 @@ export default function AboutPage() {
           filter: 'drop-shadow(0 8px 14px rgba(90,130,170,0.15))',
           animation: 'cta-cloudDrift3 18s ease-in-out infinite alternate',
         }}>
-          <div style={{ position: 'absolute', left: '10px', top: '22px', width: '182px', height: '50px', borderRadius: '999px', background: 'rgba(190,208,230,0.4)', filter: 'blur(6px)' }} />
-          <div style={{ position: 'absolute', left: '0', top: '6px', width: '200px', height: '54px', borderRadius: '999px', background: 'linear-gradient(180deg, rgba(255,255,255,0.88) 0%, rgba(228,240,252,0.74) 100%)' }} />
-          <div style={{ position: 'absolute', left: '28px', top: '-20px', width: '82px', height: '56px', borderRadius: '999px', background: 'linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(224,238,250,0.76) 100%)' }} />
-          <div style={{ position: 'absolute', right: '26px', top: '-14px', width: '66px', height: '46px', borderRadius: '999px', background: 'linear-gradient(180deg, rgba(255,255,255,0.88) 0%, rgba(226,239,251,0.74) 100%)' }} />
-          <div style={{ position: 'absolute', left: '92px', top: '-20px', width: '48px', height: '30px', borderRadius: '999px', background: 'rgba(255,255,255,0.95)', filter: 'blur(1px)' }} />
-          <div style={{ position: 'absolute', left: '40px', bottom: '-4px', width: '118px', height: '22px', borderRadius: '999px', background: 'rgba(176,198,222,0.36)', filter: 'blur(3px)' }} />
+          {/* 底部背光暗部 */}
+          <div style={{ position: 'absolute', left: '6px', top: '30px', width: '188px', height: '42px', borderRadius: '52% 48% 56% 44% / 56% 54% 46% 44%', background: 'rgba(170,190,210,0.5)', filter: 'blur(8px)' }} />
+          {/* 主云体底座（中调） */}
+          <div style={{ position: 'absolute', left: '4px', top: '18px', width: '190px', height: '48px', borderRadius: '60% 40% 54% 46% / 54% 58% 42% 46%', background: 'linear-gradient(180deg, rgba(230,240,250,0.82) 0%, rgba(196,214,232,0.74) 100%)' }} />
+          {/* 主体大块（受光面） */}
+          <div style={{ position: 'absolute', left: '2px', top: '8px', width: '116px', height: '46px', borderRadius: '64% 36% 58% 42% / 56% 60% 40% 44%', background: 'linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(224,238,250,0.78) 100%)' }} />
+          {/* 中块（受光面） */}
+          <div style={{ position: 'absolute', left: '74px', top: '2px', width: '96px', height: '56px', borderRadius: '46% 54% 50% 50% / 52% 48% 52% 48%', background: 'linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(222,237,250,0.76) 100%)' }} />
+          {/* 右端块（受光面） */}
+          <div style={{ position: 'absolute', right: '6px', top: '14px', width: '60px', height: '40px', borderRadius: '56% 44% 52% 48% / 48% 56% 44% 52%', background: 'linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(220,236,250,0.74) 100%)' }} />
+          {/* 顶部高光小凸起 1 */}
+          <div style={{ position: 'absolute', left: '30px', top: '-18px', width: '48px', height: '42px', borderRadius: '52% 48% 56% 44% / 46% 58% 42% 54%', background: 'linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(226,239,251,0.78) 100%)' }} />
+          {/* 絮状小凸起 2 */}
+          <div style={{ position: 'absolute', left: '92px', top: '-20px', width: '38px', height: '34px', borderRadius: '48% 52% 46% 54% / 54% 46% 52% 48%', background: 'rgba(255,255,255,0.9)', filter: 'blur(0.5px)' }} />
+          {/* 底部暗部加强 */}
+          <div style={{ position: 'absolute', left: '28px', bottom: '-6px', width: '130px', height: '28px', borderRadius: '58% 42% 54% 46% / 50% 60% 40% 50%', background: 'rgba(150,176,204,0.46)', filter: 'blur(4px)' }} />
         </div>
 
         {/* 飞鸟剪影 — 2只飞过天空 */}

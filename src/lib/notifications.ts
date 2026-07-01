@@ -174,6 +174,67 @@ async function sendWeChatNotification(
 }
 
 /**
+ * Fetch personal WeChat (Server酱) notification settings from database
+ */
+async function getPersonalWeChatSettings(): Promise<{
+  enabled: boolean;
+  sendKey: string;
+} | null> {
+  try {
+    // Dynamic import to avoid circular dependencies
+    const { PrismaClient } = await import('@prisma/client');
+    const prisma = new PrismaClient();
+    try {
+      const enabledSetting = await prisma.siteSettings.findUnique({
+        where: { key: 'wechatPersonalEnabled' },
+      });
+      const sendKeySetting = await prisma.siteSettings.findUnique({
+        where: { key: 'wechatPersonalSendKey' },
+      });
+
+      const enabled = (enabledSetting?.value as unknown as boolean) || false;
+      const sendKey = (sendKeySetting?.value as unknown as string) || '';
+
+      if (!enabled || !sendKey) return null;
+      return { enabled, sendKey };
+    } finally {
+      await prisma.$disconnect();
+    }
+  } catch (error) {
+    console.error('Error fetching personal WeChat settings:', error);
+    return null;
+  }
+}
+
+/**
+ * Send personal WeChat notification via Server酱 (SCT)
+ * Pushes a message to the user's personal WeChat by binding
+ * the Server酱 official account (no enterprise WeChat required).
+ */
+export async function sendPersonalWeChatNotification(
+  title: string,
+  content: string
+): Promise<boolean> {
+  const settings = await getPersonalWeChatSettings();
+  if (!settings || !settings.enabled || !settings.sendKey) return false;
+  try {
+    const res = await fetch(`https://sctapi.ftqq.com/${settings.sendKey}.send`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: title.substring(0, 30), // Server酱 title length limit
+        desp: content,
+      }),
+    });
+    const data = await res.json();
+    return data.code === 0;
+  } catch (error) {
+    console.error('Error sending personal WeChat notification:', error);
+    return false;
+  }
+}
+
+/**
  * Send notification (main entry point)
  * This function is non-blocking and will not throw errors
  */
@@ -205,6 +266,15 @@ export async function sendNotification(data: NotificationData): Promise<void> {
       console.log(`WeChat notification sent successfully for ${data.type}`);
     } else {
       console.warn(`Failed to send WeChat notification for ${data.type}`);
+    }
+
+    // Also try personal WeChat notification (Server酱) — non-blocking
+    try {
+      const personalTitle = data.type === 'contact' ? '📬 New Contact Message' : '🛒 New Order';
+      const personalContent = markdownContent; // reuse the already-built content
+      await sendPersonalWeChatNotification(personalTitle, personalContent);
+    } catch {
+      /* don't block the main flow */
     }
   } catch (error) {
     // Never block the main flow

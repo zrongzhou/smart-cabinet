@@ -215,7 +215,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
                 <div className="flex items-center space-x-2">
                   <a
                     href={`/${locale}/login`}
-                    className="px-4 py-2 text-sm font-medium transition-colors text-gray-700 hover:text-blue-600"
+                    className="px-4 py-2 text-sm font-semibold rounded-lg border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-all duration-200"
                   >
                     {locale === 'zh' ? '登录' : locale === 'ar' ? 'تسجيل الدخول' : 'Sign In'}
                   </a>
@@ -231,7 +231,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
               {/* Get a Quote Button */}
               <a
                 href={`/${locale}/contact`}
-                className="inline-flex items-center px-5 py-2 font-semibold rounded-lg transition-all duration-200 text-sm bg-blue-600 text-white hover:bg-blue-700 shadow-md"
+                className="inline-flex items-center px-4 py-2 font-semibold rounded-lg transition-all duration-200 text-sm bg-blue-600 text-white hover:bg-blue-700 shadow-md"
               >
                 {t('nav.getQuote')}
               </a>
@@ -341,7 +341,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
                   <a
                     href={`/${locale}/login`}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="block py-2.5 px-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors font-medium"
+                    className="block py-2.5 px-3 text-blue-600 border-2 border-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all duration-200 font-medium text-center"
                   >
                     {locale === 'zh' ? '登录' : locale === 'ar' ? 'تسجيل الدخول' : 'Sign In'}
                   </a>

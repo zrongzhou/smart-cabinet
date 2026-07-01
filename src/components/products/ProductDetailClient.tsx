@@ -43,6 +43,7 @@ export default function ProductDetailClient({
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [mainImageError, setMainImageError] = useState(false);
   const [mainImageLoading, setMainImageLoading] = useState(true);
+  const [shareToast, setShareToast] = useState(false);
 
   // Use pre-resolved data from server (no function props!)
   const name = product._resolvedName || '';
@@ -281,22 +282,31 @@ export default function ProductDetailClient({
                     {labels.contactUs}
                   </a>
                   <button
-                    onClick={() => {
-                      if (navigator.share) {
-                        navigator.share({
-                          title: name,
-                          text: description || '',
-                          url: window.location.href,
-                        });
-                      } else {
-                        navigator.clipboard.writeText(window.location.href);
-                        alert(labels.linkCopied);
+                    onClick={async () => {
+                      try {
+                        if (navigator.share && navigator.canShare?.({ url: window.location.href })) {
+                          await navigator.share({ title: name, text: description || '', url: window.location.href });
+                        } else {
+                          await navigator.clipboard.writeText(window.location.href);
+                          setShareToast(true);
+                          setTimeout(() => setShareToast(false), 2000);
+                        }
+                      } catch (err) {
+                        // 用户取消分享或分享失败 → 降级到复制链接
+                        try {
+                          await navigator.clipboard.writeText(window.location.href);
+                          setShareToast(true);
+                          setTimeout(() => setShareToast(false), 2000);
+                        } catch {}
                       }
                     }}
                     className="inline-flex items-center gap-2 px-6 py-3 glass-btn text-gray-700 rounded-xl font-semibold hover:-translate-y-0.5 transition-all"
                   >
                     <Share2 className="w-4 h-4" />
                     {labels.share}
+                    {shareToast && (
+                      <span className="ml-2 text-xs text-green-600 font-medium">✓ Link copied!</span>
+                    )}
                   </button>
                 </div>
               </div>
