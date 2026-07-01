@@ -2,16 +2,16 @@
 import { useEffect, useRef, memo } from 'react';
 
 // ============================================================
-// OceanHeader v237 — Starry Laser Beam Style
-// (based on reference image)
+// OceanHeader v238 — Meteor & Glass Beam Style
 //
-// v237 Features:
+// v238 Features:
 // - Deep navy background with purple-pink nebula glow
-// - 15-20 laser beams (thin white/light blue lines crossing)
+// - Overall brightness breathing effect (3-4s cycle)
+// - Glass-like laser beams (optional static decorative, multi-layer gradient)
+// - Meteor system (dynamic shooting with trails, 8-12 meteors)
 // - 50-80 star dots scattered across canvas
 // - 8-15 large soft bokeh spots (blur 15-40px)
-// - Nebula glow region (bottom-right corner)
-// - Subtle elegant animations (not noisy)
+// - Frame-rate independent animation (using dt)
 // ============================================================
 
 interface StarDot {
@@ -23,15 +23,28 @@ interface StarDot {
   twinkleSpeed: number;
 }
 
-interface LaserBeam {
+interface Meteor {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  length: number;
+  life: number;
+  maxLife: number;
+  width: number;
+  baseAlpha: number;
+  active: boolean;
+  hue: number;
+}
+
+interface GlassBeam {
   x1: number;
   y1: number;
   x2: number;
   y2: number;
   width: number;
   baseAlpha: number;
-  colorType: string;
-  pulseSpeed: number;
+  hue: number;
 }
 
 interface BokehSpot {
@@ -53,10 +66,12 @@ function StarryScene() {
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
   const stateRef = useRef<{
     stars: StarDot[];
-    beams: LaserBeam[];
+    meteors: Meteor[];
+    glassBeams: GlassBeam[];
     bokeh: BokehSpot[];
     time: number;
   } | null>(null);
+  const lastTimeRef = useRef<number>(0);
 
   // ── Initialize Star Dots (50-80 items) ──
   const initStars = (w: number, h: number): StarDot[] => {
@@ -79,28 +94,71 @@ function StarryScene() {
     return stars;
   };
 
-  // ── Initialize Laser Beams (15-20 items) ──
-  const initBeams = (w: number, h: number): LaserBeam[] => {
-    const beams: LaserBeam[] = [];
-    const count = 15 + Math.floor(Math.random() * 5);
+  // ── Initialize Meteor System (10 items) ──
+  const METEOR_COUNT = 10;
+
+  const createMeteor = (w: number, h: number): Meteor => {
+    const side = Math.floor(Math.random() * 4);
+    let x: number, y: number, angle: number;
+
+    switch (side) {
+      case 0: // From left edge
+        x = -20;
+        y = Math.random() * h;
+        angle = (Math.random() * 60 + 15) * Math.PI / 180;
+        break;
+      case 1: // From top edge
+        x = Math.random() * w;
+        y = -20;
+        angle = (Math.random() * 60 + 75) * Math.PI / 180;
+        break;
+      case 2: // From right edge
+        x = w + 20;
+        y = Math.random() * h;
+        angle = (Math.random() * 60 + 195) * Math.PI / 180;
+        break;
+      default: // From bottom edge
+        x = Math.random() * w;
+        y = h + 20;
+        angle = (Math.random() * 60 + 255) * Math.PI / 180;
+    }
+
+    const speed = 80 + Math.random() * 120;
+
+    return {
+      x,
+      y,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      length: 60 + Math.random() * 100,
+      life: 0,
+      maxLife: 2 + Math.random() * 3,
+      width: 1 + Math.random() * 2,
+      baseAlpha: 0.4 + Math.random() * 0.4,
+      active: true,
+      hue: Math.random() * 60 + 180,
+    };
+  };
+
+  const initMeteors = (w: number, h: number): Meteor[] => {
+    const meteors: Meteor[] = [];
+    for (let i = 0; i < METEOR_COUNT; i++) {
+      meteors.push(createMeteor(w, h));
+    }
+    return meteors;
+  };
+
+  // ── Initialize Glass Beams (3-5 static decorative items) ──
+  const initGlassBeams = (w: number, h: number): GlassBeam[] => {
+    const beams: GlassBeam[] = [];
+    const count = 3 + Math.floor(Math.random() * 2);
 
     const beamConfigs = [
-      { start: [0.05, 0.1], end: [0.45, 0.95], width: 1, alpha: 0.18, colorType: 'white' },
-      { start: [0.0, 0.25], end: [0.55, 1.0], width: 0.5, alpha: 0.15, colorType: 'white' },
-      { start: [0.15, 0.0], end: [0.6, 0.88], width: 1, alpha: 0.2, colorType: 'white' },
-      { start: [0.08, 0.4], end: [0.65, 1.08], width: 0.5, alpha: 0.12, colorType: 'white' },
-      { start: [0.2, 0.05], end: [0.7, 0.82], width: 1.5, alpha: 0.25, colorType: 'white' },
-      { start: [0.02, 0.5], end: [0.52, 1.05], width: 0.5, alpha: 0.13, colorType: 'white' },
-      { start: [0.12, 0.18], end: [0.75, 0.92], width: 1, alpha: 0.16, colorType: 'white' },
-      { start: [0.0, 0.35], end: [0.62, 1.02], width: 0.5, alpha: 0.14, colorType: 'lightblue' },
-      { start: [0.18, 0.02], end: [0.8, 0.78], width: 1, alpha: 0.22, colorType: 'white' },
-      { start: [0.06, 0.6], end: [0.58, 1.1], width: 0.5, alpha: 0.11, colorType: 'lightpurple' },
-      { start: [0.25, 0.0], end: [0.75, 0.85], width: 1, alpha: 0.19, colorType: 'white' },
-      { start: [0.0, 0.45], end: [0.48, 1.0], width: 0.5, alpha: 0.12, colorType: 'white' },
-      { start: [0.1, 0.3], end: [0.7, 0.95], width: 1, alpha: 0.21, colorType: 'white' },
-      { start: [0.03, 0.55], end: [0.53, 1.06], width: 0.5, alpha: 0.13, colorType: 'lightblue' },
-      { start: [0.22, 0.08], end: [0.72, 0.88], width: 1.5, alpha: 0.23, colorType: 'white' },
-      { start: [0.0, 0.15], end: [0.6, 0.92], width: 0.5, alpha: 0.14, colorType: 'white' },
+      { start: [0.05, 0.1], end: [0.45, 0.95], width: 1, alpha: 0.15, hue: 200 },
+      { start: [0.15, 0.0], end: [0.6, 0.88], width: 0.8, alpha: 0.12, hue: 220 },
+      { start: [0.0, 0.35], end: [0.62, 1.02], width: 0.6, alpha: 0.1, hue: 240 },
+      { start: [0.2, 0.05], end: [0.7, 0.82], width: 1.2, alpha: 0.18, hue: 190 },
+      { start: [0.1, 0.3], end: [0.7, 0.95], width: 0.7, alpha: 0.13, hue: 210 },
     ];
 
     beamConfigs.forEach((cfg, i) => {
@@ -112,8 +170,7 @@ function StarryScene() {
         y2: cfg.end[1] * h,
         width: cfg.width,
         baseAlpha: cfg.alpha,
-        colorType: cfg.colorType,
-        pulseSpeed: 0.5 + Math.random() * 0.5,
+        hue: cfg.hue,
       });
     });
 
@@ -170,6 +227,13 @@ function StarryScene() {
     ctx.fillRect(0, 0, w, h);
   };
 
+  // ── Draw Breathing Overlay (3-4s cycle) ──
+  const drawBreathing = (ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
+    const breathAlpha = 0.5 + 0.5 * Math.sin(t * 1.8);
+    ctx.fillStyle = `rgba(0, 0, 0, ${(1 - breathAlpha) * 0.25})`;
+    ctx.fillRect(0, 0, w, h);
+  };
+
   // ── Draw Nebula Glow ──
   const drawNebula = (ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
     const nx = w * 0.7;
@@ -218,8 +282,66 @@ function StarryScene() {
     });
   };
 
-  // ── Draw Laser Beams ──
-  const drawBeams = (ctx: CanvasRenderingContext2D, beams: LaserBeam[], t: number) => {
+  // ── Draw Glass-like Beam (multi-layer gradient) ──
+  const drawGlassBeam = (
+    ctx: CanvasRenderingContext2D,
+    x1: number, y1: number,
+    x2: number, y2: number,
+    t: number, index: number,
+    width: number, baseAlpha: number, hue: number
+  ) => {
+    // Outer glow (wide, blurry, low opacity)
+    ctx.save();
+    ctx.filter = 'blur(4px)';
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.strokeStyle = `hsla(${hue}, 60%, 70%, ${baseAlpha * 0.15})`;
+    ctx.lineWidth = width * 3;
+    ctx.stroke();
+    ctx.restore();
+
+    // Middle layer - glass body (medium width, gradient)
+    const grad = ctx.createLinearGradient(x1, y1, x2, y2);
+    grad.addColorStop(0, `hsla(${hue}, 50%, 75%, ${baseAlpha * 0.3})`);
+    grad.addColorStop(0.3, `hsla(${hue}, 60%, 85%, ${baseAlpha * 0.5})`);
+    grad.addColorStop(0.5, `hsla(${hue}, 70%, 95%, ${baseAlpha * 0.8})`);
+    grad.addColorStop(0.7, `hsla(${hue}, 60%, 85%, ${baseAlpha * 0.5})`);
+    grad.addColorStop(1, `hsla(${hue}, 50%, 75%, ${baseAlpha * 0.3})`);
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = width * 2;
+    ctx.stroke();
+
+    // Inner layer - highlight core (narrowest, brightest)
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.strokeStyle = `hsla(${hue}, 80%, 98%, ${baseAlpha * 0.9})`;
+    ctx.lineWidth = width * 0.5;
+    ctx.stroke();
+
+    // Refraction highlights (move along the beam)
+    const numHighlights = 2;
+    for (let i = 0; i < numHighlights; i++) {
+      const pos = (Math.sin(t * 0.5 + index + i * 2.5) * 0.5 + 0.5) * 0.8 + 0.1;
+      const hx = x1 + (x2 - x1) * pos;
+      const hy = y1 + (y2 - y1) * pos;
+      const hlGrad = ctx.createRadialGradient(hx, hy, 0, hx, hy, 4);
+      hlGrad.addColorStop(0, `rgba(255, 255, 255, ${baseAlpha * 0.9})`);
+      hlGrad.addColorStop(0.5, `hsla(${hue}, 60%, 85%, ${baseAlpha * 0.4})`);
+      hlGrad.addColorStop(1, 'transparent');
+      ctx.fillStyle = hlGrad;
+      ctx.beginPath();
+      ctx.arc(hx, hy, 4, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  };
+
+  // ── Draw Glass Beams ──
+  const drawGlassBeams = (ctx: CanvasRenderingContext2D, beams: GlassBeam[], t: number) => {
     ctx.save();
     const centerX = ctx.canvas.width * 0.3;
     const centerY = ctx.canvas.height * 0.4;
@@ -229,27 +351,63 @@ function StarryScene() {
     ctx.translate(-centerX, -centerY);
 
     beams.forEach((beam, i) => {
-      const pulse = Math.sin(t * beam.pulseSpeed + i * 0.8) * 0.03;
-      const alpha = Math.max(0.08, Math.min(0.35, beam.baseAlpha + pulse));
+      const pulse = Math.sin(t * 0.3 + i * 0.8) * 0.03;
+      const alpha = Math.max(0.05, Math.min(0.25, beam.baseAlpha + pulse));
 
-      let strokeStyle: string;
-      if (beam.colorType === 'white') {
-        strokeStyle = `rgba(255, 255, 255, ${alpha})`;
-      } else if (beam.colorType === 'lightblue') {
-        strokeStyle = `rgba(147, 197, 253, ${alpha})`;
-      } else {
-        strokeStyle = `rgba(196, 181, 253, ${alpha})`;
-      }
-
-      ctx.beginPath();
-      ctx.moveTo(beam.x1, beam.y1);
-      ctx.lineTo(beam.x2, beam.y2);
-      ctx.strokeStyle = strokeStyle;
-      ctx.lineWidth = beam.width;
-      ctx.stroke();
+      drawGlassBeam(
+        ctx,
+        beam.x1, beam.y1,
+        beam.x2, beam.y2,
+        t, i,
+        beam.width, alpha, beam.hue
+      );
     });
 
     ctx.restore();
+  };
+
+  // ── Update and Draw Meteors ──
+  const updateAndDrawMeteors = (ctx: CanvasRenderingContext2D, meteors: Meteor[], dt: number, w: number, h: number) => {
+    meteors.forEach((m, i) => {
+      if (!m.active) {
+        meteors[i] = createMeteor(w, h);
+        return;
+      }
+
+      m.x += m.vx * dt;
+      m.y += m.vy * dt;
+      m.life += dt;
+
+      if (m.life > m.maxLife || m.x < -200 || m.x > w + 200 || m.y < -200 || m.y > h + 200) {
+        m.active = false;
+        return;
+      }
+
+      const speed = Math.sqrt(m.vx * m.vx + m.vy * m.vy);
+      const tailX = m.x - (m.vx / speed) * m.length;
+      const tailY = m.y - (m.vy / speed) * m.length;
+
+      const grad = ctx.createLinearGradient(m.x, m.y, tailX, tailY);
+      grad.addColorStop(0, `hsla(${m.hue}, 80%, 85%, ${m.baseAlpha})`);
+      grad.addColorStop(0.3, `hsla(${m.hue}, 70%, 75%, ${m.baseAlpha * 0.7})`);
+      grad.addColorStop(1, `hsla(${m.hue}, 60%, 60%, 0)`);
+
+      ctx.beginPath();
+      ctx.moveTo(m.x, m.y);
+      ctx.lineTo(tailX, tailY);
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = m.width;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+
+      const headGrad = ctx.createRadialGradient(m.x, m.y, 0, m.x, m.y, 4);
+      headGrad.addColorStop(0, `rgba(255, 255, 255, ${m.baseAlpha})`);
+      headGrad.addColorStop(1, 'transparent');
+      ctx.fillStyle = headGrad;
+      ctx.beginPath();
+      ctx.arc(m.x, m.y, 4, 0, Math.PI * 2);
+      ctx.fill();
+    });
   };
 
   // ── Draw Star Dots ──
@@ -294,10 +452,12 @@ function StarryScene() {
 
       stateRef.current = {
         stars: initStars(w, h),
-        beams: initBeams(w, h),
+        meteors: initMeteors(w, h),
+        glassBeams: initGlassBeams(w, h),
         bokeh: initBokeh(w, h),
         time: 0,
       };
+      lastTimeRef.current = 0;
     }
 
     function animate(time: number) {
@@ -325,6 +485,8 @@ function StarryScene() {
       }
 
       const t = time * 0.001;
+      const dt = lastTimeRef.current === 0 ? 0.016 : Math.min((time - lastTimeRef.current) * 0.001, 0.05);
+      lastTimeRef.current = time;
       state.time = t;
 
       const w = rect.width;
@@ -333,9 +495,19 @@ function StarryScene() {
       currentCtx.clearRect(0, 0, w, h);
 
       drawBackground(currentCtx, w, h);
+
+      // Breathing overlay
+      drawBreathing(currentCtx, t, w, h);
+
       drawBokeh(currentCtx, state.bokeh, t, w, h);
       drawNebula(currentCtx, w, h, t);
-      drawBeams(currentCtx, state.beams, t);
+
+      // Draw glass beams (static decorative)
+      drawGlassBeams(currentCtx, state.glassBeams, t);
+
+      // Update and draw meteors (dynamic)
+      updateAndDrawMeteors(currentCtx, state.meteors, dt, w, h);
+
       drawStars(currentCtx, state.stars, t);
 
       animId = requestAnimationFrame(animate);
