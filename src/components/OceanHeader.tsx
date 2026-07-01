@@ -2,9 +2,15 @@
 import { useEffect, useRef, memo } from 'react';
 
 // ============================================================
-// OceanHeader v250 - True Deep Blue (User Feedback Fixed)
+// OceanHeader v251 - Trapezoidal Wave Breathing (User Feedback Fixed)
 //
-// v250 Changes (TRUE DEEP BLUE - NOT sky blue / shallow blue):
+// v251 Changes (TRAPEZOIDAL WAVE - longer bright state):
+// - Replaced sin wave with trapezoidal wave for breathing animation
+// - Fast brighten (2.4s) → KEEP BRIGHT 6s → Slow dim (3.6s)
+// - Cycle extended from 10s to 12s (more elegant)
+// - Bright state now 50% of cycle (was ~10% with sin wave)
+//
+// v250 Changes (TRUE DEEP BLUE - preserved):
 // - CRITICAL FIX: Bright color changed from #0a8cff to #0050ff (rgb 0,80,255)
 // - Reduced R 10→0 (ZERO red = truest deep blue, no purple at all)
 // - Reduced G 140→80 (reduce shallow feel, TRUE deep blue like ocean)
@@ -12,11 +18,9 @@ import { useEffect, useRef, memo } from 'react';
 //
 // v243 Features (preserved):
 // - Deep blue palette (not sky blue / baby blue)
-// - Independent breathing cycle (10s period)
 // - Meteor boost: +0.10 each (reduced from +0.15)
 //
 // v242 Features (preserved):
-// - Independent breathing cycle (sin wave, no dependency on meteors)
 // - Direct background color interpolation (no overlay)
 // - 14 meteors for higher activity levels
 //
@@ -507,10 +511,21 @@ function StarryScene() {
       const w = rect.width;
       const h = rect.height;
 
-      // Calculate base breathing (independent sin wave, 10-second cycle, range 0.15-0.65)
-      // v243: Reduced amplitude to stay within deep blue palette (never goes too bright)
-      const breathCycle = (t % 10) / 10;  // 0-1, 10-second cycle (slower = more elegant)
-      const baseActivity = 0.15 + 0.50 * (0.5 + 0.5 * Math.sin(breathCycle * Math.PI * 2 - Math.PI / 2));  // 0.15-0.65
+      // v251: Trapezoidal wave for longer bright state (user feedback: "bright state too short")
+      // Trapezoid wave: fast brighten → KEEP BRIGHT 6s → slow dim
+      const breathCycle = (t % 12) / 12;  // 0-1, 12-second cycle (slower = more elegant)
+      let normalized;
+      if (breathCycle < 0.2) {
+        // Fast brighten (0-0.2 = 2.4s)
+        normalized = breathCycle / 0.2;
+      } else if (breathCycle < 0.7) {
+        // KEEP BRIGHT (0.2-0.7 = 6s) ← User wants this!
+        normalized = 1.0;
+      } else {
+        // Slow dim (0.7-1.0 = 3.6s)
+        normalized = 1.0 - (breathCycle - 0.7) / 0.3;
+      }
+      const baseActivity = 0.15 + 0.50 * normalized;  // 0.15-0.65
 
       // Meteor linkage boost (each active meteor +0.10, reduced from 0.15)
       const activeCount = state.meteors.filter(m => m.active).length;
