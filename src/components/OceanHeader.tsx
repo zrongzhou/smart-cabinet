@@ -2,19 +2,18 @@
 import { useEffect, useRef, memo } from 'react';
 
 // ============================================================
-// OceanHeader v232 DEBUG — Make Crystals VISIBLE
+// OceanHeader v233 — High-Contrast Blue/Crystalline Color Scheme
 //
-// DEBUG VERSION: Using bright impossible-to-miss colors
-// to diagnose why crystals are not rendering.
+// Based on v232 DEBUG success: crystals ARE visible!
+// Root cause identified: previous versions had colors too dark + 
+// opacity too low + blue colors "eaten" by dark background.
 //
-// v232 DEBUG Strategy:
-// - Crystal 1: BRIGHT RED (must be visible!)
-// - Crystal 2: BRIGHT GREEN (must be visible!)
-// - Crystal 3: BRIGHT BLUE (must be visible!)
-// - Crystal 4: BRIGHT YELLOW (must be visible!)
-// - Each crystal has 3px solid bright border
-// - Simplified to 2 layers only (main body + border)
-// - Background opacity reduced to 0.4
+// v233 Strategy:
+// - Keep v232 structure (proven working)
+// - Replace DEBUG colors with HIGH ALPHA (0.75-0.92) blue/crystalline
+// - Restore multi-layer structure (dark outline, highlight, glow, refraction)
+// - Remove all DEBUG elements
+// - Restore background opacity to 0.7
 // ============================================================
 
 function IceCrystalScene() {
@@ -75,7 +74,7 @@ function IceCrystalScene() {
     return () => cancelAnimationFrame(animId);
   }, []);
 
-  // ── DEBUG Crystal Configurations (BRIGHT COLORS) ──
+  // ── Crystal Configurations (High-Contrast Blue/Crystalline) ──
   const crystalConfigs = [
     {
       id: 1,
@@ -84,13 +83,17 @@ function IceCrystalScene() {
       height: '40vh',
       left: '5%',
       top: '10%',
-      // BRIGHT RED - MUST BE VISIBLE!
-      backgroundColor: 'rgba(255, 50, 50, 0.85)',
-      borderColor: 'rgb(255, 0, 0)',
-      borderWidth: '4px',
+      // Sky Blue Main Tone - HIGH ALPHA
+      mainGradient: `linear-gradient(135deg, 
+        rgba(147, 197, 253, 0.92) 0%,
+        rgba(125, 211, 252, 0.85) 30%,
+        rgba(167, 243, 208, 0.78) 55%,
+        rgba(191, 219, 254, 0.88) 80%,
+        rgba(96, 165, 250, 0.90) 100%
+      )`,
+      borderColor: 'rgba(255, 255, 255, 0.65)',
       animation: 'crystal-float-1 18s ease-in-out infinite',
       animationDelay: '0s',
-      label: 'RED DEBUG',
     },
     {
       id: 2,
@@ -99,13 +102,17 @@ function IceCrystalScene() {
       height: '35vh',
       right: '5%',
       top: '15%',
-      // BRIGHT GREEN - MUST BE VISIBLE!
-      backgroundColor: 'rgba(50, 255, 50, 0.85)',
-      borderColor: 'rgb(0, 255, 0)',
-      borderWidth: '4px',
+      // Cyan/Green Main Tone - HIGH ALPHA
+      mainGradient: `linear-gradient(135deg,
+        rgba(103, 232, 249, 0.90) 0%,
+        rgba(34, 211, 238, 0.82) 30%,
+        rgba(147, 197, 253, 0.75) 55%,
+        rgba(167, 243, 208, 0.80) 80%,
+        rgba(56, 189, 248, 0.85) 100%
+      )`,
+      borderColor: 'rgba(255, 255, 255, 0.65)',
       animation: 'crystal-float-2 22s ease-in-out infinite',
       animationDelay: '-3s',
-      label: 'GREEN DEBUG',
     },
     {
       id: 3,
@@ -114,13 +121,17 @@ function IceCrystalScene() {
       height: '38vh',
       left: '15%',
       bottom: '8%',
-      // BRIGHT BLUE - MUST BE VISIBLE!
-      backgroundColor: 'rgba(50, 50, 255, 0.85)',
-      borderColor: 'rgb(0, 0, 255)',
-      borderWidth: '4px',
+      // Light Purple/Blue Main Tone - HIGH ALPHA
+      mainGradient: `linear-gradient(135deg,
+        rgba(196, 181, 253, 0.88) 0%,
+        rgba(165, 180, 252, 0.82) 30%,
+        rgba(147, 197, 253, 0.78) 55%,
+        rgba(103, 232, 249, 0.80) 80%,
+        rgba(139, 92, 246, 0.85) 100%
+      )`,
+      borderColor: 'rgba(255, 255, 255, 0.65)',
       animation: 'crystal-float-3 20s ease-in-out infinite',
       animationDelay: '-6s',
-      label: 'BLUE DEBUG',
     },
     {
       id: 4,
@@ -129,59 +140,96 @@ function IceCrystalScene() {
       height: '30vh',
       right: '10%',
       bottom: '10%',
-      // BRIGHT YELLOW - MUST BE VISIBLE!
-      backgroundColor: 'rgba(255, 255, 50, 0.85)',
-      borderColor: 'rgb(255, 255, 0)',
-      borderWidth: '4px',
+      // Ice Blue Main Tone - HIGH ALPHA (almost white highlight)
+      mainGradient: `linear-gradient(135deg,
+        rgba(224, 242, 254, 0.90) 0%,
+        rgba(186, 230, 253, 0.85) 30%,
+        rgba(125, 211, 252, 0.80) 55%,
+        rgba(147, 197, 253, 0.85) 80%,
+        rgba(96, 165, 250, 0.88) 100%
+      )`,
+      borderColor: 'rgba(255, 255, 255, 0.65)',
       animation: 'crystal-float-4 24s ease-in-out infinite',
       animationDelay: '-9s',
-      label: 'YELLOW DEBUG',
     },
   ];
 
+  // ── Refraction Lines Configuration ──
+  const getRefractionLines = (crystalId: number) => {
+    const lines = {
+      1: [
+        { rotate: -25, top: '35%', left: '20%', width: '60%' },
+        { rotate: 15, top: '55%', left: '15%', width: '50%' },
+        { rotate: -40, top: '25%', left: '25%', width: '45%' },
+      ],
+      2: [
+        { rotate: 20, top: '30%', left: '18%', width: '55%' },
+        { rotate: -10, top: '60%', left: '22%', width: '48%' },
+      ],
+      3: [
+        { rotate: -30, top: '40%', left: '20%', width: '58%' },
+        { rotate: 25, top: '50%', left: '15%', width: '52%' },
+        { rotate: -15, top: '28%', left: '28%', width: '42%' },
+      ],
+      4: [
+        { rotate: 18, top: '32%', left: '22%', width: '53%' },
+        { rotate: -22, top: '58%', left: '18%', width: '46%' },
+      ],
+    };
+    return lines[crystalId as keyof typeof lines] || [];
+  };
+
+  // ── Bubbles Configuration ──
+  const bubbles = Array.from({ length: 18 }, (_, i) => ({
+    id: `bubble-${i}`,
+    left: `${5 + ((i * 37) % 90)}%`,
+    top: `${15 + ((i * 41) % 70)}%`,
+    size: 6 + (i % 11),
+    animationDuration: `${10 + (i % 8) * 2}s`,
+    animationDelay: `${-(i * 1.3)}s`,
+    opacity: 0.5 + (i % 4) * 0.12,
+  }));
+
+  // ── Specular Highlights Configuration ──
+  const speculars = Array.from({ length: 12 }, (_, i) => ({
+    id: `spec-${i}`,
+    left: `${3 + ((i * 31) % 94)}%`,
+    top: `${5 + ((i * 43) % 88)}%`,
+    size: 3 + (i % 5),
+    animationDuration: `${2.5 + (i % 3) * 0.8}s`,
+    animationDelay: `${-(i * 0.9)}s`,
+    opacity: 0.6 + (i % 3) * 0.13,
+  }));
+
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-      {/* ===== DEBUG INDICATOR ===== */}
-      <div
-        className="absolute top-4 right-4 z-50 px-3 py-1 rounded"
-        style={{
-          backgroundColor: 'rgba(255, 0, 0, 0.8)',
-          color: 'white',
-          fontSize: '14px',
-          fontWeight: 'bold',
-          fontFamily: 'monospace',
-        }}
-      >
-        v232 DEBUG MODE
-      </div>
-
-      {/* ===== Layer 0: Reduced Opacity Background ===== */}
+      {/* ===== Layer 0: Background (Restored to 0.7 opacity) ===== */}
       <div
         className="absolute inset-0"
         style={{
           background: `
             radial-gradient(ellipse at 30% 20%, 
-              rgba(30, 58, 138, 0.4) 0%, 
-              rgba(30, 64, 175, 0.4) 25%, 
-              rgba(29, 78, 216, 0.4) 45%, 
-              rgba(30, 58, 95, 0.4) 65%, 
-              rgba(15, 23, 42, 0.4) 100%
+              rgba(30, 58, 138, 0.7) 0%, 
+              rgba(30, 64, 175, 0.7) 25%, 
+              rgba(29, 78, 216, 0.7) 45%, 
+              rgba(30, 58, 95, 0.7) 65%, 
+              rgba(15, 23, 42, 0.7) 100%
             )
           `,
         }}
       />
 
-      {/* ===== Layer 1: Canvas (reduced opacity) ===== */}
+      {/* ===== Layer 1: Canvas (Restored to 0.5 opacity) ===== */}
       <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full"
-        style={{ mixBlendMode: 'screen', opacity: 0.3 }}
+        style={{ mixBlendMode: 'screen', opacity: 0.5 }}
       />
 
-      {/* ===== Layer 2: DEBUG Crystals (BRIGHT COLORS) ===== */}
+      {/* ===== Layer 2: Multi-layer Crystals ===== */}
       {crystalConfigs.map((crystal) => (
         <div
-          key={`crystal-${crystal.id}`}
+          key={`crystal-group-${crystal.id}`}
           className="absolute"
           style={{
             width: crystal.width,
@@ -194,7 +242,22 @@ function IceCrystalScene() {
             animationDelay: crystal.animationDelay,
           }}
         >
-          {/* Main Body - BRIGHT SOLID COLOR */}
+          {/* Layer A: Dark Outline (Shadow) */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '8px',
+              left: '8px',
+              width: '100%',
+              height: '100%',
+              clipPath: crystal.clipPath,
+              background: 'rgba(15, 23, 42, 0.50)',
+              filter: 'blur(8px)',
+              opacity: 0.7,
+            }}
+          />
+
+          {/* Layer B: Main Body (High-Alpha Multi-color Gradient) */}
           <div
             style={{
               position: 'absolute',
@@ -203,29 +266,180 @@ function IceCrystalScene() {
               width: '100%',
               height: '100%',
               clipPath: crystal.clipPath,
-              backgroundColor: crystal.backgroundColor,
-              border: `${crystal.borderWidth} solid ${crystal.borderColor}`,
+              background: crystal.mainGradient,
             }}
           />
 
-          {/* Label for DEBUG */}
+          {/* Layer C: Highlight (Bright Face) */}
           <div
             style={{
               position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              color: 'white',
-              fontSize: '16px',
-              fontWeight: 'bold',
-              textShadow: '0 0 4px black',
-              pointerEvents: 'none',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              clipPath: crystal.clipPath,
+              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.55) 0%, transparent 60%)',
+              animation: `highlight-pulse-${crystal.id} 6s ease-in-out infinite`,
             }}
-          >
-            {crystal.label}
-          </div>
+          />
+
+          {/* Layer D: Edge Glow */}
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              clipPath: crystal.clipPath,
+              boxShadow: `
+                0 0 15px rgba(147, 197, 253, 0.6),
+                0 0 30px rgba(103, 232, 249, 0.35),
+                inset 0 0 15px rgba(255, 255, 255, 0.18)
+              `,
+              border: `2px solid ${crystal.borderColor}`,
+            }}
+          />
+
+          {/* Layer E: Internal Refraction Lines */}
+          {getRefractionLines(crystal.id).map((line, idx) => (
+            <div
+              key={`refraction-${crystal.id}-${idx}`}
+              style={{
+                position: 'absolute',
+                width: line.width,
+                height: '2px',
+                background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent)',
+                transform: `rotate(${line.rotate}deg)`,
+                top: line.top,
+                left: line.left,
+                filter: 'blur(0.5px)',
+              }}
+            />
+          ))}
         </div>
       ))}
+
+      {/* ===== Layer 3: Bubbles ===== */}
+      {bubbles.map((bubble) => (
+        <div
+          key={bubble.id}
+          className="absolute rounded-full"
+          style={{
+            left: bubble.left,
+            top: bubble.top,
+            width: bubble.size,
+            height: bubble.size,
+            background: `radial-gradient(circle at 30% 30%, 
+              rgba(255, 255, 255, ${bubble.opacity + 0.3}), 
+              rgba(191, 219, 254, ${bubble.opacity * 0.7}) 40%, 
+              rgba(96, 165, 250, ${bubble.opacity * 0.4}) 70%, 
+              transparent 100%
+            )`,
+            border: '1px solid rgba(255, 255, 255, 0.5)',
+            animation: `bubble-float ${bubble.animationDuration} ease-in-out infinite`,
+            animationDelay: bubble.animationDelay,
+          }}
+        />
+      ))}
+
+      {/* ===== Layer 4: Specular Highlights ===== */}
+      {speculars.map((spec) => (
+        <div
+          key={spec.id}
+          className="absolute rounded-full"
+          style={{
+            left: spec.left,
+            top: spec.top,
+            width: spec.size,
+            height: spec.size,
+            background: `radial-gradient(circle at 30% 30%, 
+              rgba(255, 255, 255, 0.95), 
+              rgba(224, 242, 254, 0.7) 45%, 
+              transparent 70%
+            )`,
+            filter: 'blur(0.5px)',
+            animation: `specular-twinkle ${spec.animationDuration} ease-in-out infinite`,
+            animationDelay: spec.animationDelay,
+          }}
+        />
+      ))}
+
+      {/* ===== Layer 5: Light Rays ===== */}
+      <div
+        className="absolute"
+        style={{
+          left: '-15%',
+          top: '-20%',
+          width: '90vw',
+          height: '120vh',
+          background: `linear-gradient(125deg, 
+            transparent 0%, 
+            rgba(255, 255, 255, 0.08) 15%, 
+            rgba(191, 219, 254, 0.12) 35%, 
+            rgba(147, 197, 253, 0.08) 55%, 
+            transparent 75%
+          )`,
+          transform: 'rotate(-28deg)',
+          transformOrigin: 'top left',
+          animation: 'ray-sweep-1 25s ease-in-out infinite',
+        }}
+      />
+      <div
+        className="absolute"
+        style={{
+          right: '-10%',
+          top: '-15%',
+          width: '70vw',
+          height: '110vh',
+          background: `linear-gradient(215deg, 
+            transparent 0%, 
+            rgba(255, 255, 255, 0.06) 20%, 
+            rgba(196, 181, 253, 0.10) 40%, 
+            rgba(147, 197, 253, 0.07) 60%, 
+            transparent 80%
+          )`,
+          transform: 'rotate(18deg)',
+          transformOrigin: 'top right',
+          animation: 'ray-sweep-2 28s ease-in-out infinite',
+        }}
+      />
+
+      {/* ===== Layer 6: Bloom Glow ===== */}
+      <div
+        className="absolute"
+        style={{
+          left: '25%',
+          top: '5%',
+          width: '55vw',
+          height: '55vh',
+          background: `radial-gradient(ellipse at center, 
+            rgba(191, 219, 254, 0.25) 0%, 
+            rgba(147, 197, 253, 0.14) 35%, 
+            rgba(96, 165, 250, 0.07) 60%, 
+            transparent 80%
+          )`,
+          filter: 'blur(50px) hue-rotate(0deg)',
+          animation: 'bloom-pulse 12s ease-in-out infinite, bloom-hue-rotate 20s linear infinite',
+        }}
+      />
+      <div
+        className="absolute"
+        style={{
+          right: '15%',
+          bottom: '10%',
+          width: '40vw',
+          height: '40vh',
+          background: `radial-gradient(ellipse at center, 
+            rgba(196, 181, 253, 0.20) 0%, 
+            rgba(165, 180, 252, 0.12) 40%, 
+            transparent 75%
+          )`,
+          filter: 'blur(45px) hue-rotate(0deg)',
+          animation: 'bloom-pulse-2 15s ease-in-out infinite, bloom-hue-rotate-2 25s linear infinite',
+        }}
+      />
 
       {/* ===== Inline Styles for Animations ===== */}
       <style>{`
@@ -257,6 +471,73 @@ function IceCrystalScene() {
           60%  { transform: translate(3%, 3%) rotate(2.2deg) scale(0.96); }
           85%  { transform: translate(-2%, 5%) rotate(-1deg) scale(1.02); }
           100% { transform: translate(0%, 0%) rotate(0deg) scale(1.0); }
+        }
+
+        /* ── Highlight Pulse Animations ── */
+        @keyframes highlight-pulse-1 {
+          0%, 100% { opacity: 0.40; }
+          50%      { opacity: 0.80; }
+        }
+        @keyframes highlight-pulse-2 {
+          0%, 100% { opacity: 0.45; }
+          50%      { opacity: 0.85; }
+        }
+        @keyframes highlight-pulse-3 {
+          0%, 100% { opacity: 0.42; }
+          50%      { opacity: 0.82; }
+        }
+        @keyframes highlight-pulse-4 {
+          0%, 100% { opacity: 0.38; }
+          50%      { opacity: 0.78; }
+        }
+
+        /* ── Bubble Float Animation ── */
+        @keyframes bubble-float {
+          0%   { transform: translateY(0px) translateX(0px) scale(1.0); opacity: 0.5; }
+          25%  { transform: translateY(-25px) translateX(3px) scale(1.05); opacity: 0.7; }
+          50%  { transform: translateY(-50px) translateX(-2px) scale(0.98); opacity: 0.6; }
+          75%  { transform: translateY(-75px) translateX(4px) scale(1.03); opacity: 0.75; }
+          100% { transform: translateY(-100px) translateX(0px) scale(1.0); opacity: 0.5; }
+        }
+
+        /* ── Specular Highlight Twinkle ── */
+        @keyframes specular-twinkle {
+          0%, 100% { opacity: 0.4; transform: scale(0.8); }
+          50%      { opacity: 1.0; transform: scale(1.3); }
+        }
+
+        /* ── Light Ray Sweep ── */
+        @keyframes ray-sweep-1 {
+          0%   { transform: rotate(-28deg); opacity: 0.5; }
+          50%  { transform: rotate(-23deg); opacity: 0.85; }
+          100% { transform: rotate(-28deg); opacity: 0.5; }
+        }
+        @keyframes ray-sweep-2 {
+          0%   { transform: rotate(18deg); opacity: 0.45; }
+          50%  { transform: rotate(23deg); opacity: 0.75; }
+          100% { transform: rotate(18deg); opacity: 0.45; }
+        }
+
+        /* ── Bloom Pulse ── */
+        @keyframes bloom-pulse {
+          0%, 100% { opacity: 0.5; transform: scale(1.0); }
+          50%      { opacity: 0.85; transform: scale(1.12); }
+        }
+        @keyframes bloom-pulse-2 {
+          0%, 100% { opacity: 0.45; transform: scale(1.0); }
+          50%      { opacity: 0.75; transform: scale(1.08); }
+        }
+
+        /* ── Bloom Hue-Rotate ── */
+        @keyframes bloom-hue-rotate {
+          0%   { filter: blur(50px) hue-rotate(0deg); }
+          50%  { filter: blur(50px) hue-rotate(30deg); }
+          100% { filter: blur(50px) hue-rotate(0deg); }
+        }
+        @keyframes bloom-hue-rotate-2 {
+          0%   { filter: blur(45px) hue-rotate(0deg); }
+          50%  { filter: blur(45px) hue-rotate(-25deg); }
+          100% { filter: blur(45px) hue-rotate(0deg); }
         }
       `}</style>
     </div>
