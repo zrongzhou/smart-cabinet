@@ -283,21 +283,32 @@ export default function ProductDetailClient({
                   </a>
                   <button
                     onClick={async () => {
+                      const shareData = {
+                        title: name || document.title,
+                        // strip HTML tags from description before sharing
+                        text: (description || '').replace(/<[^>]*>/g, '').substring(0, 200),
+                        url: window.location.href,
+                      };
                       try {
-                        if (navigator.share && navigator.canShare?.({ url: window.location.href })) {
-                          await navigator.share({ title: name, text: description || '', url: window.location.href });
-                        } else {
-                          await navigator.clipboard.writeText(window.location.href);
-                          setShareToast(true);
-                          setTimeout(() => setShareToast(false), 2000);
+                        // Only use native share on mobile-like environments
+                        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                        if (isMobile && navigator.share && navigator.canShare?.(shareData)) {
+                          await navigator.share(shareData);
+                          return;
                         }
+                        // Desktop & fallback: always copy link
+                        await navigator.clipboard.writeText(window.location.href);
+                        setShareToast(true);
+                        setTimeout(() => setShareToast(false), 2000);
                       } catch (err) {
-                        // 用户取消分享或分享失败 → 降级到复制链接
+                        // Final fallback
                         try {
                           await navigator.clipboard.writeText(window.location.href);
                           setShareToast(true);
                           setTimeout(() => setShareToast(false), 2000);
-                        } catch {}
+                        } catch {
+                          // clipboard also failed (rare)
+                        }
                       }
                     }}
                     className="inline-flex items-center gap-2 px-6 py-3 glass-btn text-gray-700 rounded-xl font-semibold hover:-translate-y-0.5 transition-all"
@@ -305,7 +316,7 @@ export default function ProductDetailClient({
                     <Share2 className="w-4 h-4" />
                     {labels.share}
                     {shareToast && (
-                      <span className="ml-2 text-xs text-green-600 font-medium">✓ Link copied!</span>
+                      <span className="ml-2 inline-flex items-center px-2 py-0.5 bg-green-50 text-green-700 text-xs font-medium rounded-full">✓ Link copied!</span>
                     )}
                   </button>
                 </div>

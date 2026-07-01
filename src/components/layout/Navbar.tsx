@@ -211,30 +211,29 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
                   )}
                 </div>
               ) : (
-                /* Login/Register Buttons */
-                <div className="flex items-center space-x-2">
+                /* Auth Button Group — unified style */
+                <div className="flex items-center gap-2">
                   <a
                     href={`/${locale}/login`}
-                    className="px-4 py-2 text-sm font-semibold rounded-lg border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-all duration-200"
+                    className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 whitespace-nowrap"
                   >
                     {locale === 'zh' ? '登录' : locale === 'ar' ? 'تسجيل الدخول' : 'Sign In'}
                   </a>
                   <a
                     href={`/${locale}/register`}
-                    className="px-4 py-2 text-sm font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 shadow-md"
+                    className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 shadow-sm whitespace-nowrap"
                   >
                     {locale === 'zh' ? '注册' : locale === 'ar' ? 'إنشاء حساب' : 'Sign Up'}
+                  </a>
+                  <a
+                    href={`/${locale}/contact`}
+                    className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white hover:from-blue-700 hover:to-blue-600 transition-all duration-200 shadow-sm whitespace-nowrap"
+                  >
+                    {t('nav.getQuote')}
                   </a>
                 </div>
               )}
 
-              {/* Get a Quote Button */}
-              <a
-                href={`/${locale}/contact`}
-                className="inline-flex items-center px-4 py-2 font-semibold rounded-lg transition-all duration-200 text-sm bg-blue-600 text-white hover:bg-blue-700 shadow-md"
-              >
-                {t('nav.getQuote')}
-              </a>
             </div>
 
             {/* Mobile Menu Button - 44x44px touch target */}
@@ -341,14 +340,14 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
                   <a
                     href={`/${locale}/login`}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="block py-2.5 px-3 text-blue-600 border-2 border-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all duration-200 font-medium text-center"
+                    className="block w-full text-center py-2.5 px-3 border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 rounded-lg font-medium whitespace-nowrap transition-all duration-200"
                   >
                     {locale === 'zh' ? '登录' : locale === 'ar' ? 'تسجيل الدخول' : 'Sign In'}
                   </a>
                   <a
                     href={`/${locale}/register`}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="block py-2.5 px-3 text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-all duration-200 font-medium text-center"
+                    className="block w-full text-center py-2.5 px-3 bg-blue-600 text-white hover:bg-blue-700 rounded-lg font-medium whitespace-nowrap transition-all duration-200"
                   >
                     {locale === 'zh' ? '注册' : locale === 'ar' ? 'إنشاء حساب' : 'Sign Up'}
                   </a>
