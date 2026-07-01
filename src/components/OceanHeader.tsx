@@ -2,367 +2,272 @@
 import { useEffect, useRef, memo } from 'react';
 
 // ============================================================
-// OceanHeader v236 — Water Drops + Frost + Multi-color Cubes
-// (based on 7 reference images)
+// OceanHeader v237 — Starry Laser Beam Style
+// (based on reference image)
 //
-// v236 Features:
-// - Isometric 3D cubes (3 visible faces with brightness distinction)
-// - Water dropets on crystal surfaces (8-15 per crystal)
-// - Frost texture (30-50 tiny white dots per crystal)
-// - Bright multi-color background (purple→pink→blue→cyan)
-// - Bubble system (20-30 across canvas)
-// - Sharp specular highlights
+// v237 Features:
+// - Deep navy background with purple-pink nebula glow
+// - 15-20 laser beams (thin white/light blue lines crossing)
+// - 50-80 star dots scattered across canvas
+// - 8-15 large soft bokeh spots (blur 15-40px)
+// - Nebula glow region (bottom-right corner)
+// - Subtle elegant animations (not noisy)
 // ============================================================
 
-interface Point {
-  x: number;
-  y: number;
-}
-
-interface CrystalFace {
-  points: Point[];
-  fillColor: string;
-  strokeColor: string;
-  lineWidth: number;
-}
-
-interface WaterDropet {
+interface StarDot {
   x: number;
   y: number;
   radius: number;
-  offsetX: number;
-  offsetY: number;
-  speedX: number;
-  speedY: number;
-}
-
-interface Bubble {
-  x: number;
-  y: number;
-  radius: number;
-  speedY: number;
-  speedX: number;
-  alpha: number;
+  baseAlpha: number;
   pulse: number;
+  twinkleSpeed: number;
 }
 
-interface Crystal {
-  faces: CrystalFace[];
-  dropets: WaterDropet[];
-  frostDots: Point[];
-  centerX: number;
-  centerY: number;
+interface LaserBeam {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  width: number;
+  baseAlpha: number;
+  colorType: string;
+  pulseSpeed: number;
 }
 
-function hexToRgba(hex: string, alpha: number): string {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+interface BokehSpot {
+  x: number;
+  y: number;
+  radius: number;
+  baseR: number;
+  baseG: number;
+  baseB: number;
+  baseAlpha: number;
+  driftX: number;
+  driftY: number;
+  driftSpeedX: number;
+  driftSpeedY: number;
 }
 
-function rotatePoint(point: Point, center: Point, angle: number): Point {
-  const cosA = Math.cos(angle);
-  const sinA = Math.sin(angle);
-  const dx = point.x - center.x;
-  const dy = point.y - center.y;
-  return {
-    x: center.x + dx * cosA - dy * sinA,
-    y: center.y + dx * sinA + dy * cosA,
-  };
-}
-
-function getPolygonBounds(face: Point[]): { minX: number; maxX: number; minY: number; maxY: number } {
-  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-  face.forEach(p => {
-    minX = Math.min(minX, p.x);
-    maxX = Math.max(maxX, p.x);
-    minY = Math.min(minY, p.y);
-    maxY = Math.max(maxY, p.y);
-  });
-  return { minX, maxX, minY, maxY };
-}
-
-function isPointInPolygon(x: number, y: number, polygon: Point[]): boolean {
-  let inside = false;
-  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-    const xi = polygon[i].x, yi = polygon[i].y;
-    const xj = polygon[j].x, yj = polygon[j].y;
-
-    const intersect = ((yi > y) !== (yj > y)) &&
-      (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-    if (intersect) inside = !inside;
-  }
-  return inside;
-}
-
-function createIsometricCube(
-  centerX: number, centerY: number, size: number,
-  colors: { top: string; left: string; right: string },
-  angle: number
-): Crystal {
-  const hSize = size * 0.5;
-  const vSize = size * 0.3;
-
-  const topCenter = { x: centerX, y: centerY - vSize * 0.5 };
-  const top = [
-    rotatePoint({ x: centerX - hSize, y: topCenter.y }, topCenter, angle),
-    rotatePoint({ x: centerX, y: topCenter.y - vSize }, topCenter, angle),
-    rotatePoint({ x: centerX + hSize, y: topCenter.y }, topCenter, angle),
-    rotatePoint({ x: centerX, y: topCenter.y + vSize }, topCenter, angle),
-  ];
-
-  const left = [
-    top[0],
-    top[3],
-    { x: top[3].x - hSize * 0.3, y: top[3].y + vSize },
-    { x: top[0].x - hSize * 0.3, y: top[0].y + vSize },
-  ];
-
-  const right = [
-    top[3],
-    top[2],
-    { x: top[2].x + hSize * 0.3, y: top[2].y + vSize },
-    { x: top[3].x + hSize * 0.3, y: top[3].y + vSize },
-  ];
-
-  const dropets = generateWaterDropets(top, 10);
-  const frostDots = [
-    ...generateFrostDots(top, 15),
-    ...generateFrostDots(left, 10),
-    ...generateFrostDots(right, 10),
-  ];
-
-  return {
-    centerX,
-    centerY,
-    faces: [
-      { points: top, fillColor: colors.top, strokeColor: 'rgba(255,255,255,0.55)', lineWidth: 1.5 },
-      { points: left, fillColor: colors.left, strokeColor: 'rgba(255,255,255,0.45)', lineWidth: 1.2 },
-      { points: right, fillColor: colors.right, strokeColor: 'rgba(255,255,255,0.40)', lineWidth: 1.0 },
-    ],
-    dropets,
-    frostDots,
-  };
-}
-
-function generateWaterDropets(face: Point[], count: number): WaterDropet[] {
-  const dropets: WaterDropet[] = [];
-  const bounds = getPolygonBounds(face);
-
-  for (let i = 0; i < count; i++) {
-    let attempts = 0;
-    let x, y;
-    do {
-      x = bounds.minX + Math.random() * (bounds.maxX - bounds.minX);
-      y = bounds.minY + Math.random() * (bounds.maxY - bounds.minY);
-      attempts++;
-    } while (attempts < 10 && !isPointInPolygon(x, y, face));
-
-    if (attempts < 10) {
-      dropets.push({
-        x,
-        y,
-        radius: 3 + Math.random() * 9,
-        offsetX: 0,
-        offsetY: 0,
-        speedX: (Math.random() - 0.5) * 0.15,
-        speedY: (Math.random() - 0.5) * 0.15,
-      });
-    }
-  }
-  return dropets;
-}
-
-function generateFrostDots(face: Point[], count: number): Point[] {
-  const dots: Point[] = [];
-  const bounds = getPolygonBounds(face);
-
-  for (let i = 0; i < count; i++) {
-    let attempts = 0;
-    let x, y;
-    do {
-      x = bounds.minX + Math.random() * (bounds.maxX - bounds.minX);
-      y = bounds.minY + Math.random() * (bounds.maxY - bounds.minY);
-      attempts++;
-    } while (attempts < 10 && !isPointInPolygon(x, y, face));
-
-    if (attempts < 10) {
-      dots.push({ x, y });
-    }
-  }
-  return dots;
-}
-
-function IceCrystalScene() {
+function StarryScene() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
-  const animationStateRef = useRef<{
-    crystals: Crystal[];
-    bubbles: Bubble[];
+  const stateRef = useRef<{
+    stars: StarDot[];
+    beams: LaserBeam[];
+    bokeh: BokehSpot[];
     time: number;
   } | null>(null);
 
-  const initCrystals = (w: number, h: number): Crystal[] => {
-    const cubeSize = w * 0.12;
-    const isoAngle = Math.PI / 6;
+  // ── Initialize Star Dots (50-80 items) ──
+  const initStars = (w: number, h: number): StarDot[] => {
+    const stars: StarDot[] = [];
+    const count = 50 + Math.floor(Math.random() * 30);
 
-    return [
-      createIsometricCube(0.20 * w, 0.35 * h, cubeSize * 1.2, { top: '#93c5fd', left: '#60a5fa', right: '#3b82f6' }, isoAngle),
-      createIsometricCube(0.70 * w, 0.25 * h, cubeSize * 0.9, { top: '#c4b5fd', left: '#a78bfa', right: '#7c3aed' }, isoAngle),
-      createIsometricCube(0.72 * w, 0.65 * h, cubeSize * 1.0, { top: '#67e8f9', left: '#22d3ee', right: '#06b6d4' }, isoAngle),
-      createIsometricCube(0.45 * w, 0.55 * h, cubeSize * 0.7, { top: '#a7f3d0', left: '#6ee7b7', right: '#059669' }, isoAngle),
-    ];
-  };
+    for (let i = 0; i < count; i++) {
+      const sizeRand = Math.random();
+      const radius = sizeRand > 0.85 ? 1.5 + Math.random() * 1.5 : 0.5 + Math.random() * 1.0;
 
-  const initBubbles = (w: number, h: number): Bubble[] => {
-    const bubbles: Bubble[] = [];
-    for (let i = 0; i < 25; i++) {
-      bubbles.push({
+      stars.push({
         x: Math.random() * w,
         y: Math.random() * h,
-        radius: 4 + Math.random() * 14,
-        speedY: 0.15 + Math.random() * 0.25,
-        speedX: (Math.random() - 0.5) * 0.12,
-        alpha: 0.25 + Math.random() * 0.35,
+        radius,
+        baseAlpha: 0.3 + Math.random() * 0.6,
         pulse: Math.random() * Math.PI * 2,
+        twinkleSpeed: 0.3 + Math.random() * 0.7,
       });
     }
-    return bubbles;
+    return stars;
   };
 
-  const drawBackground = (ctx: CanvasRenderingContext2D, w: number, h: number) => {
-    const bgGrad = ctx.createLinearGradient(0, 0, w, h);
-    bgGrad.addColorStop(0, '#a78bfa');
-    bgGrad.addColorStop(0.3, '#f0abfc');
-    bgGrad.addColorStop(0.6, '#93c5fd');
-    bgGrad.addColorStop(1, '#67e8f9');
-    ctx.fillStyle = bgGrad;
-    ctx.fillRect(0, 0, w, h);
+  // ── Initialize Laser Beams (15-20 items) ──
+  const initBeams = (w: number, h: number): LaserBeam[] => {
+    const beams: LaserBeam[] = [];
+    const count = 15 + Math.floor(Math.random() * 5);
 
-    const haloGrad = ctx.createRadialGradient(w * 0.4, h * 0.3, 0, w * 0.4, h * 0.3, w * 0.6);
-    haloGrad.addColorStop(0, 'rgba(255,255,255,0.15)');
-    haloGrad.addColorStop(1, 'transparent');
-    ctx.fillStyle = haloGrad;
-    ctx.fillRect(0, 0, w, h);
-  };
-
-  const drawCrystal = (ctx: CanvasRenderingContext2D, crystal: Crystal, t: number) => {
-    crystal.faces.forEach((face, faceIdx) => {
-      ctx.beginPath();
-      ctx.moveTo(face.points[0].x, face.points[0].y);
-      for (let i = 1; i < face.points.length; i++) {
-        ctx.lineTo(face.points[i].x, face.points[i].y);
-      }
-      ctx.closePath();
-
-      const baseColor = face.fillColor;
-      const alphaOffset = Math.sin(t * 0.6 + faceIdx * 0.5) * 0.03;
-      const baseAlpha = 0.7;
-      ctx.fillStyle = hexToRgba(baseColor, Math.max(0.4, Math.min(1, baseAlpha + alphaOffset)));
-      ctx.fill();
-
-      ctx.strokeStyle = face.strokeColor;
-      ctx.lineWidth = face.lineWidth;
-      ctx.stroke();
-    });
-
-    ctx.fillStyle = 'rgba(255,255,255,0.25)';
-    crystal.frostDots.forEach((dot) => {
-      const pulse = Math.sin(t * 0.8 + dot.x * 0.1) * 0.1;
-      ctx.beginPath();
-      ctx.arc(dot.x, dot.y, 0.5 + pulse, 0, Math.PI * 2);
-      ctx.fill();
-    });
-
-    crystal.dropets.forEach((droplet) => {
-      droplet.offsetX += droplet.speedX;
-      droplet.offsetY += droplet.speedY;
-      if (Math.abs(droplet.offsetX) > 5) droplet.speedX *= -1;
-      if (Math.abs(droplet.offsetY) > 5) droplet.speedY *= -1;
-
-      const dx = droplet.x + droplet.offsetX;
-      const dy = droplet.y + droplet.offsetY;
-
-      const grad = ctx.createRadialGradient(dx - droplet.radius * 0.3, dy - droplet.radius * 0.3, 0, dx, dy, droplet.radius);
-      grad.addColorStop(0, 'rgba(255,255,255,0.85)');
-      grad.addColorStop(0.4, 'rgba(255,255,255,0.5)');
-      grad.addColorStop(1, 'transparent');
-
-      ctx.beginPath();
-      ctx.arc(dx, dy, droplet.radius, 0, Math.PI * 2);
-      ctx.fillStyle = grad;
-      ctx.fill();
-
-      ctx.strokeStyle = 'rgba(255,255,255,0.55)';
-      ctx.lineWidth = 1;
-      ctx.stroke();
-    });
-  };
-
-  const drawBubbles = (ctx: CanvasRenderingContext2D, bubbles: Bubble[], t: number, w: number, h: number) => {
-    bubbles.forEach((bubble) => {
-      bubble.y -= bubble.speedY;
-      bubble.x += bubble.speedX + Math.sin(t * 0.5 + bubble.pulse) * 0.15;
-
-      if (bubble.y < -20) {
-        bubble.y = h + 20;
-        bubble.x = Math.random() * w;
-      }
-      if (bubble.x < -20) bubble.x = w + 20;
-      if (bubble.x > w + 20) bubble.x = -20;
-
-      const pulse = Math.sin(t * 0.8 + bubble.pulse) * 0.12;
-      const alpha = Math.max(0.15, Math.min(0.6, bubble.alpha + pulse));
-
-      const grad = ctx.createRadialGradient(bubble.x - bubble.radius * 0.3, bubble.y - bubble.radius * 0.3, 0, bubble.x, bubble.y, bubble.radius);
-      grad.addColorStop(0, `rgba(255,255,255,${alpha})`);
-      grad.addColorStop(0.5, `rgba(191,219,254,${alpha * 0.6})`);
-      grad.addColorStop(1, 'transparent');
-
-      ctx.beginPath();
-      ctx.arc(bubble.x, bubble.y, bubble.radius, 0, Math.PI * 2);
-      ctx.fillStyle = grad;
-      ctx.fill();
-
-      ctx.strokeStyle = `rgba(255,255,255,${alpha * 0.55})`;
-      ctx.lineWidth = 1;
-      ctx.stroke();
-    });
-  };
-
-  const drawSparkles = (ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
-    const sparkles = [
-      { x: 0.18, y: 0.22, size: 2.5 },
-      { x: 0.42, y: 0.15, size: 1.8 },
-      { x: 0.28, y: 0.62, size: 2.2 },
-      { x: 0.68, y: 0.32, size: 2.0 },
-      { x: 0.82, y: 0.68, size: 1.8 },
-      { x: 0.52, y: 0.78, size: 2.5 },
-      { x: 0.22, y: 0.75, size: 2.0 },
-      { x: 0.62, y: 0.12, size: 2.2 },
-      { x: 0.35, y: 0.45, size: 1.5 },
-      { x: 0.78, y: 0.48, size: 2.0 },
+    const beamConfigs = [
+      { start: [0.05, 0.1], end: [0.45, 0.95], width: 1, alpha: 0.18, colorType: 'white' },
+      { start: [0.0, 0.25], end: [0.55, 1.0], width: 0.5, alpha: 0.15, colorType: 'white' },
+      { start: [0.15, 0.0], end: [0.6, 0.88], width: 1, alpha: 0.2, colorType: 'white' },
+      { start: [0.08, 0.4], end: [0.65, 1.08], width: 0.5, alpha: 0.12, colorType: 'white' },
+      { start: [0.2, 0.05], end: [0.7, 0.82], width: 1.5, alpha: 0.25, colorType: 'white' },
+      { start: [0.02, 0.5], end: [0.52, 1.05], width: 0.5, alpha: 0.13, colorType: 'white' },
+      { start: [0.12, 0.18], end: [0.75, 0.92], width: 1, alpha: 0.16, colorType: 'white' },
+      { start: [0.0, 0.35], end: [0.62, 1.02], width: 0.5, alpha: 0.14, colorType: 'lightblue' },
+      { start: [0.18, 0.02], end: [0.8, 0.78], width: 1, alpha: 0.22, colorType: 'white' },
+      { start: [0.06, 0.6], end: [0.58, 1.1], width: 0.5, alpha: 0.11, colorType: 'lightpurple' },
+      { start: [0.25, 0.0], end: [0.75, 0.85], width: 1, alpha: 0.19, colorType: 'white' },
+      { start: [0.0, 0.45], end: [0.48, 1.0], width: 0.5, alpha: 0.12, colorType: 'white' },
+      { start: [0.1, 0.3], end: [0.7, 0.95], width: 1, alpha: 0.21, colorType: 'white' },
+      { start: [0.03, 0.55], end: [0.53, 1.06], width: 0.5, alpha: 0.13, colorType: 'lightblue' },
+      { start: [0.22, 0.08], end: [0.72, 0.88], width: 1.5, alpha: 0.23, colorType: 'white' },
+      { start: [0.0, 0.15], end: [0.6, 0.92], width: 0.5, alpha: 0.14, colorType: 'white' },
     ];
 
-    sparkles.forEach((sparkle, i) => {
-      const flash = Math.sin(t * 2.2 + i * 1.5);
-      const alpha = flash > 0.82 ? (flash - 0.82) * 5.56 : 0;
+    beamConfigs.forEach((cfg, i) => {
+      if (i >= count) return;
+      beams.push({
+        x1: cfg.start[0] * w,
+        y1: cfg.start[1] * h,
+        x2: cfg.end[0] * w,
+        y2: cfg.end[1] * h,
+        width: cfg.width,
+        baseAlpha: cfg.alpha,
+        colorType: cfg.colorType,
+        pulseSpeed: 0.5 + Math.random() * 0.5,
+      });
+    });
 
-      if (alpha > 0) {
-        ctx.beginPath();
-        ctx.arc(sparkle.x * w, sparkle.y * h, sparkle.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255,255,255,${alpha})`;
-        ctx.fill();
+    return beams;
+  };
 
-        ctx.beginPath();
-        ctx.arc(sparkle.x * w, sparkle.y * h, sparkle.size * 3, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255,255,255,${alpha * 0.25})`;
-        ctx.fill();
-      }
+  // ── Initialize Bokeh Spots (8-15 items) ──
+  const initBokeh = (w: number, h: number): BokehSpot[] => {
+    const spots: BokehSpot[] = [];
+    const count = 8 + Math.floor(Math.random() * 7);
+
+    const colorConfigs = [
+      { r: 96, g: 165, b: 250 },
+      { r: 147, g: 197, b: 253 },
+      { r: 196, g: 181, b: 253 },
+      { r: 244, g: 114, b: 182 },
+      { r: 251, g: 191, b: 36 },
+    ];
+
+    for (let i = 0; i < count; i++) {
+      const cfg = colorConfigs[Math.floor(Math.random() * colorConfigs.length)];
+      const alpha = cfg.r === 251
+        ? 0.05 + Math.random() * 0.07
+        : cfg.r === 244
+          ? 0.06 + Math.random() * 0.08
+          : 0.08 + Math.random() * 0.10;
+
+      spots.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        radius: 20 + Math.random() * 60,
+        baseR: cfg.r,
+        baseG: cfg.g,
+        baseB: cfg.b,
+        baseAlpha: alpha,
+        driftX: (Math.random() - 0.5) * w * 0.1,
+        driftY: (Math.random() - 0.5) * h * 0.1,
+        driftSpeedX: (Math.random() - 0.5) * 0.03,
+        driftSpeedY: (Math.random() - 0.5) * 0.03,
+      });
+    }
+    return spots;
+  };
+
+  // ── Draw Background ──
+  const drawBackground = (ctx: CanvasRenderingContext2D, w: number, h: number) => {
+    const grad = ctx.createLinearGradient(0, 0, w, h);
+    grad.addColorStop(0, '#0a0a1a');
+    grad.addColorStop(0.3, '#0f172a');
+    grad.addColorStop(0.6, '#1e3a8a');
+    grad.addColorStop(0.85, '#312e81');
+    grad.addColorStop(1, '#4c1d95');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, w, h);
+  };
+
+  // ── Draw Nebula Glow ──
+  const drawNebula = (ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
+    const nx = w * 0.7;
+    const ny = h * 0.75;
+    const nr = Math.max(w, h) * 0.4;
+
+    const grad = ctx.createRadialGradient(nx, ny, 0, nx, ny, nr);
+    const pulse = Math.sin(t * 0.2) * 0.02;
+    grad.addColorStop(0, `rgba(196, 181, 253, ${0.15 + pulse})`);
+    grad.addColorStop(0.4, `rgba(244, 114, 182, ${0.08 + pulse * 0.5})`);
+    grad.addColorStop(1, 'transparent');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, w, h);
+  };
+
+  // ── Draw Bokeh Spots ──
+  const drawBokeh = (ctx: CanvasRenderingContext2D, bokeh: BokehSpot[], t: number, w: number, h: number) => {
+    bokeh.forEach((spot) => {
+      spot.driftX += spot.driftSpeedX;
+      spot.driftY += spot.driftSpeedY;
+
+      if (spot.driftX < -spot.radius * 2) spot.driftX = w + spot.radius;
+      if (spot.driftX > w + spot.radius * 2) spot.driftX = -spot.radius;
+      if (spot.driftY < -spot.radius * 2) spot.driftY = h + spot.radius;
+      if (spot.driftY > h + spot.radius * 2) spot.driftY = -spot.radius;
+
+      ctx.save();
+      ctx.filter = 'blur(25px)';
+
+      const grad = ctx.createRadialGradient(
+        spot.x + spot.driftX * 0.1, spot.y + spot.driftY * 0.1, 0,
+        spot.x, spot.y, spot.radius
+      );
+      const pulse = Math.sin(t * 0.15 + spot.x * 0.01) * 0.02;
+      const alpha = Math.max(0.03, Math.min(0.2, spot.baseAlpha + pulse));
+
+      grad.addColorStop(0, `rgba(${spot.baseR}, ${spot.baseG}, ${spot.baseB}, ${alpha.toFixed(2)})`);
+      grad.addColorStop(0.6, `rgba(${spot.baseR}, ${spot.baseG}, ${spot.baseB}, ${(alpha * 0.5).toFixed(2)})`);
+      grad.addColorStop(1, 'transparent');
+
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(spot.x, spot.y, spot.radius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
     });
   };
 
+  // ── Draw Laser Beams ──
+  const drawBeams = (ctx: CanvasRenderingContext2D, beams: LaserBeam[], t: number) => {
+    ctx.save();
+    const centerX = ctx.canvas.width * 0.3;
+    const centerY = ctx.canvas.height * 0.4;
+    const rotAngle = Math.sin(t * 0.2) * 0.035;
+    ctx.translate(centerX, centerY);
+    ctx.rotate(rotAngle);
+    ctx.translate(-centerX, -centerY);
+
+    beams.forEach((beam, i) => {
+      const pulse = Math.sin(t * beam.pulseSpeed + i * 0.8) * 0.03;
+      const alpha = Math.max(0.08, Math.min(0.35, beam.baseAlpha + pulse));
+
+      let strokeStyle: string;
+      if (beam.colorType === 'white') {
+        strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+      } else if (beam.colorType === 'lightblue') {
+        strokeStyle = `rgba(147, 197, 253, ${alpha})`;
+      } else {
+        strokeStyle = `rgba(196, 181, 253, ${alpha})`;
+      }
+
+      ctx.beginPath();
+      ctx.moveTo(beam.x1, beam.y1);
+      ctx.lineTo(beam.x2, beam.y2);
+      ctx.strokeStyle = strokeStyle;
+      ctx.lineWidth = beam.width;
+      ctx.stroke();
+    });
+
+    ctx.restore();
+  };
+
+  // ── Draw Star Dots ──
+  const drawStars = (ctx: CanvasRenderingContext2D, stars: StarDot[], t: number) => {
+    stars.forEach((star) => {
+      const twinkle = Math.sin(t * star.twinkleSpeed + star.pulse);
+      const alpha = twinkle > 0.7
+        ? star.baseAlpha + (twinkle - 0.7) * 1.5
+        : star.baseAlpha * 0.6;
+
+      ctx.beginPath();
+      ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255, 255, 255, ${Math.max(0.1, Math.min(0.95, alpha))})`;
+      ctx.fill();
+    });
+  };
+
+  // ── Main Animation Loop ──
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -375,35 +280,30 @@ function IceCrystalScene() {
 
     function resize() {
       const currentCanvas = canvasRef.current;
-      if (!currentCanvas) return;
+      const currentCtx = ctxRef.current;
+      if (!currentCanvas || !currentCtx) return;
 
       const rect = currentCanvas.getBoundingClientRect();
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       currentCanvas.width = Math.max(1, rect.width * dpr);
       currentCanvas.height = Math.max(1, rect.height * dpr);
-
-      const currentCtx = ctxRef.current;
-      if (!currentCtx) return;
       currentCtx.scale(dpr, dpr);
 
       const w = rect.width;
       const h = rect.height;
-      animationStateRef.current = {
-        crystals: initCrystals(w, h),
-        bubbles: initBubbles(w, h),
+
+      stateRef.current = {
+        stars: initStars(w, h),
+        beams: initBeams(w, h),
+        bokeh: initBokeh(w, h),
         time: 0,
       };
     }
 
     function animate(time: number) {
       const currentCtx = ctxRef.current;
-      if (!currentCtx) {
-        animId = requestAnimationFrame(animate);
-        return;
-      }
-
       const canvas = canvasRef.current;
-      if (!canvas) {
+      if (!currentCtx || !canvas) {
         animId = requestAnimationFrame(animate);
         return;
       }
@@ -414,11 +314,11 @@ function IceCrystalScene() {
         return;
       }
 
-      if (!animationStateRef.current) {
+      if (!stateRef.current) {
         resize();
       }
 
-      const state = animationStateRef.current;
+      const state = stateRef.current;
       if (!state) {
         animId = requestAnimationFrame(animate);
         return;
@@ -433,13 +333,10 @@ function IceCrystalScene() {
       currentCtx.clearRect(0, 0, w, h);
 
       drawBackground(currentCtx, w, h);
-      drawBubbles(currentCtx, state.bubbles, t, w, h);
-
-      state.crystals.forEach((crystal) => {
-        drawCrystal(currentCtx, crystal, t);
-      });
-
-      drawSparkles(currentCtx, t, w, h);
+      drawBokeh(currentCtx, state.bokeh, t, w, h);
+      drawNebula(currentCtx, w, h, t);
+      drawBeams(currentCtx, state.beams, t);
+      drawStars(currentCtx, state.stars, t);
 
       animId = requestAnimationFrame(animate);
     }
@@ -478,14 +375,19 @@ export default memo(function OceanHeader({ title, subtitle, children, icon }: {
   return (
     <header
       className="relative overflow-hidden"
-      style={{ background: 'linear-gradient(135deg, #a78bfa 0%, #f0abfc 30%, #93c5fd 60%, #67e8f9 100%)' }}
+      style={{
+        background: 'linear-gradient(135deg, #0a0a1a 0%, #0f172a 30%, #1e3a8a 60%, #312e81 85%, #4c1d95 100%)',
+      }}
     >
-      <IceCrystalScene />
+      <StarryScene />
 
       <div className="relative z-10 px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
-        <div className="mx-auto max-w-4xl text-center">
+        <div className="absolute inset-0" style={{
+          background: 'linear-gradient(180deg, rgba(15,23,42,0.5) 0%, rgba(15,23,42,0.25) 60%, transparent 100%)',
+        }} />
+        <div className="mx-auto max-w-4xl text-center relative z-10">
           {icon && (
-            <div className="mb-4 text-5xl opacity-80 flex justify-center" aria-hidden="true">
+            <div className="mb-4 text-5xl opacity-90 flex justify-center" aria-hidden="true">
               {typeof icon === 'string' ? <i className={icon} /> : icon}
             </div>
           )}
@@ -493,7 +395,7 @@ export default memo(function OceanHeader({ title, subtitle, children, icon }: {
             {title}
           </h1>
           {subtitle && (
-            <p className="mt-4 text-xl text-purple-100 sm:text-2xl drop-shadow">
+            <p className="mt-4 text-xl text-blue-100 sm:text-2xl drop-shadow">
               {subtitle}
             </p>
           )}
