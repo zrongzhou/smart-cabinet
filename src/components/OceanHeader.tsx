@@ -1,16 +1,21 @@
-'use client';
+﻿'use client';
 import { useEffect, useRef, memo } from 'react';
 
 // ============================================================
-// OceanHeader v241 — Direct Background Color Interpolation (FIXED)
+// OceanHeader v242 鈥?Independent Breathing Cycle + Meteor Boost
 //
-// v241 Changes (BREATHING FIX):
-// - CRITICAL FIX: Changed from overlay-based breathing to direct background color interpolation
-// - drawBackground() now accepts activityLevel parameter and interpolates between dark/bright color sets
-// - Increased METEOR_COUNT from 10 to 14 for higher activity levels
-// - Lowered targetActivity threshold from /3 to /2 (2 meteors = noticeable brightness)
-// - Removed drawBreathing() overlay (no longer needed, background changes directly)
-// - Brightness difference now HUGE: L≈2% (dark) to L≈45% (bright) - human eye clearly sees this!
+// v242 Changes (BREATHING FIX):
+// - CRITICAL FIX: Independent 8-second breathing cycle (sin wave, range 0.3-1.0)
+// - Meteor boost added (+0.15 per active meteor, max +0.5)
+// - Expanded color range: #000b1a (0,11,26) 鈫?#60a5fa (96,165,250)
+// - Vertical gradient direction for enhanced "whole" effect
+// - Removed drawBreathing() overlay (no longer needed)
+// - Breathing now visible EVEN WITHOUT meteors (independent cycle)
+//
+// v241 Features (preserved):
+// - Direct background color interpolation (no overlay)
+// - 14 meteors for higher activity levels
+// - Frame-rate independent animation (using dt)
 //
 // v240 Features (preserved):
 // - Deep navy background with blue theme (no purple)
@@ -18,7 +23,6 @@ import { useEffect, useRef, memo } from 'react';
 // - Meteor system (dynamic shooting with trails, now 14 meteors)
 // - 50-80 star dots scattered across canvas
 // - 8-15 large soft bokeh spots (blue color scheme)
-// - Frame-rate independent animation (using dt)
 // ============================================================
 
 interface StarDot {
@@ -82,7 +86,7 @@ function StarryScene() {
   } | null>(null);
   const lastTimeRef = useRef<number>(0);
 
-  // ── Initialize Star Dots (50-80 items) ──
+  // 鈹€鈹€ Initialize Star Dots (50-80 items) 鈹€鈹€
   const initStars = (w: number, h: number): StarDot[] => {
     const stars: StarDot[] = [];
     const count = 50 + Math.floor(Math.random() * 30);
@@ -103,7 +107,7 @@ function StarryScene() {
     return stars;
   };
 
-  // ── Initialize Meteor System (14 items for higher activity) ──
+  // 鈹€鈹€ Initialize Meteor System (14 items for higher activity) 鈹€鈹€
   const METEOR_COUNT = 14;
 
   const createMeteor = (w: number, h: number): Meteor => {
@@ -157,7 +161,7 @@ function StarryScene() {
     return meteors;
   };
 
-  // ── Initialize Glass Beams (3-5 static decorative items) ──
+  // 鈹€鈹€ Initialize Glass Beams (3-5 static decorative items) 鈹€鈹€
   const initGlassBeams = (w: number, h: number): GlassBeam[] => {
     const beams: GlassBeam[] = [];
     const count = 3 + Math.floor(Math.random() * 2);
@@ -186,7 +190,7 @@ function StarryScene() {
     return beams;
   };
 
-  // ── Initialize Bokeh Spots (8-15 items) ──
+  // 鈹€鈹€ Initialize Bokeh Spots (8-15 items) 鈹€鈹€
   const initBokeh = (w: number, h: number): BokehSpot[] => {
     const spots: BokehSpot[] = [];
     const count = 8 + Math.floor(Math.random() * 7);
@@ -220,66 +224,26 @@ function StarryScene() {
     return spots;
   };
 
-  // ── Draw Background with Activity-Based Color Interpolation ──
+  // 鈹€鈹€ Draw Background with Activity-Based Color Interpolation 鈹€鈹€
   const drawBackground = (ctx: CanvasRenderingContext2D, w: number, h: number, activityLevel: number) => {
-    // Dark colors (activityLevel = 0) - L≈2%~10%
-    const darkColors = ['#020617', '#0a0a2a', '#0f172a', '#1e293b', '#1e3a8a'];
-    
-    // Bright colors (activityLevel = 1) - L≈8%~45% - MUCH brighter!
-    const brightColors = ['#0c1929', '#153055', '#1d4278', '#2563ab', '#3b82f6'];
-    
-    // Interpolate between dark and bright based on activityLevel
-    const stops = darkColors.map((dark, i) => {
-      const bright = brightColors[i];
-      
-      // Parse hex to RGB
-      const dr = parseInt(dark.slice(1, 3), 16);
-      const dg = parseInt(dark.slice(3, 5), 16);
-      const db = parseInt(dark.slice(5, 7), 16);
-      
-      const br = parseInt(bright.slice(1, 3), 16);
-      const bg = parseInt(bright.slice(3, 5), 16);
-      const bb = parseInt(bright.slice(5, 7), 16);
-      
-      // Linear interpolation
-      const r = Math.round(dr + (br - dr) * activityLevel);
-      const g = Math.round(dg + (bg - dg) * activityLevel);
-      const b = Math.round(db + (bb - db) * activityLevel);
-      
-      // Convert back to hex with proper padding
-      return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
-    });
-    
-    const grad = ctx.createLinearGradient(0, 0, w, h);
-    stops.forEach((color, i) => {
-      grad.addColorStop(i / (stops.length - 1), color);
-    });
-    
-    ctx.fillStyle = grad;
+    // Color interpolation range (expanded for noticeable breathing effect)
+    // Dark: #000b1a (rgb 0, 11, 26)
+    // Bright: #60a5fa (rgb 96, 165, 250)
+    const r = Math.round(0 + (96 - 0) * activityLevel);
+    const g = Math.round(11 + (165 - 11) * activityLevel);
+    const b = Math.round(26 + (250 - 26) * activityLevel);
+
+    // Create multi-layer gradient for enhanced "whole" effect (vertical direction)
+    const gradient = ctx.createLinearGradient(0, 0, 0, h);
+    gradient.addColorStop(0, `rgb(${r}, ${g}, ${b})`);
+    gradient.addColorStop(0.5, `rgb(${Math.min(255, r+20)}, ${Math.min(255, g+20)}, ${Math.min(255, b+20)})`);
+    gradient.addColorStop(1, `rgb(${Math.min(255, r+40)}, ${Math.min(255, g+40)}, ${Math.min(255, b+40)})`);
+
+    ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, w, h);
   };
 
-  // ── Draw Breathing Glow (Optional Enhancement - Kept as Subtle Overlay) ──
-  // NOTE: Main breathing effect now achieved via drawBackground() color interpolation
-  // This function adds a subtle additional glow for extra visual depth
-  const drawBreathing = (ctx: CanvasRenderingContext2D, activityLevel: number, w: number, h: number) => {
-    if (activityLevel < 0.05) return;
-
-    // Subtle radial glow - ONLY as enhancement (much reduced intensity)
-    const brightGrad = ctx.createRadialGradient(w * 0.5, h * 0.3, 0, w * 0.5, h * 0.3, w * 0.6);
-    const b1 = activityLevel * 0.12;   // Very subtle (was 0.40)
-    const b2 = activityLevel * 0.08;   // Very subtle (was 0.30)
-    const b3 = activityLevel * 0.04;   // Very subtle (was 0.18)
-
-    brightGrad.addColorStop(0, `rgba(59, 130, 246, ${b1})`);
-    brightGrad.addColorStop(0.4, `rgba(37, 99, 235, ${b2})`);
-    brightGrad.addColorStop(0.7, `rgba(30, 58, 138, ${b3})`);
-    brightGrad.addColorStop(1, 'transparent');
-    ctx.fillStyle = brightGrad;
-    ctx.fillRect(0, 0, w, h);
-  };
-
-  // ── Draw Bokeh Spots ──
+  // 鈹€鈹€ Draw Bokeh Spots 鈹€鈹€
   const drawBokeh = (ctx: CanvasRenderingContext2D, bokeh: BokehSpot[], t: number, w: number, h: number) => {
     bokeh.forEach((spot) => {
       spot.driftX += spot.driftSpeedX;
@@ -312,7 +276,7 @@ function StarryScene() {
     });
   };
 
-  // ── Draw Glass-like Beam (multi-layer gradient) ──
+  // 鈹€鈹€ Draw Glass-like Beam (multi-layer gradient) 鈹€鈹€
   const drawGlassBeam = (
     ctx: CanvasRenderingContext2D,
     x1: number, y1: number,
@@ -370,7 +334,7 @@ function StarryScene() {
     }
   };
 
-  // ── Draw Glass Beams ──
+  // 鈹€鈹€ Draw Glass Beams 鈹€鈹€
   const drawGlassBeams = (ctx: CanvasRenderingContext2D, beams: GlassBeam[], t: number) => {
     ctx.save();
     const centerX = ctx.canvas.width * 0.3;
@@ -396,7 +360,7 @@ function StarryScene() {
     ctx.restore();
   };
 
-  // ── Update and Draw Meteors ──
+  // 鈹€鈹€ Update and Draw Meteors 鈹€鈹€
   const updateAndDrawMeteors = (ctx: CanvasRenderingContext2D, meteors: Meteor[], dt: number, w: number, h: number) => {
     meteors.forEach((m, i) => {
       if (!m.active) {
@@ -440,7 +404,7 @@ function StarryScene() {
     });
   };
 
-  // ── Draw Star Dots ──
+  // 鈹€鈹€ Draw Star Dots 鈹€鈹€
   const drawStars = (ctx: CanvasRenderingContext2D, stars: StarDot[], t: number) => {
     stars.forEach((star) => {
       const twinkle = Math.sin(t * star.twinkleSpeed + star.pulse);
@@ -455,7 +419,7 @@ function StarryScene() {
     });
   };
 
-  // ── Main Animation Loop ──
+  // 鈹€鈹€ Main Animation Loop 鈹€鈹€
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -524,12 +488,19 @@ function StarryScene() {
       const w = rect.width;
       const h = rect.height;
 
-      // Calculate target activity based on active meteor count
-      const activeCount = state.meteors.filter(m => m.active).length;
-      state.targetActivity = Math.min(1.0, activeCount / 2);  // 2 meteors = noticeable brightness (was /3)
+      // Calculate base breathing (independent sin wave, 8-second cycle, range 0.3-1.0)
+      const breathCycle = (t % 8) / 8;  // 0-1, 8-second cycle
+      const baseActivity = 0.3 + 0.7 * (0.5 + 0.5 * Math.sin(breathCycle * Math.PI * 2 - Math.PI / 2));  // 0.3-1.0
 
-      // Smooth interpolation (lerp) of activityLevel
-      state.activityLevel += (state.targetActivity - state.activityLevel) * 0.06;  // doubled for faster transition
+      // Meteor linkage boost (each active meteor +0.15)
+      const activeCount = state.meteors.filter(m => m.active).length;
+      const meteorBoost = Math.min(0.5, activeCount * 0.15);  // max +0.5
+
+      // Combine: base breathing + meteor boost
+      state.targetActivity = Math.min(1.0, baseActivity + meteorBoost);
+
+      // Smooth interpolation (increased response speed)
+      state.activityLevel += (state.targetActivity - state.activityLevel) * 0.08;
 
       // When approaching 0, force to 0 to avoid floating point issues
       if (state.targetActivity < 0.01 && state.activityLevel < 0.02) {
@@ -540,9 +511,6 @@ function StarryScene() {
 
       // Draw background with activity-based color interpolation (main breathing effect)
       drawBackground(currentCtx, w, h, state.activityLevel);
-
-      // Subtle breathing glow overlay (optional enhancement, much reduced intensity)
-      drawBreathing(currentCtx, state.activityLevel * 0.3, w, h);
 
       drawBokeh(currentCtx, state.bokeh, t, w, h);
 
