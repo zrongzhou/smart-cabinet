@@ -2,579 +2,494 @@
 import { useEffect, useRef, memo } from 'react';
 
 // ============================================================
-// OceanHeader v234 — Faceted Crystal (刻面水晶)
+// OceanHeader v235 — Canvas 2D Faceted Crystal
 //
-// v234 Enhancement: From "flat plastic" to "faceted crystal"
-// - Hard-stop gradients (3 zones: bright/middle/dark)
-// - Sharp edge highlights (2-3px white lines)
-// - Sharp specular dots (3-5px, no blur)
-// - Sparkle flash effects (random timed blinks)
-// - Enhanced refraction lines (wider, more visible)
+// Complete refactor from CSS to Canvas 2D:
+// - 3D polygon crystals (2-3 faces each with brightness distinction)
+// - Long highlight lines (not dots!) along edges
+// - 8-12 laser beams radiating from top-left
+// - Crystal edge outlines (1-2px white/light blue)
+// - Small bubbles/light dots (15-25 across canvas)
+// - BRIGHT background (#3b82f6/#2563eb, NOT #0f172a!)
 // ============================================================
+
+interface Point {
+  x: number;
+  y: number;
+}
+
+interface CrystalFace {
+  points: Point[];
+  fillColor: string;
+  fillAlpha: number;
+  strokeColor: string;
+  lineWidth: number;
+}
+
+interface Crystal {
+  faces: CrystalFace[];
+  highlightLines: HighlightLine[];
+  centerX: number;
+  centerY: number;
+}
+
+interface HighlightLine {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  color: string;
+  alpha: number;
+  width: number;
+}
+
+interface Bubble {
+  x: number;
+  y: number;
+  radius: number;
+  speedY: number;
+  speedX: number;
+  alpha: number;
+  pulse: number;
+}
 
 function IceCrystalScene() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
+  const animationStateRef = useRef<{
+    crystals: Crystal[];
+    laserBeams: Point[][];
+    bubbles: Bubble[];
+    time: number;
+  } | null>(null);
 
-  // ── Subtle Caustic Pattern ──
+  // ── Initialize Crystal Geometries ──
+  const initCrystals = (w: number, h: number): Crystal[] => {
+    return [
+      // Crystal 1 (Left-Center, Largest) - Pentagon + 2 side faces
+      {
+        centerX: 0.22 * w,
+        centerY: 0.35 * h,
+        faces: [
+          // Front face (bright)
+          {
+            points: [
+              { x: 0.10 * w, y: 0.20 * h },
+              { x: 0.35 * w, y: 0.12 * h },
+              { x: 0.42 * w, y: 0.35 * h },
+              { x: 0.28 * w, y: 0.55 * h },
+              { x: 0.08 * w, y: 0.42 * h },
+            ],
+            fillColor: 'rgba(147, 197, 253, 0.38)',
+            fillAlpha: 0.38,
+            strokeColor: 'rgba(255, 255, 255, 0.50)',
+            lineWidth: 1.5,
+          },
+          // Side face 1 (darker)
+          {
+            points: [
+              { x: 0.35 * w, y: 0.12 * h },
+              { x: 0.48 * w, y: 0.22 * h },
+              { x: 0.45 * w, y: 0.45 * h },
+              { x: 0.42 * w, y: 0.35 * h },
+            ],
+            fillColor: 'rgba(96, 165, 250, 0.28)',
+            fillAlpha: 0.28,
+            strokeColor: 'rgba(255, 255, 255, 0.38)',
+            lineWidth: 1.2,
+          },
+          // Side face 2 (darkest)
+          {
+            points: [
+              { x: 0.28 * w, y: 0.55 * h },
+              { x: 0.42 * w, y: 0.35 * h },
+              { x: 0.45 * w, y: 0.45 * h },
+              { x: 0.38 * w, y: 0.65 * h },
+              { x: 0.18 * w, y: 0.58 * h },
+            ],
+            fillColor: 'rgba(59, 130, 246, 0.25)',
+            fillAlpha: 0.25,
+            strokeColor: 'rgba(255, 255, 255, 0.35)',
+            lineWidth: 1.0,
+          },
+        ],
+        highlightLines: [
+          { x1: 0.12 * w, y1: 0.22 * h, x2: 0.25 * w, y2: 0.18 * h, color: 'rgba(255,255,255,0.65)', alpha: 0.65, width: 2 },
+          { x1: 0.15 * w, y1: 0.30 * h, x2: 0.32 * w, y2: 0.25 * h, color: 'rgba(255,255,255,0.58)', alpha: 0.58, width: 1.5 },
+          { x1: 0.20 * w, y1: 0.42 * h, x2: 0.38 * w, y2: 0.38 * h, color: 'rgba(255,255,255,0.62)', alpha: 0.62, width: 2.5 },
+        ],
+      },
+      // Crystal 2 (Top-Right) - Hexagon + side face
+      {
+        centerX: 0.72 * w,
+        centerY: 0.22 * h,
+        faces: [
+          // Front face
+          {
+            points: [
+              { x: 0.60 * w, y: 0.15 * h },
+              { x: 0.78 * w, y: 0.15 * h },
+              { x: 0.85 * w, y: 0.32 * h },
+              { x: 0.78 * w, y: 0.48 * h },
+              { x: 0.60 * w, y: 0.48 * h },
+              { x: 0.53 * w, y: 0.32 * h },
+            ],
+            fillColor: 'rgba(125, 211, 252, 0.35)',
+            fillAlpha: 0.35,
+            strokeColor: 'rgba(255, 255, 255, 0.48)',
+            lineWidth: 1.5,
+          },
+          // Side face
+          {
+            points: [
+              { x: 0.78 * w, y: 0.15 * h },
+              { x: 0.88 * w, y: 0.25 * h },
+              { x: 0.85 * w, y: 0.45 * h },
+              { x: 0.78 * w, y: 0.48 * h },
+            ],
+            fillColor: 'rgba(103, 232, 249, 0.25)',
+            fillAlpha: 0.25,
+            strokeColor: 'rgba(255, 255, 255, 0.35)',
+            lineWidth: 1.0,
+          },
+        ],
+        highlightLines: [
+          { x1: 0.62 * w, y1: 0.18 * h, x2: 0.75 * w, y2: 0.16 * h, color: 'rgba(255,255,255,0.60)', alpha: 0.60, width: 2 },
+          { x1: 0.65 * w, y1: 0.30 * h, x2: 0.82 * w, y2: 0.28 * h, color: 'rgba(255,255,255,0.55)', alpha: 0.55, width: 1.5 },
+        ],
+      },
+      // Crystal 3 (Bottom-Right) - Diamond + side face (BRIGHTEST)
+      {
+        centerX: 0.75 * w,
+        centerY: 0.65 * h,
+        faces: [
+          // Front face (brightest!)
+          {
+            points: [
+              { x: 0.65 * w, y: 0.55 * h },
+              { x: 0.85 * w, y: 0.55 * h },
+              { x: 0.92 * w, y: 0.72 * h },
+              { x: 0.85 * w, y: 0.88 * h },
+              { x: 0.65 * w, y: 0.88 * h },
+              { x: 0.58 * w, y: 0.72 * h },
+            ],
+            fillColor: 'rgba(224, 242, 254, 0.32)',
+            fillAlpha: 0.32,
+            strokeColor: 'rgba(255, 255, 255, 0.52)',
+            lineWidth: 1.5,
+          },
+          // Side face
+          {
+            points: [
+              { x: 0.85 * w, y: 0.55 * h },
+              { x: 0.95 * w, y: 0.62 * h },
+              { x: 0.92 * w, y: 0.80 * h },
+              { x: 0.85 * w, y: 0.88 * h },
+            ],
+            fillColor: 'rgba(186, 230, 253, 0.25)',
+            fillAlpha: 0.25,
+            strokeColor: 'rgba(255, 255, 255, 0.38)',
+            lineWidth: 1.0,
+          },
+        ],
+        highlightLines: [
+          { x1: 0.68 * w, y1: 0.58 * h, x2: 0.82 * w, y2: 0.57 * h, color: 'rgba(255,255,255,0.68)', alpha: 0.68, width: 2.5 },
+          { x1: 0.70 * w, y1: 0.70 * h, x2: 0.88 * w, y2: 0.68 * h, color: 'rgba(255,255,255,0.58)', alpha: 0.58, width: 2 },
+        ],
+      },
+    ];
+  };
+
+  // ── Initialize Laser Beams ──
+  const initLaserBeams = (w: number, h: number): Point[][] => {
+    return [
+      [{ x: 0.05 * w, y: 0.10 * h }, { x: 0.45 * w, y: 0.90 * h }],
+      [{ x: 0.0 * w, y: 0.25 * h }, { x: 0.55 * w, y: 0.95 * h }],
+      [{ x: 0.15 * w, y: 0.0 * h }, { x: 0.60 * w, y: 0.85 * h }],
+      [{ x: 0.08 * w, y: 0.40 * h }, { x: 0.65 * w, y: 1.0 * h }],
+      [{ x: 0.20 * w, y: 0.05 * h }, { x: 0.70 * w, y: 0.88 * h }],
+      [{ x: 0.02 * w, y: 0.50 * h }, { x: 0.52 * w, y: 1.05 * h }],
+      [{ x: 0.12 * w, y: 0.18 * h }, { x: 0.75 * w, y: 0.92 * h }],
+      [{ x: 0.0 * w, y: 0.35 * h }, { x: 0.62 * w, y: 1.02 * h }],
+      [{ x: 0.18 * w, y: 0.02 * h }, { x: 0.80 * w, y: 0.82 * h }],
+      [{ x: 0.06 * w, y: 0.60 * h }, { x: 0.58 * w, y: 1.08 * h }],
+    ];
+  };
+
+  // ── Initialize Bubbles ──
+  const initBubbles = (w: number, h: number): Bubble[] => {
+    const bubbles: Bubble[] = [];
+    for (let i = 0; i < 20; i++) {
+      bubbles.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        radius: 3 + Math.random() * 5,
+        speedY: 0.2 + Math.random() * 0.3,
+        speedX: (Math.random() - 0.5) * 0.15,
+        alpha: 0.3 + Math.random() * 0.4,
+        pulse: Math.random() * Math.PI * 2,
+      });
+    }
+    return bubbles;
+  };
+
+  // ── Draw Background ──
+  const drawBackground = (ctx: CanvasRenderingContext2D, w: number, h: number, _t: number) => {
+    const bgGrad = ctx.createRadialGradient(w * 0.5, h * 0.4, 0, w * 0.5, h * 0.4, w * 0.7);
+    bgGrad.addColorStop(0, '#3b82f6');
+    bgGrad.addColorStop(0.5, '#2563eb');
+    bgGrad.addColorStop(1, '#1e40af');
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, w, h);
+  };
+
+  // ── Draw Laser Beams ──
+  const drawLaserBeams = (ctx: CanvasRenderingContext2D, beams: Point[][], t: number, w: number, h: number) => {
+    const rotationAngle = Math.sin(t * 0.3) * 0.05; // ±~3° rotation
+    
+    ctx.save();
+    ctx.translate(w * 0.15, h * 0.2);
+    ctx.rotate(rotationAngle);
+    ctx.translate(-w * 0.15, -h * 0.2);
+
+    beams.forEach((beam, i) => {
+      const alpha = 0.04 + Math.sin(t * 0.5 + i * 0.8) * 0.02;
+      ctx.beginPath();
+      ctx.moveTo(beam[0].x, beam[0].y);
+      ctx.lineTo(beam[1].x, beam[1].y);
+      ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+      ctx.lineWidth = 1 + (i % 2);
+      ctx.stroke();
+    });
+
+    ctx.restore();
+  };
+
+  // ── Draw Crystal ──
+  const drawCrystal = (ctx: CanvasRenderingContext2D, crystal: Crystal, t: number) => {
+    // Draw faces
+    crystal.faces.forEach((face) => {
+      ctx.beginPath();
+      ctx.moveTo(face.points[0].x, face.points[0].y);
+      for (let i = 1; i < face.points.length; i++) {
+        ctx.lineTo(face.points[i].x, face.points[i].y);
+      }
+      ctx.closePath();
+
+      // Fill with subtle animation
+      const alpha = face.fillAlpha + Math.sin(t * 0.8) * 0.03;
+      const fillAlpha = Math.max(0.15, alpha);
+      ctx.fillStyle = face.fillColor.replace(/[\d.]+\)$/, `${fillAlpha.toFixed(2)})`);
+      ctx.fill();
+
+      // Stroke outline
+      ctx.strokeStyle = face.strokeColor;
+      ctx.lineWidth = face.lineWidth;
+      ctx.stroke();
+    });
+
+    // Draw highlight lines
+    crystal.highlightLines.forEach((line) => {
+      const pulseAlpha = line.alpha + Math.sin(t * 1.2) * 0.15;
+      const alpha = Math.max(0.3, Math.min(0.9, pulseAlpha));
+      
+      ctx.beginPath();
+      ctx.moveTo(line.x1, line.y1);
+      ctx.lineTo(line.x2, line.y2);
+      ctx.strokeStyle = line.color.replace(/[\d.]+\)$/, `${alpha.toFixed(2)})`);
+      ctx.lineWidth = line.width;
+      ctx.stroke();
+    });
+  };
+
+  // ── Draw Bubbles ──
+  const drawBubbles = (ctx: CanvasRenderingContext2D, bubbles: Bubble[], t: number, w: number, h: number) => {
+    bubbles.forEach((bubble) => {
+      // Animate position
+      bubble.y -= bubble.speedY;
+      bubble.x += bubble.speedX + Math.sin(t * 0.5 + bubble.pulse) * 0.2;
+      
+      // Wrap around
+      if (bubble.y < -10) {
+        bubble.y = h + 10;
+        bubble.x = Math.random() * w;
+      }
+      if (bubble.x < -10) bubble.x = w + 10;
+      if (bubble.x > w + 10) bubble.x = -10;
+
+      // Draw bubble
+      const pulse = Math.sin(t * 0.8 + bubble.pulse) * 0.15;
+      const alpha = Math.max(0.2, Math.min(0.7, bubble.alpha + pulse));
+
+      ctx.beginPath();
+      ctx.arc(bubble.x, bubble.y, bubble.radius, 0, Math.PI * 2);
+      
+      // Radial gradient for 3D effect
+      const grad = ctx.createRadialGradient(
+        bubble.x - bubble.radius * 0.3,
+        bubble.y - bubble.radius * 0.3,
+        0,
+        bubble.x,
+        bubble.y,
+        bubble.radius
+      );
+      grad.addColorStop(0, `rgba(255, 255, 255, ${alpha})`);
+      grad.addColorStop(0.5, `rgba(191, 219, 254, ${alpha * 0.6})`);
+      grad.addColorStop(1, 'transparent');
+      
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      // Border
+      ctx.strokeStyle = `rgba(255, 255, 255, ${alpha * 0.5})`;
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+    });
+  };
+
+  // ── Draw Sparkle Dots ──
+  const drawSparkles = (ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
+    const sparkles = [
+      { x: 0.15, y: 0.25, size: 2 },
+      { x: 0.45, y: 0.18, size: 1.5 },
+      { x: 0.30, y: 0.65, size: 2.5 },
+      { x: 0.70, y: 0.35, size: 2 },
+      { x: 0.85, y: 0.70, size: 1.5 },
+      { x: 0.55, y: 0.82, size: 2 },
+      { x: 0.25, y: 0.80, size: 1.8 },
+      { x: 0.65, y: 0.15, size: 2.2 },
+    ];
+
+    sparkles.forEach((sparkle, i) => {
+      const flash = Math.sin(t * 2.5 + i * 1.3);
+      const alpha = flash > 0.85 ? (flash - 0.85) * 6.67 : 0;
+      
+      if (alpha > 0) {
+        ctx.beginPath();
+        ctx.arc(sparkle.x * w, sparkle.y * h, sparkle.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+        ctx.fill();
+        
+        // Glow
+        ctx.beginPath();
+        ctx.arc(sparkle.x * w, sparkle.y * h, sparkle.size * 3, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.3})`;
+        ctx.fill();
+      }
+    });
+  };
+
+  // ── Main Animation Loop ──
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d', { alpha: true })!;
+    
+    const ctx = canvas.getContext('2d', { alpha: true });
+    if (!ctx) return;
+    ctxRef.current = ctx;
+    
     let animId = 0;
 
     function resize() {
-      if (!canvas) return;
-      const rect = canvas.getBoundingClientRect();
+      const currentCanvas = canvasRef.current;
+      const currentCtx = ctxRef.current;
+      if (!currentCanvas || !currentCtx) return;
+      
+      const rect = currentCanvas.getBoundingClientRect();
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = Math.max(1, rect.width * dpr);
-      canvas.height = Math.max(1, rect.height * dpr);
+      currentCanvas.width = Math.max(1, rect.width * dpr);
+      currentCanvas.height = Math.max(1, rect.height * dpr);
+      currentCtx.scale(dpr, dpr);
+      
+      // Re-initialize geometries on resize
+      const w = rect.width;
+      const h = rect.height;
+      animationStateRef.current = {
+        crystals: initCrystals(w, h),
+        laserBeams: initLaserBeams(w, h),
+        bubbles: initBubbles(w, h),
+        time: 0,
+      };
     }
 
-    function render(time: number) {
-      if (!canvas) return;
-      const rect = canvas.getBoundingClientRect();
-      if (rect.width === 0) { animId = requestAnimationFrame(render); return; }
+    function animate(time: number) {
+      const currentCanvas = canvasRef.current;
+      const currentCtx = ctxRef.current;
+      if (!currentCanvas || !currentCtx) return;
+      
+      const rect = currentCanvas.getBoundingClientRect();
+      if (rect.width === 0) {
+        animId = requestAnimationFrame(animate);
+        return;
+      }
 
-      resize();
-      const w = canvas.width, h = canvas.height;
-      const t = time * 0.0003;
+      if (!animationStateRef.current) {
+        resize();
+      }
 
-      ctx.clearRect(0, 0, w, h);
+      const state = animationStateRef.current!;
+      const t = time * 0.001; // Convert to seconds
+      state.time = t;
 
-      const caustics = [
-        { x: 0.3, y: 0.4, r: 0.25, phase: 0 },
-        { x: 0.6, y: 0.3, r: 0.20, phase: 1.5 },
-        { x: 0.45, y: 0.65, r: 0.22, phase: 3.0 },
-        { x: 0.2, y: 0.55, r: 0.18, phase: 4.5 },
-      ];
+      const w = rect.width;
+      const h = rect.height;
 
-      caustics.forEach((caustic) => {
-        const cx = (caustic.x + Math.sin(t * 0.5 + caustic.phase) * 0.03) * w;
-        const cy = (caustic.y + Math.cos(t * 0.4 + caustic.phase) * 0.03) * h;
-        const cr = Math.max(caustic.r * w, caustic.r * h);
+      currentCtx.clearRect(0, 0, w, h);
 
-        const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, cr);
-        grad.addColorStop(0, `rgba(186, 230, 253, ${0.06 + Math.sin(t + caustic.phase) * 0.02})`);
-        grad.addColorStop(0.5, `rgba(147, 197, 253, ${0.03 + Math.cos(t * 0.7 + caustic.phase) * 0.015})`);
-        grad.addColorStop(1, 'transparent');
+      // 1. Draw background
+      drawBackground(currentCtx, w, h, t);
 
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, w, h);
+      // 2. Draw laser beams
+      drawLaserBeams(currentCtx, state.laserBeams, t, w, h);
+
+      // 3. Draw crystals
+      state.crystals.forEach((crystal) => {
+        drawCrystal(currentCtx, crystal, t);
       });
 
-      animId = requestAnimationFrame(render);
+      // 4. Draw sparkle dots
+      drawSparkles(currentCtx, t, w, h);
+
+      // 5. Draw bubbles
+      drawBubbles(currentCtx, state.bubbles, t, w, h);
+
+      animId = requestAnimationFrame(animate);
     }
 
     resize();
-    animId = requestAnimationFrame(render);
-    return () => cancelAnimationFrame(animId);
+    animId = requestAnimationFrame(animate);
+
+    const resizeObserver = new ResizeObserver(() => {
+      resize();
+    });
+    resizeObserver.observe(canvas);
+
+    return () => {
+      cancelAnimationFrame(animId);
+      resizeObserver.disconnect();
+    };
   }, []);
-
-  // ── Crystal Configurations (Faceted with Hard-Stop Gradients) ──
-  const crystalConfigs = [
-    {
-      id: 1,
-      clipPath: 'polygon(50% 0%, 85% 25%, 85% 75%, 50% 100%, 15% 75%, 15% 25%)',
-      width: '35vw',
-      height: '40vh',
-      left: '5%',
-      top: '10%',
-      // Faceted gradient: 135° with HARD STOPS (write % twice!)
-      mainGradient: `linear-gradient(135deg, 
-        rgba(224, 242, 254, 0.95) 0%, 35%,
-        rgba(147, 197, 253, 0.80) 35%, 70%,
-        rgba(59, 130, 246, 0.85) 70%, 100%
-      )`,
-      // Zone 1 (0-35%): Bright face - ice white
-      // Zone 2 (35-70%): Middle face - bright blue  
-      // Zone 3 (70-100%): Dark face - deep blue
-      edgeAngle: '135deg',
-      animation: 'crystal-float-1 18s ease-in-out infinite',
-      animationDelay: '0s',
-    },
-    {
-      id: 2,
-      clipPath: 'polygon(30% 0%, 70% 0%, 100% 50%, 70% 100%, 30% 100%, 0% 50%)',
-      width: '30vw',
-      height: '35vh',
-      right: '5%',
-      top: '15%',
-      // Faceted gradient: 120° with HARD STOPS
-      mainGradient: `linear-gradient(120deg, 
-        rgba(224, 242, 254, 0.92) 0%, 30%,
-        rgba(103, 232, 249, 0.78) 30%, 65%,
-        rgba(37, 99, 235, 0.82) 65%, 100%
-      )`,
-      edgeAngle: '120deg',
-      animation: 'crystal-float-2 22s ease-in-out infinite',
-      animationDelay: '-3s',
-    },
-    {
-      id: 3,
-      clipPath: 'polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)',
-      width: '38vw',
-      height: '38vh',
-      left: '15%',
-      bottom: '8%',
-      // Faceted gradient: 145° with HARD STOPS
-      mainGradient: `linear-gradient(145deg, 
-        rgba(255, 255, 255, 0.55) 0%, 5%,
-        rgba(196, 181, 253, 0.88) 5%, 40%,
-        rgba(103, 232, 249, 0.75) 40%, 75%,
-        rgba(91, 33, 182, 0.80) 75%, 100%
-      )`,
-      // Extra bright zone at start (0-5%) for sharp highlight
-      edgeAngle: '145deg',
-      animation: 'crystal-float-3 20s ease-in-out infinite',
-      animationDelay: '-6s',
-    },
-    {
-      id: 4,
-      clipPath: 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)',
-      width: '25vw',
-      height: '30vh',
-      right: '10%',
-      bottom: '10%',
-      // Faceted gradient: 125° with HARD STOPS
-      mainGradient: `linear-gradient(125deg, 
-        rgba(224, 242, 254, 0.93) 0%, 35%,
-        rgba(125, 211, 252, 0.82) 35%, 68%,
-        rgba(59, 130, 246, 0.86) 68%, 100%
-      )`,
-      edgeAngle: '125deg',
-      animation: 'crystal-float-4 24s ease-in-out infinite',
-      animationDelay: '-9s',
-    },
-  ];
-
-  // ── Sharp Specular Dots (2-3 per crystal) ──
-  const getSpecularDots = (crystalId: number) => {
-    const dots = {
-      1: [
-        { top: '22%', left: '28%', size: 4 },
-        { top: '35%', left: '38%', size: 3 },
-        { top: '18%', left: '45%', size: 5 },
-      ],
-      2: [
-        { top: '20%', left: '32%', size: 4 },
-        { top: '30%', left: '40%', size: 3 },
-      ],
-      3: [
-        { top: '25%', left: '30%', size: 5 },
-        { top: '15%', left: '42%', size: 3 },
-        { top: '35%', left: '25%', size: 4 },
-      ],
-      4: [
-        { top: '22%', left: '35%', size: 4 },
-        { top: '28%', left: '30%', size: 3 },
-      ],
-    };
-    return dots[crystalId as keyof typeof dots] || [];
-  };
-
-  // ── Sparkle Flash Points (3-5 random timed) ──
-  const sparkles = Array.from({ length: 5 }, (_, i) => ({
-    id: `sparkle-${i}`,
-    top: `${10 + Math.random() * 70}%`,
-    left: `${10 + Math.random() * 80}%`,
-    size: 2 + Math.floor(Math.random() * 3),
-    animationDelay: `${-(i * 1.7 + Math.random() * 2)}s`,
-    animationDuration: `${3 + Math.random() * 2}s`,
-  }));
-
-  // ── Enhanced Refraction Lines ──
-  const getRefractionLines = (crystalId: number) => {
-    const lines = {
-      1: [
-        { rotate: -25, top: '30%', left: '15%', width: '70%', height: '3px' },
-        { rotate: 15, top: '50%', left: '12%', width: '65%', height: '2px' },
-        { rotate: -40, top: '22%', left: '20%', width: '55%', height: '3px' },
-        { rotate: 30, top: '65%', left: '18%', width: '50%', height: '2px' },
-      ],
-      2: [
-        { rotate: 20, top: '28%', left: '15%', width: '68%', height: '3px' },
-        { rotate: -10, top: '55%', left: '20%', width: '58%', height: '2px' },
-        { rotate: 35, top: '40%', left: '10%', width: '60%', height: '3px' },
-      ],
-      3: [
-        { rotate: -30, top: '35%', left: '18%', width: '72%', height: '3px' },
-        { rotate: 25, top: '48%', left: '14%', width: '62%', height: '2px' },
-        { rotate: -15, top: '25%', left: '22%', width: '52%', height: '3px' },
-        { rotate: 40, top: '60%', left: '16%', width: '48%', height: '2px' },
-      ],
-      4: [
-        { rotate: 18, top: '30%', left: '16%', width: '66%', height: '3px' },
-        { rotate: -22, top: '52%', left: '20%', width: '56%', height: '2px' },
-        { rotate: 30, top: '42%', left: '12%', width: '60%', height: '3px' },
-      ],
-    };
-    return lines[crystalId as keyof typeof lines] || [];
-  };
-
-  // ── Bubbles Configuration ──
-  const bubbles = Array.from({ length: 18 }, (_, i) => ({
-    id: `bubble-${i}`,
-    left: `${5 + ((i * 37) % 90)}%`,
-    top: `${15 + ((i * 41) % 70)}%`,
-    size: 6 + (i % 11),
-    animationDuration: `${10 + (i % 8) * 2}s`,
-    animationDelay: `${-(i * 1.3)}s`,
-    opacity: 0.5 + (i % 4) * 0.12,
-  }));
 
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-      {/* ===== Layer 0: Background ===== */}
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 w-full h-full"
+        style={{ display: 'block' }}
+      />
+
+      {/* Caustic effect overlay (subtle) */}
       <div
         className="absolute inset-0"
         style={{
           background: `
-            radial-gradient(ellipse at 30% 20%, 
-              rgba(30, 58, 138, 0.7) 0%, 
-              rgba(30, 64, 175, 0.7) 25%, 
-              rgba(29, 78, 216, 0.7) 45%, 
-              rgba(30, 58, 95, 0.7) 65%, 
-              rgba(15, 23, 42, 0.7) 100%
-            )
+            radial-gradient(ellipse at 30% 40%, rgba(147, 197, 253, 0.08) 0%, transparent 50%),
+            radial-gradient(ellipse at 70% 60%, rgba(103, 232, 249, 0.06) 0%, transparent 50%
           `,
+          mixBlendMode: 'screen',
+          opacity: 0.4,
         }}
       />
-
-      {/* ===== Layer 1: Canvas ===== */}
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 w-full h-full"
-        style={{ mixBlendMode: 'screen', opacity: 0.5 }}
-      />
-
-      {/* ===== Layer 2: Faceted Crystals ===== */}
-      {crystalConfigs.map((crystal) => (
-        <div
-          key={`crystal-group-${crystal.id}`}
-          className="absolute"
-          style={{
-            width: crystal.width,
-            height: crystal.height,
-            left: crystal.left || 'auto',
-            right: crystal.right || 'auto',
-            top: crystal.top || 'auto',
-            bottom: crystal.bottom || 'auto',
-            animation: crystal.animation,
-            animationDelay: crystal.animationDelay,
-          }}
-        >
-          {/* Layer A: Dark Outline (Shadow) */}
-          <div
-            style={{
-              position: 'absolute',
-              top: '8px',
-              left: '8px',
-              width: '100%',
-              height: '100%',
-              clipPath: crystal.clipPath,
-              background: 'rgba(15, 23, 42, 0.50)',
-              filter: 'blur(8px)',
-              opacity: 0.7,
-            }}
-          />
-
-          {/* Layer B: Main Body (Faceted Hard-Stop Gradient) ★ */}
-          <div
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              clipPath: crystal.clipPath,
-              background: crystal.mainGradient,
-            }}
-          />
-
-          {/* Layer C: Sharp Edge Highlight (2-3px white line on top-left edge) ★ */}
-          <div
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              clipPath: crystal.clipPath,
-              background: `linear-gradient(${crystal.edgeAngle}, 
-                rgba(255, 255, 255, 0.85) 0%, 
-                rgba(255, 255, 255, 0.4) 15%,
-                transparent 30%
-              )`,
-            }}
-          />
-
-          {/* Layer D: Sharp Specular Dots (2-3 small sharp white dots) ★ */}
-          {getSpecularDots(crystal.id).map((dot, idx) => (
-            <div
-              key={`spec-dot-${crystal.id}-${idx}`}
-              style={{
-                position: 'absolute',
-                top: dot.top,
-                left: dot.left,
-                width: dot.size,
-                height: dot.size,
-                borderRadius: '50%',
-                backgroundColor: '#ffffff',
-                boxShadow: '0 0 6px 2px rgba(255, 255, 255, 0.8)',
-                filter: 'blur(0px)',
-                animation: `specular-pulse-${crystal.id}-${idx} ${2.5 + idx * 0.5}s ease-in-out infinite`,
-              }}
-            />
-          ))}
-
-          {/* Layer E: Edge Glow */}
-          <div
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              clipPath: crystal.clipPath,
-              boxShadow: `0 0 20px rgba(147, 197, 253, 0.5)`,
-              border: '1px solid rgba(255, 255, 255, 0.5)',
-            }}
-          />
-
-          {/* Layer F: Enhanced Refraction Lines (3-4 lines, wider, more visible) */}
-          {getRefractionLines(crystal.id).map((line, idx) => (
-            <div
-              key={`refraction-${crystal.id}-${idx}`}
-              style={{
-                position: 'absolute',
-                width: line.width,
-                height: line.height,
-                background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.50), transparent)',
-                transform: `rotate(${line.rotate}deg)`,
-                top: line.top,
-                left: line.left,
-                filter: 'blur(0.5px)',
-              }}
-            />
-          ))}
-        </div>
-      ))}
-
-      {/* ===== Sparkle Flash Points (3-5 random timed) ★ ===== */}
-      {sparkles.map((sparkle) => (
-        <div
-          key={sparkle.id}
-          className="absolute rounded-full"
-          style={{
-            top: sparkle.top,
-            left: sparkle.left,
-            width: sparkle.size,
-            height: sparkle.size,
-            backgroundColor: '#ffffff',
-            boxShadow: '0 0 8px 3px rgba(255, 255, 255, 0.9)',
-            animation: `sparkle-flash ${sparkle.animationDuration} ease-in-out infinite`,
-            animationDelay: sparkle.animationDelay,
-          }}
-        />
-      ))}
-
-      {/* ===== Layer 3: Bubbles ===== */}
-      {bubbles.map((bubble) => (
-        <div
-          key={bubble.id}
-          className="absolute rounded-full"
-          style={{
-            left: bubble.left,
-            top: bubble.top,
-            width: bubble.size,
-            height: bubble.size,
-            background: `radial-gradient(circle at 30% 30%, 
-              rgba(255, 255, 255, ${bubble.opacity + 0.3}), 
-              rgba(191, 219, 254, ${bubble.opacity * 0.7}) 40%, 
-              rgba(96, 165, 250, ${bubble.opacity * 0.4}) 70%, 
-              transparent 100%
-            )`,
-            border: '1px solid rgba(255, 255, 255, 0.5)',
-            animation: `bubble-float ${bubble.animationDuration} ease-in-out infinite`,
-            animationDelay: bubble.animationDelay,
-          }}
-        />
-      ))}
-
-      {/* ===== Layer 4: Light Rays ===== */}
-      <div
-        className="absolute"
-        style={{
-          left: '-15%',
-          top: '-20%',
-          width: '90vw',
-          height: '120vh',
-          background: `linear-gradient(125deg, 
-            transparent 0%, 
-            rgba(255, 255, 255, 0.08) 15%, 
-            rgba(191, 219, 254, 0.12) 35%, 
-            rgba(147, 197, 253, 0.08) 55%, 
-            transparent 75%
-          )`,
-          transform: 'rotate(-28deg)',
-          transformOrigin: 'top left',
-          animation: 'ray-sweep-1 25s ease-in-out infinite',
-        }}
-      />
-      <div
-        className="absolute"
-        style={{
-          right: '-10%',
-          top: '-15%',
-          width: '70vw',
-          height: '110vh',
-          background: `linear-gradient(215deg, 
-            transparent 0%, 
-            rgba(255, 255, 255, 0.06) 20%, 
-            rgba(196, 181, 253, 0.10) 40%, 
-            rgba(147, 197, 253, 0.07) 60%, 
-            transparent 80%
-          )`,
-          transform: 'rotate(18deg)',
-          transformOrigin: 'top right',
-          animation: 'ray-sweep-2 28s ease-in-out infinite',
-        }}
-      />
-
-      {/* ===== Layer 5: Bloom Glow ===== */}
-      <div
-        className="absolute"
-        style={{
-          left: '25%',
-          top: '5%',
-          width: '55vw',
-          height: '55vh',
-          background: `radial-gradient(ellipse at center, 
-            rgba(191, 219, 254, 0.25) 0%, 
-            rgba(147, 197, 253, 0.14) 35%, 
-            rgba(96, 165, 250, 0.07) 60%, 
-            transparent 80%
-          )`,
-          filter: 'blur(50px) hue-rotate(0deg)',
-          animation: 'bloom-pulse 12s ease-in-out infinite, bloom-hue-rotate 20s linear infinite',
-        }}
-      />
-
-      {/* ===== Inline Styles for Animations ===== */}
-      <style>{`
-        /* ── Crystal Floating Animations ── */
-        @keyframes crystal-float-1 {
-          0%   { transform: translate(0%, 0%) rotate(0deg) scale(1.0); }
-          25%  { transform: translate(3%, 2%) rotate(1.5deg) scale(1.02); }
-          50%  { transform: translate(-2%, 4%) rotate(-1deg) scale(0.98); }
-          75%  { transform: translate(4%, -1%) rotate(2deg) scale(1.03); }
-          100% { transform: translate(0%, 0%) rotate(0deg) scale(1.0); }
-        }
-        @keyframes crystal-float-2 {
-          0%   { transform: translate(0%, 0%) rotate(0deg) scale(1.0); }
-          30%  { transform: translate(-4%, 3%) rotate(-2deg) scale(1.03); }
-          55%  { transform: translate(2%, -2%) rotate(1.8deg) scale(0.97); }
-          80%  { transform: translate(-3%, 4%) rotate(-1.5deg) scale(1.01); }
-          100% { transform: translate(0%, 0%) rotate(0deg) scale(1.0); }
-        }
-        @keyframes crystal-float-3 {
-          0%   { transform: translate(0%, 0%) rotate(0deg) scale(1.0); }
-          20%  { transform: translate(5%, 1%) rotate(1.2deg) scale(1.01); }
-          45%  { transform: translate(-3%, 5%) rotate(-2.2deg) scale(0.99); }
-          70%  { transform: translate(4%, -3%) rotate(1.8deg) scale(1.02); }
-          100% { transform: translate(0%, 0%) rotate(0deg) scale(1.0); }
-        }
-        @keyframes crystal-float-4 {
-          0%   { transform: translate(0%, 0%) rotate(0deg) scale(1.0); }
-          35%  { transform: translate(-5%, -2%) rotate(-1.8deg) scale(1.04); }
-          60%  { transform: translate(3%, 3%) rotate(2.2deg) scale(0.96); }
-          85%  { transform: translate(-2%, 5%) rotate(-1deg) scale(1.02); }
-          100% { transform: translate(0%, 0%) rotate(0deg) scale(1.0); }
-        }
-
-        /* ── Sharp Specular Dot Pulse Animations ── */
-        @keyframes specular-pulse-1-0 {
-          0%, 100% { opacity: 0.6; transform: scale(0.9); }
-          50%      { opacity: 1.0; transform: scale(1.2); }
-        }
-        @keyframes specular-pulse-1-1 {
-          0%, 100% { opacity: 0.55; transform: scale(0.85); }
-          50%      { opacity: 0.95; transform: scale(1.15); }
-        }
-        @keyframes specular-pulse-1-2 {
-          0%, 100% { opacity: 0.65; transform: scale(0.95); }
-          50%      { opacity: 1.0; transform: scale(1.25); }
-        }
-        @keyframes specular-pulse-2-0 {
-          0%, 100% { opacity: 0.58; transform: scale(0.88); }
-          50%      { opacity: 0.98; transform: scale(1.18); }
-        }
-        @keyframes specular-pulse-2-1 {
-          0%, 100% { opacity: 0.62; transform: scale(0.92); }
-          50%      { opacity: 1.0; transform: scale(1.22); }
-        }
-        @keyframes specular-pulse-3-0 {
-          0%, 100% { opacity: 0.57; transform: scale(0.87); }
-          50%      { opacity: 0.97; transform: scale(1.17); }
-        }
-        @keyframes specular-pulse-3-1 {
-          0%, 100% { opacity: 0.63; transform: scale(0.93); }
-          50%      { opacity: 1.0; transform: scale(1.23); }
-        }
-        @keyframes specular-pulse-3-2 {
-          0%, 100% { opacity: 0.6; transform: scale(0.9); }
-          50%      { opacity: 0.98; transform: scale(1.2); }
-        }
-        @keyframes specular-pulse-4-0 {
-          0%, 100% { opacity: 0.59; transform: scale(0.89); }
-          50%      { opacity: 0.99; transform: scale(1.19); }
-        }
-        @keyframes specular-pulse-4-1 {
-          0%, 100% { opacity: 0.61; transform: scale(0.91); }
-          50%      { opacity: 1.0; transform: scale(1.21); }
-        }
-
-        /* ── Sparkle Flash Animation ★ ── */
-        @keyframes sparkle-flash {
-          0%, 85%, 100% { opacity: 0; transform: scale(0.3); }
-          88%           { opacity: 1; transform: scale(1.3); }
-          92%           { opacity: 0.7; transform: scale(0.9); }
-        }
-
-        /* ── Bubble Float Animation ── */
-        @keyframes bubble-float {
-          0%   { transform: translateY(0px) translateX(0px) scale(1.0); opacity: 0.5; }
-          25%  { transform: translateY(-25px) translateX(3px) scale(1.05); opacity: 0.7; }
-          50%  { transform: translateY(-50px) translateX(-2px) scale(0.98); opacity: 0.6; }
-          75%  { transform: translateY(-75px) translateX(4px) scale(1.03); opacity: 0.75; }
-          100% { transform: translateY(-100px) translateX(0px) scale(1.0); opacity: 0.5; }
-        }
-
-        /* ── Light Ray Sweep ── */
-        @keyframes ray-sweep-1 {
-          0%   { transform: rotate(-28deg); opacity: 0.5; }
-          50%  { transform: rotate(-23deg); opacity: 0.85; }
-          100% { transform: rotate(-28deg); opacity: 0.5; }
-        }
-        @keyframes ray-sweep-2 {
-          0%   { transform: rotate(18deg); opacity: 0.45; }
-          50%  { transform: rotate(23deg); opacity: 0.75; }
-          100% { transform: rotate(18deg); opacity: 0.45; }
-        }
-
-        /* ── Bloom Pulse ── */
-        @keyframes bloom-pulse {
-          0%, 100% { opacity: 0.5; transform: scale(1.0); }
-          50%      { opacity: 0.85; transform: scale(1.12); }
-        }
-
-        /* ── Bloom Hue-Rotate ── */
-        @keyframes bloom-hue-rotate {
-          0%   { filter: blur(50px) hue-rotate(0deg); }
-          50%  { filter: blur(50px) hue-rotate(30deg); }
-          100% { filter: blur(50px) hue-rotate(0deg); }
-        }
-      `}</style>
     </div>
   );
 }
@@ -588,7 +503,7 @@ export default memo(function OceanHeader({ title, subtitle, children, icon }: {
   return (
     <header
       className="relative overflow-hidden"
-      style={{ background: '#0f172a' }}
+      style={{ background: '#2563eb' }}  // BRIGHT blue, not dark!
     >
       <IceCrystalScene />
 
