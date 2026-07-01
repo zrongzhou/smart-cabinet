@@ -2,15 +2,18 @@
 import { useEffect, useRef, memo } from 'react';
 
 // ============================================================
-// OceanHeader v243 - Deep Blue Palette Fix (Brand-Aligned Colors)
+// OceanHeader v244 - Vibrant Blue + Center Glow (Depth Fix)
 //
-// v243 Changes (COLOR FIX):
-// - CRITICAL FIX: Color range narrowed to deep blues only (#020617 -> #1e3a8a)
-// - NO more sky-blue/washed-out bright phase (was #60a5fa - looked like baby blue)
-// - 5-stop gradient for depth and richness (not flat PPT background)
-// - Breathing amplitude reduced: 0.15-0.65 (was 0.3-1.0), capped at 0.75
-// - Slower breathing cycle: 10s (was 8s) for more elegant feel
-// - Meteor boost reduced: +0.10 each (was +0.15)
+// v244 Changes (DEPTH + BRIGHTNESS FIX):
+// - CRITICAL FIX: Bright color changed from #1e3a8a to #3b82f6 (Tailwind blue-500, vibrant not dark)
+// - Added center glow overlay (radial gradient, adds depth and volume)
+// - 7-stop gradient (was 5-stop) for enhanced depth
+// - Breathing cap increased: 0.75 → 0.85 (user feedback: "bright color still too dark")
+//
+// v243 Features (preserved):
+// - Deep blue palette (not sky blue / baby blue)
+// - Independent breathing cycle (10s period)
+// - Meteor boost: +0.10 each (reduced from +0.15)
 //
 // v242 Features (preserved):
 // - Independent breathing cycle (sin wave, no dependency on meteors)
@@ -229,30 +232,30 @@ function StarryScene() {
 
   // Draw Background with Activity-Based Color Interpolation
   const drawBackground = (ctx: CanvasRenderingContext2D, w: number, h: number, activityLevel: number) => {
-    // v243: Deep blue palette (matches industrial brand style)
+    // v244: Vibrant blue palette with depth
     // Dark: #020617 (rgb 2, 6, 23) - near-black navy
-    // Bright: #1e3a8a (rgb 30, 58, 138) - deep royal blue (NOT sky blue!)
-    // This keeps the dark atmosphere while still showing breathing
-    
+    // Bright: #3b82f6 (rgb 59, 130, 246) - Tailwind blue-500 (vibrant but not sky blue!)
     const baseR = 2;
     const baseG = 6;
     const baseB = 23;
     
-    const maxR = 30;   // was 96 - much darker!
-    const maxG = 58;   // was 165
-    const maxB = 138;  // was 250
+    const maxR = 59;   // blue-500: vibrant but not washed out
+    const maxG = 130;
+    const maxB = 246;
     
     const r = Math.round(baseR + (maxR - baseR) * activityLevel);
     const g = Math.round(baseG + (maxG - baseG) * activityLevel);
     const b = Math.round(baseB + (maxB - baseB) * activityLevel);
 
-    // 5-stop vertical gradient for depth and richness (not flat PPT look)
+    // 7-stop vertical gradient for enhanced depth
     const gradient = ctx.createLinearGradient(0, 0, 0, h);
-    gradient.addColorStop(0,   `rgb(${Math.max(0, r-4)}, ${Math.max(0, g-2)}, ${b})`);        // slightly darker top
-    gradient.addColorStop(0.25, `rgb(${r}, ${g}, ${b})`);                                 // base
-    gradient.addColorStop(0.5,  `rgb(${Math.min(255, r+12)}, ${Math.min(255, g+18)}, ${Math.min(255, b+28)})`);  // mid glow
-    gradient.addColorStop(0.75, `rgb(${Math.min(255, r+6)}, ${Math.min(255, g+10)}, ${Math.min(255, b+16)})`);  // transition
-    gradient.addColorStop(1,   `rgb(${Math.max(0, r-2)}, ${g}, ${Math.max(0, b-4)})`);     // slightly darker bottom
+    gradient.addColorStop(0,   `rgb(${Math.max(0, r-6)}, ${Math.max(0, g-4)}, ${b})`);           // dark top
+    gradient.addColorStop(0.15, `rgb(${Math.max(0, r-2)}, ${Math.max(0, g-2)}, ${b})`);       // transition
+    gradient.addColorStop(0.3,  `rgb(${r}, ${g}, ${b})`);                                     // base
+    gradient.addColorStop(0.5,  `rgb(${Math.min(255, r+20)}, ${Math.min(255, g+25)}, ${Math.min(255, b+35)})`); // MID GLOW (brightest)
+    gradient.addColorStop(0.7,  `rgb(${Math.min(255, r+10)}, ${Math.min(255, g+15)}, ${Math.min(255, b+20)})`); // transition
+    gradient.addColorStop(0.85, `rgb(${Math.min(255, r+4)}, ${Math.min(255, g+6)}, ${Math.min(255, b+10)})`);  // subtle bright
+    gradient.addColorStop(1,   `rgb(${Math.max(0, r-4)}, ${Math.max(0, g-2)}, ${Math.max(0, b-4)})`);   // dark bottom
 
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, w, h);
@@ -512,8 +515,9 @@ function StarryScene() {
       const activeCount = state.meteors.filter(m => m.active).length;
       const meteorBoost = Math.min(0.35, activeCount * 0.10);  // max +0.35 (was 0.5)
 
-      // Combine: base breathing + meteor boost (capped at 0.75 to never go too bright)
-      state.targetActivity = Math.min(0.75, baseActivity + meteorBoost);
+      // Combine: base breathing + meteor boost (capped at 0.85 for vibrant blue)
+      // v244: Increased cap from 0.75 to 0.85 (user feedback: "bright color still too dark")
+      state.targetActivity = Math.min(0.85, baseActivity + meteorBoost);
 
       // Smooth interpolation (slightly faster for responsive feel)
       state.activityLevel += (state.targetActivity - state.activityLevel) * 0.06;
@@ -527,6 +531,17 @@ function StarryScene() {
 
       // Draw background with activity-based color interpolation (main breathing effect)
       drawBackground(currentCtx, w, h, state.activityLevel);
+
+      // Draw center glow overlay (adds depth and volume)
+      if (state.activityLevel > 0.2) {
+        const glowIntensity = (state.activityLevel - 0.2) * 0.4;  // 0.2-0.85 range → 0-0.26 alpha
+        const glowGrad = currentCtx.createRadialGradient(w * 0.5, h * 0.4, 0, w * 0.5, h * 0.4, w * 0.7);
+        glowGrad.addColorStop(0, `rgba(59, 130, 246, ${glowIntensity})`);   // blue-500 glow
+        glowGrad.addColorStop(0.5, `rgba(37, 99, 235, ${glowIntensity * 0.6})`);  // blue-600
+        glowGrad.addColorStop(1, 'transparent');
+        currentCtx.fillStyle = glowGrad;
+        currentCtx.fillRect(0, 0, w, h);
+      }
 
       drawBokeh(currentCtx, state.bokeh, t, w, h);
 
