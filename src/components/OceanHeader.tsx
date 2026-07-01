@@ -2,15 +2,15 @@
 import { useEffect, useRef, memo } from 'react';
 
 // ============================================================
-// OceanHeader v238 — Meteor & Glass Beam Style
+// OceanHeader v239 — Meteor-Linked Breathing & Blue Theme
 //
-// v238 Features:
-// - Deep navy background with purple-pink nebula glow
-// - Overall brightness breathing effect (3-4s cycle)
-// - Glass-like laser beams (optional static decorative, multi-layer gradient)
-// - Meteor system (dynamic shooting with trails, 8-12 meteors)
+// v239 Features:
+// - Deep navy background with blue theme (no purple)
+// - Meteor-linked breathing effect (bright when meteors appear, dim when disappear)
+// - Glass-like laser beams (blue hue range)
+// - Meteor system (dynamic shooting with trails, 8-12 meteors, blue-purple hue)
 // - 50-80 star dots scattered across canvas
-// - 8-15 large soft bokeh spots (blur 15-40px)
+// - 8-15 large soft bokeh spots (blue color scheme)
 // - Frame-rate independent animation (using dt)
 // ============================================================
 
@@ -70,6 +70,8 @@ function StarryScene() {
     glassBeams: GlassBeam[];
     bokeh: BokehSpot[];
     time: number;
+    activityLevel: number;
+    targetActivity: number;
   } | null>(null);
   const lastTimeRef = useRef<number>(0);
 
@@ -136,7 +138,7 @@ function StarryScene() {
       width: 1 + Math.random() * 2,
       baseAlpha: 0.4 + Math.random() * 0.4,
       active: true,
-      hue: Math.random() * 60 + 180,
+      hue: 200 + Math.random() * 60,
     };
   };
 
@@ -154,11 +156,11 @@ function StarryScene() {
     const count = 3 + Math.floor(Math.random() * 2);
 
     const beamConfigs = [
-      { start: [0.05, 0.1], end: [0.45, 0.95], width: 1, alpha: 0.15, hue: 200 },
+      { start: [0.05, 0.1], end: [0.45, 0.95], width: 1, alpha: 0.15, hue: 210 },
       { start: [0.15, 0.0], end: [0.6, 0.88], width: 0.8, alpha: 0.12, hue: 220 },
-      { start: [0.0, 0.35], end: [0.62, 1.02], width: 0.6, alpha: 0.1, hue: 240 },
-      { start: [0.2, 0.05], end: [0.7, 0.82], width: 1.2, alpha: 0.18, hue: 190 },
-      { start: [0.1, 0.3], end: [0.7, 0.95], width: 0.7, alpha: 0.13, hue: 210 },
+      { start: [0.0, 0.35], end: [0.62, 1.02], width: 0.6, alpha: 0.1, hue: 230 },
+      { start: [0.2, 0.05], end: [0.7, 0.82], width: 1.2, alpha: 0.18, hue: 200 },
+      { start: [0.1, 0.3], end: [0.7, 0.95], width: 0.7, alpha: 0.13, hue: 215 },
     ];
 
     beamConfigs.forEach((cfg, i) => {
@@ -183,20 +185,16 @@ function StarryScene() {
     const count = 8 + Math.floor(Math.random() * 7);
 
     const colorConfigs = [
+      { r: 59, g: 130, b: 246 },
       { r: 96, g: 165, b: 250 },
       { r: 147, g: 197, b: 253 },
-      { r: 196, g: 181, b: 253 },
-      { r: 244, g: 114, b: 182 },
-      { r: 251, g: 191, b: 36 },
+      { r: 191, g: 219, b: 254 },
+      { r: 125, g: 211, b: 252 },
     ];
 
     for (let i = 0; i < count; i++) {
       const cfg = colorConfigs[Math.floor(Math.random() * colorConfigs.length)];
-      const alpha = cfg.r === 251
-        ? 0.05 + Math.random() * 0.07
-        : cfg.r === 244
-          ? 0.06 + Math.random() * 0.08
-          : 0.08 + Math.random() * 0.10;
+      const alpha = 0.08 + Math.random() * 0.10;
 
       spots.push({
         x: Math.random() * w,
@@ -215,36 +213,32 @@ function StarryScene() {
     return spots;
   };
 
-  // ── Draw Background ──
+  // ── Draw Background (Blue Theme - No Purple) ──
   const drawBackground = (ctx: CanvasRenderingContext2D, w: number, h: number) => {
     const grad = ctx.createLinearGradient(0, 0, w, h);
-    grad.addColorStop(0, '#0a0a1a');
-    grad.addColorStop(0.3, '#0f172a');
-    grad.addColorStop(0.6, '#1e3a8a');
-    grad.addColorStop(0.85, '#312e81');
-    grad.addColorStop(1, '#4c1d95');
+    grad.addColorStop(0, '#020617');
+    grad.addColorStop(0.25, '#0a0a2a');
+    grad.addColorStop(0.5, '#0f172a');
+    grad.addColorStop(0.75, '#1e293b');
+    grad.addColorStop(1, '#1e3a8a');
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, w, h);
   };
 
-  // ── Draw Breathing Overlay (3-4s cycle) ──
-  const drawBreathing = (ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
-    const breathAlpha = 0.5 + 0.5 * Math.sin(t * 1.8);
-    ctx.fillStyle = `rgba(0, 0, 0, ${(1 - breathAlpha) * 0.25})`;
-    ctx.fillRect(0, 0, w, h);
-  };
+  // ── Draw Meteor-Linked Breathing Overlay ──
+  const drawBreathing = (ctx: CanvasRenderingContext2D, activityLevel: number, w: number, h: number) => {
+    if (activityLevel < 0.005) return;
 
-  // ── Draw Nebula Glow ──
-  const drawNebula = (ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
-    const nx = w * 0.7;
-    const ny = h * 0.75;
-    const nr = Math.max(w, h) * 0.4;
+    const grad = ctx.createLinearGradient(0, 0, w, h);
+    const a1 = activityLevel * 0.12;
+    const a2 = activityLevel * 0.08;
+    const a3 = activityLevel * 0.04;
 
-    const grad = ctx.createRadialGradient(nx, ny, 0, nx, ny, nr);
-    const pulse = Math.sin(t * 0.2) * 0.02;
-    grad.addColorStop(0, `rgba(196, 181, 253, ${0.15 + pulse})`);
-    grad.addColorStop(0.4, `rgba(244, 114, 182, ${0.08 + pulse * 0.5})`);
+    grad.addColorStop(0, `rgba(30, 58, 138, ${a1})`);
+    grad.addColorStop(0.4, `rgba(59, 130, 246, ${a2})`);
+    grad.addColorStop(0.7, `rgba(125, 211, 252, ${a3})`);
     grad.addColorStop(1, 'transparent');
+
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, w, h);
   };
@@ -456,6 +450,8 @@ function StarryScene() {
         glassBeams: initGlassBeams(w, h),
         bokeh: initBokeh(w, h),
         time: 0,
+        activityLevel: 0,
+        targetActivity: 0,
       };
       lastTimeRef.current = 0;
     }
@@ -492,15 +488,26 @@ function StarryScene() {
       const w = rect.width;
       const h = rect.height;
 
+      // Calculate target activity based on active meteor count
+      const activeCount = state.meteors.filter(m => m.active).length;
+      state.targetActivity = Math.min(1.0, activeCount / 6);
+
+      // Smooth interpolation (lerp) of activityLevel
+      state.activityLevel += (state.targetActivity - state.activityLevel) * 0.03;
+
+      // When approaching 0, force to 0 to avoid floating point issues
+      if (state.targetActivity < 0.01 && state.activityLevel < 0.02) {
+        state.activityLevel = 0;
+      }
+
       currentCtx.clearRect(0, 0, w, h);
 
       drawBackground(currentCtx, w, h);
 
-      // Breathing overlay
-      drawBreathing(currentCtx, t, w, h);
+      // Meteor-linked breathing overlay
+      drawBreathing(currentCtx, state.activityLevel, w, h);
 
       drawBokeh(currentCtx, state.bokeh, t, w, h);
-      drawNebula(currentCtx, w, h, t);
 
       // Draw glass beams (static decorative)
       drawGlassBeams(currentCtx, state.glassBeams, t);
@@ -548,7 +555,7 @@ export default memo(function OceanHeader({ title, subtitle, children, icon }: {
     <header
       className="relative overflow-hidden"
       style={{
-        background: 'linear-gradient(135deg, #0a0a1a 0%, #0f172a 30%, #1e3a8a 60%, #312e81 85%, #4c1d95 100%)',
+        background: 'linear-gradient(135deg, #020617 0%, #0a0a2a 25%, #0f172a 50%, #1e293b 75%, #1e3a8a 100%)',
       }}
     >
       <StarryScene />
