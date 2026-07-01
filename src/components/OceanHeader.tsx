@@ -2,18 +2,14 @@
 import { useEffect, useRef, memo } from 'react';
 
 // ============================================================
-// OceanHeader v233 — High-Contrast Blue/Crystalline Color Scheme
+// OceanHeader v234 — Faceted Crystal (刻面水晶)
 //
-// Based on v232 DEBUG success: crystals ARE visible!
-// Root cause identified: previous versions had colors too dark + 
-// opacity too low + blue colors "eaten" by dark background.
-//
-// v233 Strategy:
-// - Keep v232 structure (proven working)
-// - Replace DEBUG colors with HIGH ALPHA (0.75-0.92) blue/crystalline
-// - Restore multi-layer structure (dark outline, highlight, glow, refraction)
-// - Remove all DEBUG elements
-// - Restore background opacity to 0.7
+// v234 Enhancement: From "flat plastic" to "faceted crystal"
+// - Hard-stop gradients (3 zones: bright/middle/dark)
+// - Sharp edge highlights (2-3px white lines)
+// - Sharp specular dots (3-5px, no blur)
+// - Sparkle flash effects (random timed blinks)
+// - Enhanced refraction lines (wider, more visible)
 // ============================================================
 
 function IceCrystalScene() {
@@ -74,7 +70,7 @@ function IceCrystalScene() {
     return () => cancelAnimationFrame(animId);
   }, []);
 
-  // ── Crystal Configurations (High-Contrast Blue/Crystalline) ──
+  // ── Crystal Configurations (Faceted with Hard-Stop Gradients) ──
   const crystalConfigs = [
     {
       id: 1,
@@ -83,15 +79,16 @@ function IceCrystalScene() {
       height: '40vh',
       left: '5%',
       top: '10%',
-      // Sky Blue Main Tone - HIGH ALPHA
+      // Faceted gradient: 135° with HARD STOPS (write % twice!)
       mainGradient: `linear-gradient(135deg, 
-        rgba(147, 197, 253, 0.92) 0%,
-        rgba(125, 211, 252, 0.85) 30%,
-        rgba(167, 243, 208, 0.78) 55%,
-        rgba(191, 219, 254, 0.88) 80%,
-        rgba(96, 165, 250, 0.90) 100%
+        rgba(224, 242, 254, 0.95) 0%, 35%,
+        rgba(147, 197, 253, 0.80) 35%, 70%,
+        rgba(59, 130, 246, 0.85) 70%, 100%
       )`,
-      borderColor: 'rgba(255, 255, 255, 0.65)',
+      // Zone 1 (0-35%): Bright face - ice white
+      // Zone 2 (35-70%): Middle face - bright blue  
+      // Zone 3 (70-100%): Dark face - deep blue
+      edgeAngle: '135deg',
       animation: 'crystal-float-1 18s ease-in-out infinite',
       animationDelay: '0s',
     },
@@ -102,15 +99,13 @@ function IceCrystalScene() {
       height: '35vh',
       right: '5%',
       top: '15%',
-      // Cyan/Green Main Tone - HIGH ALPHA
-      mainGradient: `linear-gradient(135deg,
-        rgba(103, 232, 249, 0.90) 0%,
-        rgba(34, 211, 238, 0.82) 30%,
-        rgba(147, 197, 253, 0.75) 55%,
-        rgba(167, 243, 208, 0.80) 80%,
-        rgba(56, 189, 248, 0.85) 100%
+      // Faceted gradient: 120° with HARD STOPS
+      mainGradient: `linear-gradient(120deg, 
+        rgba(224, 242, 254, 0.92) 0%, 30%,
+        rgba(103, 232, 249, 0.78) 30%, 65%,
+        rgba(37, 99, 235, 0.82) 65%, 100%
       )`,
-      borderColor: 'rgba(255, 255, 255, 0.65)',
+      edgeAngle: '120deg',
       animation: 'crystal-float-2 22s ease-in-out infinite',
       animationDelay: '-3s',
     },
@@ -121,15 +116,15 @@ function IceCrystalScene() {
       height: '38vh',
       left: '15%',
       bottom: '8%',
-      // Light Purple/Blue Main Tone - HIGH ALPHA
-      mainGradient: `linear-gradient(135deg,
-        rgba(196, 181, 253, 0.88) 0%,
-        rgba(165, 180, 252, 0.82) 30%,
-        rgba(147, 197, 253, 0.78) 55%,
-        rgba(103, 232, 249, 0.80) 80%,
-        rgba(139, 92, 246, 0.85) 100%
+      // Faceted gradient: 145° with HARD STOPS
+      mainGradient: `linear-gradient(145deg, 
+        rgba(255, 255, 255, 0.55) 0%, 5%,
+        rgba(196, 181, 253, 0.88) 5%, 40%,
+        rgba(103, 232, 249, 0.75) 40%, 75%,
+        rgba(91, 33, 182, 0.80) 75%, 100%
       )`,
-      borderColor: 'rgba(255, 255, 255, 0.65)',
+      // Extra bright zone at start (0-5%) for sharp highlight
+      edgeAngle: '145deg',
       animation: 'crystal-float-3 20s ease-in-out infinite',
       animationDelay: '-6s',
     },
@@ -140,40 +135,77 @@ function IceCrystalScene() {
       height: '30vh',
       right: '10%',
       bottom: '10%',
-      // Ice Blue Main Tone - HIGH ALPHA (almost white highlight)
-      mainGradient: `linear-gradient(135deg,
-        rgba(224, 242, 254, 0.90) 0%,
-        rgba(186, 230, 253, 0.85) 30%,
-        rgba(125, 211, 252, 0.80) 55%,
-        rgba(147, 197, 253, 0.85) 80%,
-        rgba(96, 165, 250, 0.88) 100%
+      // Faceted gradient: 125° with HARD STOPS
+      mainGradient: `linear-gradient(125deg, 
+        rgba(224, 242, 254, 0.93) 0%, 35%,
+        rgba(125, 211, 252, 0.82) 35%, 68%,
+        rgba(59, 130, 246, 0.86) 68%, 100%
       )`,
-      borderColor: 'rgba(255, 255, 255, 0.65)',
+      edgeAngle: '125deg',
       animation: 'crystal-float-4 24s ease-in-out infinite',
       animationDelay: '-9s',
     },
   ];
 
-  // ── Refraction Lines Configuration ──
+  // ── Sharp Specular Dots (2-3 per crystal) ──
+  const getSpecularDots = (crystalId: number) => {
+    const dots = {
+      1: [
+        { top: '22%', left: '28%', size: 4 },
+        { top: '35%', left: '38%', size: 3 },
+        { top: '18%', left: '45%', size: 5 },
+      ],
+      2: [
+        { top: '20%', left: '32%', size: 4 },
+        { top: '30%', left: '40%', size: 3 },
+      ],
+      3: [
+        { top: '25%', left: '30%', size: 5 },
+        { top: '15%', left: '42%', size: 3 },
+        { top: '35%', left: '25%', size: 4 },
+      ],
+      4: [
+        { top: '22%', left: '35%', size: 4 },
+        { top: '28%', left: '30%', size: 3 },
+      ],
+    };
+    return dots[crystalId as keyof typeof dots] || [];
+  };
+
+  // ── Sparkle Flash Points (3-5 random timed) ──
+  const sparkles = Array.from({ length: 5 }, (_, i) => ({
+    id: `sparkle-${i}`,
+    top: `${10 + Math.random() * 70}%`,
+    left: `${10 + Math.random() * 80}%`,
+    size: 2 + Math.floor(Math.random() * 3),
+    animationDelay: `${-(i * 1.7 + Math.random() * 2)}s`,
+    animationDuration: `${3 + Math.random() * 2}s`,
+  }));
+
+  // ── Enhanced Refraction Lines ──
   const getRefractionLines = (crystalId: number) => {
     const lines = {
       1: [
-        { rotate: -25, top: '35%', left: '20%', width: '60%' },
-        { rotate: 15, top: '55%', left: '15%', width: '50%' },
-        { rotate: -40, top: '25%', left: '25%', width: '45%' },
+        { rotate: -25, top: '30%', left: '15%', width: '70%', height: '3px' },
+        { rotate: 15, top: '50%', left: '12%', width: '65%', height: '2px' },
+        { rotate: -40, top: '22%', left: '20%', width: '55%', height: '3px' },
+        { rotate: 30, top: '65%', left: '18%', width: '50%', height: '2px' },
       ],
       2: [
-        { rotate: 20, top: '30%', left: '18%', width: '55%' },
-        { rotate: -10, top: '60%', left: '22%', width: '48%' },
+        { rotate: 20, top: '28%', left: '15%', width: '68%', height: '3px' },
+        { rotate: -10, top: '55%', left: '20%', width: '58%', height: '2px' },
+        { rotate: 35, top: '40%', left: '10%', width: '60%', height: '3px' },
       ],
       3: [
-        { rotate: -30, top: '40%', left: '20%', width: '58%' },
-        { rotate: 25, top: '50%', left: '15%', width: '52%' },
-        { rotate: -15, top: '28%', left: '28%', width: '42%' },
+        { rotate: -30, top: '35%', left: '18%', width: '72%', height: '3px' },
+        { rotate: 25, top: '48%', left: '14%', width: '62%', height: '2px' },
+        { rotate: -15, top: '25%', left: '22%', width: '52%', height: '3px' },
+        { rotate: 40, top: '60%', left: '16%', width: '48%', height: '2px' },
       ],
       4: [
-        { rotate: 18, top: '32%', left: '22%', width: '53%' },
-        { rotate: -22, top: '58%', left: '18%', width: '46%' },
+        { rotate: 18, top: '30%', left: '16%', width: '66%', height: '3px' },
+        { rotate: -22, top: '52%', left: '20%', width: '56%', height: '2px' },
+        { rotate: 30, top: '42%', left: '12%', width: '60%', height: '3px' },
       ],
     };
     return lines[crystalId as keyof typeof lines] || [];
@@ -190,20 +222,9 @@ function IceCrystalScene() {
     opacity: 0.5 + (i % 4) * 0.12,
   }));
 
-  // ── Specular Highlights Configuration ──
-  const speculars = Array.from({ length: 12 }, (_, i) => ({
-    id: `spec-${i}`,
-    left: `${3 + ((i * 31) % 94)}%`,
-    top: `${5 + ((i * 43) % 88)}%`,
-    size: 3 + (i % 5),
-    animationDuration: `${2.5 + (i % 3) * 0.8}s`,
-    animationDelay: `${-(i * 0.9)}s`,
-    opacity: 0.6 + (i % 3) * 0.13,
-  }));
-
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-      {/* ===== Layer 0: Background (Restored to 0.7 opacity) ===== */}
+      {/* ===== Layer 0: Background ===== */}
       <div
         className="absolute inset-0"
         style={{
@@ -219,14 +240,14 @@ function IceCrystalScene() {
         }}
       />
 
-      {/* ===== Layer 1: Canvas (Restored to 0.5 opacity) ===== */}
+      {/* ===== Layer 1: Canvas ===== */}
       <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full"
         style={{ mixBlendMode: 'screen', opacity: 0.5 }}
       />
 
-      {/* ===== Layer 2: Multi-layer Crystals ===== */}
+      {/* ===== Layer 2: Faceted Crystals ===== */}
       {crystalConfigs.map((crystal) => (
         <div
           key={`crystal-group-${crystal.id}`}
@@ -257,7 +278,7 @@ function IceCrystalScene() {
             }}
           />
 
-          {/* Layer B: Main Body (High-Alpha Multi-color Gradient) */}
+          {/* Layer B: Main Body (Faceted Hard-Stop Gradient) ★ */}
           <div
             style={{
               position: 'absolute',
@@ -270,7 +291,7 @@ function IceCrystalScene() {
             }}
           />
 
-          {/* Layer C: Highlight (Bright Face) */}
+          {/* Layer C: Sharp Edge Highlight (2-3px white line on top-left edge) ★ */}
           <div
             style={{
               position: 'absolute',
@@ -279,12 +300,34 @@ function IceCrystalScene() {
               width: '100%',
               height: '100%',
               clipPath: crystal.clipPath,
-              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.55) 0%, transparent 60%)',
-              animation: `highlight-pulse-${crystal.id} 6s ease-in-out infinite`,
+              background: `linear-gradient(${crystal.edgeAngle}, 
+                rgba(255, 255, 255, 0.85) 0%, 
+                rgba(255, 255, 255, 0.4) 15%,
+                transparent 30%
+              )`,
             }}
           />
 
-          {/* Layer D: Edge Glow */}
+          {/* Layer D: Sharp Specular Dots (2-3 small sharp white dots) ★ */}
+          {getSpecularDots(crystal.id).map((dot, idx) => (
+            <div
+              key={`spec-dot-${crystal.id}-${idx}`}
+              style={{
+                position: 'absolute',
+                top: dot.top,
+                left: dot.left,
+                width: dot.size,
+                height: dot.size,
+                borderRadius: '50%',
+                backgroundColor: '#ffffff',
+                boxShadow: '0 0 6px 2px rgba(255, 255, 255, 0.8)',
+                filter: 'blur(0px)',
+                animation: `specular-pulse-${crystal.id}-${idx} ${2.5 + idx * 0.5}s ease-in-out infinite`,
+              }}
+            />
+          ))}
+
+          {/* Layer E: Edge Glow */}
           <div
             style={{
               position: 'absolute',
@@ -293,24 +336,20 @@ function IceCrystalScene() {
               width: '100%',
               height: '100%',
               clipPath: crystal.clipPath,
-              boxShadow: `
-                0 0 15px rgba(147, 197, 253, 0.6),
-                0 0 30px rgba(103, 232, 249, 0.35),
-                inset 0 0 15px rgba(255, 255, 255, 0.18)
-              `,
-              border: `2px solid ${crystal.borderColor}`,
+              boxShadow: `0 0 20px rgba(147, 197, 253, 0.5)`,
+              border: '1px solid rgba(255, 255, 255, 0.5)',
             }}
           />
 
-          {/* Layer E: Internal Refraction Lines */}
+          {/* Layer F: Enhanced Refraction Lines (3-4 lines, wider, more visible) */}
           {getRefractionLines(crystal.id).map((line, idx) => (
             <div
               key={`refraction-${crystal.id}-${idx}`}
               style={{
                 position: 'absolute',
                 width: line.width,
-                height: '2px',
-                background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent)',
+                height: line.height,
+                background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.50), transparent)',
                 transform: `rotate(${line.rotate}deg)`,
                 top: line.top,
                 left: line.left,
@@ -319,6 +358,24 @@ function IceCrystalScene() {
             />
           ))}
         </div>
+      ))}
+
+      {/* ===== Sparkle Flash Points (3-5 random timed) ★ ===== */}
+      {sparkles.map((sparkle) => (
+        <div
+          key={sparkle.id}
+          className="absolute rounded-full"
+          style={{
+            top: sparkle.top,
+            left: sparkle.left,
+            width: sparkle.size,
+            height: sparkle.size,
+            backgroundColor: '#ffffff',
+            boxShadow: '0 0 8px 3px rgba(255, 255, 255, 0.9)',
+            animation: `sparkle-flash ${sparkle.animationDuration} ease-in-out infinite`,
+            animationDelay: sparkle.animationDelay,
+          }}
+        />
       ))}
 
       {/* ===== Layer 3: Bubbles ===== */}
@@ -344,29 +401,7 @@ function IceCrystalScene() {
         />
       ))}
 
-      {/* ===== Layer 4: Specular Highlights ===== */}
-      {speculars.map((spec) => (
-        <div
-          key={spec.id}
-          className="absolute rounded-full"
-          style={{
-            left: spec.left,
-            top: spec.top,
-            width: spec.size,
-            height: spec.size,
-            background: `radial-gradient(circle at 30% 30%, 
-              rgba(255, 255, 255, 0.95), 
-              rgba(224, 242, 254, 0.7) 45%, 
-              transparent 70%
-            )`,
-            filter: 'blur(0.5px)',
-            animation: `specular-twinkle ${spec.animationDuration} ease-in-out infinite`,
-            animationDelay: spec.animationDelay,
-          }}
-        />
-      ))}
-
-      {/* ===== Layer 5: Light Rays ===== */}
+      {/* ===== Layer 4: Light Rays ===== */}
       <div
         className="absolute"
         style={{
@@ -406,7 +441,7 @@ function IceCrystalScene() {
         }}
       />
 
-      {/* ===== Layer 6: Bloom Glow ===== */}
+      {/* ===== Layer 5: Bloom Glow ===== */}
       <div
         className="absolute"
         style={{
@@ -422,22 +457,6 @@ function IceCrystalScene() {
           )`,
           filter: 'blur(50px) hue-rotate(0deg)',
           animation: 'bloom-pulse 12s ease-in-out infinite, bloom-hue-rotate 20s linear infinite',
-        }}
-      />
-      <div
-        className="absolute"
-        style={{
-          right: '15%',
-          bottom: '10%',
-          width: '40vw',
-          height: '40vh',
-          background: `radial-gradient(ellipse at center, 
-            rgba(196, 181, 253, 0.20) 0%, 
-            rgba(165, 180, 252, 0.12) 40%, 
-            transparent 75%
-          )`,
-          filter: 'blur(45px) hue-rotate(0deg)',
-          animation: 'bloom-pulse-2 15s ease-in-out infinite, bloom-hue-rotate-2 25s linear infinite',
         }}
       />
 
@@ -473,22 +492,53 @@ function IceCrystalScene() {
           100% { transform: translate(0%, 0%) rotate(0deg) scale(1.0); }
         }
 
-        /* ── Highlight Pulse Animations ── */
-        @keyframes highlight-pulse-1 {
-          0%, 100% { opacity: 0.40; }
-          50%      { opacity: 0.80; }
+        /* ── Sharp Specular Dot Pulse Animations ── */
+        @keyframes specular-pulse-1-0 {
+          0%, 100% { opacity: 0.6; transform: scale(0.9); }
+          50%      { opacity: 1.0; transform: scale(1.2); }
         }
-        @keyframes highlight-pulse-2 {
-          0%, 100% { opacity: 0.45; }
-          50%      { opacity: 0.85; }
+        @keyframes specular-pulse-1-1 {
+          0%, 100% { opacity: 0.55; transform: scale(0.85); }
+          50%      { opacity: 0.95; transform: scale(1.15); }
         }
-        @keyframes highlight-pulse-3 {
-          0%, 100% { opacity: 0.42; }
-          50%      { opacity: 0.82; }
+        @keyframes specular-pulse-1-2 {
+          0%, 100% { opacity: 0.65; transform: scale(0.95); }
+          50%      { opacity: 1.0; transform: scale(1.25); }
         }
-        @keyframes highlight-pulse-4 {
-          0%, 100% { opacity: 0.38; }
-          50%      { opacity: 0.78; }
+        @keyframes specular-pulse-2-0 {
+          0%, 100% { opacity: 0.58; transform: scale(0.88); }
+          50%      { opacity: 0.98; transform: scale(1.18); }
+        }
+        @keyframes specular-pulse-2-1 {
+          0%, 100% { opacity: 0.62; transform: scale(0.92); }
+          50%      { opacity: 1.0; transform: scale(1.22); }
+        }
+        @keyframes specular-pulse-3-0 {
+          0%, 100% { opacity: 0.57; transform: scale(0.87); }
+          50%      { opacity: 0.97; transform: scale(1.17); }
+        }
+        @keyframes specular-pulse-3-1 {
+          0%, 100% { opacity: 0.63; transform: scale(0.93); }
+          50%      { opacity: 1.0; transform: scale(1.23); }
+        }
+        @keyframes specular-pulse-3-2 {
+          0%, 100% { opacity: 0.6; transform: scale(0.9); }
+          50%      { opacity: 0.98; transform: scale(1.2); }
+        }
+        @keyframes specular-pulse-4-0 {
+          0%, 100% { opacity: 0.59; transform: scale(0.89); }
+          50%      { opacity: 0.99; transform: scale(1.19); }
+        }
+        @keyframes specular-pulse-4-1 {
+          0%, 100% { opacity: 0.61; transform: scale(0.91); }
+          50%      { opacity: 1.0; transform: scale(1.21); }
+        }
+
+        /* ── Sparkle Flash Animation ★ ── */
+        @keyframes sparkle-flash {
+          0%, 85%, 100% { opacity: 0; transform: scale(0.3); }
+          88%           { opacity: 1; transform: scale(1.3); }
+          92%           { opacity: 0.7; transform: scale(0.9); }
         }
 
         /* ── Bubble Float Animation ── */
@@ -498,12 +548,6 @@ function IceCrystalScene() {
           50%  { transform: translateY(-50px) translateX(-2px) scale(0.98); opacity: 0.6; }
           75%  { transform: translateY(-75px) translateX(4px) scale(1.03); opacity: 0.75; }
           100% { transform: translateY(-100px) translateX(0px) scale(1.0); opacity: 0.5; }
-        }
-
-        /* ── Specular Highlight Twinkle ── */
-        @keyframes specular-twinkle {
-          0%, 100% { opacity: 0.4; transform: scale(0.8); }
-          50%      { opacity: 1.0; transform: scale(1.3); }
         }
 
         /* ── Light Ray Sweep ── */
@@ -523,21 +567,12 @@ function IceCrystalScene() {
           0%, 100% { opacity: 0.5; transform: scale(1.0); }
           50%      { opacity: 0.85; transform: scale(1.12); }
         }
-        @keyframes bloom-pulse-2 {
-          0%, 100% { opacity: 0.45; transform: scale(1.0); }
-          50%      { opacity: 0.75; transform: scale(1.08); }
-        }
 
         /* ── Bloom Hue-Rotate ── */
         @keyframes bloom-hue-rotate {
           0%   { filter: blur(50px) hue-rotate(0deg); }
           50%  { filter: blur(50px) hue-rotate(30deg); }
           100% { filter: blur(50px) hue-rotate(0deg); }
-        }
-        @keyframes bloom-hue-rotate-2 {
-          0%   { filter: blur(45px) hue-rotate(0deg); }
-          50%  { filter: blur(45px) hue-rotate(-25deg); }
-          100% { filter: blur(45px) hue-rotate(0deg); }
         }
       `}</style>
     </div>
