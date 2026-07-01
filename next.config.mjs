@@ -28,15 +28,24 @@ const nextConfig = {
     ],
   },
 
-  // Image optimization — selective optimization for local images only
-  // COS images (external) are unoptimized to avoid remotePatterns issues
+  // Image optimization — ENABLED (v241 performance fix)
   images: {
-    unoptimized: true, // Keep true for COS compatibility
-    // Re-enable formats for local images (when unoptimized is false in future)
-    // formats: ['image/webp', 'image/avif'],
-    // deviceSizes: [640, 750, 828, 1080, 1200, 1920],
-    // imageSizes: [16, 32, 48, 64, 96, 128, 256],
-    minimumCacheTTL: 60 * 60 * 24 * 7, // 7 days cache for local images
+    unoptimized: false, // ENABLED! (was true - disabled optimization)
+    formats: ['image/webp', 'image/avif'], // Prefer WebP
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    minimumCacheTTL: 60 * 60 * 24 * 7, // 7 days cache
+    // Allow COS CDN and external images
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**.myqcloud.com', // Tencent COS CDN
+      },
+      {
+        protocol: 'https',
+        hostname: 'test.wstoolcabinet.com', // Production domain
+      },
+    ],
   },
 
   // Suppress Google Translate

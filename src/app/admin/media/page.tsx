@@ -262,15 +262,16 @@ export default function AdminMediaPage() {
     return mimeMap[ext] || 'application/octet-stream';
   };
 
-  const getFileIcon = (type?: string) => {
-    if (!type || !type.startsWith) return <File className="w-8 h-8 text-gray-400" />;
-    if (type.startsWith('image/')) return <ImageIcon className="w-8 h-8 text-blue-500" />;
-    if (type.startsWith('video/')) return <Video className="w-8 h-8 text-purple-500" />;
-    if (type.startsWith('audio/')) return <Music className="w-8 h-8 text-pink-500" />;
-    if (type.includes('pdf')) return <FileText className="w-8 h-8 text-red-500" />;
-    if (type.includes('word') || type.includes('document')) return <FileText className="w-8 h-8 text-blue-600" />;
-    if (type.includes('zip') || type.includes('compressed')) return <Archive className="w-8 h-8 text-yellow-600" />;
-    return <File className="w-8 h-8 text-gray-400" />;
+  const getFileIcon = (type?: string, size: 'sm' | 'lg' = 'sm') => {
+    const sizeClass = size === 'lg' ? 'w-16 h-16' : 'w-8 h-8';
+    if (!type || !type.startsWith) return <File className={`${sizeClass} text-gray-400`} />;
+    if (type.startsWith('image/')) return <ImageIcon className={`${sizeClass} text-blue-500`} />;
+    if (type.startsWith('video/')) return <Video className={`${sizeClass} text-purple-500`} />;
+    if (type.startsWith('audio/')) return <Music className={`${sizeClass} text-pink-500`} />;
+    if (type.includes('pdf')) return <FileText className={`${sizeClass} text-red-500`} />;
+    if (type.includes('word') || type.includes('document')) return <FileText className={`${sizeClass} text-blue-600`} />;
+    if (type.includes('zip') || type.includes('compressed')) return <Archive className={`${sizeClass} text-yellow-600`} />;
+    return <File className={`${sizeClass} text-gray-400`} />;
   };
 
   const filteredItems = mediaItems.filter(item =>
@@ -298,27 +299,27 @@ export default function AdminMediaPage() {
       )}
 
       {/* Page Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-10">
         <div>
-          <Link href="/admin" className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-2">
-            <ArrowLeft className="w-4 h-4 mr-1" />
+          <Link href="/admin" className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-3 text-base">
+            <ArrowLeft className="w-5 h-5 mr-2" />
             返回仪表盘
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900">媒体库管理</h1>
-          <p className="text-gray-600 mt-1">管理系统中的所有媒体文件。文件存储在服务器上，无空间限制。</p>
+          <h1 className="text-4xl font-bold text-gray-900">媒体库管理</h1>
+          <p className="text-gray-600 mt-2 text-lg">管理系统中的所有媒体文件。文件存储在服务器上，无空间限制。</p>
         </div>
-        <div className="flex space-x-3">
-          <button onClick={() => { loadMediaList(); }} className="px-4 py-2.5 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors flex items-center gap-2" title="刷新列表">
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+        <div className="flex space-x-4">
+          <button onClick={() => { loadMediaList(); }} className="px-6 py-3.5 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors flex items-center gap-2.5 text-base font-medium shadow-sm" title="刷新列表">
+            <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
             刷新
           </button>
           {selectedItems.length > 0 && (
-            <button onClick={handleBatchDelete} className="px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors duration-200 flex items-center space-x-2">
+            <button onClick={handleBatchDelete} className="px-6 py-3.5 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors duration-200 flex items-center space-x-2.5 text-base font-medium shadow-lg shadow-red-200">
               <Trash2 className="w-5 h-5" />
               <span>删除选中 ({selectedItems.length})</span>
             </button>
           )}
-          <button onClick={() => setShowUploadModal(true)} className="btn-primary flex items-center space-x-2">
+          <button onClick={() => setShowUploadModal(true)} className="btn-primary flex items-center space-x-2.5 text-base py-3.5 px-6">
             <Plus className="w-5 h-5" />
             <span>上传文件</span>
           </button>
@@ -326,29 +327,29 @@ export default function AdminMediaPage() {
       </div>
 
       {/* Search + View Toggle */}
-      <div className="admin-card mb-6 p-4">
-        <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+      <div className="admin-card mb-8 p-6">
+        <div className="flex flex-col sm:flex-row gap-5 items-center justify-between">
+          <div className="relative flex-1 max-w-lg">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-400" />
             <input
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="搜索文件名..."
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 outline-none admin-form-input transition-all"
+              className="w-full pl-12 pr-5 py-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 outline-none admin-form-input transition-all text-base"
             />
             {searchQuery && (
-              <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                <X className="w-4 h-4" />
+              <button onClick={() => setSearchQuery('')} className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                <X className="w-5 h-5" />
               </button>
             )}
           </div>
-          <div className="flex items-center space-x-1 bg-gray-100 rounded-lg p-1">
-            <button onClick={() => setViewMode('grid')} className={`p-2 rounded-md transition-all ${viewMode === 'grid' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}>
-              <Grid className="w-5 h-5" />
+          <div className="flex items-center space-x-1 bg-gray-100 rounded-xl p-1.5">
+            <button onClick={() => setViewMode('grid')} className={`p-3 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white text-blue-600 shadow-md' : 'text-gray-600 hover:text-gray-900'}`}>
+              <Grid className="w-6 h-6" />
             </button>
-            <button onClick={() => setViewMode('list')} className={`p-2 rounded-md transition-all ${viewMode === 'list' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}>
-              <List className="w-5 h-5" />
+            <button onClick={() => setViewMode('list')} className={`p-3 rounded-lg transition-all ${viewMode === 'list' ? 'bg-white text-blue-600 shadow-md' : 'text-gray-600 hover:text-gray-900'}`}>
+              <List className="w-6 h-6" />
             </button>
           </div>
         </div>
@@ -356,22 +357,22 @@ export default function AdminMediaPage() {
 
       {/* Grid View */}
       {viewMode === 'grid' && (
-        <div className="admin-card p-6">
+        <div className="admin-card p-8">
           {loading ? (
-            <div className="text-center py-12 text-gray-400">
-              <RefreshCw className="w-12 h-12 mx-auto mb-4 animate-spin text-blue-500" />
-              <p>加载中...</p>
+            <div className="text-center py-16 text-gray-400">
+              <RefreshCw className="w-16 h-16 mx-auto mb-6 animate-spin text-blue-500" />
+              <p className="text-lg">加载中...</p>
             </div>
           ) : filteredItems.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
               {filteredItems.map(item => (
                 <div
                   key={item.id}
-                  className={`relative group border rounded-xl overflow-hidden hover:shadow-lg transition-all duration-200 ${
-                    selectedItems.includes(item.id) ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200'
+                  className={`relative group border-2 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 ${
+                    selectedItems.includes(item.id) ? 'border-blue-500 ring-4 ring-blue-200' : 'border-gray-200'
                   }`}
                 >
-                  <div className="absolute top-2 left-2 z-10">
+                  <div className="absolute top-3 left-3 z-10">
                     <input
                       type="checkbox"
                       checked={selectedItems.includes(item.id)}
@@ -379,37 +380,37 @@ export default function AdminMediaPage() {
                         if (e.target.checked) setSelectedItems(prev => [...prev, item.id]);
                         else setSelectedItems(prev => prev.filter(id => id !== item.id));
                       }}
-                      className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                      className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500 shadow-lg"
                     />
                   </div>
                   <div className="aspect-square bg-gray-100 flex items-center justify-center cursor-pointer" onClick={() => setPreviewImage(item)}>
                     {inferMimeType(item.name).startsWith('image/') ? (
-                      <img src={item.url} alt={item.name} className="w-full h-full object-cover" loading="lazy" />
+                      <img src={item.url} alt={item.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
                     ) : (
                       <div className="flex items-center justify-center w-full h-full bg-gradient-to-br from-gray-50 to-gray-100">
-                        {getFileIcon(inferMimeType(item.name))}
+                        {getFileIcon(inferMimeType(item.name), 'lg')}
                       </div>
                     )}
                   </div>
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center space-x-2">
-                    <button onClick={e => { e.stopPropagation(); copyUrl(item.url); }} className="p-2 bg-white/90 rounded-lg hover:bg-white transition-colors" title="复制URL">
-                      <Copy className="w-4 h-4 text-gray-700" />
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center space-x-3">
+                    <button onClick={e => { e.stopPropagation(); copyUrl(item.url); }} className="p-3 bg-white/90 rounded-xl hover:bg-white transition-colors shadow-lg" title="复制URL">
+                      <Copy className="w-5 h-5 text-gray-700" />
                     </button>
-                    <button onClick={e => { e.stopPropagation(); handleDelete(item.id); }} className="p-2 bg-white/90 rounded-lg hover:bg-white transition-colors" title="删除">
-                      <Trash2 className="w-4 h-4 text-red-600" />
+                    <button onClick={e => { e.stopPropagation(); handleDelete(item.id); }} className="p-3 bg-white/90 rounded-xl hover:bg-white transition-colors shadow-lg" title="删除">
+                      <Trash2 className="w-5 h-5 text-red-600" />
                     </button>
                   </div>
-                  <div className="p-2">
-                    <p className="text-xs text-gray-700 truncate" title={item.name}>{item.name}</p>
-                    <p className="text-xs text-gray-400 mt-1">{formatFileSize(item.size)}</p>
+                  <div className="p-4">
+                    <p className="text-sm text-gray-700 truncate font-medium" title={item.name}>{item.name}</p>
+                    <p className="text-sm text-gray-400 mt-1.5">{formatFileSize(item.size)}</p>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="text-center py-12 text-gray-400">
-              <ImageIcon className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-              <p>{searchQuery ? '没有找到匹配的文件' : '暂无媒体文件，点击"上传文件"按钮添加。'}</p>
+            <div className="text-center py-16 text-gray-400">
+              <ImageIcon className="w-20 h-20 mx-auto mb-6 text-gray-300" />
+              <p className="text-lg">{searchQuery ? '没有找到匹配的文件' : '暂无媒体文件，点击"上传文件"按钮添加。'}</p>
             </div>
           )}
         </div>
@@ -419,15 +420,15 @@ export default function AdminMediaPage() {
       {viewMode === 'list' && (
         <div className="admin-card overflow-hidden">
           {loading ? (
-            <div className="text-center py-12 text-gray-400">
-              <RefreshCw className="w-12 h-12 mx-auto mb-4 animate-spin text-blue-500" />
-              <p>加载中...</p>
+            <div className="text-center py-16 text-gray-400">
+              <RefreshCw className="w-16 h-16 mx-auto mb-6 animate-spin text-blue-500" />
+              <p className="text-lg">加载中...</p>
             </div>
           ) : filteredItems.length > 0 ? (
             <table className="admin-table w-full">
               <thead>
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-900 w-12">
+                  <th className="px-6 py-5 text-left text-xs font-semibold text-gray-900 w-12">
                     <input
                       type="checkbox"
                       checked={selectedItems.length === filteredItems.length && filteredItems.length > 0}
@@ -435,20 +436,20 @@ export default function AdminMediaPage() {
                         if (e.target.checked) setSelectedItems(filteredItems.map(item => item.id));
                         else setSelectedItems([]);
                       }}
-                      className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                      className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
                     />
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-900">文件</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-900">类型</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-900">大小</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-900">上传时间</th>
-                  <th className="px-6 py-4 text-right text-xs font-semibold text-gray-900">操作</th>
+                  <th className="px-6 py-5 text-left text-xs font-semibold text-gray-900">文件</th>
+                  <th className="px-6 py-5 text-left text-xs font-semibold text-gray-900">类型</th>
+                  <th className="px-6 py-5 text-left text-xs font-semibold text-gray-900">大小</th>
+                  <th className="px-6 py-5 text-left text-xs font-semibold text-gray-900">上传时间</th>
+                  <th className="px-6 py-5 text-right text-xs font-semibold text-gray-900">操作</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredItems.map((item, index) => (
-                  <tr key={item.id} className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-blue-50/50 transition-colors duration-150`}>
-                    <td className="px-6 py-4">
+                  <tr key={item.id} className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/80'} hover:bg-blue-50/50 transition-colors duration-150`}>
+                    <td className="px-6 py-5">
                       <input
                         type="checkbox"
                         checked={selectedItems.includes(item.id)}
@@ -456,30 +457,30 @@ export default function AdminMediaPage() {
                           if (e.target.checked) setSelectedItems(prev => [...prev, item.id]);
                           else setSelectedItems(prev => prev.filter(id => id !== item.id));
                         }}
-                        className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                        className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
                       />
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <td className="px-6 py-5">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
                           {getFileIcon(inferMimeType(item.name))}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900 truncate">{item.name}</p>
-                          <button onClick={() => copyUrl(item.url)} className="text-xs text-blue-500 hover:text-blue-700 truncate block mt-0.5" title={item.url}>
-                            {item.url.substring(0, 60)}...
+                          <p className="text-base font-medium text-gray-900 truncate">{item.name}</p>
+                          <button onClick={() => copyUrl(item.url)} className="text-sm text-blue-500 hover:text-blue-700 truncate block mt-1" title={item.url}>
+                            {item.url.substring(0, 80)}...
                           </button>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4"><span className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs">{item.type.split('/')[0]}</span></td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{formatFileSize(item.size)}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{new Date(item.createdAt).toLocaleDateString('zh-CN')}</td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-5"><span className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-sm">{item.type.split('/')[0]}</span></td>
+                    <td className="px-6 py-5 text-base text-gray-600">{formatFileSize(item.size)}</td>
+                    <td className="px-6 py-5 text-base text-gray-600">{new Date(item.createdAt).toLocaleDateString('zh-CN')}</td>
+                    <td className="px-6 py-5">
                       <div className="flex items-center justify-end space-x-2">
-                        <button onClick={() => copyUrl(item.url)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="复制URL"><Copy className="w-4 h-4" /></button>
-                        <button onClick={() => { if (inferMimeType(item.name).startsWith('image/')) setPreviewImage(item); else window.open(item.url, '_blank'); }} className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors" title="预览"><ImageIcon className="w-4 h-4" /></button>
-                        <button onClick={() => handleDelete(item.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="删除"><Trash2 className="w-4 h-4" /></button>
+                        <button onClick={() => copyUrl(item.url)} className="admin-btn-action-edit" title="复制URL"><Copy className="w-5 h-5" /></button>
+                        <button onClick={() => { if (inferMimeType(item.name).startsWith('image/')) setPreviewImage(item); else window.open(item.url, '_blank'); }} className="p-2.5 text-green-600 bg-green-50 hover:bg-green-100 rounded-lg transition-colors" title="预览"><ImageIcon className="w-5 h-5" /></button>
+                        <button onClick={() => handleDelete(item.id)} className="admin-btn-action-delete" title="删除"><Trash2 className="w-5 h-5" /></button>
                       </div>
                     </td>
                   </tr>
@@ -487,9 +488,9 @@ export default function AdminMediaPage() {
               </tbody>
             </table>
           ) : (
-            <div className="text-center py-12 text-gray-400">
-              <ImageIcon className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-              <p>暂无媒体文件，点击"上传文件"按钮添加。</p>
+            <div className="text-center py-16 text-gray-400">
+              <ImageIcon className="w-20 h-20 mx-auto mb-6 text-gray-300" />
+              <p className="text-lg">暂无媒体文件，点击"上传文件"按钮添加。</p>
             </div>
           )}
         </div>

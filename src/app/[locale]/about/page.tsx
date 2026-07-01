@@ -9,6 +9,7 @@ import {
 import { useLocale } from '@/lib/i18n';
 import { fetchUnifiedSettings, SiteSettings } from '@/data/unified-data';
 import OceanHeader from '@/components/OceanHeader';
+import Image from 'next/image';
 
 // Page data type (from API or localStorage)
 interface PageData {
@@ -1000,10 +1001,13 @@ export default function AboutPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
           {/* Company Image */}
           <div className={`relative h-96 rounded-2xl overflow-hidden shadow-2xl ${isRTL ? 'lg:order-2' : ''}`}>
-            <img
+            <Image
               src={companyImageFromEditor || "/images/about/company-hero.svg"}
               alt={t('company.name')}
+              fill={true}
               className="w-full h-full object-cover"
+              loading="lazy"
+              quality={80}
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 if (target.src !== "/images/about/company-hero.svg") {
@@ -1269,11 +1273,13 @@ export default function AboutPage() {
             ].map((item, index) => (
               <div key={index} className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2" style={{ height: '280px' }}>
                 {/* Image with zoom on hover */}
-                <img
+                <Image
                   src={item.src}
                   alt={t(item.altKey)}
+                  fill={true}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                   loading="lazy"
+                  quality={80}
                 />
                 
                 {/* Glass overlay at bottom */}

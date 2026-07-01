@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { verifyToken } from '@/lib/auth/jwt';
+import { sendNotification, OrderNotificationData } from '@/lib/notifications';
 
 const prisma = new PrismaClient();
 
@@ -67,6 +68,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid items' }, { status: 400 });
     }
 
+    // 获取用户信息
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { name: true, email: true },
+    });
+
     // 创建订单
     const order = await prisma.order.create({
       data: {
@@ -98,6 +105,25 @@ export async function POST(request: NextRequest) {
         },
       },
     });
+
+    // Send WeChat notification (non-blocking, don't await)
+    if (user) {
+      const notificationData: OrderNotificationData = {
+        type: 'order',
+        id: order.id,
+        customerName: user.name,
+        customerEmail: user.email,
+        total,
+        status: order.status,
+        itemCount: items.length,
+        createdAt: order.createdAt,
+      };
+
+      // Fire and forget - don't block the response
+      sendNotification(notificationData).catch((err) =>
+        console.error('Failed to send order notification:', err)
+      );
+    }
 
     return NextResponse.json({ order });
   } catch (error) {

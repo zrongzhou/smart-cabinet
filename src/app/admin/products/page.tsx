@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { Plus, Pencil, Trash2, Loader2, Search, Filter, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { Plus, Pencil, Trash2, Loader2, Search, Filter, ChevronLeft, ChevronRight, X, Package } from 'lucide-react';
 import { fetchUnifiedCategories } from '@/data/unified-data';
 
 export const dynamic = 'force-dynamic';
@@ -265,10 +265,10 @@ export default function AdminProductsPage() {
         <button
           key={i}
           onClick={() => handlePageChange(i)}
-          className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
+          className={`w-11 h-11 rounded-xl transition-all duration-200 text-base font-semibold ${
             i === currentPage
-              ? 'bg-blue-600 text-white font-medium'
-              : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-300'
+              ? 'bg-blue-600 text-white shadow-lg shadow-blue-200'
+              : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300 hover:border-blue-300'
           }`}
         >
           {i}
@@ -277,36 +277,36 @@ export default function AdminProductsPage() {
     }
     
     return (
-      <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200">
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-gray-600">
+      <div className="flex items-center justify-between px-8 py-6 border-t border-gray-200">
+        <div className="flex items-center gap-6">
+          <span className="text-base text-gray-600 font-medium">
             共 {totalProducts} 个产品，第 {currentPage}/{totalPages} 页
           </span>
           <select
             value={pageSize}
             onChange={(e) => handlePageSizeChange(Number(e.target.value))}
-            className="px-2 py-1.5 text-sm border border-gray-300 rounded-lg bg-white"
+            className="px-4 py-2.5 text-base border border-gray-300 rounded-xl bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
           >
             {PAGE_SIZE_OPTIONS.map(size => (
               <option key={size} value={size}>{size} 条/页</option>
             ))}
           </select>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage <= 1}
-            className="p-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-11 h-11 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
           >
-            <ChevronLeft className="w-4 h-4" />
+            <ChevronLeft className="w-5 h-5" />
           </button>
           {pages}
           <button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage >= totalPages}
-            className="p-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-11 h-11 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
           >
-            <ChevronRight className="w-4 h-4" />
+            <ChevronRight className="w-5 h-5" />
           </button>
         </div>
       </div>
@@ -316,20 +316,20 @@ export default function AdminProductsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-xl font-bold text-gray-900">产品管理</h1>
-          <div className="flex items-center gap-3">
+      <div className="bg-white border-b border-gray-200 px-8 py-6">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-3xl font-bold text-gray-900">产品管理</h1>
+          <div className="flex items-center gap-4">
             {selectedIds.size > 0 && (
-              <span className="text-sm text-gray-600">
+              <span className="text-base text-gray-600 font-medium">
                 已选择 {selectedIds.size} 个产品
               </span>
             )}
             <Link
               href="/admin/products/add"
-              className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+              className="inline-flex items-center gap-2.5 bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-colors text-base font-medium shadow-lg shadow-blue-200"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-5 h-5" />
               添加产品
             </Link>
           </div>
@@ -337,75 +337,75 @@ export default function AdminProductsPage() {
 
         {/* Batch Action Bar */}
         {selectedIds.size > 0 && (
-          <div className="flex items-center gap-3 mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="flex items-center gap-4 mb-6 p-5 bg-blue-50 border border-blue-200 rounded-xl">
             <button
               onClick={() => handleSelectAll(false)}
-              className="p-1.5 text-gray-600 hover:text-gray-900 rounded"
+              className="p-2 text-gray-600 hover:text-gray-900 rounded-lg hover:bg-blue-100 transition-colors"
               title="取消选择"
             >
-              <X className="w-4 h-4" />
+              <X className="w-5 h-5" />
             </button>
-            <span className="text-sm text-blue-900 font-medium">
+            <span className="text-base text-blue-900 font-medium">
               已选择 {selectedIds.size} 个产品
             </span>
-            <div className="flex items-center gap-2 ml-4">
+            <div className="flex items-center gap-3 ml-6">
               <button
                 onClick={() => handleBatchStatus('active')}
                 disabled={batchLoading}
-                className="px-3 py-1.5 text-sm bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50"
+                className="px-5 py-2.5 text-base bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 disabled:opacity-50 transition-colors font-medium shadow-lg shadow-emerald-200"
               >
                 批量启用
               </button>
               <button
                 onClick={() => handleBatchStatus('draft')}
                 disabled={batchLoading}
-                className="px-3 py-1.5 text-sm bg-gray-600 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50"
+                className="px-5 py-2.5 text-base bg-gray-600 text-white rounded-xl hover:bg-gray-700 disabled:opacity-50 transition-colors font-medium shadow-lg shadow-gray-200"
               >
                 批量草稿
               </button>
               <button
                 onClick={() => handleBatchStatus('discontinued')}
                 disabled={batchLoading}
-                className="px-3 py-1.5 text-sm bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 disabled:opacity-50"
+                className="px-5 py-2.5 text-base bg-yellow-600 text-white rounded-xl hover:bg-yellow-700 disabled:opacity-50 transition-colors font-medium shadow-lg shadow-yellow-200"
               >
                 批量停售
               </button>
               <button
                 onClick={handleBatchDelete}
                 disabled={batchLoading}
-                className="px-3 py-1.5 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 flex items-center gap-1"
+                className="px-5 py-2.5 text-base bg-red-600 text-white rounded-xl hover:bg-red-700 disabled:opacity-50 flex items-center gap-2 transition-colors font-medium shadow-lg shadow-red-200"
               >
-                {batchLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                {batchLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
                 批量删除
               </button>
             </div>
             {batchError && (
-              <span className="text-sm text-red-600 ml-2">{batchError}</span>
+              <span className="text-base text-red-600 ml-3">{batchError}</span>
             )}
           </div>
         )}
 
         {/* Search and Filter */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-5">
           {/* Search Box */}
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <div className="relative flex-1 max-w-lg">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => handleSearch(e.target.value)}
               placeholder="搜索产品名称、SKU..."
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+              className="w-full pl-12 pr-5 py-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-base"
             />
           </div>
 
           {/* Category Filter - Grouped by Dimension */}
           <div className="relative">
-            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Filter className="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400" />
             <select
               value={selectedCategory}
               onChange={(e) => handleCategoryFilter(e.target.value)}
-              className="pl-10 pr-8 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm bg-white min-w-[250px]"
+              className="pl-12 pr-10 py-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-base bg-white min-w-[300px]"
             >
               <option value="">所有分类</option>
               {groupedCategories.map(group => (
@@ -424,7 +424,7 @@ export default function AdminProductsPage() {
           {(searchQuery || selectedCategory) && (
             <button
               onClick={() => { handleSearch(''); handleCategoryFilter(''); }}
-              className="px-4 py-2.5 text-sm text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-6 py-3.5 text-base text-gray-600 hover:text-gray-900 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors font-medium"
             >
               清除筛选
             </button>
@@ -432,97 +432,97 @@ export default function AdminProductsPage() {
         </div>
       </div>
 
-      <div className="p-6">
+      <div className="p-8">
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
+          <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-xl mb-6">
             {error}
-            <button onClick={() => loadProducts(currentPage, pageSize, searchQuery, selectedCategory)} className="ml-4 text-sm underline">重试</button>
+            <button onClick={() => loadProducts(currentPage, pageSize, searchQuery, selectedCategory)} className="ml-4 text-base underline">重试</button>
           </div>
         )}
 
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+            <Loader2 className="w-12 h-12 animate-spin text-blue-600" />
           </div>
         ) : (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+          <div className="admin-card">
+            <table className="admin-table w-full">
+              <thead>
                 <tr>
-                  <th className="px-4 py-3 text-left w-12">
+                  <th className="px-6 py-5 text-left w-12">
                     <input
                       type="checkbox"
                       checked={products.length > 0 && products.every(p => selectedIds.has(p.id))}
                       onChange={(e) => handleSelectAll(e.target.checked)}
-                      className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">图片</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">名称</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SKU编号</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">分类</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">推荐</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                  <th className="px-6 py-5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">图片</th>
+                  <th className="px-6 py-5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">名称</th>
+                  <th className="px-6 py-5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SKU编号</th>
+                  <th className="px-6 py-5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">分类</th>
+                  <th className="px-6 py-5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
+                  <th className="px-6 py-5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">推荐</th>
+                  <th className="px-6 py-5 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-gray-100">
                 {products.map(product => (
-                  <tr key={product.id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={product.id} className="hover:bg-blue-50/30 transition-colors">
                     {/* Checkbox */}
-                    <td className="px-4 py-4">
+                    <td className="px-6 py-5">
                       <input
                         type="checkbox"
                         checked={selectedIds.has(product.id)}
                         onChange={(e) => handleSelectOne(product.id, e.target.checked)}
-                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                       />
                     </td>
                     {/* Product Image */}
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-5">
                       {product.images && product.images.length > 0 ? (
                         <img
                           src={product.images[0]}
                           alt={product.name?.en || 'Product'}
-                          className="w-16 h-12 object-cover rounded-lg border border-gray-200"
+                          className="w-20 h-16 object-cover rounded-xl border border-gray-200"
                         />
                       ) : product.image ? (
                         <img
                           src={product.image}
                           alt={product.name?.en || 'Product'}
-                          className="w-16 h-12 object-cover rounded-lg border border-gray-200"
+                          className="w-20 h-16 object-cover rounded-xl border border-gray-200"
                         />
                       ) : (
-                        <div className="w-16 h-12 bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center">
-                          <span className="text-gray-400 text-xs">无图</span>
+                        <div className="w-20 h-16 bg-gray-100 rounded-xl border border-gray-200 flex items-center justify-center">
+                          <span className="text-gray-400 text-sm">无图</span>
                         </div>
                       )}
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="font-medium text-gray-900">{product.name?.en || product.name || 'Unnamed'}</div>
-                      <div className="text-sm text-gray-500">{product.name?.zh || ''}</div>
+                    <td className="px-6 py-5">
+                      <div className="font-medium text-gray-900 text-base">{product.name?.en || product.name || 'Unnamed'}</div>
+                      <div className="text-sm text-gray-500 mt-1">{product.name?.zh || ''}</div>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{product.sku || '-'}</td>
+                    <td className="px-6 py-5 text-base text-gray-600">{product.sku || '-'}</td>
                     {/* Category */}
-                    <td className="px-6 py-4">
-                      <div className="flex flex-wrap gap-1">
+                    <td className="px-6 py-5">
+                      <div className="flex flex-wrap gap-2">
                         {product.categories && product.categories.slice(0, 2).map((cat: any, idx: number) => (
-                          <span key={idx} className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded text-xs">
+                          <span key={idx} className="px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-sm font-medium">
                             {cat.name?.zh || cat.name?.en || cat.name?.ar || cat.name || 'Unknown'}
                           </span>
                         ))}
                         {product.categories && product.categories.length > 2 && (
-                          <span className="text-xs text-gray-500">+{product.categories.length - 2}</span>
+                          <span className="text-sm text-gray-500">+{product.categories.length - 2}</span>
                         )}
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
+                    <td className="px-6 py-5">
+                      <span className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium ${
                         product.status === 'active' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
                         product.status === 'draft' ? 'bg-gray-50 text-gray-600 border border-gray-200' :
                         'bg-yellow-50 text-yellow-700 border border-yellow-200'
                       }`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${
+                        <span className={`w-2 h-2 rounded-full ${
                           product.status === 'active' ? 'bg-emerald-500' :
                           product.status === 'draft' ? 'bg-gray-400' :
                           'bg-yellow-500'
@@ -530,32 +530,32 @@ export default function AdminProductsPage() {
                         {product.status === 'active' ? '启用' : product.status === 'draft' ? '草稿' : product.status === 'discontinued' ? '停售' : product.status || '未知'}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-5">
                       {product.featured ? (
-                        <span className="text-yellow-500 text-lg">★</span>
+                        <span className="text-yellow-500 text-2xl">★</span>
                       ) : (
-                        <span className="text-gray-300 text-lg">☆</span>
+                        <span className="text-gray-300 text-2xl">☆</span>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
+                    <td className="px-6 py-5 text-right">
+                      <div className="flex items-center justify-end gap-3">
                         <Link
                           href={`/admin/products/edit/${product.id}`}
-                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          className="admin-btn-action-edit"
                           title="编辑"
                         >
-                          <Pencil className="w-4 h-4" />
+                          <Pencil className="w-5 h-5" />
                         </Link>
                         <button
                           onClick={() => handleDelete(product.id, product.name?.en || product.name || 'Unnamed')}
                           disabled={deletingId === product.id}
-                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+                          className="admin-btn-action-delete disabled:opacity-50"
                           title="删除"
                         >
                           {deletingId === product.id ? (
-                            <Loader2 className="w-4 h-4 animate-spin" />
+                            <Loader2 className="w-5 h-5 animate-spin" />
                           ) : (
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-5 h-5" />
                           )}
                         </button>
                       </div>
@@ -564,10 +564,11 @@ export default function AdminProductsPage() {
                 ))}
                 {products.length === 0 && (
                   <tr>
-                    <td colSpan={8} className="px-6 py-12 text-center text-gray-400">
-                      {searchQuery || selectedCategory ? '没有匹配的产品。' : '暂无产品。'}
+                    <td colSpan={8} className="px-6 py-16 text-center text-gray-400">
+                      <Package className="w-16 h-16 mx-auto mb-4 text-gray-200" />
+                      <p className="text-lg">{searchQuery || selectedCategory ? '没有匹配的产品。' : '暂无产品。'}</p>
                       {!searchQuery && !selectedCategory && (
-                        <Link href="/admin/products/add" className="text-blue-600 hover:underline ml-1">创建产品</Link>
+                        <Link href="/admin/products/add" className="text-blue-600 hover:underline ml-1 text-base">创建产品</Link>
                       )}
                     </td>
                   </tr>

@@ -218,27 +218,27 @@ export default function AdminFaqsPage() {
       )}
 
       {/* Page Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-10">
         <div>
-          <Link href="/admin" className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-2">
-            <ArrowLeft className="w-4 h-4 mr-1" />
+          <Link href="/admin" className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-3 text-base">
+            <ArrowLeft className="w-5 h-5 mr-2" />
             返回仪表盘
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900">FAQ 管理</h1>
-          <p className="text-gray-600 mt-1">管理系统中的所有常见问题，支持分类、排序和批量操作</p>
+          <h1 className="text-4xl font-bold text-gray-900">FAQ 管理</h1>
+          <p className="text-gray-600 mt-2 text-lg">管理系统中的所有常见问题，支持分类、排序和批量操作</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
           <button
             onClick={loadData}
             disabled={loading}
-            className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors border border-blue-200 disabled:opacity-50"
+            className="inline-flex items-center gap-2.5 px-6 py-3 text-base font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-xl transition-colors border border-blue-200 disabled:opacity-50 shadow-sm"
           >
-            <Loader2 className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            <Loader2 className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
             刷新
           </button>
           <Link
             href="/admin/faqs/add"
-            className="btn-primary flex items-center space-x-2"
+            className="btn-primary flex items-center space-x-2.5 text-base py-3.5 px-6"
           >
             <Plus className="w-5 h-5" />
             <span>添加FAQ</span>
@@ -257,32 +257,32 @@ export default function AdminFaqsPage() {
       {!loading && (
         <>
           {/* Filters and Batch Actions */}
-          <div className="admin-card mb-6 p-4">
-            <div className="flex flex-col gap-4">
+          <div className="admin-card mb-8 p-6">
+            <div className="flex flex-col gap-5">
               {/* Search and Category Filter */}
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-5">
                 {/* Search */}
                 <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-400" />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="搜索问题或答案..."
-                    className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 outline-none admin-form-input transition-all"
+                    className="w-full pl-12 pr-5 py-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 outline-none admin-form-input transition-all text-base"
                   />
                   {searchQuery && (
                     <button
                       onClick={() => setSearchQuery('')}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                     >
-                      <X className="w-4 h-4" />
-                    </button>
+                    <X className="w-5 h-5" />
+                  </button>
                   )}
                 </div>
 
                 {/* Category Pills — FAQ-specific categories */}
-                <div className="flex items-center gap-2 flex-wrap">
+                <div className="flex items-center gap-3 flex-wrap">
                   {[
                     { key: '', label: '全部分类' },
                     { key: 'features', label: '功能特性' },
@@ -300,8 +300,8 @@ export default function AdminFaqsPage() {
                     <button
                       key={cat.key}
                       onClick={() => setFilterCategory(cat.key)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                        filterCategory === cat.key ? 'bg-blue-500 text-white shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                        filterCategory === cat.key ? 'bg-blue-500 text-white shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                       }`}
                     >
                       {cat.label}
@@ -312,26 +312,26 @@ export default function AdminFaqsPage() {
 
               {/* Batch Actions */}
               {selectedItems.length > 0 && (
-                <div className="p-3 bg-blue-50 rounded-lg flex items-center justify-between">
-                  <span className="text-sm text-blue-700 font-medium">
+                <div className="p-5 bg-blue-50 rounded-xl flex items-center justify-between">
+                  <span className="text-base text-blue-700 font-medium">
                     已选中 {selectedItems.length} 个FAQ
                   </span>
-                  <div className="flex space-x-2">
+                  <div className="flex space-x-3">
                     <button
                       onClick={() => handleBatchStatusChange('active')}
-                      className="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700 transition-colors"
+                      className="px-5 py-2.5 bg-green-600 text-white rounded-xl text-base hover:bg-green-700 transition-colors font-medium shadow-lg shadow-green-200"
                     >
                       批量启用
                     </button>
                     <button
                       onClick={() => handleBatchStatusChange('inactive')}
-                      className="px-3 py-1 bg-gray-600 text-white rounded text-sm hover:bg-gray-700 transition-colors"
+                      className="px-5 py-2.5 bg-gray-600 text-white rounded-xl text-base hover:bg-gray-700 transition-colors font-medium shadow-lg shadow-gray-200"
                     >
                       批量禁用
                     </button>
                     <button
                       onClick={handleBatchDelete}
-                      className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700 transition-colors"
+                      className="px-5 py-2.5 bg-red-600 text-white rounded-xl text-base hover:bg-red-700 transition-colors font-medium shadow-lg shadow-red-200"
                       disabled={saving}
                     >
                       批量删除
@@ -347,19 +347,19 @@ export default function AdminFaqsPage() {
             {filteredFaqs.length > 0 ? (
               <>
                 {/* Select All Header */}
-                <div className="px-6 py-3 border-b border-gray-200 flex items-center">
+                <div className="px-8 py-5 border-b border-gray-200 flex items-center">
                   <button
                     onClick={toggleSelectAll}
-                    className="flex items-center space-x-2 text-sm text-gray-600 hover:text-gray-900"
+                    className="flex items-center space-x-3 text-base text-gray-600 hover:text-gray-900"
                   >
                     {selectedItems.length === filteredFaqs.length ? (
-                      <CheckSquare className="w-4 h-4 text-blue-600" />
+                      <CheckSquare className="w-5 h-5 text-blue-600" />
                     ) : (
-                      <Square className="w-4 h-4" />
+                      <Square className="w-5 h-5" />
                     )}
                     <span>全选</span>
                   </button>
-                  <span className="ml-4 text-sm text-gray-500">
+                  <span className="ml-6 text-base text-gray-500">
                     共 {filteredFaqs.length} 个FAQ
                   </span>
                 </div>
@@ -368,8 +368,8 @@ export default function AdminFaqsPage() {
                   {filteredFaqs.map((faq, index) => (
                     <div key={faq.id}>
                       {/* Question Row */}
-                      <div className="px-6 py-4 flex items-center justify-between hover:bg-gray-50/50 transition-colors duration-150">
-                        <div className="flex items-center space-x-3 flex-1">
+                      <div className="px-8 py-5 flex items-center justify-between hover:bg-gray-50/50 transition-colors duration-150">
+                        <div className="flex items-center space-x-4 flex-1">
                           <button
                             onClick={() => {
                               if (selectedItems.includes(faq.id)) {
@@ -381,41 +381,41 @@ export default function AdminFaqsPage() {
                             className="text-gray-400 hover:text-blue-600 transition-colors"
                           >
                             {selectedItems.includes(faq.id) ? (
-                              <CheckSquare className="w-4 h-4 text-blue-600" />
+                              <CheckSquare className="w-5 h-5 text-blue-600" />
                             ) : (
-                              <Square className="w-4 h-4" />
+                              <Square className="w-5 h-5" />
                             )}
                           </button>
 
                           <button
                             onClick={() => toggleExpand(faq.id)}
-                            className="flex-1 flex items-center space-x-3 text-left group"
+                            className="flex-1 flex items-center space-x-4 text-left group"
                           >
-                            <div className={`w-1 h-10 rounded-full flex-shrink-0 ${faq.status === 'active' ? 'bg-green-500' : 'bg-gray-300'}`} />
+                            <div className={`w-1.5 h-12 rounded-full flex-shrink-0 ${faq.status === 'active' ? 'bg-green-500' : 'bg-gray-300'}`} />
                             <div className="flex-1">
-                              <div className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
+                              <div className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors text-base">
                                 {faq.question.zh}
                               </div>
-                              <div className="text-sm text-gray-500 mt-0.5">{faq.question.en}</div>
+                              <div className="text-base text-gray-500 mt-1">{faq.question.en}</div>
                             </div>
                             {faq.isExpanded ? (
-                              <ChevronUp className="w-4 h-4 text-gray-400 group-hover:text-blue-600 transition-colors" />
+                              <ChevronUp className="w-5 h-5 text-gray-400 group-hover:text-blue-600 transition-colors" />
                             ) : (
-                              <ChevronDown className="w-4 h-4 text-gray-400 group-hover:text-blue-600 transition-colors" />
+                              <ChevronDown className="w-5 h-5 text-gray-400 group-hover:text-blue-600 transition-colors" />
                             )}
                           </button>
                         </div>
 
-                        <div className="flex items-center space-x-2 ml-4">
+                        <div className="flex items-center space-x-3 ml-6">
                           {/* Category Badge */}
-                          <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs hidden sm:inline">
+                          <span className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm hidden sm:inline font-medium">
                             {getCategoryName(faq.category || '')}
                           </span>
 
                           {/* Status Badge - clickable */}
                           <button
                             onClick={() => toggleStatus(faq)}
-                            className={faq.status === 'active' ? 'badge-active' : 'badge-inactive'}
+                            className={faq.status === 'active' ? 'admin-badge admin-badge-success cursor-pointer hover:opacity-80' : 'admin-badge admin-badge-warning cursor-pointer hover:opacity-80'}
                             disabled={saving}
                           >
                             {faq.status === 'active' ? '已启用' : '已禁用'}
@@ -424,7 +424,7 @@ export default function AdminFaqsPage() {
                           <button
                             onClick={() => moveUp(index)}
                             disabled={index === 0}
-                            className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-30 transition-colors"
+                            className="p-2 text-gray-400 hover:text-gray-600 disabled:opacity-30 transition-colors text-lg"
                             title="上移"
                           >
                             ↑
@@ -432,35 +432,35 @@ export default function AdminFaqsPage() {
                           <button
                             onClick={() => moveDown(index)}
                             disabled={index === filteredFaqs.length - 1}
-                            className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-30 transition-colors"
+                            className="p-2 text-gray-400 hover:text-gray-600 disabled:opacity-30 transition-colors text-lg"
                             title="下移"
                           >
                             ↓
                           </button>
                           <Link
                             href={`/admin/faqs/edit/${faq.id}`}
-                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            className="admin-btn-action-edit"
                             title="编辑"
                           >
-                            <Pencil className="w-4 h-4" />
+                            <Pencil className="w-5 h-5" />
                           </Link>
                           <button
                             onClick={() => handleDelete(faq.id)}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            className="admin-btn-action-delete"
                             title="删除"
                             disabled={saving}
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-5 h-5" />
                           </button>
                         </div>
                       </div>
 
                       {/* Answer Preview (Expanded) */}
                       {faq.isExpanded && (
-                        <div className="px-6 pb-4 bg-gradient-to-r from-blue-50/30 to-transparent border-l-4 border-blue-500 ml-6 mr-6 rounded-r-lg">
-                            <div className="text-sm text-gray-600 leading-relaxed pl-4">
-                              {faq.answer.zh}
-                            </div>
+                        <div className="px-8 pb-5 bg-gradient-to-r from-blue-50/30 to-transparent border-l-4 border-blue-500 ml-8 mr-8 rounded-r-xl">
+                          <div className="text-base text-gray-600 leading-relaxed pl-5">
+                            {faq.answer.zh}
+                          </div>
                         </div>
                       )}
                     </div>
@@ -468,8 +468,8 @@ export default function AdminFaqsPage() {
                 </div>
               </>
             ) : (
-              <div className="text-center py-12 text-gray-400">
-                <p>暂无FAQ，点击"添加FAQ"按钮创建。</p>
+              <div className="text-center py-16 text-gray-400">
+                <p className="text-lg">暂无FAQ，点击"添加FAQ"按钮创建。</p>
               </div>
             )}
           </div>

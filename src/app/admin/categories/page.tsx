@@ -438,29 +438,29 @@ export default function AdminCategoriesPage() {
       )}
 
       {/* Page Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-10">
         <div>
-          <Link href="/admin" className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-2">
-            <ArrowLeft className="w-4 h-4 mr-1" />
+          <Link href="/admin" className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-3 text-base">
+            <ArrowLeft className="w-5 h-5 mr-2" />
             返回仪表盘
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900">分类管理</h1>
-          <p className="text-gray-600 mt-1">按维度管理产品分类</p>
+          <h1 className="text-4xl font-bold text-gray-900">分类管理</h1>
+          <p className="text-gray-600 mt-2 text-lg">按维度管理产品分类</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
           <button
             onClick={loadData}
             disabled={loading}
-            className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors border border-blue-200 disabled:opacity-50"
+            className="inline-flex items-center gap-2.5 px-6 py-3 text-base font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-xl transition-colors border border-blue-200 disabled:opacity-50 shadow-sm"
           >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
             刷新
           </button>
           <Link
             href="/admin/tags"
-            className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-purple-600 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors border border-purple-200"
+            className="inline-flex items-center gap-2.5 px-6 py-3 text-base font-medium text-purple-600 bg-purple-50 hover:bg-purple-100 rounded-xl transition-colors border border-purple-200 shadow-sm"
           >
-            <span>🏷️</span>
+            <span className="text-lg">🏷️</span>
             标签管理
           </Link>
         </div>
@@ -481,41 +481,41 @@ export default function AdminCategoriesPage() {
             {/* Tabs + Search + Add */}
             <div className="border-b border-gray-200">
               {/* Tab Navigation */}
-              <div className="flex gap-1 px-4 pt-4 flex-wrap">
+              <div className="flex gap-2 px-6 pt-5 flex-wrap">
                 {allTabs.map((tab) => {
                   const isCustom = !['cabinet-type','managed-items','industry','custom-solution'].includes(tab.key);
                   const customDim = isCustom ? customDimensions.find(d => d.key === tab.key) : null;
                   return (
-                    <div key={tab.key} className="flex items-center gap-0.5">
+                    <div key={tab.key} className="flex items-center gap-1">
                       <button
                         onClick={() => setActiveTab(tab.key)}
-                        className={`px-5 py-3 text-sm font-medium transition-all rounded-t-lg ${
+                        className={`px-6 py-3.5 text-base font-medium transition-all rounded-t-xl ${
                           activeTab === tab.key
-                            ? 'bg-blue-50 text-blue-600 border-b-2 border-blue-600'
+                            ? 'bg-blue-50 text-blue-600 border-b-2 border-blue-600 shadow-sm'
                             : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                         }`}
                       >
-                        <span className="mr-2">{tab.icon}</span>
+                        <span className="mr-2.5 text-lg">{tab.icon}</span>
                         {tab.label}
-                        <span className="ml-2 px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full text-xs">
+                        <span className="ml-3 px-3 py-0.5 bg-gray-100 text-gray-600 rounded-full text-sm">
                           {categories.filter(c => c.type === tab.key).length}
                         </span>
                       </button>
                       {/* Edit/Delete buttons */}
                       <button
                         onClick={(e) => { e.stopPropagation(); handleEditDimension(isCustom ? (customDim || { key: tab.key, label: tab.key, labelZh: tab.key, labelEn: tab.key, labelAr: tab.key, icon: '' }) : (builtInLabels[tab.key] || { key: tab.key, label: tab.label, labelZh: tab.label, labelEn: tab.label, labelAr: tab.label, icon: '' })); }}
-                        className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                         title="编辑维度名称（三语言）"
                       >
-                        <Pencil className="w-3 h-3" />
+                        <Pencil className="w-4 h-4" />
                       </button>
                       {isCustom && (
                         <button
                           onClick={(e) => { e.stopPropagation(); handleDeleteDimension(tab.key); }}
-                          className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                          className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                           title="删除维度"
                         >
-                          <Trash2 className="w-3 h-3" />
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       )}
                     </div>
@@ -524,7 +524,7 @@ export default function AdminCategoriesPage() {
                 {/* New Dimension Button */}
                 <button
                   onClick={() => { setEditingDimension(null); setDimensionForm({ key: '', labelZh: '', labelEn: '', labelAr: '', icon: '' }); setShowDimensionModal(true); }}
-                  className="px-5 py-3 text-sm font-medium transition-all rounded-t-lg text-blue-500 hover:text-blue-700 hover:bg-blue-50 border border-dashed border-blue-300"
+                  className="px-6 py-3.5 text-base font-medium transition-all rounded-t-xl text-blue-500 hover:text-blue-700 hover:bg-blue-50 border-2 border-dashed border-blue-300"
                   title="新建一级分类（新维度）"
                 >
                   + 新建维度
@@ -532,18 +532,18 @@ export default function AdminCategoriesPage() {
               </div>
 
               {/* Search and Add Button */}
-              <div className="px-4 py-3 flex items-center justify-between">
-                <div className="relative w-64">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <div className="px-6 py-5 flex items-center justify-between">
+                <div className="relative w-80">
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="搜索分类..."
-                    className="w-full pl-9 admin-form-input text-sm"
+                    className="w-full pl-12 admin-form-input text-base"
                   />
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                   <button
                     onClick={() => {
                       if (confirm('确定要重置为默认分类数据吗？当前自定义分类将丢失。')) {
@@ -551,10 +551,10 @@ export default function AdminCategoriesPage() {
                         loadData();
                       }
                     }}
-                    className="flex items-center space-x-1.5 px-3 py-2 text-sm font-medium text-amber-600 bg-amber-50 hover:bg-amber-100 rounded-lg transition-colors border border-amber-200"
+                    className="flex items-center space-x-2.5 px-5 py-3 text-base font-medium text-amber-600 bg-amber-50 hover:bg-amber-100 rounded-xl transition-colors border border-amber-200 shadow-sm"
                     title="重置为默认分类数据"
                   >
-                    <RefreshCw className="w-4 h-4" />
+                    <RefreshCw className="w-5 h-5" />
                     <span>重置默认</span>
                   </button>
                   <button
@@ -574,9 +574,9 @@ export default function AdminCategoriesPage() {
                       });
                       setShowModal(true);
                     }}
-                    className="btn-primary flex items-center space-x-2 text-sm"
+                    className="btn-primary flex items-center space-x-2.5 text-base py-3.5 px-6"
                   >
-                    <Plus className="w-4 h-4" />
+                    <Plus className="w-5 h-5" />
                     <span>添加分类</span>
                   </button>
                 </div>
@@ -585,17 +585,17 @@ export default function AdminCategoriesPage() {
 
             {/* Categories Table */}
             <div className="overflow-x-auto">
-              <table className="w-full">
+              <table className="admin-table w-full">
                 <thead>
                   <tr className="bg-gray-50/80 border-b border-gray-200">
-                    <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-10">排序</th>
-                    <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-10">图标</th>
-                    <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">中文名</th>
-                    <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">英文名</th>
-                    <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider hidden lg:table-cell">SLUG</th>
-                    <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-24">状态</th>
-                    <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-20">产品数</th>
-                    <th className="px-4 py-3.5 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider w-24">操作</th>
+                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-12">排序</th>
+                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-12">图标</th>
+                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">中文名</th>
+                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">英文名</th>
+                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider hidden lg:table-cell">SLUG</th>
+                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-28">状态</th>
+                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-24">产品数</th>
+                    <th className="px-6 py-5 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider w-28">操作</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
@@ -605,59 +605,59 @@ export default function AdminCategoriesPage() {
                       className="hover:bg-blue-50/30 transition-colors duration-150"
                     >
                       {/* Order */}
-                      <td className="px-4 py-3">
-                        <span className="text-xs text-gray-400">{index + 1}</span>
+                      <td className="px-6 py-4">
+                        <span className="text-sm text-gray-400 font-medium">{index + 1}</span>
                       </td>
                       {/* Icon */}
-                      <td className="px-4 py-3">
+                      <td className="px-6 py-4">
                         {category.icon ? (
-                          (() => { const IconComp = getIconComponent(category.icon); return IconComp ? <IconComp className="w-5 h-5 text-gray-700" /> : <span className="text-lg">{category.icon}</span>; })()
+                          (() => { const IconComp = getIconComponent(category.icon); return IconComp ? <IconComp className="w-6 h-6 text-gray-700" /> : <span className="text-2xl">{category.icon}</span>; })()
                         ) : (
-                          <span className="text-gray-300 text-lg">−</span>
+                          <span className="text-gray-300 text-2xl">−</span>
                         )}
                       </td>
                       {/* Chinese Name */}
-                      <td className="px-4 py-3">
-                        <div className="font-medium text-gray-900 text-sm">{category.nameZh}</div>
+                      <td className="px-6 py-4">
+                        <div className="font-medium text-gray-900 text-base">{category.nameZh}</div>
                       </td>
                       {/* English Name */}
-                      <td className="px-4 py-3 text-sm text-gray-600">{category.nameEn}</td>
+                      <td className="px-6 py-4 text-base text-gray-600">{category.nameEn}</td>
                       {/* Slug */}
-                      <td className="px-4 py-3 text-sm text-gray-500 font-mono hidden lg:table-cell">{category.slug}</td>
+                      <td className="px-6 py-4 text-base text-gray-500 font-mono hidden lg:table-cell">{category.slug}</td>
                       {/* Status */}
-                      <td className="px-4 py-3">
-                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium ${
                           category.status === 'active'
                             ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                             : 'bg-gray-50 text-gray-500 border border-gray-200'
                         }`}>
-                          <span className={`w-1.5 h-1.5 rounded-full ${
+                          <span className={`w-2 h-2 rounded-full ${
                             category.status === 'active' ? 'bg-emerald-500' : 'bg-gray-400'
                           }`}></span>
                           {category.status === 'active' ? '已启用' : '已禁用'}
                         </span>
                       </td>
                       {/* Product Count */}
-                      <td className="px-4 py-3 text-sm text-gray-600">
+                      <td className="px-6 py-4 text-base text-gray-600 font-medium">
                         {mounted ? (productCounts[category.id] || 0) : 0}
                       </td>
                       {/* Actions */}
-                      <td className="px-4 py-3.5">
-                        <div className="flex items-center justify-end space-x-1">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-end space-x-2">
                           <button
                             onClick={() => handleEditCategory(category)}
-                            className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-all duration-150"
+                            className="admin-btn-action-edit"
                             title="编辑"
                           >
-                            <Pencil className="w-4 h-4" />
+                            <Pencil className="w-5 h-5" />
                           </button>
                           <button
                             onClick={() => handleDeleteCategory(category.id)}
-                            className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-all duration-150"
+                            className="admin-btn-action-delete"
                             title="删除"
                             disabled={saving}
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-5 h-5" />
                           </button>
                         </div>
                       </td>
@@ -666,8 +666,9 @@ export default function AdminCategoriesPage() {
                 </tbody>
               </table>
               {filteredCategories.length === 0 && (
-                <div className="text-center py-12 text-gray-400">
-                  <p>暂无分类，点击"添加分类"按钮创建。</p>
+                <div className="text-center py-16 text-gray-400">
+                  <FolderOpen className="w-20 h-20 mx-auto mb-4 text-gray-200" />
+                  <p className="text-lg">暂无分类，点击"添加分类"按钮创建。</p>
                 </div>
               )}
             </div>

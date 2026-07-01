@@ -111,7 +111,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     <>
       {/* Global Admin Styles */}
       <style jsx global>{`
-        /* Admin Design System Variables */
+        /* Admin Design System Variables - Enhanced */
         :root {
           --admin-primary: #3b82f6;
           --admin-primary-dark: #1d4ed8;
@@ -123,44 +123,85 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           --admin-danger: #ef4444;
           --admin-surface: #ffffff;
           --admin-surface-hover: #f8fafc;
-          --admin-bg: #f1f5f9;
+          --admin-bg: #f8fafc;
           --admin-border: #e2e8f0;
           --admin-text-primary: #0f172a;
           --admin-text-secondary: #475569;
           --admin-text-muted: #94a3b8;
           --admin-sidebar-bg: #0f172a;
           --admin-sidebar-surface: #1e293b;
-          --admin-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-          --admin-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-          --admin-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-          --admin-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-          --admin-radius: 0.75rem;
-          --admin-radius-sm: 0.5rem;
-          --admin-radius-lg: 1rem;
+          --admin-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.08);
+          --admin-shadow: 0 2px 8px 0 rgb(0 0 0 / 0.08), 0 1px 3px -1px rgb(0 0 0 / 0.08);
+          --admin-shadow-md: 0 8px 16px -2px rgb(0 0 0 / 0.1), 0 4px 8px -2px rgb(0 0 0 / 0.08);
+          --admin-shadow-lg: 0 16px 24px -4px rgb(0 0 0 / 0.12), 0 8px 12px -4px rgb(0 0 0 / 0.08);
+          --admin-radius: 1rem;
+          --admin-radius-sm: 0.75rem;
+          --admin-radius-lg: 1.25rem;
+          --admin-radius-xl: 1.5rem;
         }
 
-        /* Card Styles */
+        /* Card Styles - Enhanced */
         .admin-card {
           background: var(--admin-surface);
-          border-radius: var(--admin-radius);
+          border-radius: var(--admin-radius-lg);
           box-shadow: var(--admin-shadow);
           border: 1px solid var(--admin-border);
-          transition: all 0.3s ease;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          padding: 2rem;
         }
 
         .admin-card:hover {
           box-shadow: var(--admin-shadow-md);
           border-color: var(--admin-primary-light);
+          transform: translateY(-2px);
         }
 
         .admin-card-elevated {
           background: var(--admin-surface);
-          border-radius: var(--admin-radius-lg);
+          border-radius: var(--admin-radius-xl);
           box-shadow: var(--admin-shadow-lg);
           border: 1px solid var(--admin-border);
+          padding: 2rem;
         }
 
-        /* Table Styles */
+        /* Stat Card Specific Styles */
+        .admin-stat-card {
+          background: var(--admin-surface);
+          border-radius: var(--admin-radius-lg);
+          box-shadow: var(--admin-shadow);
+          border: 1px solid var(--admin-border);
+          padding: 2rem;
+          min-height: 140px;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .admin-stat-card:hover {
+          box-shadow: var(--admin-shadow-md);
+          transform: translateY(-4px);
+          border-color: var(--admin-primary-light);
+        }
+
+        /* Icon Container */
+        .admin-icon-container {
+          width: 3.5rem;
+          height: 3.5rem;
+          border-radius: var(--admin-radius);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.3s ease;
+        }
+
+        .admin-icon-container:hover {
+          transform: scale(1.05);
+        }
+
+        .admin-icon-container svg {
+          width: 1.75rem;
+          height: 1.75rem;
+        }
+
+        /* Table Styles - Enhanced */
         .admin-table {
           width: 100%;
           border-collapse: separate;
@@ -172,7 +213,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         }
 
         .admin-table thead th {
-          padding: 0.875rem 1rem;
+          padding: 1rem 1.5rem;
           text-align: left;
           font-size: 0.75rem;
           font-weight: 600;
@@ -191,7 +232,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         }
 
         .admin-table tbody tr:nth-child(even) {
-          background: #f8fafc;
+          background: rgba(248, 250, 252, 0.8);
         }
 
         .admin-table tbody tr:hover {
@@ -199,38 +240,48 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         }
 
         .admin-table tbody td {
-          padding: 0.875rem 1rem;
+          padding: 1rem 1.5rem;
           font-size: 0.875rem;
           color: var(--admin-text-primary);
           border-bottom: 1px solid var(--admin-border);
         }
 
-        /* Button Styles */
+        /* Button Styles - Enhanced */
         .admin-btn-primary {
           background: linear-gradient(135deg, var(--admin-primary) 0%, var(--admin-primary-dark) 100%);
           color: white;
-          padding: 0.625rem 1.25rem;
+          padding: 0.75rem 1.5rem;
           border-radius: var(--admin-radius-sm);
           font-weight: 500;
           font-size: 0.875rem;
-          transition: all 0.3s ease;
-          box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+          height: 2.75rem;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
         }
 
         .admin-btn-primary:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 4px 8px rgba(59, 130, 246, 0.4);
+          transform: translateY(-2px);
+          box-shadow: 0 8px 16px rgba(59, 130, 246, 0.4);
         }
 
         .admin-btn-secondary {
           background: var(--admin-surface);
           color: var(--admin-text-primary);
-          padding: 0.625rem 1.25rem;
+          padding: 0.75rem 1.5rem;
           border-radius: var(--admin-radius-sm);
           font-weight: 500;
           font-size: 0.875rem;
           border: 1px solid var(--admin-border);
           transition: all 0.2s ease;
+          height: 2.75rem;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
         }
 
         .admin-btn-secondary:hover {
@@ -242,27 +293,66 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         .admin-btn-danger {
           background: linear-gradient(135deg, var(--admin-danger) 0%, #dc2626 100%);
           color: white;
-          padding: 0.625rem 1.25rem;
+          padding: 0.75rem 1.5rem;
           border-radius: var(--admin-radius-sm);
           font-weight: 500;
           font-size: 0.875rem;
-          transition: all 0.3s ease;
-          box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+          height: 2.75rem;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
         }
 
         .admin-btn-danger:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 4px 8px rgba(239, 68, 68, 0.4);
+          transform: translateY(-2px);
+          box-shadow: 0 8px 16px rgba(239, 68, 68, 0.4);
         }
 
-        /* Badge Styles */
+        /* Action Button Styles - Soft Background */
+        .admin-btn-action-edit {
+          padding: 0.5rem;
+          border-radius: var(--admin-radius-sm);
+          color: #2563eb;
+          background: rgba(37, 99, 235, 0.08);
+          transition: all 0.2s ease;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .admin-btn-action-edit:hover {
+          background: rgba(37, 99, 235, 0.15);
+          transform: scale(1.05);
+        }
+
+        .admin-btn-action-delete {
+          padding: 0.5rem;
+          border-radius: var(--admin-radius-sm);
+          color: #dc2626;
+          background: rgba(220, 38, 38, 0.08);
+          transition: all 0.2s ease;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .admin-btn-action-delete:hover {
+          background: rgba(220, 38, 38, 0.15);
+          transform: scale(1.05);
+        }
+
+        /* Badge Styles - Enhanced */
         .admin-badge {
           display: inline-flex;
           align-items: center;
-          padding: 0.25rem 0.75rem;
+          padding: 0.375rem 1rem;
           border-radius: 9999px;
-          font-size: 0.75rem;
+          font-size: 0.8125rem;
           font-weight: 500;
+          gap: 0.375rem;
         }
 
         .admin-badge-success {
@@ -285,10 +375,28 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           color: #1e40af;
         }
 
-        /* Input Styles */
+        /* Input Styles - Enhanced */
         .admin-input {
           width: 100%;
-          padding: 0.625rem 1rem;
+          padding: 0.75rem 1.25rem;
+          border: 1px solid var(--admin-border);
+          border-radius: var(--admin-radius-sm);
+          font-size: 0.875rem;
+          transition: all 0.2s ease;
+          background: var(--admin-surface);
+          height: 2.75rem;
+        }
+
+        .admin-input:focus {
+          outline: none;
+          border-color: var(--admin-primary);
+          box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Form Input Class */
+        .admin-form-input {
+          width: 100%;
+          padding: 0.75rem 1.25rem;
           border: 1px solid var(--admin-border);
           border-radius: var(--admin-radius-sm);
           font-size: 0.875rem;
@@ -296,16 +404,16 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           background: var(--admin-surface);
         }
 
-        .admin-input:focus {
+        .admin-form-input:focus {
           outline: none;
           border-color: var(--admin-primary);
-          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+          box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
         }
 
         /* Scrollbar Styles */
         .admin-scrollbar::-webkit-scrollbar {
-          width: 6px;
-          height: 6px;
+          width: 8px;
+          height: 8px;
         }
 
         .admin-scrollbar::-webkit-scrollbar-track {
@@ -314,7 +422,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
         .admin-scrollbar::-webkit-scrollbar-thumb {
           background: #cbd5e1;
-          border-radius: 3px;
+          border-radius: 4px;
         }
 
         .admin-scrollbar::-webkit-scrollbar-thumb:hover {
@@ -347,6 +455,33 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
         .admin-slide-in-right {
           animation: slideInRight 0.3s ease-out;
+        }
+
+        /* Spacing Utilities */
+        .admin-section-gap {
+          gap: 1.5rem;
+        }
+
+        .admin-mb-6 {
+          margin-bottom: 1.5rem;
+        }
+
+        /* Page Header Styles */
+        .admin-page-header {
+          margin-bottom: 2rem;
+        }
+
+        .admin-page-title {
+          font-size: 1.875rem;
+          font-weight: 700;
+          color: var(--admin-text-primary);
+          line-height: 1.2;
+        }
+
+        .admin-page-subtitle {
+          font-size: 0.875rem;
+          color: var(--admin-text-secondary);
+          margin-top: 0.25rem;
         }
       `}</style>
 

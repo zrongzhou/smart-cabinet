@@ -142,27 +142,27 @@ export default function AdminBlogPage() {
       )}
 
       {/* Page Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-10">
         <div>
-          <Link href="/admin" className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-2">
-            <ArrowLeft className="w-4 h-4 mr-1" />
+          <Link href="/admin" className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-3 text-base">
+            <ArrowLeft className="w-5 h-5 mr-2" />
             返回仪表盘
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900">博客管理</h1>
-          <p className="text-gray-600 mt-1">管理系统中的所有文章，支持富文本编辑、分类和标签。</p>
+          <h1 className="text-4xl font-bold text-gray-900">博客管理</h1>
+          <p className="text-gray-600 mt-2 text-lg">管理系统中的所有文章，支持富文本编辑、分类和标签。</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
           <button
             onClick={loadData}
             disabled={loading}
-            className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors border border-blue-200 disabled:opacity-50"
+            className="inline-flex items-center gap-2.5 px-6 py-3 text-base font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-xl transition-colors border border-blue-200 disabled:opacity-50 shadow-sm"
           >
-            <Loader2 className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            <Loader2 className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
             刷新
           </button>
           <Link
             href="/admin/blog/add"
-            className="btn-primary flex items-center space-x-2"
+            className="btn-primary flex items-center space-x-2.5 text-base py-3.5 px-6"
           >
             <Plus className="w-5 h-5" />
             <span>写文章</span>
@@ -181,22 +181,22 @@ export default function AdminBlogPage() {
       {!loading && (
         <>
           {/* Search Bar */}
-          <div className="admin-card mb-6 p-4">
+          <div className="admin-card mb-8 p-6">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-400" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="搜索文章标题..."
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 outline-none admin-form-input transition-all"
+                className="w-full pl-12 pr-5 py-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 outline-none admin-form-input transition-all text-base"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-5 h-5" />
                 </button>
               )}
             </div>
@@ -208,100 +208,100 @@ export default function AdminBlogPage() {
               <table className="admin-table w-full">
                 <thead>
                   <tr>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">封面图</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">文章标题</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">摘要预览</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">分类</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">状态</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">精选</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">更新时间</th>
-                    <th className="px-6 py-4 text-right text-sm font-semibold text-gray-900">操作</th>
+                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">封面图</th>
+                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">文章标题</th>
+                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">摘要预览</th>
+                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">分类</th>
+                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">状态</th>
+                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">精选</th>
+                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">更新时间</th>
+                    <th className="px-6 py-5 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">操作</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredPosts.map((post, index) => (
                     <tr
                       key={post.id}
-                      className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-blue-50/50 transition-colors duration-150`}
+                      className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/80'} hover:bg-blue-50/50 transition-colors duration-150`}
                     >
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-5">
                         {post.image ? (
-                          <img src={post.image} alt="" className="w-16 h-12 object-cover rounded-lg shadow-sm" />
+                          <img src={post.image} alt="" className="w-20 h-16 object-cover rounded-xl shadow-sm" />
                         ) : (
-                          <div className="w-16 h-12 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center">
-                            <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <div className="w-20 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center">
+                            <svg className="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
                           </div>
                         )}
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="font-medium text-gray-900 mb-1">{post.title.zh}</div>
-                        <div className="text-sm text-gray-500">{post.title.en}</div>
+                      <td className="px-6 py-5">
+                        <div className="font-medium text-gray-900 mb-1.5 text-base">{post.title.zh}</div>
+                        <div className="text-base text-gray-500">{post.title.en}</div>
                         {post.tags && post.tags.length > 0 && (
-                          <div className="flex flex-wrap gap-1 mt-1.5">
+                          <div className="flex flex-wrap gap-2 mt-2">
                             {post.tags.slice(0, 3).map(rel => {
                               const tag = tags.find(t => t.id === rel.tagId);
                               return tag ? (
-                                <span key={rel.tagId} className="px-2 py-0.5 text-xs rounded" style={{ backgroundColor: tag.color + '20', color: tag.color }}>
+                                <span key={rel.tagId} className="px-3 py-1 text-sm rounded-lg" style={{ backgroundColor: tag.color + '20', color: tag.color }}>
                                   {tag.nameZh || tag.nameEn}
                                 </span>
                               ) : null;
                             })}
-                            {post.tags.length > 3 && <span className="text-xs text-gray-400">+{post.tags.length - 3}</span>}
+                            {post.tags.length > 3 && <span className="text-sm text-gray-400">+{post.tags.length - 3}</span>}
                           </div>
                         )}
                       </td>
-                      <td className="px-6 py-4 max-w-xs">
-                        <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
-                          {truncateText(post.excerpt?.zh || post.content?.zh || '暂无摘要', 100)}
+                      <td className="px-6 py-5 max-w-sm">
+                        <p className="text-base text-gray-600 line-clamp-2 leading-relaxed">
+                          {truncateText(post.excerpt?.zh || post.content?.zh || '暂无摘要', 120)}
                         </p>
                       </td>
-                      <td className="px-6 py-4">
-                        <span className="px-2.5 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
+                      <td className="px-6 py-5">
+                        <span className="px-4 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
                           {getCategoryName(post.category)}
                         </span>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-5">
                         <button
                           onClick={() => toggleStatus(post.id)}
-                          className={post.status === 'published' ? 'badge-active cursor-pointer hover:opacity-80' : 'badge-warning cursor-pointer hover:opacity-80'}
+                          className={post.status === 'published' ? 'admin-badge admin-badge-success cursor-pointer hover:opacity-80' : 'admin-badge admin-badge-warning cursor-pointer hover:opacity-80'}
                         >
                           {post.status === 'published' ? '已发布' : '草稿'}
                         </button>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-5">
                         <button
                           onClick={() => toggleFeatured(post.id)}
                           className="text-gray-400 hover:text-yellow-500 transition-colors"
                           title={post.featured ? '取消精选' : '设为精选'}
                         >
                           {post.featured ? (
-                            <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
+                            <Star className="w-6 h-6 text-yellow-500 fill-yellow-500" />
                           ) : (
-                            <StarOff className="w-5 h-5" />
+                            <StarOff className="w-6 h-6" />
                           )}
                         </button>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-600" suppressHydrationWarning>
+                      <td className="px-6 py-5 text-base text-gray-600" suppressHydrationWarning>
                         {new Date(post.updatedAt).toLocaleDateString('zh-CN')}
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-5">
                         <div className="flex items-center justify-end space-x-2">
                           <Link
                             href={`/admin/blog/edit/${post.id}`}
-                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            className="admin-btn-action-edit"
                             title="编辑"
                           >
-                            <Pencil className="w-4 h-4" />
+                            <Pencil className="w-5 h-5" />
                           </Link>
                           <button
                             onClick={() => handleDelete(post.id)}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            className="admin-btn-action-delete"
                             title="删除"
                             disabled={saving}
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-5 h-5" />
                           </button>
                         </div>
                       </td>
@@ -310,11 +310,11 @@ export default function AdminBlogPage() {
                 </tbody>
               </table>
             ) : (
-              <div className="text-center py-12 text-gray-400">
-                <svg className="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="text-center py-16 text-gray-400">
+                <svg className="w-20 h-20 mx-auto mb-6 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                <p>暂无文章，点击"写文章"按钮创建。</p>
+                <p className="text-lg">暂无文章，点击"写文章"按钮创建。</p>
               </div>
             )}
           </div>

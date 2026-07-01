@@ -281,23 +281,23 @@ export default function AdminContactMessagesPage() {
       )}
 
       {/* Page Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-10">
         <div>
-          <Link href="/admin" className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-2 text-sm">
-            <ArrowLeft className="w-4 h-4 mr-1" />
+          <Link href="/admin" className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-3 text-base">
+            <ArrowLeft className="w-5 h-5 mr-2" />
             返回仪表盘
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-4xl font-bold text-gray-900">
             联系消息管理
           </h1>
-          <p className="text-gray-600 mt-1 text-sm">
+          <p className="text-gray-600 mt-2 text-lg">
             查看和管理客户联系消息
           </p>
         </div>
       </div>
 
-      {/* Statistics Cards - Compact Design */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      {/* Statistics Cards - Enhanced Design */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {[
           {
             label: '总消息数',
@@ -338,16 +338,16 @@ export default function AdminContactMessagesPage() {
         ].map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <div key={index} className={`bg-white rounded-xl p-4 shadow-sm border ${stat.borderColor} hover:shadow-md transition-shadow duration-200`}>
+            <div key={index} className={`admin-stat-card border ${stat.borderColor} hover:shadow-lg transition-all duration-300`}>
               <div className="flex items-center justify-between">
                 <div>
-                  <div className={`text-2xl font-bold bg-gradient-to-r ${stat.bgGradient} bg-clip-text text-transparent`}>
+                  <div className={`text-5xl font-bold bg-gradient-to-r ${stat.bgGradient} bg-clip-text text-transparent`}>
                     {stat.value}
                   </div>
-                  <div className="text-xs text-gray-500 mt-1">{stat.label}</div>
+                  <div className="text-base text-gray-500 mt-2">{stat.label}</div>
                 </div>
-                <div className={`w-10 h-10 ${stat.bgLight} rounded-lg flex items-center justify-center flex-shrink-0`}>
-                  <Icon className={`w-5 h-5 ${stat.textColor}`} />
+                <div className={`admin-icon-container ${stat.bgLight}`}>
+                  <Icon className={`${stat.textColor}`} />
                 </div>
               </div>
             </div>
@@ -356,10 +356,10 @@ export default function AdminContactMessagesPage() {
       </div>
 
       {/* Filters and Search */}
-      <div className="admin-card mb-6">
-        <div className="flex flex-col sm:flex-row gap-4">
+      <div className="admin-card mb-8 p-6">
+        <div className="flex flex-col sm:flex-row gap-5">
           {/* Filter Tabs */}
-          <div className="flex items-center space-x-1 bg-gray-100 p-1 rounded-xl">
+          <div className="flex items-center space-x-1 bg-gray-100 p-1.5 rounded-xl">
             {([
               { key: 'all', label: '全部', count: stats.total },
               { key: 'unread', label: '未读', count: stats.unread },
@@ -368,14 +368,14 @@ export default function AdminContactMessagesPage() {
               <button
                 key={tab.key}
                 onClick={() => setActiveFilter(tab.key)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                className={`flex items-center gap-2.5 px-5 py-2.5 rounded-lg text-base font-medium transition-all duration-200 ${
                   activeFilter === tab.key
-                    ? 'bg-white text-blue-600 shadow-sm'
+                    ? 'bg-white text-blue-600 shadow-md'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                 }`}
               >
                 {tab.label}
-                <span className={`text-xs px-2 py-0.5 rounded-full ${
+                <span className={`text-sm px-2.5 py-0.5 rounded-full ${
                   activeFilter === tab.key
                     ? 'bg-blue-100 text-blue-600'
                     : 'bg-gray-200 text-gray-600'
@@ -389,13 +389,13 @@ export default function AdminContactMessagesPage() {
           {/* Search */}
           <div className="flex-1">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="搜索姓名、邮箱或消息内容..."
-                className="admin-form-input w-full pl-10"
+                className="admin-form-input w-full pl-12 py-3.5 text-base"
               />
             </div>
           </div>
@@ -403,29 +403,29 @@ export default function AdminContactMessagesPage() {
 
         {/* Bulk Actions */}
         {selectedIds.length > 0 && (
-          <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-200">
-            <span className="text-sm text-gray-600">
+          <div className="flex items-center gap-4 mt-6 pt-6 border-t border-gray-200">
+            <span className="text-base text-gray-600 font-medium">
               已选择 {selectedIds.length} 条
             </span>
             <button
               onClick={() => handleBulkAction('mark-read')}
-              className="btn-secondary text-sm"
+              className="btn-secondary text-base py-2.5 px-5"
             >
-              <CheckCircle className="w-4 h-4 mr-1" />
+              <CheckCircle className="w-5 h-5 mr-2" />
               标记已读
             </button>
             <button
               onClick={() => handleBulkAction('mark-unread')}
-              className="btn-secondary text-sm"
+              className="btn-secondary text-base py-2.5 px-5"
             >
-              <Mail className="w-4 h-4 mr-1" />
+              <Mail className="w-5 h-5 mr-2" />
               标记未读
             </button>
             <button
               onClick={() => handleBulkAction('delete')}
-              className="btn-danger text-sm"
+              className="btn-danger text-base py-2.5 px-5"
             >
-              <Trash2 className="w-4 h-4 mr-1" />
+              <Trash2 className="w-5 h-5 mr-2" />
               删除
             </button>
           </div>
@@ -435,15 +435,15 @@ export default function AdminContactMessagesPage() {
       {/* Messages Table with Horizontal Scroll */}
       <div className="admin-card overflow-hidden">
         {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
-            <span className="ml-3 text-gray-600">加载中...</span>
+          <div className="flex items-center justify-center py-16">
+            <Loader2 className="w-12 h-12 text-blue-500 animate-spin" />
+            <span className="ml-4 text-gray-600 text-lg">加载中...</span>
           </div>
         ) : messages.length === 0 ? (
-          <div className="text-center py-12">
-            <MessageSquare className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500 text-lg">暂无消息</p>
-            <p className="text-gray-400 text-sm mt-2">
+          <div className="text-center py-16">
+            <MessageSquare className="w-20 h-20 text-gray-300 mx-auto mb-6" />
+            <p className="text-gray-500 text-xl">暂无消息</p>
+            <p className="text-gray-400 text-base mt-3">
               {searchQuery
                 ? '尝试调整搜索条件'
                 : '当客户提交联系表单时，消息将显示在这里'
@@ -454,36 +454,36 @@ export default function AdminContactMessagesPage() {
           <>
             {/* Desktop Table with Horizontal Scroll */}
             <div className="hidden md:block overflow-x-auto">
-              <table className="w-full min-w-[900px]">
+              <table className="admin-table w-full">
                 <thead>
-                  <tr className="border-b border-gray-200 bg-gray-50">
-                    <th className="text-left p-3 w-12">
+                  <tr className="bg-gray-50/80 border-b border-gray-200">
+                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-12">
                       <input
                         type="checkbox"
                         checked={selectAll}
                         onChange={(e) => setSelectAll(e.target.checked)}
-                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                       />
                     </th>
-                    <th className="text-left p-3 text-sm font-semibold text-gray-700 min-w-[120px]">
+                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider min-w-[140px]">
                       姓名
                     </th>
-                    <th className="text-left p-3 text-sm font-semibold text-gray-700 min-w-[180px]">
+                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider min-w-[200px]">
                       邮箱
                     </th>
-                    <th className="text-left p-3 text-sm font-semibold text-gray-700 min-w-[100px]">
+                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider min-w-[120px]">
                       主题
                     </th>
-                    <th className="text-left p-3 text-sm font-semibold text-gray-700 min-w-[200px]">
+                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider min-w-[250px]">
                       消息
                     </th>
-                    <th className="text-left p-3 text-sm font-semibold text-gray-700 w-20">
+                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-24">
                       状态
                     </th>
-                    <th className="text-left p-3 text-sm font-semibold text-gray-700 w-36">
+                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-40">
                       日期
                     </th>
-                    <th className="text-right p-3 text-sm font-semibold text-gray-700 w-24">
+                    <th className="px-6 py-5 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider w-32">
                       操作
                     </th>
                   </tr>
@@ -492,11 +492,11 @@ export default function AdminContactMessagesPage() {
                   {messages.map((message) => (
                     <tr
                       key={message.id}
-                      className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${
-                        !message.isRead ? 'bg-blue-50/80 border-l-4 border-l-blue-500' : ''
+                      className={`${messages.indexOf(message) % 2 === 0 ? 'bg-white' : 'bg-gray-50/80'} hover:bg-blue-50/50 transition-colors ${
+                        !message.isRead ? 'border-l-4 border-l-blue-500' : ''
                       }`}
                     >
-                      <td className="p-4">
+                      <td className="px-6 py-5">
                         <input
                           type="checkbox"
                           checked={selectedIds.includes(message.id)}
@@ -507,54 +507,54 @@ export default function AdminContactMessagesPage() {
                               setSelectedIds(selectedIds.filter(id => id !== message.id));
                             }
                           }}
-                          className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                         />
                       </td>
-                      <td className="p-3">
-                        <div className="flex items-center gap-2">
+                      <td className="px-6 py-5">
+                        <div className="flex items-center gap-3">
                           {!message.isRead && (
-                            <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0" title="未读" />
+                            <div className="w-2.5 h-2.5 bg-blue-500 rounded-full flex-shrink-0" title="未读" />
                           )}
-                          <span className={`font-medium text-sm ${!message.isRead ? 'text-gray-900 font-semibold' : 'text-gray-700'}`}>
+                          <span className={`font-medium text-base ${!message.isRead ? 'text-gray-900 font-semibold' : 'text-gray-700'}`}>
                             {message.name}
                           </span>
                         </div>
                       </td>
-                      <td className="p-3 text-sm text-gray-600 truncate">{message.email}</td>
-                      <td className="p-3">
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                      <td className="px-6 py-5 text-base text-gray-600">{message.email}</td>
+                      <td className="px-6 py-5">
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-700">
                           {getSubjectLabel(message.subject)}
                         </span>
                       </td>
-                      <td className="p-3 text-sm text-gray-600 max-w-[200px]">
+                      <td className="px-6 py-5 text-base text-gray-600 max-w-sm">
                         <div className="truncate" title={message.message}>
-                          {truncateMessage(message.message, 60)}
+                          {truncateMessage(message.message, 80)}
                         </div>
                       </td>
-                      <td className="p-3">
+                      <td className="px-6 py-5">
                         {message.isRead ? (
-                          <span className="inline-flex items-center gap-1 text-xs text-gray-500">
-                            <MailOpen className="w-3 h-3" />
+                          <span className="inline-flex items-center gap-1.5 text-sm text-gray-500">
+                            <MailOpen className="w-4 h-4" />
                             已读
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 text-xs text-blue-600 font-semibold bg-blue-50 px-2 py-0.5 rounded-full">
-                            <Mail className="w-3 h-3" />
+                          <span className="inline-flex items-center gap-1.5 text-sm text-blue-600 font-semibold bg-blue-50 px-3 py-1 rounded-full">
+                            <Mail className="w-4 h-4" />
                             未读
                           </span>
                         )}
                       </td>
-                      <td className="p-3 text-sm text-gray-500 whitespace-nowrap">
+                      <td className="px-6 py-5 text-base text-gray-500 whitespace-nowrap">
                         {formatDate(message.createdAt)}
                       </td>
-                      <td className="p-3">
-                        <div className="flex items-center justify-end gap-1">
+                      <td className="px-6 py-5">
+                        <div className="flex items-center justify-end gap-2">
                           <button
                             onClick={() => handleViewMessage(message)}
-                            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                            className="admin-btn-action-edit"
                             title="查看详情"
                           >
-                            <Eye className="w-4 h-4" />
+                            <Eye className="w-5 h-5" />
                           </button>
                           {!message.isRead && (
                             <button
@@ -568,18 +568,18 @@ export default function AdminContactMessagesPage() {
                                 await loadMessages();
                                 await loadStats();
                               }}
-                              className="p-1.5 text-green-600 hover:bg-green-50 rounded-md transition-colors"
+                              className="p-2.5 text-green-600 bg-green-50 hover:bg-green-100 rounded-lg transition-colors"
                               title="标记已读"
                             >
-                              <CheckCircle className="w-4 h-4" />
+                              <CheckCircle className="w-5 h-5" />
                             </button>
                           )}
                           <button
                             onClick={() => handleDelete(message.id)}
-                            className="p-1.5 text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                            className="admin-btn-action-delete"
                             title="删除"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-5 h-5" />
                           </button>
                         </div>
                       </td>

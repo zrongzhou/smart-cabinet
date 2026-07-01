@@ -219,9 +219,9 @@ export default function AdminDashboardPage() {
   return (
     <div>
       {/* Page Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">仪表盘</h1>
-        <p className="text-gray-500 mt-1">欢迎回来！这是您的系统概览。</p>
+      <div className="mb-10">
+        <h1 className="text-4xl font-bold text-gray-900">仪表盘</h1>
+        <p className="text-gray-500 mt-2 text-lg">欢迎回来！这是您的系统概览。</p>
       </div>
 
       {error && (
@@ -231,7 +231,7 @@ export default function AdminDashboardPage() {
       )}
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {statCards.map((stat, index) => {
           const Icon = stat.icon;
           const isPositiveTrend = stat.trend >= 0;
@@ -241,12 +241,12 @@ export default function AdminDashboardPage() {
               href={stat.href}
               className="group block"
             >
-              <div className="admin-card hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 h-full">
-                <div className="flex items-center justify-between mb-4">
-                  <div className={`w-12 h-12 ${stat.bgLight} rounded-xl flex items-center justify-center`}>
-                    <Icon className={`w-6 h-6 ${stat.textColor}`} />
+              <div className="admin-stat-card hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 h-full">
+                <div className="flex items-center justify-between mb-5">
+                  <div className={`admin-icon-container ${stat.bgLight}`}>
+                    <Icon className={`${stat.textColor}`} />
                   </div>
-                  <div className={`flex items-center space-x-1 text-sm font-medium ${isPositiveTrend ? 'text-green-600' : 'text-red-600'}`}>
+                  <div className={`flex items-center space-x-1.5 text-sm font-medium ${isPositiveTrend ? 'text-green-600' : 'text-red-600'}`}>
                     {isPositiveTrend ? (
                       <TrendingUp className="w-4 h-4" />
                     ) : (
@@ -255,13 +255,13 @@ export default function AdminDashboardPage() {
                     <span>{isPositiveTrend ? '+' : ''}{stat.trend}%</span>
                   </div>
                 </div>
-                <div className={`text-4xl font-bold mb-1 bg-gradient-to-r ${stat.bgGradient} bg-clip-text text-transparent`}>
+                <div className={`text-5xl font-bold mb-2 bg-gradient-to-r ${stat.bgGradient} bg-clip-text text-transparent`}>
                   {stat.value}
                 </div>
-                <div className="text-sm text-gray-500 mb-3">{stat.label}</div>
-                <div className="flex items-center text-xs text-blue-600 font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="text-base text-gray-500 mb-4">{stat.label}</div>
+                <div className="flex items-center text-sm text-blue-600 font-medium opacity-0 group-hover:opacity-100 transition-all duration-300">
                   <span>查看详情</span>
-                  <ArrowUpRight className="w-3 h-3 ml-1" />
+                  <ArrowUpRight className="w-4 h-4 ml-1.5" />
                 </div>
               </div>
             </Link>
@@ -269,35 +269,35 @@ export default function AdminDashboardPage() {
         })}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
         {/* Recent Activities */}
         <div className="admin-card">
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="text-lg font-bold text-gray-900">最近活动</h2>
-            <Clock className="w-5 h-5 text-gray-400" />
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">最近活动</h2>
+            <Clock className="w-6 h-6 text-gray-400" />
           </div>
           {recentActivities.length > 0 ? (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {recentActivities.map((activity, index) => (
                 <div 
                   key={index} 
-                  className={`flex items-start space-x-3 pb-3 border-b border-gray-100 last:border-0 pl-3 border-l-4 ${activity.color} hover:bg-gray-50 rounded-r-lg transition-colors -ml-3`}
+                  className={`flex items-start space-x-4 pb-4 border-b border-gray-100 last:border-0 pl-4 border-l-4 ${activity.color} hover:bg-gray-50 rounded-r-lg transition-colors -ml-4`}
                 >
-                  <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                  <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5 ${
                     activity.type === 'product' ? 'bg-blue-50' :
                     activity.type === 'blog' ? 'bg-green-50' :
                     'bg-purple-50'
                   }`}>
-                    {activity.type === 'product' && <Package className="w-4 h-4 text-blue-600" />}
-                    {activity.type === 'blog' && <FileText className="w-4 h-4 text-green-600" />}
-                    {activity.type === 'faq' && <HelpCircle className="w-4 h-4 text-purple-600" />}
+                    {activity.type === 'product' && <Package className="w-5 h-5 text-blue-600" />}
+                    {activity.type === 'blog' && <FileText className="w-5 h-5 text-green-600" />}
+                    {activity.type === 'faq' && <HelpCircle className="w-5 h-5 text-purple-600" />}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-gray-800">
+                    <p className="text-base text-gray-800">
                       <span className="font-medium">{activity.action}</span>: <span className="truncate">{activity.name}</span>
                     </p>
-                    <p className="text-xs text-gray-400 mt-0.5 flex items-center">
-                      <Clock className="w-3 h-3 mr-1" />
+                    <p className="text-sm text-gray-400 mt-1 flex items-center">
+                      <Clock className="w-4 h-4 mr-1.5" />
                       {getTimeAgo(activity.time)}
                     </p>
                   </div>
@@ -305,33 +305,33 @@ export default function AdminDashboardPage() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-10 text-gray-400">
-              <Package className="w-12 h-12 mx-auto mb-3 text-gray-200" />
-              <p className="text-sm">暂无活动记录</p>
+            <div className="text-center py-12 text-gray-400">
+              <Package className="w-16 h-16 mx-auto mb-4 text-gray-200" />
+              <p className="text-base">暂无活动记录</p>
             </div>
           )}
         </div>
 
         {/* Quick Actions */}
         <div className="admin-card">
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="text-lg font-bold text-gray-900">快捷操作</h2>
-            <ArrowRight className="w-5 h-5 text-gray-400" />
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">快捷操作</h2>
+            <ArrowRight className="w-6 h-6 text-gray-400" />
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {quickActions.map((action, index) => {
               const Icon = action.icon;
               return (
                 <Link
                   key={index}
                   href={action.href}
-                  className={`p-5 bg-gradient-to-r ${action.bgGradient} ${action.hoverBg} rounded-xl transition-all duration-300 flex flex-col items-start justify-center text-left transform hover:scale-105 hover:shadow-xl ${action.shadowColor}`}
+                  className={`p-6 bg-gradient-to-r ${action.bgGradient} ${action.hoverBg} rounded-xl transition-all duration-300 flex flex-col items-start justify-center text-left transform hover:scale-105 hover:shadow-xl ${action.shadowColor}`}
                 >
-                  <Icon className={`w-8 h-8 ${action.textColor} mb-3`} />
-                  <span className={`text-base font-bold ${action.textColor} mb-1`}>
+                  <Icon className={`w-10 h-10 ${action.textColor} mb-4`} />
+                  <span className={`text-lg font-bold ${action.textColor} mb-2`}>
                     {action.label}
                   </span>
-                  <span className={`text-xs ${action.textColor} opacity-80`}>
+                  <span className={`text-sm ${action.textColor} opacity-80`}>
                     {action.description}
                   </span>
                 </Link>
@@ -341,29 +341,29 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
-      {/* System Info Bar */}
-      <div className="admin-card bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center space-x-6 text-sm text-gray-600">
-            <div className="flex items-center space-x-2">
-              <Settings className="w-4 h-4 text-gray-400" />
-              <span>版本: <span className="font-semibold text-gray-900">v34.0</span></span>
+        {/* System Info Bar */}
+        <div className="admin-card bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div className="flex items-center space-x-8 text-base text-gray-600">
+              <div className="flex items-center space-x-3">
+                <Settings className="w-5 h-5 text-gray-400" />
+                <span>版本: <span className="font-semibold text-gray-900">v34.0</span></span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <User className="w-5 h-5 text-gray-400" />
+                <span>用户: <span className="font-semibold text-gray-900">{typeof window !== 'undefined' ? localStorage.getItem('admin_user') || 'admin' : 'admin'}</span></span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <Calendar className="w-5 h-5 text-gray-400" />
+                <span>时间: <span className="font-semibold text-gray-900">{currentTime}</span></span>
+              </div>
             </div>
-            <div className="flex items-center space-x-2">
-              <User className="w-4 h-4 text-gray-400" />
-              <span>用户: <span className="font-semibold text-gray-900">{typeof window !== 'undefined' ? localStorage.getItem('admin_user') || 'admin' : 'admin'}</span></span>
+            <div className="flex items-center space-x-3 text-sm text-gray-500">
+              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
+              <span>系统运行正常</span>
             </div>
-            <div className="flex items-center space-x-2">
-              <Calendar className="w-4 h-4 text-gray-400" />
-              <span>时间: <span className="font-semibold text-gray-900">{currentTime}</span></span>
-            </div>
-          </div>
-          <div className="flex items-center space-x-2 text-xs text-gray-500">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-            <span>系统运行正常</span>
           </div>
         </div>
-      </div>
     </div>
   );
 }

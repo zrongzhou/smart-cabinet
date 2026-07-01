@@ -7,6 +7,7 @@ import TestimonialsSection from '@/components/home/TestimonialsSection';
 import BlogPreview from '@/components/home/BlogPreview';
 import TrustBadges from '@/components/home/TrustBadges';
 import CtaSection from '@/components/home/CtaSection';
+import Image from 'next/image';
 
 // HeroSection 包含 canvas/星空动画，SSR 时会触发 window is not defined
 // 用 ssr: false 彻底禁用服务端渲染，仅客户端渲染
@@ -21,7 +22,15 @@ const HeroSection = dynamic(
         <div className="absolute bottom-1/3 right-1/4 w-48 h-48 rounded-full blur-3xl animate-pulse" style={{ backgroundColor: 'rgba(99,102,241,0.06)', animationDuration: '4s' }} />
         {/* Logo + Brand */}
         <div className="relative z-10 flex flex-col items-center gap-5">
-          <img src="/images/logo.svg" alt="Qtech" className="h-12 w-auto opacity-90 animate-pulse" style={{ animationDuration: '2s' }} />
+          <Image 
+            src="/images/logo.svg" 
+            alt="Qtech" 
+            width={120}
+            height={48}
+            className="h-12 w-auto opacity-90 animate-pulse" 
+            style={{ animationDuration: '2s' }}
+            priority={true}
+          />
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: '0ms' }} />
             <div className="w-2 h-2 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '150ms' }} />

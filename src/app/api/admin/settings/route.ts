@@ -47,12 +47,24 @@ export async function GET(request: NextRequest) {
 
       // If v is an object (after parsing), extract a string value
       if (v && typeof v === 'object' && !Array.isArray(v)) {
-        if (v.zh && typeof v.zh === 'string' && v.zh !== '') result[s.key] = v.zh;
-        else if (v.en && typeof v.en === 'string') result[s.key] = v.en;
-        else if (v.ar && typeof v.ar === 'string') result[s.key] = v.ar;
-        else result[s.key] = '';  // empty object or all-empty values
+        // Check if it's an i18n object (has zh/en/ar fields)
+        if (v.zh !== undefined || v.en !== undefined || v.ar !== undefined) {
+          if (v.zh && typeof v.zh === 'string' && v.zh !== '') result[s.key] = v.zh;
+          else if (v.en && typeof v.en === 'string') result[s.key] = v.en;
+          else if (v.ar && typeof v.ar === 'string') result[s.key] = v.ar;
+          else result[s.key] = '';  // empty object or all-empty values
+        } else {
+          // Non-i18n object, store as-is (shouldn't happen normally)
+          result[s.key] = v;
+        }
       } else if (Array.isArray(v)) {
         // JSON array (e.g., contactEmails) — preserve as array
+        result[s.key] = v;
+      } else if (typeof v === 'boolean') {
+        // Boolean value (e.g., wechatNotificationEnabled)
+        result[s.key] = v;
+      } else if (typeof v === 'number') {
+        // Number value
         result[s.key] = v;
       } else if (typeof v === 'string') {
         result[s.key] = v;

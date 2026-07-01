@@ -43,11 +43,16 @@ interface StarLayer {
 }
 
 const STAR_LAYERS: StarLayer[] = [
-  { count: 100, sizeRange: [0.12, 0.35], opacityRange: [0.06, 0.2], color: 'rgba(170,185,220,', speedFactor: 0 },
-  { count: 50, sizeRange: [0.28, 0.65], opacityRange: [0.12, 0.35], color: 'rgba(190,210,245,', speedFactor: 0 },
-  { count: 25, sizeRange: [0.5, 1.2], opacityRange: [0.25, 0.55], color: 'rgba(218,235,255,', speedFactor: 0 },
-  { count: 10, sizeRange: [1.8, 3.2], opacityRange: [0.5, 1.0], color: 'rgba(255,255,255,', speedFactor: 0.008 },
-  { count: 3, sizeRange: [3.0, 4.8], opacityRange: [0.75, 1.0], color: 'rgba(240,248,255,', speedFactor: 0.004 },
+  // Layer 0: 远景微尘 — 基础亮度提升 + 更大尺寸
+  { count: 120, sizeRange: [0.18, 0.5], opacityRange: [0.15, 0.38], color: 'rgba(170,185,220,', speedFactor: 0 },
+  // Layer 1: 中景星群 — 明显可见的背景星星
+  { count: 65, sizeRange: [0.35, 0.8], opacityRange: [0.25, 0.55], color: 'rgba(190,210,245,', speedFactor: 0 },
+  // Layer 2: 近景中等亮度 — 清晰可辨
+  { count: 30, sizeRange: [0.6, 1.5], opacityRange: [0.4, 0.72], color: 'rgba(218,235,255,', speedFactor: 0 },
+  // Layer 3: 亮星 — 带十字光芒，强闪烁
+  { count: 12, sizeRange: [1.8, 3.5], opacityRange: [0.6, 1.0], color: 'rgba(255,255,255,', speedFactor: 0.008 },
+  // Layer 4: 超亮星 — 最醒目，最慢移动
+  { count: 4, sizeRange: [3.2, 5.5], opacityRange: [0.82, 1.0], color: 'rgba(240,248,255,', speedFactor: 0.004 },
 ];
 
 // ============================================================
@@ -408,13 +413,16 @@ export default function HeroSection() {
 
     const drawMilkyWay = () => {
       ctx.save();
-      ctx.globalAlpha = 0.03 + Math.sin(Date.now() * 0.00008) * 0.01;
+      // 呼吸式脉动：更明显的明暗周期（4秒一周期）
+      const breathe = 0.06 + Math.sin(Date.now() * 0.0015) * 0.035;
+      ctx.globalAlpha = breathe;
       ctx.translate(canvas.width * 0.5, canvas.height * 0.45);
       ctx.rotate(-0.35);
       ctx.scale(1, 0.22);
       const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, canvas.width * 0.55);
-      grad.addColorStop(0, 'rgba(210, 215, 240, 0.85)');
-      grad.addColorStop(0.4, 'rgba(190, 200, 230, 0.4)');
+      grad.addColorStop(0, 'rgba(210, 215, 240, 0.92)');
+      grad.addColorStop(0.35, 'rgba(195, 205, 235, 0.55)');
+      grad.addColorStop(0.7, 'rgba(170, 185, 220, 0.2)');
       grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
       ctx.fillStyle = grad;
       ctx.fillRect(-canvas.width, -canvas.height, canvas.width * 2, canvas.height * 2);
@@ -423,24 +431,53 @@ export default function HeroSection() {
 
     const drawNebulae = () => {
       const t = Date.now() * 0.00005;
+      // Nebula 1: 紫色星云 — 大幅提亮，肉眼可见的紫雾
       const g1 = ctx.createRadialGradient(
-        canvas.width * 0.12 + Math.sin(t) * 20,
-        canvas.height * 0.18 + Math.cos(t * 0.7) * 15, 0,
-        canvas.width * 0.12, canvas.height * 0.18, canvas.width * 0.3
+        canvas.width * 0.12 + Math.sin(t) * 25,
+        canvas.height * 0.18 + Math.cos(t * 0.7) * 18, 0,
+        canvas.width * 0.12, canvas.height * 0.18, canvas.width * 0.36
       );
-      g1.addColorStop(0, `rgba(99, 102, 241, ${0.05 + Math.sin(t * 1.3) * 0.015})`);
+      g1.addColorStop(0, `rgba(120, 100, 230, ${0.22 + Math.sin(t * 1.3) * 0.07})`);
+      g1.addColorStop(0.4, `rgba(99, 102, 241, ${0.12 + Math.cos(t * 0.8) * 0.04})`);
+      g1.addColorStop(0.7, `rgba(79, 70, 200, ${0.05 + Math.sin(t * 0.5) * 0.02})`);
       g1.addColorStop(1, 'rgba(0, 0, 0, 0)');
       ctx.fillStyle = g1;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+      // Nebula 2: 青色星云 — 稍提亮
+      const pulse2 = 0.08 + Math.sin(t * 0.9) * 0.04;
       const g2 = ctx.createRadialGradient(
-        canvas.width * 0.82 + Math.cos(t * 0.8) * 20,
-        canvas.height * 0.78 + Math.sin(t * 1.1) * 15, 0,
-        canvas.width * 0.82, canvas.height * 0.78, canvas.width * 0.28
+        canvas.width * 0.82 + Math.cos(t * 0.8) * 25,
+        canvas.height * 0.78 + Math.sin(t * 1.1) * 18, 0,
+        canvas.width * 0.82, canvas.height * 0.78, canvas.width * 0.30
       );
-      g2.addColorStop(0, `rgba(6, 182, 212, ${0.03 + Math.cos(t * 0.9) * 0.01})`);
+      g2.addColorStop(0, `rgba(6, 182, 212, ${pulse2})`);
+      g2.addColorStop(0.5, `rgba(6, 182, 212, ${pulse2 * 0.4})`);
       g2.addColorStop(1, 'rgba(0, 0, 0, 0)');
       ctx.fillStyle = g2;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Nebula 3: 紫罗兰暖光 — 提亮，与Nebula 1形成双紫呼应
+      const g3 = ctx.createRadialGradient(
+        canvas.width * 0.58 + Math.sin(t * 0.6) * 30,
+        canvas.height * 0.52 + Math.cos(t * 1.4) * 20, 0,
+        canvas.width * 0.58, canvas.height * 0.52, canvas.width * 0.30
+      );
+      g3.addColorStop(0, `rgba(139, 92, 246, ${0.11 + Math.sin(t * 1.1) * 0.04})`);
+      g3.addColorStop(0.5, `rgba(124, 85, 235, ${0.06 + Math.cos(t * 0.7) * 0.025})`);
+      g3.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = g3;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Nebula 4: 底部淡紫弥漫 — 填补底部暗区
+      const g4 = ctx.createRadialGradient(
+        canvas.width * 0.50,
+        canvas.height * 0.88, 0,
+        canvas.width * 0.50, canvas.height * 0.88, canvas.width * 0.45
+      );
+      g4.addColorStop(0, `rgba(80, 60, 180, ${0.06 + Math.sin(t * 0.6) * 0.02})`);
+      g4.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = g4;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
     };
 
@@ -464,20 +501,27 @@ export default function HeroSection() {
 
         let twinkleFactor: number;
         if (star.layer >= 3) {
+          // 亮星：强闪烁 + 偶发闪光（breathing burst）
           const twinkle = Math.sin(time * star.twinkleSpeed + star.twinkleOffset);
-          const flash = Math.pow(Math.max(0, twinkle), 3);
-          twinkleFactor = 0.55 + ((twinkle + 1) * 0.2) + flash * 0.35;
+          const flash = Math.pow(Math.max(0, twinkle), 4); // 更尖锐的闪光峰
+          const breathe = Math.sin(time * star.twinkleSpeed * 0.37 + star.twinkleOffset * 1.7); // 慢呼吸
+          twinkleFactor = 0.45 + ((twinkle + 1) * 0.18) + flash * 0.45 + breathe * 0.12;
         } else {
+          // 普通星：深呼吸——从很暗到很亮，明显起伏
           const twinkle = Math.sin(time * star.twinkleSpeed + star.twinkleOffset);
-          twinkleFactor = 0.70 + ((twinkle + 1) * 0.15);
+          const deepBreath = Math.sin(time * star.twinkleSpeed * 0.25 + star.twinkleOffset * 2.3); // 慢周期深呼吸
+          // 呼吸范围：0.35 ~ 1.35（允许短暂超亮）
+          twinkleFactor = 0.5 + ((twinkle + 1) * 0.25) + deepBreath * 0.2;
         }
         const currentOpacity = Math.min(1, Math.max(0.03, star.baseOpacity * twinkleFactor));
 
-        if (star.layer >= 3 && currentOpacity > 0.4 && star.size > 1.5) {
-          const glowSize = star.size * (4 + star.layer * 1.5);
+        if (star.layer >= 3 && currentOpacity > 0.35 && star.size > 1.5) {
+          // 更大更亮的光晕——营造"星星在呼吸发光"的感觉
+          const glowSize = star.size * (5 + star.layer * 2);
           const glowGrad = ctx.createRadialGradient(star.x, star.y, 0, star.x, star.y, glowSize);
-          glowGrad.addColorStop(0, `rgba(180, 210, 255, ${currentOpacity * 0.18})`);
-          glowGrad.addColorStop(0.35, `rgba(140, 180, 230, ${currentOpacity * 0.08})`);
+          glowGrad.addColorStop(0, `rgba(200, 225, 255, ${currentOpacity * 0.28})`);
+          glowGrad.addColorStop(0.25, `rgba(160, 200, 245, ${currentOpacity * 0.14})`);
+          glowGrad.addColorStop(0.55, `rgba(120, 170, 230, ${currentOpacity * 0.06})`);
           glowGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
           ctx.fillStyle = glowGrad;
           ctx.beginPath();
@@ -566,28 +610,30 @@ export default function HeroSection() {
       className="homepage-starry relative min-h-[75vh] flex items-center justify-center overflow-hidden"
       style={{ minHeight: '75vh' }}
     >
-      {/* Multi-layer deep space gradient */}
+      {/* Multi-layer deep space gradient — 紫调提亮 */}
       <div className="absolute inset-0 z-0" style={{
-        background: `radial-gradient(ellipse at 50% 35%, rgba(25, 33, 68, 0.38) 0%, transparent 60%),
-                   radial-gradient(ellipse at 15% 85%, rgba(45, 35, 90, 0.2) 0%, transparent 45%),
-                   radial-gradient(ellipse at 85% 15%, rgba(25, 50, 85, 0.22) 0%, transparent 45%),
-                   linear-gradient(178deg, #02010a 0%, #060b1a 16%, #0a1028 32%, #0d1535 48%, #09142c 66%, #050e21 84%, #020814 100%)`,
+        background: `radial-gradient(ellipse at 50% 32%, rgba(30, 42, 90, 0.55) 0%, transparent 58%),
+                   radial-gradient(ellipse at 12% 82%, rgba(55, 38, 115, 0.40) 0%, transparent 45%),
+                   radial-gradient(ellipse at 88% 12%, rgba(32, 55, 95, 0.35) 0%, transparent 45%),
+                   linear-gradient(178deg, #050312 0%, #0a0c22 14%, #101838 28%, #151e48 44%, #121c40 60%, #0c1632 78%, #080d1e 92%, #040610 100%)`,
       }} />
 
       {/* Star field canvas */}
       <canvas ref={canvasRef} className="absolute inset-0 z-0 pointer-events-none" style={{ width: '100%', height: '100%' }} />
 
-      {/* Vignette for depth focus */}
+      {/* Vignette for depth focus — 减弱暗角，让紫色星云透出来 */}
       <div className="absolute inset-0 z-[1]" style={{
-        background: `radial-gradient(ellipse 70% 50% at 50% 42%, transparent 0%, rgba(2, 4, 12, 0.35) 60%, rgba(2, 4, 12, 0.58) 100%)`,
+        background: `radial-gradient(ellipse 70% 52% at 50% 40%, transparent 0%, rgba(4, 6, 18, 0.30) 58%, rgba(4, 6, 18, 0.55) 100%)`,
         pointerEvents: 'none',
       }} />
 
-      {/* Ambient light orbs behind content */}
+      {/* Ambient light orbs behind content — 提亮紫色光晕 */}
       <div className="absolute top-[8%] left-[3%] w-[450px] h-[450px] rounded-full blur-[130px] z-0"
-        style={{ backgroundColor: 'rgba(59, 130, 246, 0.10)' }} />
+        style={{ backgroundColor: 'rgba(59, 130, 246, 0.14)' }} />
       <div className="absolute bottom-[12%] right-[3%] w-[350px] h-[350px] rounded-full blur-[110px] z-0"
-        style={{ backgroundColor: 'rgba(139, 92, 246, 0.07)' }} />
+        style={{ backgroundColor: 'rgba(139, 92, 246, 0.12)' }} />
+      <div className="absolute top-[45%] left-[50%] -translate-x-1/2 w-[500px] h-[300px] rounded-full blur-[120px] z-0"
+        style={{ backgroundColor: 'rgba(99, 102, 241, 0.06)' }} />
 
       {/* Content */}
       <div className="relative z-10 text-center text-white px-6 max-w-5xl mx-auto">
