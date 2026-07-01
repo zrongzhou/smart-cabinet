@@ -2,7 +2,14 @@
 import { useEffect, useRef, memo } from 'react';
 
 // ============================================================
-// OceanHeader v239 — Meteor-Linked Breathing & Blue Theme
+// OceanHeader v240 — Meteor-Linked Breathing & Blue Theme (Fixed)
+//
+// v240 Changes:
+// - FIXED: Breathing overlay alpha values increased 3-4x (0.12→0.40, 0.08→0.30, 0.04→0.18)
+// - FIXED: Changed from linear gradient to radial gradient for more natural glow effect
+// - FIXED: Added highlight layer (activityLevel > 0.5) for noticeable brightness difference
+// - FIXED: Lowered targetActivity threshold from /6 to /3 (3 meteors = full brightness)
+// - FIXED: Increased lerp factor from 0.03 to 0.06 for faster transitions
 //
 // v239 Features:
 // - Deep navy background with blue theme (no purple)
@@ -227,20 +234,32 @@ function StarryScene() {
 
   // ── Draw Meteor-Linked Breathing Overlay ──
   const drawBreathing = (ctx: CanvasRenderingContext2D, activityLevel: number, w: number, h: number) => {
-    if (activityLevel < 0.005) return;
+    if (activityLevel < 0.01) return;
 
-    const grad = ctx.createLinearGradient(0, 0, w, h);
-    const a1 = activityLevel * 0.12;
-    const a2 = activityLevel * 0.08;
-    const a3 = activityLevel * 0.04;
+    // Layer 1: Overall brightness increase (significantly enhanced)
+    const brightGrad = ctx.createRadialGradient(w * 0.5, h * 0.3, 0, w * 0.5, h * 0.3, w * 0.8);
+    // Alpha values greatly increased: reach 0.35~0.50 at full brightness
+    const b1 = activityLevel * 0.40;   // from 0.12 → 0.40 (3x+)
+    const b2 = activityLevel * 0.30;   // from 0.08 → 0.30 (nearly 4x)
+    const b3 = activityLevel * 0.18;   // from 0.04 → 0.18 (4x+)
 
-    grad.addColorStop(0, `rgba(30, 58, 138, ${a1})`);
-    grad.addColorStop(0.4, `rgba(59, 130, 246, ${a2})`);
-    grad.addColorStop(0.7, `rgba(125, 211, 252, ${a3})`);
-    grad.addColorStop(1, 'transparent');
-
-    ctx.fillStyle = grad;
+    brightGrad.addColorStop(0, `rgba(59, 130, 246, ${b1})`);       // #3b82f6 bright blue
+    brightGrad.addColorStop(0.4, `rgba(37, 99, 235, ${b2})`);      // #2563eb medium blue
+    brightGrad.addColorStop(0.7, `rgba(30, 58, 138, ${b3})`);      // #1e3a8a deep blue
+    brightGrad.addColorStop(1, 'transparent');
+    ctx.fillStyle = brightGrad;
     ctx.fillRect(0, 0, w, h);
+
+    // Layer 2: Highlight layer (only appears when activityLevel > 0.5)
+    if (activityLevel > 0.5) {
+      const highlightAlpha = (activityLevel - 0.5) * 0.25;  // 0~0.125
+      const hlGrad = ctx.createLinearGradient(0, 0, w, h);
+      hlGrad.addColorStop(0, `rgba(186, 230, 253, ${highlightAlpha})`);     // #bae6fd light blue-white
+      hlGrad.addColorStop(0.5, `rgba(224, 242, 254, ${highlightAlpha * 0.7})`); // #e0f2fe very light blue
+      hlGrad.addColorStop(1, 'transparent');
+      ctx.fillStyle = hlGrad;
+      ctx.fillRect(0, 0, w, h);
+    }
   };
 
   // ── Draw Bokeh Spots ──
@@ -490,10 +509,10 @@ function StarryScene() {
 
       // Calculate target activity based on active meteor count
       const activeCount = state.meteors.filter(m => m.active).length;
-      state.targetActivity = Math.min(1.0, activeCount / 6);
+      state.targetActivity = Math.min(1.0, activeCount / 3);  // 3 meteors = full brightness (was 6)
 
       // Smooth interpolation (lerp) of activityLevel
-      state.activityLevel += (state.targetActivity - state.activityLevel) * 0.03;
+      state.activityLevel += (state.targetActivity - state.activityLevel) * 0.06;  // doubled for faster transition
 
       // When approaching 0, force to 0 to avoid floating point issues
       if (state.targetActivity < 0.01 && state.activityLevel < 0.02) {
