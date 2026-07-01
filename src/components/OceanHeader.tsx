@@ -452,6 +452,7 @@ function StarryScene() {
     ctxRef.current = ctx;
 
     let animId = 0;
+    let cancelled = false;
 
     function resize() {
       const currentCanvas = canvasRef.current;
@@ -480,16 +481,18 @@ function StarryScene() {
     }
 
     function animate(time: number) {
+      if (cancelled) return;
+
       const currentCtx = ctxRef.current;
       const canvas = canvasRef.current;
       if (!currentCtx || !canvas) {
-        animId = requestAnimationFrame(animate);
+        if (!cancelled) animId = requestAnimationFrame(animate);
         return;
       }
 
       const rect = canvas.getBoundingClientRect();
       if (rect.width === 0) {
-        animId = requestAnimationFrame(animate);
+        if (!cancelled) animId = requestAnimationFrame(animate);
         return;
       }
 
@@ -499,7 +502,7 @@ function StarryScene() {
 
       const state = stateRef.current;
       if (!state) {
-        animId = requestAnimationFrame(animate);
+        if (!cancelled) animId = requestAnimationFrame(animate);
         return;
       }
 
@@ -569,7 +572,7 @@ function StarryScene() {
 
       drawStars(currentCtx, state.stars, t);
 
-      animId = requestAnimationFrame(animate);
+      if (!cancelled) animId = requestAnimationFrame(animate);
     }
 
     resize();
@@ -581,7 +584,9 @@ function StarryScene() {
     resizeObserver.observe(canvasRef.current!);
 
     return () => {
+      cancelled = true;
       cancelAnimationFrame(animId);
+      animId = 0;
       resizeObserver.disconnect();
     };
   }, []);
