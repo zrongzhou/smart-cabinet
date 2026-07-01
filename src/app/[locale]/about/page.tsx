@@ -1519,57 +1519,44 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ===== PROFESSIONAL CTA v180 — 商务蓝主题 + 几何光效 ===== */}
+      {/* ===== CTA v255 — 蓝天草原主题 ===== */}
       <section
-        className="py-24 px-4 sm:px-6 lg:px-8 text-white relative overflow-hidden"
+        className="py-24 px-4 sm:px-6 lg:px-8 text-gray-900 relative overflow-hidden"
         style={{
-          background: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 40%, #1d4ed8 70%, #2563eb 100%)',
+          background: 'linear-gradient(180deg, #3b82f6 0%, #60a5fa 25%, #93c5fd 45%, #dbeafe 60%, #ecfdf5 75%, #bbf7d0 90%, #86efac 100%)',
         }}
       >
         {/* === 背景装饰层 === */}
-        {/* 大型模糊光斑 — 缓慢漂移 */}
-        <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] rounded-full pointer-events-none" style={{
-          background: 'radial-gradient(circle, rgba(59,130,246,0.20) 0%, rgba(37,99,235,0.08) 45%, transparent 70%)',
-          animation: 'v180-glowDrift1 12s ease-in-out infinite alternate',
+        {/* 太阳光晕 — 温暖脉冲 */}
+        <div className="absolute top-[5%] right-[10%] w-[300px] h-[300px] rounded-full pointer-events-none" style={{
+          background: 'radial-gradient(circle, rgba(255, 248, 220, 0.6) 0%, rgba(254, 243, 199, 0.3) 40%, transparent 70%)',
+          animation: 'cta-sunPulse 8s ease-in-out infinite alternate',
         }} />
-        <div className="absolute bottom-[-15%] left-[-8%] w-[600px] h-[600px] rounded-full pointer-events-none" style={{
-          background: 'radial-gradient(circle, rgba(99,102,241,0.15) 0%, rgba(59,130,246,0.06) 50%, transparent 75%)',
-          animation: 'v180-glowDrift2 15s ease-in-out infinite alternate',
-        }} />
-        {/* 细微网格纹理 */}
-        <div className="absolute inset-0 pointer-events-none opacity-[0.04]" style={{
-          backgroundImage: 'linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px)',
-          backgroundSize: '60px 60px',
-        }} />
-        {/* 对角线光束 */}
-        <div className="absolute top-0 right-0 w-[600px] h-[400px] pointer-events-none overflow-hidden" style={{ opacity: 0.06 }}>
-          <div style={{
-            width: '120%', height: '200%', background: 'conic-gradient(from 180deg at 50% 50%, transparent 0deg, rgba(255,255,255,0.8) 30deg, transparent 60deg)',
-            transform: 'rotate(-25deg) translate(20%, -20%)',
-            animation: 'v180-beamSweep 20s linear infinite',
-          }} />
-        </div>
-        {/* 浮动粒子 — 12个小光点 */}
-        {[...Array(12)].map((_, i) => (
-          <div key={i} className="absolute rounded-full pointer-events-none" style={{
-            width: `${2 + (i % 3)}px`,
-            height: `${2 + (i % 3)}px`,
-            left: `${8 + i * 7.5}%`,
-            top: `${10 + (i * 3.7) % 80}%`,
-            background: 'rgba(191,219,254,0.5)',
-            boxShadow: '0 0 6px rgba(147,197,253,0.4)',
-            animation: `v180-particleFloat ${4 + i * 0.7}s ease-in-out infinite`,
-            animationDelay: `${i * 0.4}s`,
+        {/* 白云装饰 — 3朵 */}
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="absolute pointer-events-none" style={{
+            left: `${10 + i * 35}%`,
+            top: `${8 + i * 5}%`,
+            width: `${100 + i * 30}px`,
+            height: `${35 + i * 10}px`,
+            background: 'rgba(255, 255, 255, 0.7)',
+            borderRadius: '50%',
+            filter: 'blur(20px)',
+            animation: `cta-cloudFloat ${12 + i * 3}s ease-in-out infinite alternate`,
           }} />
         ))}
+        {/* 草地波浪 — 底部 */}
+        <div className="absolute bottom-0 left-0 right-0 h-20 pointer-events-none" style={{
+          background: 'linear-gradient(to top, rgba(34, 160, 94, 0.2), transparent)',
+        }} />
 
         {/* === 内容区 === */}
         <div className="max-w-4xl mx-auto text-center relative z-10">
           {/* 标题 */}
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-5 leading-tight">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-5 leading-tight" style={{ color: '#0f172a' }}>
             {t('about.cta.title')}
           </h2>
-          <p className="text-lg sm:text-xl mb-10 max-w-2xl mx-auto leading-relaxed opacity-90">
+          <p className="text-lg sm:text-xl mb-10 max-w-2xl mx-auto leading-relaxed" style={{ color: '#334155' }}>
             {t('about.cta.subtitle')}
           </p>
 
@@ -1578,9 +1565,9 @@ export default function AboutPage() {
             <a href={`/${locale}/contact`}
               className="group relative inline-flex items-center justify-center px-10 py-4 font-bold rounded-xl overflow-hidden cursor-pointer text-base transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl"
               style={{
-                background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
-                color: '#78350f',
-                boxShadow: '0 8px 32px rgba(245,158,11,0.35), 0 0 0 1px rgba(255,255,255,0.15) inset',
+                background: 'linear-gradient(135deg, rgba(16,185,129,0.9) 0%, rgba(5,150,105,0.85) 100%)',
+                color: '#ffffff',
+                boxShadow: '0 8px 32px rgba(16,185,129,0.35), 0 0 0 1px rgba(255,255,255,0.15) inset',
               }}
             >
               <span style={{ display:'inline-flex',alignItems:'center',gap:'6px' }}>
@@ -1589,11 +1576,12 @@ export default function AboutPage() {
               </span>
             </a>
             <a href={`tel:${contactPhone.replace(/\s/g,'')}`}
-              className="group relative inline-flex items-center justify-center px-8 py-4 font-semibold rounded-xl cursor-pointer text-base text-white transition-all duration-300 hover:-translate-y-0.5"
+              className="group relative inline-flex items-center justify-center px-8 py-4 font-semibold rounded-xl cursor-pointer text-base transition-all duration-300 hover:-translate-y-0.5"
               style={{
-                background: 'rgba(255,255,255,0.08)',
-                border: '1.5px solid rgba(255,255,255,0.2)',
+                background: 'rgba(255,255,255,0.75)',
+                border: '1.5px solid rgba(148,163,184,0.4)',
                 backdropFilter: 'blur(8px)',
+                color: '#1e293b',
               }}
             >
               <Phone className="mr-2 w-4 h-4" />
@@ -1602,12 +1590,12 @@ export default function AboutPage() {
           </div>
 
           {/* 联系信息 */}
-          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm opacity-75">
-            <a href={`mailto:${contactEmail}`} className="hover:opacity-100 transition-opacity inline-flex items-center gap-1.5">
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm" style={{ color: '#475569' }}>
+            <a href={`mailto:${contactEmail}`} className="hover:opacity-100 transition-opacity inline-flex items-center gap-1.5" style={{ color: '#475569' }}>
               <Mail className="w-3.5 h-3.5" /> {contactEmail}
             </a>
-            <span className="hidden sm:inline opacity-40">|</span>
-            <span className="inline-flex items-center gap-1.5">
+            <span className="hidden sm:inline" style={{ opacity: 0.4 }}>|</span>
+            <span className="inline-flex items-center gap-1.5" style={{ color: '#475569' }}>
               <MapPin className="w-3.5 h-3.5" /> Guangzhou, China
             </span>
           </div>
@@ -1684,6 +1672,16 @@ export default function AboutPage() {
           25%{opacity:0.7; transform:translate(4px,-12px)}
           50%{opacity:0.4; transform:translate(-3px,-20px)}
           75%{opacity:0.65; transform:translate(5px,-8px)}
+        }
+
+        /* ===== CTA v255 — 蓝天草原主题动画 ===== */
+        @keyframes cta-sunPulse {
+          0%{opacity:0.6; transform:scale(1)}
+          100%{opacity:1; transform:scale(1.12)}
+        }
+        @keyframes cta-cloudFloat {
+          0%{transform:translateX(0) translateY(0)}
+          100%{transform:translateX(15px) translateY(-5px)}
         }
 
         /* ===== Subtle wave separator animations ===== */
