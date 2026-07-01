@@ -232,16 +232,17 @@ function StarryScene() {
 
   // Draw Background with Activity-Based Color Interpolation
   const drawBackground = (ctx: CanvasRenderingContext2D, w: number, h: number, activityLevel: number) => {
-    // v245: Brighter blue palette (user feedback: "bright color still too dark")
+    // v246: Deep blue with vibrant brightness (fix "shallow blue depressing feel")
     // Dark: #020617 (rgb 2, 6, 23) - near-black navy
-    // Bright: #5096ff (rgb 80, 150, 255) - brighter vibrant blue (not sky blue!)
+    // Bright: #4d89f4 (rgb 77, 137, 244) - 正统深蓝，鲜艳但不浅
+    // Key fix: Reduced G 150→137, reduced B 255→244 (no more "sky blue" feel)
     const baseR = 2;
     const baseG = 6;
     const baseB = 23;
     
-    const maxR = 80;   // brighter than blue-500, still rich blue
-    const maxG = 150;
-    const maxB = 255;
+    const maxR = 77;   // higher R = richer blue (not washed out)
+    const maxG = 137;  // lower G = less "shallow blue" feel
+    const maxB = 244;  // lower B = deeper blue (not neon bright)
     
     const r = Math.round(baseR + (maxR - baseR) * activityLevel);
     const g = Math.round(baseG + (maxG - baseG) * activityLevel);
