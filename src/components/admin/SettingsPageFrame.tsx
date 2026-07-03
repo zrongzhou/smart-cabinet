@@ -76,7 +76,11 @@ export default function SettingsPageFrame({ hook, title, description, backHref, 
         </div>
       ) : (
         <>
-          <div className="admin-card p-6 animate-fade-in">{children}</div>
+          <div className="admin-card p-6 animate-fade-in">
+            <fieldset disabled={saving} className="border-0 m-0 p-0 min-w-0">
+              {children}
+            </fieldset>
+          </div>
 
           {/* Saved toast */}
           {saved && (

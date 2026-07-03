@@ -1523,7 +1523,7 @@ export default function AboutPage() {
       <section
         className="py-24 px-4 sm:px-6 lg:px-8 text-white relative overflow-hidden"
         style={{
-          background: 'radial-gradient(120% 80% at 18% 0%, #7dd3fc 0%, transparent 55%), radial-gradient(120% 90% at 88% 18%, #a5f3fc 0%, transparent 52%), linear-gradient(160deg, #e0f2fe 0%, #bae6fd 35%, #7dd3fc 70%, #38bdf8 100%)',
+          background: 'radial-gradient(120% 80% at 18% 0%, #38bdf8 0%, transparent 55%), radial-gradient(120% 90% at 88% 18%, #0ea5e9 0%, transparent 52%), linear-gradient(160deg, #38bdf8 0%, #0ea5e9 35%, #0284c7 70%, #0369a1 100%)',
         }}
       >
         {/* === 背景装饰层 v262 — 水透玻璃质感 === */}
@@ -1605,17 +1605,17 @@ export default function AboutPage() {
           <div
             className="rounded-3xl px-7 py-12 sm:px-12 text-center"
             style={{
-              background: 'rgba(255,255,255,0.12)',
-              backdropFilter: 'blur(18px)',
-              WebkitBackdropFilter: 'blur(18px)',
-              border: '1px solid rgba(255,255,255,0.28)',
-              boxShadow: '0 8px 44px rgba(15, 70, 110, 0.22), inset 0 1px 0 rgba(255,255,255,0.45)',
+              background: 'linear-gradient(160deg, rgba(11,42,66,0.62) 0%, rgba(7,30,52,0.74) 100%)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255,255,255,0.22)',
+              boxShadow: '0 18px 50px rgba(8,30,52,0.35), inset 0 1px 0 rgba(255,255,255,0.18)',
             }}
           >
             {/* 标题 */}
             <h2
               className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-5 leading-tight text-white"
-              style={{ textShadow: '0 2px 12px rgba(15,70,110,0.25)' }}
+              style={{ textShadow: '0 2px 16px rgba(0,0,0,0.45)' }}
             >
               {t('about.cta.title')}
             </h2>
@@ -1641,12 +1641,12 @@ export default function AboutPage() {
               <a href={`tel:${contactPhone.replace(/\s/g, '')}`}
                 className="group relative inline-flex items-center justify-center px-8 py-4 font-semibold rounded-xl cursor-pointer text-base transition-all duration-300 hover:-translate-y-0.5"
                 style={{
-                  background: 'rgba(255,255,255,0.2)',
+                  background: 'rgba(15,23,42,0.28)',
                   border: '1.5px solid rgba(255,255,255,0.5)',
                   backdropFilter: 'blur(10px)',
                   WebkitBackdropFilter: 'blur(10px)',
                   color: '#ffffff',
-                  boxShadow: '0 6px 20px rgba(15,70,110,0.12)',
+                  boxShadow: '0 6px 20px rgba(8,30,52,0.18)',
                 }}
               >
                 <Phone className="mr-2 w-4 h-4" />

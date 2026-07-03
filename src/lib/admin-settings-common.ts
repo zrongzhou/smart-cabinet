@@ -263,8 +263,11 @@ export function useSettings(): UseSettingsReturn {
         throw new Error(errData.error || `API error: ${res.status}`);
       }
 
-      // Re-fetch so the UI reflects the persisted values.
-      await loadSettings();
+      // Reflect the just-persisted values locally. We intentionally do NOT re-fetch
+      // the GET endpoint: re-fetching opens a race window where edits the user makes
+      // during the in-flight request could be clobbered by a stale server response.
+      // `settingsToSave` is the authoritative payload we just PUT, so reuse it.
+      setSettings(normaliseSettings(settingsToSave));
 
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
@@ -314,8 +317,18 @@ export function useSettings(): UseSettingsReturn {
         headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ webhookUrl: settings.wechatWebhookUrl }),
       });
-      const data = await res.json();
-      setTestResult({ success: data.success, message: data.message });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setTestResult({
+          success: false,
+          message: data?.error || data?.message || `Webhook 测试失败（HTTP ${res.status}）`,
+        });
+        return;
+      }
+      setTestResult({
+        success: !!data?.success,
+        message: data?.message || (data?.success ? 'Webhook 测试成功' : 'Webhook 测试失败'),
+      });
     } catch (err: any) {
       setTestResult({ success: false, message: err.message || 'Failed to test webhook' });
     } finally {

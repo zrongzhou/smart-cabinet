@@ -103,7 +103,7 @@ export default function MediaPicker({ isOpen, onClose, onSelect, fileType = 'all
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
 
       {/* Modal */}
-      <div className="flex min-height-screen items-center justify-center p-4" onClick={(e) => e.stopPropagation()}>
+      <div className="flex min-h-screen items-center justify-center p-4" onClick={(e) => e.stopPropagation()}>
         <div className="relative bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[85vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200">

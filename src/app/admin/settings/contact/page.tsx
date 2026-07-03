@@ -11,9 +11,11 @@ export default function ContactSettingsPage() {
   const { settings, setSettings } = hook;
 
   const updateArray = (key: 'contactEmails' | 'contactPhones' | 'contactWhatsAppNumbers', idx: number, value: string) => {
-    const next = [...(settings[key] || [''])];
-    next[idx] = value;
-    setSettings((prev) => ({ ...prev, [key]: next }));
+    setSettings((prev) => {
+      const next = [...(prev[key] || [''])];
+      next[idx] = value;
+      return { ...prev, [key]: next };
+    });
   };
 
   const addItem = (key: 'contactEmails' | 'contactPhones' | 'contactWhatsAppNumbers') => {
@@ -21,8 +23,10 @@ export default function ContactSettingsPage() {
   };
 
   const removeItem = (key: 'contactEmails' | 'contactPhones' | 'contactWhatsAppNumbers', idx: number) => {
-    const next = (settings[key] || ['']).filter((_, i) => i !== idx);
-    setSettings((prev) => ({ ...prev, [key]: next.length ? next : [''] }));
+    setSettings((prev) => {
+      const next = (prev[key] || ['']).filter((_, i) => i !== idx);
+      return { ...prev, [key]: next.length ? next : [''] };
+    });
   };
 
   return (
