@@ -60,8 +60,8 @@ export default function SettingsPageFrame({ hook, title, description, backHref, 
         </div>
         <button
           onClick={handleSave}
-          disabled={saving}
-          className="btn-primary flex items-center space-x-2"
+          disabled={saving || loading}
+          className="btn-primary flex items-center space-x-2 disabled:opacity-60"
         >
           <Save className="w-5 h-5" />
           <span>{saving ? '保存中...' : '保存设置'}</span>
