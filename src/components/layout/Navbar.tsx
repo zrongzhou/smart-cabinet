@@ -119,7 +119,13 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
               <span className={`text-xl font-bold text-gray-900`}>{siteName}</span>
             </a>
 
-            {/* Desktop Navigation */}
+            {/* ============================================================= */}
+            {/* DESKTOP NAV LINKS + LANGUAGE SWITCHER                        */}
+            {/* HIDDEN on mobile (< md) — SHOWN on md and up only.            */}
+            {/* NOTE: Auth buttons are intentionally NOT here. They live in   */}
+            {/* the separate container below so that a responsive failure in   */}
+            {/* one group can never leak into the other on mobile.             */}
+            {/* ============================================================= */}
             <div className="hidden md:flex items-center space-x-6">
               {navLinks.map((link) => (
                 <a
@@ -161,8 +167,17 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
                   </div>
                 )}
               </div>
+            </div>
 
-              {/* Auth UI */}
+            {/* ============================================================= */}
+            {/* DESKTOP AUTH UI (SIGN IN / SIGN UP / GET QUOTE or USER MENU)  */}
+            {/* SEPARATE hidden md:flex container — independent from the       */}
+            {/* nav-links container above. HIDDEN on mobile, SHOWN on md+.     */}
+            {/* Keeping it isolated guarantees the auth group behaves as a     */}
+            {/* single unit under the responsive toggle, exactly like the      */}
+            {/* nav-links group.                                               */}
+            {/* ============================================================= */}
+            <div className="hidden md:flex items-center gap-2">
               {isAuthenticated && user ? (
                 /* User Menu */
                 <div className="relative">
@@ -211,8 +226,8 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
                   )}
                 </div>
               ) : (
-                /* Auth Button Group — unified style */
-                <div className="flex items-center gap-2">
+                /* Auth Button Group — unified style (independent of nav links) */
+                <>
                   <a
                     href={`/${locale}/login`}
                     className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 whitespace-nowrap"
@@ -231,12 +246,15 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
                   >
                     {t('nav.getQuote')}
                   </a>
-                </div>
+                </>
               )}
-
             </div>
 
-            {/* Mobile Menu Button - 44x44px touch target */}
+            {/* ============================================================= */}
+            {/* MOBILE HAMBURGER BUTTON — SHOWN ONLY on mobile (< md).         */}
+            {/* md:hidden guarantees it never appears on desktop. Tapping it   */}
+            {/* toggles the mobile sidebar (isMobileMenuOpen).                 */}
+            {/* ============================================================= */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="md:hidden p-3 rounded-lg transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-gray-100"
