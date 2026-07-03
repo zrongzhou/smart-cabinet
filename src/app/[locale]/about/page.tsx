@@ -1519,217 +1519,151 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ===== CTA v261 — 明亮清新蓝天草原（第4版云朵·纯CSS径向渐变） ===== */}
+      {/* ===== CTA v262 — 水透玻璃质感（Glassmorphism + Liquid） ===== */}
       <section
-        className="py-24 px-4 sm:px-6 lg:px-8 text-gray-900 relative overflow-hidden"
+        className="py-24 px-4 sm:px-6 lg:px-8 text-white relative overflow-hidden"
         style={{
-          background: 'linear-gradient(180deg, #60a5fa 0%, #7cb3f5 12%, #93c5fd 25%, #bfdbfe 42%, #dbeafe 55%, #ecfdf5 72%, #dcfce7 82%, #bbf7d0 92%, #86efac 100%)',
+          background: 'radial-gradient(120% 80% at 18% 0%, #7dd3fc 0%, transparent 55%), radial-gradient(120% 90% at 88% 18%, #a5f3fc 0%, transparent 52%), linear-gradient(160deg, #e0f2fe 0%, #bae6fd 35%, #7dd3fc 70%, #38bdf8 100%)',
         }}
       >
-        {/* === 背景装饰层 v261 — 明亮清新蓝天草原（精简版） === */}
+        {/* === 背景装饰层 v262 — 水透玻璃质感 === */}
 
-        {/* 太阳 + 外围光晕（右上角） */}
-        <div className="absolute pointer-events-none" style={{ top: '-2%', right: '2%', width: '400px', height: '400px' }}>
-          {/* 外围超大光晕 */}
-          <div className="absolute" style={{
-            left: '50%', top: '50%', width: '400px', height: '400px', marginLeft: '-200px', marginTop: '-200px',
-            borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(255,250,230,0.30) 0%, rgba(255,246,220,0.12) 40%, transparent 70%)',
-          }} />
-          {/* 太阳核心 — 增强亮度 */}
-          <div className="absolute" style={{
-            left: '50%', top: '50%', width: '280px', height: '280px', marginLeft: '-140px', marginTop: '-140px',
-            borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,248,210,0.7) 35%, rgba(255,220,100,0.25) 70%, transparent 86%)',
-            animation: 'cta-sunPulse 5s ease-in-out infinite alternate',
-          }} />
-        </div>
+        {/* 水面折射光带（缓慢扫过） */}
+        <div className="absolute pointer-events-none" style={{
+          left: '-25%', top: '0%', width: '150%', height: '120%',
+          background: 'linear-gradient(105deg, transparent 42%, rgba(255,255,255,0.16) 50%, transparent 58%)',
+          animation: 'cta-refractionSweep 11s ease-in-out infinite',
+        }} />
 
-        {/* 远山剪影 — 3层（提高透明度，若隐若现） */}
-        <svg className="absolute pointer-events-none" style={{ left: '-2%', bottom: '6%', width: '104%', height: '210px' }} viewBox="0 0 1200 220" preserveAspectRatio="none">
-          <path d="M0,150 Q60,118 120,136 Q200,82 280,120 Q360,58 440,112 Q520,72 600,116 Q690,64 770,110 Q860,78 940,120 Q1030,72 1110,116 Q1160,96 1200,118 L1200,220 L0,220 Z"
-            fill="rgba(130,160,185,0.18)" />
-          <path d="M0,176 Q80,148 160,166 Q260,118 360,156 Q470,108 580,154 Q690,124 800,158 Q910,134 1020,164 Q1120,140 1200,166 L1200,220 L0,220 Z"
-            fill="rgba(110,145,175,0.22)" />
-          <path d="M0,198 Q100,178 200,192 Q320,158 440,188 Q560,164 680,190 Q800,168 920,190 Q1060,170 1200,192 L1200,220 L0,220 Z"
-            fill="rgba(85,125,160,0.26)" />
-        </svg>
+        {/* 水面焦散高光（顶部两处缓慢呼吸） */}
+        <div className="absolute pointer-events-none" style={{
+          left: '8%', top: '6%', width: '320px', height: '320px',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(255,255,255,0.28) 0%, transparent 60%)',
+          animation: 'cta-waterCaustic 7s ease-in-out infinite',
+        }} />
+        <div className="absolute pointer-events-none" style={{
+          right: '12%', top: '14%', width: '260px', height: '260px',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(190,240,255,0.22) 0%, transparent 62%)',
+          animation: 'cta-waterCaustic 9s ease-in-out infinite',
+          animationDelay: '1.5s',
+        }} />
 
-        {/* 云朵1 — 左上主云 */}
-        <div className="absolute pointer-events-none"
-          style={{
-            left: '2%', top: '8%',
-            width: '320px', height: '120px',
-            borderRadius: '80px',
-            background: `
-              radial-gradient(ellipse 90px 70px at 30% 35%, rgba(255,255,255,0.95) 0%, transparent 65%),
-              radial-gradient(ellipse 70px 55px at 60% 45%, rgba(248,252,255,0.88) 0%, transparent 60%),
-              radial-gradient(ellipse 120px 80px at 50% 60%, rgba(220,235,250,0.75) 0%, transparent 70%),
-              radial-gradient(ellipse 200px 90px at 50% 80%, rgba(180,205,230,0.45) 0%, transparent 75%)
-            `,
-            boxShadow: '0 15px 40px rgba(100,150,200,0.18), inset 0 -8px 20px rgba(180,200,220,0.15)',
-            animation: 'cta-cloudDrift1 28s ease-in-out infinite alternate',
-          }}
-        />
-        <div className="absolute pointer-events-none"
-          style={{
-            left: '6%', top: '4%',
-            width: '140px', height: '65px',
-            borderRadius: '65px',
-            background: 'radial-gradient(ellipse at center, rgba(255,255,255,0.92) 0%, rgba(230,240,250,0.78) 60%, transparent 75%)',
-            animation: 'cta-cloudDrift1 28s ease-in-out infinite alternate',
-          }}
-        />
-        <div className="absolute pointer-events-none"
-          style={{
-            left: '16%', top: '2%',
-            width: '100px', height: '50px',
-            borderRadius: '50px',
-            background: 'radial-gradient(ellipse at center, rgba(255,255,255,0.88) 0%, rgba(228,240,250,0.72) 55%, transparent 70%)',
-            animation: 'cta-cloudDrift1 28s ease-in-out infinite alternate',
-          }}
-        />
-        {/* 云朵2 — 右侧更扁宽更远 */}
-        <div className="absolute pointer-events-none"
-          style={{
-            right: '10%', top: '16%',
-            width: '280px', height: '100px',
-            borderRadius: '70px',
-            background: `
-              radial-gradient(ellipse 80px 60px at 32% 40%, rgba(255,255,255,0.9) 0%, transparent 62%),
-              radial-gradient(ellipse 60px 48px at 58% 48%, rgba(246,251,255,0.82) 0%, transparent 58%),
-              radial-gradient(ellipse 110px 70px at 50% 62%, rgba(214,230,246,0.65) 0%, transparent 68%),
-              radial-gradient(ellipse 180px 80px at 50% 82%, rgba(175,200,225,0.38) 0%, transparent 74%)
-            `,
-            boxShadow: '0 12px 34px rgba(100,150,200,0.15), inset 0 -6px 16px rgba(180,200,220,0.12)',
-            animation: 'cta-cloudDrift2 24s ease-in-out infinite alternate',
-          }}
-        />
-        <div className="absolute pointer-events-none"
-          style={{
-            right: '14%', top: '12%',
-            width: '110px', height: '52px',
-            borderRadius: '52px',
-            background: 'radial-gradient(ellipse at center, rgba(255,255,255,0.86) 0%, rgba(228,240,250,0.7) 58%, transparent 74%)',
-            animation: 'cta-cloudDrift2 24s ease-in-out infinite alternate',
-          }}
-        />
-        {/* 云朵3 — 中间远处最小最淡 */}
-        <div className="absolute pointer-events-none"
-          style={{
-            right: '28%', top: '26%',
-            width: '160px', height: '65px',
-            borderRadius: '45px',
-            background: `
-              radial-gradient(ellipse 46px 38px at 34% 42%, rgba(255,255,255,0.78) 0%, transparent 60%),
-              radial-gradient(ellipse 38px 30px at 58% 50%, rgba(242,248,254,0.7) 0%, transparent 55%),
-              radial-gradient(ellipse 70px 50px at 50% 64%, rgba(206,224,240,0.5) 0%, transparent 66%),
-              radial-gradient(ellipse 120px 60px at 50% 84%, rgba(168,196,222,0.3) 0%, transparent 72%)
-            `,
-            boxShadow: '0 10px 26px rgba(100,150,200,0.12), inset 0 -5px 12px rgba(180,200,220,0.1)',
-            animation: 'cta-cloudDrift3 20s ease-in-out infinite alternate',
-          }}
-        />
+        {/* 液态玻璃球 — 水滴/水珠装饰（backdrop blur 实现玻璃质感） */}
+        <div className="absolute pointer-events-none" style={{
+          left: '4%', top: '12%', width: '240px', height: '240px', borderRadius: '50%',
+          background: 'radial-gradient(circle at 32% 28%, rgba(255,255,255,0.6) 0%, rgba(186,230,253,0.28) 55%, rgba(125,211,252,0.06) 80%)',
+          border: '1px solid rgba(255,255,255,0.35)',
+          boxShadow: 'inset 0 2px 16px rgba(255,255,255,0.7), inset -8px -10px 24px rgba(56,189,248,0.18), 0 18px 50px rgba(14,116,144,0.22)',
+          backdropFilter: 'blur(9px)', WebkitBackdropFilter: 'blur(9px)',
+          animation: 'cta-waterOrbDrift 19s ease-in-out infinite alternate',
+        }} />
+        <div className="absolute pointer-events-none" style={{
+          right: '6%', top: '20%', width: '180px', height: '180px', borderRadius: '50%',
+          background: 'radial-gradient(circle at 34% 30%, rgba(255,255,255,0.55) 0%, rgba(165,243,252,0.26) 55%, rgba(103,232,249,0.05) 80%)',
+          border: '1px solid rgba(255,255,255,0.3)',
+          boxShadow: 'inset 0 2px 14px rgba(255,255,255,0.65), inset -6px -8px 20px rgba(56,189,248,0.16), 0 14px 40px rgba(14,116,144,0.2)',
+          backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
+          animation: 'cta-waterOrbDrift2 16s ease-in-out infinite alternate',
+        }} />
+        <div className="absolute pointer-events-none" style={{
+          right: '24%', top: '4%', width: '120px', height: '120px', borderRadius: '50%',
+          background: 'radial-gradient(circle at 36% 30%, rgba(255,255,255,0.5) 0%, rgba(186,230,253,0.22) 58%, transparent 80%)',
+          border: '1px solid rgba(255,255,255,0.28)',
+          boxShadow: 'inset 0 2px 10px rgba(255,255,255,0.6), 0 10px 30px rgba(14,116,144,0.18)',
+          backdropFilter: 'blur(7px)', WebkitBackdropFilter: 'blur(7px)',
+          animation: 'cta-waterOrbDrift 22s ease-in-out infinite alternate',
+          animationDelay: '2s',
+        }} />
+        <div className="absolute pointer-events-none" style={{
+          left: '30%', bottom: '8%', width: '150px', height: '150px', borderRadius: '50%',
+          background: 'radial-gradient(circle at 34% 30%, rgba(255,255,255,0.5) 0%, rgba(165,243,252,0.24) 56%, transparent 80%)',
+          border: '1px solid rgba(255,255,255,0.26)',
+          boxShadow: 'inset 0 2px 12px rgba(255,255,255,0.6), 0 12px 34px rgba(14,116,144,0.18)',
+          backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
+          animation: 'cta-waterOrbDrift2 24s ease-in-out infinite alternate',
+          animationDelay: '1s',
+        }} />
 
-        {/* 飞鸟剪影 — 2只飞过天空 */}
-        <svg className="absolute pointer-events-none" style={{ right: '20%', top: '18%', width: '32px', height: '16px', animation: 'cta-birdFly 16s linear infinite' }} viewBox="0 0 32 16">
-          <path d="M0,8 Q8,0 16,8 Q24,0 32,8 Q24,6 16,10 Q8,6 0,8Z" fill="rgba(50,60,70,0.32)" />
-        </svg>
-        <svg className="absolute pointer-events-none" style={{ left: '15%', top: '28%', width: '24px', height: '12px', animation: 'cta-birdFly2 20s linear infinite', animationDelay: '-7s' }} viewBox="0 0 32 16">
-          <path d="M0,8 Q8,0 16,8 Q24,0 32,8 Q24,6 16,10 Q8,6 0,8Z" fill="rgba(50,60,70,0.22)" />
-        </svg>
-
-        {/* 草地层叠 — 4层波浪形自然田野（提亮） */}
-        <svg className="absolute bottom-0 left-0 w-full pointer-events-none" style={{ height: '230px' }} viewBox="0 0 1200 230" preserveAspectRatio="none">
-          <defs>
-            <linearGradient id="ctaGrass1" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="rgba(165,225,170,0.55)" />
-              <stop offset="100%" stopColor="rgba(134,208,142,0.72)" />
-            </linearGradient>
-            <linearGradient id="ctaGrass2" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="rgba(120,200,130,0.7)" />
-              <stop offset="100%" stopColor="rgba(94,172,108,0.84)" />
-            </linearGradient>
-            <linearGradient id="ctaGrass3" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="rgba(82,168,98,0.82)" />
-              <stop offset="100%" stopColor="rgba(58,144,78,0.92)" />
-            </linearGradient>
-            <linearGradient id="ctaGrass4" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="rgba(56,138,72,0.9)" />
-              <stop offset="100%" stopColor="rgba(38,114,56,0.97)" />
-            </linearGradient>
-          </defs>
-          <path d="M0,72 Q90,52 180,68 Q280,46 380,66 Q480,48 580,68 Q690,50 790,68 Q890,48 990,66 Q1080,52 1200,66 L1200,230 L0,230 Z" fill="url(#ctaGrass1)" />
-          <path d="M0,112 Q110,94 220,110 Q330,88 450,108 Q560,92 680,110 Q800,90 920,110 Q1040,94 1200,112 L1200,230 L0,230 Z" fill="url(#ctaGrass2)" />
-          <path d="M0,152 Q100,136 210,152 Q320,132 440,150 Q560,134 690,152 Q810,134 940,152 Q1060,136 1200,152 L1200,230 L0,230 Z" fill="url(#ctaGrass3)" />
-          <path d="M0,190 Q120,178 240,190 Q360,174 500,190 Q620,176 760,190 Q880,176 1020,190 Q1120,180 1200,190 L1200,230 L0,230 Z" fill="url(#ctaGrass4)" />
-          <path d="M180,190 Q186,176 190,166 Q194,176 198,190 Z" fill="rgba(34,100,52,0.92)" style={{ transformBox: 'fill-box', transformOrigin: 'bottom center', animation: 'cta-grassSway 2.8s ease-in-out infinite alternate' }} />
-          <path d="M520,190 Q528,172 534,158 Q540,172 546,190 Z" fill="rgba(34,100,52,0.92)" style={{ transformBox: 'fill-box', transformOrigin: 'bottom center', animation: 'cta-grassSway 3.1s ease-in-out infinite alternate', animationDelay: '0.4s' }} />
-          <path d="M880,190 Q888,174 894,162 Q900,174 906,190 Z" fill="rgba(34,100,52,0.92)" style={{ transformBox: 'fill-box', transformOrigin: 'bottom center', animation: 'cta-grassSway 2.6s ease-in-out infinite alternate', animationDelay: '0.8s' }} />
-        </svg>
-
-        {/* 大气粒子 — 5个暖白色光尘 */}
-        {[...Array(5)].map((_, i) => (
-          <div key={`cta-p-${i}`} className="absolute rounded-full pointer-events-none" style={{
-            width: `${3 + (i % 3)}px`,
-            height: `${3 + (i % 3)}px`,
-            left: `${8 + (i * 17)}%`,
-            top: `${12 + (i * 11)}%`,
-            background: `rgba(255,250,235,${0.6 + (i * 0.08)})`,
-            boxShadow: `0 0 ${4 + i}px rgba(255,248,220,${0.3 + i * 0.1})`,
-            animation: `cta-sparkle ${2 + i * 0.5}s ease-in-out infinite alternate`,
-            animationDelay: `${i * 0.4}s`,
+        {/* 上升气泡 — 水中气泡 */}
+        {[...Array(7)].map((_, i) => (
+          <div key={`cta-bubble-${i}`} className="absolute rounded-full pointer-events-none" style={{
+            left: `${6 + i * 13}%`,
+            bottom: '-30px',
+            width: `${6 + (i % 4) * 4}px`,
+            height: `${6 + (i % 4) * 4}px`,
+            background: 'rgba(255,255,255,0.45)',
+            boxShadow: '0 0 8px rgba(255,255,255,0.5)',
+            animation: `cta-bubbleRise ${7 + (i % 5) * 1.5}s linear infinite`,
+            animationDelay: `${(i * 1.3).toFixed(1)}s`,
           }} />
         ))}
 
-        {/* 内容区 */}
-        <div className="max-w-4xl mx-auto text-center relative z-10">
-          {/* 标题 */}
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-5 leading-tight" style={{ color: '#0f172a' }}>
-            {t('about.cta.title')}
-          </h2>
-          <p className="text-lg sm:text-xl mb-10 max-w-2xl mx-auto leading-relaxed" style={{ color: '#334155' }}>
-            {t('about.cta.subtitle')}
-          </p>
-
-          {/* 按钮组 */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
-            <a href={`/${locale}/contact`}
-              className="group relative inline-flex items-center justify-center px-10 py-4 font-bold rounded-xl overflow-hidden cursor-pointer text-base transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl"
-              style={{
-                background: 'linear-gradient(135deg, rgba(16,185,129,0.9) 0%, rgba(5,150,105,0.85) 100%)',
-                color: '#ffffff',
-                boxShadow: '0 8px 32px rgba(16,185,129,0.35), 0 0 0 1px rgba(255,255,255,0.15) inset',
-              }}
+        {/* 内容区 — 玻璃拟态面板 */}
+        <div className="relative z-10 mx-auto max-w-3xl px-4">
+          <div
+            className="rounded-3xl px-7 py-12 sm:px-12 text-center"
+            style={{
+              background: 'rgba(255,255,255,0.12)',
+              backdropFilter: 'blur(18px)',
+              WebkitBackdropFilter: 'blur(18px)',
+              border: '1px solid rgba(255,255,255,0.28)',
+              boxShadow: '0 8px 44px rgba(15, 70, 110, 0.22), inset 0 1px 0 rgba(255,255,255,0.45)',
+            }}
+          >
+            {/* 标题 */}
+            <h2
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-5 leading-tight text-white"
+              style={{ textShadow: '0 2px 12px rgba(15,70,110,0.25)' }}
             >
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                {t('nav.contact')}
-                <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              {t('about.cta.title')}
+            </h2>
+            <p className="text-lg sm:text-xl mb-10 max-w-2xl mx-auto leading-relaxed text-white/90">
+              {t('about.cta.subtitle')}
+            </p>
+
+            {/* 按钮组 */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+              <a href={`/${locale}/contact`}
+                className="group relative inline-flex items-center justify-center px-10 py-4 font-bold rounded-xl overflow-hidden cursor-pointer text-base transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(16,185,129,0.95) 0%, rgba(5,150,105,0.9) 100%)',
+                  color: '#ffffff',
+                  boxShadow: '0 8px 32px rgba(16,185,129,0.4), 0 0 0 1px rgba(255,255,255,0.2) inset',
+                }}
+              >
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  {t('nav.contact')}
+                  <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </span>
+              </a>
+              <a href={`tel:${contactPhone.replace(/\s/g, '')}`}
+                className="group relative inline-flex items-center justify-center px-8 py-4 font-semibold rounded-xl cursor-pointer text-base transition-all duration-300 hover:-translate-y-0.5"
+                style={{
+                  background: 'rgba(255,255,255,0.2)',
+                  border: '1.5px solid rgba(255,255,255,0.5)',
+                  backdropFilter: 'blur(10px)',
+                  WebkitBackdropFilter: 'blur(10px)',
+                  color: '#ffffff',
+                  boxShadow: '0 6px 20px rgba(15,70,110,0.12)',
+                }}
+              >
+                <Phone className="mr-2 w-4 h-4" />
+                {contactPhone}
+              </a>
+            </div>
+
+            {/* 联系信息 */}
+            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-white/90">
+              <a href={`mailto:${contactEmail}`} className="hover:text-white transition-opacity inline-flex items-center gap-1.5 opacity-90 hover:opacity-100">
+                <Mail className="w-3.5 h-3.5" /> {contactEmail}
+              </a>
+              <span className="hidden sm:inline" style={{ opacity: 0.5 }}>|</span>
+              <span className="inline-flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5" /> Guangzhou, China
               </span>
-            </a>
-            <a href={`tel:${contactPhone.replace(/\s/g, '')}`}
-              className="group relative inline-flex items-center justify-center px-8 py-4 font-semibold rounded-xl cursor-pointer text-base transition-all duration-300 hover:-translate-y-0.5"
-              style={{
-                background: 'rgba(255,255,255,0.75)',
-                border: '1.5px solid rgba(148,163,184,0.4)',
-                backdropFilter: 'blur(8px)',
-                color: '#1e293b',
-              }}
-            >
-              <Phone className="mr-2 w-4 h-4" />
-              {contactPhone}
-            </a>
-          </div>
-
-          {/* 联系信息 */}
-          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm" style={{ color: '#475569' }}>
-            <a href={`mailto:${contactEmail}`} className="hover:opacity-100 transition-opacity inline-flex items-center gap-1.5" style={{ color: '#475569' }}>
-              <Mail className="w-3.5 h-3.5" /> {contactEmail}
-            </a>
-            <span className="hidden sm:inline" style={{ opacity: 0.4 }}>|</span>
-            <span className="inline-flex items-center gap-1.5" style={{ color: '#475569' }}>
-              <MapPin className="w-3.5 h-3.5" /> Guangzhou, China
-            </span>
+            </div>
           </div>
         </div>
 
@@ -1806,52 +1740,33 @@ export default function AboutPage() {
           75%{opacity:0.65; transform:translate(5px,-8px)}
         }
 
-        /* ===== CTA v258 — 电影级蓝天草原主题动画 ===== */
+        /* ===== CTA v262 — 水透玻璃质感动画 ===== */
 
-        /* 太阳光晕 — 强呼吸效果 */
-        @keyframes cta-sunPulse {
-          0%{opacity:0.7; transform:scale(0.96)}
-          100%{opacity:1; transform:scale(1.12)}
+        /* 液态玻璃球缓慢漂移 */
+        @keyframes cta-waterOrbDrift {
+          0%{transform:translate(0,0) scale(1)}
+          100%{transform:translate(20px,-16px) scale(1.07)}
         }
-        /* 云朵飘动 — 每朵云不同轨迹 */
-        @keyframes cta-cloudDrift1 {
-          0%{transform:translateX(0) translateY(0)}
-          50%{transform:translateX(22px) translateY(-8px)}
-          100%{transform:translateX(38px) translateY(-4px)}
+        @keyframes cta-waterOrbDrift2 {
+          0%{transform:translate(0,0) scale(1)}
+          100%{transform:translate(-18px,14px) scale(1.06)}
         }
-        @keyframes cta-cloudDrift2 {
-          0%{transform:translateX(0) translateY(0)}
-          50%{transform:translateX(-20px) translateY(-10px)}
-          100%{transform:translateX(-32px) translateY(-3px)}
+        /* 水中气泡上升 */
+        @keyframes cta-bubbleRise {
+          0%{transform:translateY(0) scale(0.6); opacity:0}
+          12%{opacity:0.75}
+          82%{opacity:0.5}
+          100%{transform:translateY(-460px) scale(1); opacity:0}
         }
-        @keyframes cta-cloudDrift3 {
-          0%{transform:translateX(0) translateY(0)}
-          40%{transform:translateX(14px) translateY(-6px)}
-          100%{transform:translateX(24px) translateY(-2px)}
+        /* 水面折射光带缓慢扫过 */
+        @keyframes cta-refractionSweep {
+          0%,100%{transform:translateX(-8%) rotate(0deg)}
+          50%{transform:translateX(6%) rotate(2deg)}
         }
-        /* 草地摇摆 — 风吹效果（前景草丛） */
-        @keyframes cta-grassSway {
-          0%{transform:rotate(-3deg) skewX(0deg)}
-          100%{transform:rotate(3deg) skewX(1.5deg)}
-        }
-        /* 微光粒子闪烁 */
-        @keyframes cta-sparkle {
-          0%{opacity:0.18; transform:scale(0.5) translate(0, 0)}
-          60%{opacity:1; transform:scale(1.3) translate(2px, -3px)}
-          100%{opacity:0.4; transform:scale(0.8) translate(-1px, -1px)}
-        }
-        /* 飞鸟飞过 */
-        @keyframes cta-birdFly {
-          0%{transform:translateX(0) translateY(0); opacity:0}
-          5%{opacity:0.32}
-          90%{opacity:0.32}
-          100%{transform:translateX(-280px) translateY(30px); opacity:0}
-        }
-        @keyframes cta-birdFly2 {
-          0%{transform:translateX(0) translateY(0); opacity:0}
-          5%{opacity:0.22}
-          90%{opacity:0.22}
-          100%{transform:translateX(220px) translateY(-20px); opacity:0}
+        /* 水面焦散高光呼吸 */
+        @keyframes cta-waterCaustic {
+          0%,100%{opacity:0.3; transform:scale(1)}
+          50%{opacity:0.55; transform:scale(1.14)}
         }
 
         /* ===== Subtle wave separator animations ===== */
