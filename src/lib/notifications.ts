@@ -235,6 +235,106 @@ export async function sendPersonalWeChatNotification(
 }
 
 /**
+ * 企业微信应用消息设置
+ * 通过企业微信"自建应用"API向成员发私信
+ * 需要: corpId(企业ID) + agentId(应用ID) + secret(密钥) + toUser(接收人userId)
+ */
+interface WeComAppSettings {
+  enabled: boolean;
+  corpId: string;
+  agentId: string;
+  secret: string;
+  toUser: string; // 接收人的 userId 或 @all
+}
+
+async function getWeComAppSettings(): Promise<WeComAppSettings | null> {
+  try {
+    const { PrismaClient } = await import('@prisma/client');
+    const prisma = new PrismaClient();
+    try {
+      const keys = ['wecomAppEnabled', 'wecomCorpId', 'wecomAgentId', 'wecomSecret', 'wecomToUser'];
+      const entries = await Promise.all(
+        keys.map(k => prisma.siteSettings.findUnique({ where: { key: k } }))
+      );
+      // site_settings.value 为 Json 列，enabled 可能是 boolean 或字符串 'true'，其余为字符串
+      const raw = entries.map(e => e?.value);
+      const enabled = raw[0] === true || raw[0] === 'true';
+      const corpId = raw[1] != null ? String(raw[1]) : '';
+      const agentId = raw[2] != null ? String(raw[2]) : '';
+      const secret = raw[3] != null ? String(raw[3]) : '';
+
+      if (!enabled || !corpId || !agentId || !secret) return null;
+      return {
+        enabled,
+        corpId,
+        agentId,
+        secret,
+        toUser: raw[4] != null ? String(raw[4]) : '@all',
+      };
+    } finally { await prisma.$disconnect(); }
+  } catch (error) {
+    console.error('Error fetching WeCom app settings:', error);
+    return null;
+  }
+}
+
+// 获取 access_token（带简单缓存，5分钟内有效）
+let _tokenCache: { token: string; expiresAt: number } | null = null;
+
+async function getWeComAccessToken(corpId: string, secret: string): Promise<string | null> {
+  if (_tokenCache && Date.now() < _tokenCache.expiresAt) return _tokenCache.token;
+
+  try {
+    const res = await fetch(
+      `https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=${corpId}&corpsecret=${secret}`
+    );
+    const data = await res.json();
+    if (data.errcode !== 0 || !data.access_token) return null;
+
+    _tokenCache = {
+      token: data.access_token,
+      expiresAt: Date.now() + (data.expires_in - 300) * 1000, // 提前5分钟过期
+    };
+    return data.token;
+  } catch { return null; }
+}
+
+export async function sendWeComAppNotification(title: string, content: string): Promise<boolean> {
+  const settings = await getWeComAppSettings();
+  if (!settings?.enabled || !settings.corpId || !settings.agentId || !settings.secret) return false;
+
+  try {
+    const accessToken = await getWeComAccessToken(settings.corpId, settings.secret);
+    if (!accessToken) return false;
+
+    // 发送文本卡片消息
+    const res = await fetch(
+      `https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=${accessToken}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          touser: settings.toUser,
+          msgtype: 'textcard',
+          agentid: parseInt(settings.agentId, 10),
+          textcard: {
+            title: title.substring(0, 48),
+            description: content.substring(0, 800),
+            url: '',
+            btntext: '查看详情',
+          },
+        }),
+      }
+    );
+    const data = await res.json();
+    return data.errcode === 0;
+  } catch (error) {
+    console.error('Error sending WeCom app notification:', error);
+    return false;
+  }
+}
+
+/**
  * Send notification (main entry point)
  * This function is non-blocking and will not throw errors
  */
@@ -275,6 +375,15 @@ export async function sendNotification(data: NotificationData): Promise<void> {
       await sendPersonalWeChatNotification(personalTitle, personalContent);
     } catch {
       /* don't block the main flow */
+    }
+
+    // Also try enterprise WeChat application message — non-blocking
+    try {
+      const appTitle = data.type === 'contact' ? '📬 新联系消息' : '🛒 新订单';
+      const appContent = markdownContent;
+      await sendWeComAppNotification(appTitle, appContent);
+    } catch {
+      /* don't block */
     }
   } catch (error) {
     // Never block the main flow

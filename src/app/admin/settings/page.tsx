@@ -53,6 +53,11 @@ interface SiteSettings {
   wechatNotificationEnabled: boolean;
   wechatPersonalEnabled: boolean;
   wechatPersonalSendKey: string;
+  wecomAppEnabled: boolean;
+  wecomCorpId: string;
+  wecomAgentId: string;
+  wecomSecret: string;
+  wecomToUser: string;
 }
 
 // Simple Error Boundary for MediaPicker
@@ -114,6 +119,11 @@ export default function AdminSettingsPage() {
     wechatNotificationEnabled: false,
     wechatPersonalEnabled: false,
     wechatPersonalSendKey: '',
+    wecomAppEnabled: false,
+    wecomCorpId: '',
+    wecomAgentId: '',
+    wecomSecret: '',
+    wecomToUser: '',
   });
 
   const [activeTab, setActiveTab] = useState('company');
@@ -1011,6 +1021,67 @@ export default function AdminSettingsPage() {
                         3. 用微信扫描绑定 Server酱公众号即可接收消息
                       </p>
                     </div>
+                  </div>
+
+                  {/* 企业微信应用消息 */}
+                  <div className="border-t border-gray-200 pt-6">
+                    <h3 className="text-base font-semibold text-gray-900 mb-2">企业微信应用消息</h3>
+                    <p className="text-sm text-gray-500 mb-4">通过企业微信"自建应用"向成员发送私信（需企业管理员权限创建应用）</p>
+
+                    {/* Enable Switch */}
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-sm font-medium text-gray-700">启用应用消息</span>
+                      <button type="button"
+                        onClick={() => setSettings({...settings, wecomAppEnabled: !settings.wecomAppEnabled})}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${settings.wecomAppEnabled ? 'bg-blue-600' : 'bg-gray-200'}`}
+                      >
+                        <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${settings.wecomAppEnabled ? 'translate-x-6' : 'translate-x-1'}`} />
+                      </button>
+                    </div>
+
+                    {settings.wecomAppEnabled && (
+                      <div className="space-y-3 bg-blue-50/50 p-4 rounded-lg">
+                        {/* Corp ID */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">企业ID (Corp ID)</label>
+                          <input type="text" value={settings.wecomCorpId || ''}
+                            onChange={(e) => setSettings({...settings, wecomCorpId: e.target.value})}
+                            className="admin-form-input w-full font-mono text-sm"
+                            placeholder="wwxxxxxxxxxxxxxxx" />
+                        </div>
+                        {/* Agent ID */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">应用ID (Agent ID)</label>
+                          <input type="text" value={settings.wecomAgentId || ''}
+                            onChange={(e) => setSettings({...settings, wecomAgentId: e.target.value})}
+                            className="admin-form-input w-full font-mono text-sm"
+                            placeholder="1000002" />
+                        </div>
+                        {/* Secret */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">应用Secret</label>
+                          <input type="password" value={settings.wecomSecret || ''} autoComplete="off"
+                            onChange={(e) => setSettings({...settings, wecomSecret: e.target.value})}
+                            className="admin-form-input w-full font-mono text-sm"
+                            placeholder="xxxxxxxxxxxxxxxxxxxxxxxx" />
+                        </div>
+                        {/* To User */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">接收人 UserID</label>
+                          <input type="text" value={settings.wecomToUser || ''}
+                            onChange={(e) => setSettings({...settings, wecomToUser: e.target.value})}
+                            className="admin-form-input w-full font-mono text-sm"
+                            placeholder="@all（或具体 userId，多个用|分隔）" />
+                        </div>
+                        <p className="mt-2 text-xs text-gray-500 leading-relaxed">
+                          1. 登录 <strong>企业微信管理后台</strong> → 应用管理 → 创建自建应用<br/>
+                          2. 在应用详情页获取 Agent ID 和 Secret<br/>
+                          3. 在"我的企业"→"企业信息"中获取 Corp ID<br/>
+                          4. 确保应用的"可见范围"包含目标接收人<br/>
+                          ⚠️ 只能发给本企业的企业微信成员，无法推送给外部人员
+                        </p>
+                      </div>
+                    )}
                   </div>
 
                   {/* Webhook URL */}

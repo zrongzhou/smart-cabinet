@@ -1519,136 +1519,117 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ===== CTA v258 — 电影级蓝天草原（去卡通化） ===== */}
+      {/* ===== CTA v261 — 明亮清新蓝天草原（第4版云朵·纯CSS径向渐变） ===== */}
       <section
         className="py-24 px-4 sm:px-6 lg:px-8 text-gray-900 relative overflow-hidden"
         style={{
-          background: 'linear-gradient(180deg, #4a90e2 0%, #5ba3eb 15%, #72b8f0 30%, #89ccf5 45%, #a6ddf2 58%, #c4e8f6 70%, #dff0fa 80%, #eef8fd 88%, #ecf8e5 94%, #d4edda 100%)',
+          background: 'linear-gradient(180deg, #60a5fa 0%, #7cb3f5 12%, #93c5fd 25%, #bfdbfe 42%, #dbeafe 55%, #ecfdf5 72%, #dcfce7 82%, #bbf7d0 92%, #86efac 100%)',
         }}
       >
-        {/* === 背景装饰层 v258 — 电影级自然风光 === */}
+        {/* === 背景装饰层 v261 — 明亮清新蓝天草原（精简版） === */}
 
-        {/* 大气雾霾层（空气散射） — 多层超大模糊椭圆 */}
-        <div className="absolute inset-0 pointer-events-none" style={{ overflow: 'hidden' }}>
-          <div className="absolute" style={{ left: '-12%', top: '-8%', width: '62%', height: '52%', borderRadius: '50%', background: 'radial-gradient(ellipse at center, rgba(210,230,250,0.35) 0%, transparent 70%)', filter: 'blur(60px)' }} />
-          <div className="absolute" style={{ right: '-16%', top: '-12%', width: '72%', height: '56%', borderRadius: '50%', background: 'radial-gradient(ellipse at center, rgba(235,245,255,0.28) 0%, transparent 70%)', filter: 'blur(80px)' }} />
-          <div className="absolute" style={{ left: '18%', bottom: '-22%', width: '84%', height: '46%', borderRadius: '50%', background: 'radial-gradient(ellipse at center, rgba(220,238,252,0.22) 0%, transparent 70%)', filter: 'blur(50px)' }} />
-        </div>
-
-        {/* 天空光斑 — 左上淡蓝（缓慢脉动） */}
-        <div className="absolute top-[1%] left-[-3%] w-[360px] h-[290px] rounded-full pointer-events-none" style={{
-          background: 'radial-gradient(ellipse at center, rgba(150,200,255,0.32) 0%, rgba(191,219,254,0.16) 50%, transparent 75%)',
-          filter: 'blur(3px)',
-          animation: 'cta-skyGlow 7s ease-in-out infinite alternate',
-        }} />
-
-        {/* 太阳 + 光线系统（右上角） */}
-        <div className="absolute pointer-events-none" style={{ top: '-4%', right: '4%', width: '560px', height: '560px' }}>
-          {/* 体积光 — 宽斜条（右上→左下） */}
+        {/* 太阳 + 外围光晕（右上角） */}
+        <div className="absolute pointer-events-none" style={{ top: '-2%', right: '2%', width: '400px', height: '400px' }}>
+          {/* 外围超大光晕 */}
           <div className="absolute" style={{
-            left: '50%', top: '50%', width: '200px', height: '960px', marginLeft: '-100px',
-            background: 'linear-gradient(180deg, rgba(255,252,240,0.10) 0%, rgba(255,250,235,0.04) 42%, transparent 76%)',
-            filter: 'blur(38px)', transformOrigin: 'top center', transform: 'rotate(-40deg)',
-            animation: 'cta-godray 14s ease-in-out infinite alternate',
-          }} />
-          {/* 光线射线 — conic-gradient 旋转光束 */}
-          <div className="absolute" style={{
-            left: '50%', top: '50%', width: '1000px', height: '1000px', marginLeft: '-500px', marginTop: '-500px',
+            left: '50%', top: '50%', width: '400px', height: '400px', marginLeft: '-200px', marginTop: '-200px',
             borderRadius: '50%',
-            background: 'conic-gradient(from 0deg, rgba(255,252,240,0.06) 0deg, transparent 9deg, transparent 23deg, rgba(255,252,240,0.05) 31deg, transparent 39deg, transparent 53deg, rgba(255,252,240,0.06) 61deg, transparent 73deg, transparent 87deg, rgba(255,252,240,0.05) 95deg, transparent 100deg)',
-            WebkitMaskImage: 'radial-gradient(circle, transparent 8%, black 9%, black 62%, transparent 72%)',
-            maskImage: 'radial-gradient(circle, transparent 8%, black 9%, black 62%, transparent 72%)',
-            animation: 'cta-raySpin 32s linear infinite',
+            background: 'radial-gradient(circle, rgba(255,250,230,0.30) 0%, rgba(255,246,220,0.12) 40%, transparent 70%)',
           }} />
-          {/* 太阳核心 — 径向渐变 白→淡黄→透明 */}
+          {/* 太阳核心 — 增强亮度 */}
           <div className="absolute" style={{
-            left: '50%', top: '50%', width: '230px', height: '230px', marginLeft: '-115px', marginTop: '-115px',
+            left: '50%', top: '50%', width: '280px', height: '280px', marginLeft: '-140px', marginTop: '-140px',
             borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(255,255,255,0.96) 0%, rgba(255,250,230,0.85) 12%, rgba(255,243,205,0.5) 30%, rgba(254,225,160,0.2) 55%, transparent 76%)',
+            background: 'radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,248,210,0.7) 35%, rgba(255,220,100,0.25) 70%, transparent 86%)',
             animation: 'cta-sunPulse 5s ease-in-out infinite alternate',
           }} />
-          {/* 镜头光晕 lens flare — 太阳左下方 */}
-          <div className="absolute" style={{
-            left: '20%', top: '64%', width: '48px', height: '48px', borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(255,250,230,0.45) 0%, rgba(255,248,220,0.18) 50%, transparent 75%)',
-            filter: 'blur(2px)',
-          }} />
-          <div className="absolute" style={{
-            left: '8%', top: '78%', width: '26px', height: '26px', borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(255,248,225,0.4) 0%, transparent 70%)',
-          }} />
         </div>
 
-        {/* 远山剪影 — 3层层叠雾气山脉 */}
+        {/* 远山剪影 — 3层（提高透明度，若隐若现） */}
         <svg className="absolute pointer-events-none" style={{ left: '-2%', bottom: '6%', width: '104%', height: '210px' }} viewBox="0 0 1200 220" preserveAspectRatio="none">
-          {/* 最远层 — 最淡最高 */}
           <path d="M0,150 Q60,118 120,136 Q200,82 280,120 Q360,58 440,112 Q520,72 600,116 Q690,64 770,110 Q860,78 940,120 Q1030,72 1110,116 Q1160,96 1200,118 L1200,220 L0,220 Z"
-            fill="rgba(100,130,160,0.12)" />
-          {/* 中间层 — 中等 */}
+            fill="rgba(130,160,185,0.18)" />
           <path d="M0,176 Q80,148 160,166 Q260,118 360,156 Q470,108 580,154 Q690,124 800,158 Q910,134 1020,164 Q1120,140 1200,166 L1200,220 L0,220 Z"
-            fill="rgba(80,110,140,0.18)" />
-          {/* 最近层 — 最深最低 */}
+            fill="rgba(110,145,175,0.22)" />
           <path d="M0,198 Q100,178 200,192 Q320,158 440,188 Q560,164 680,190 Q800,168 920,190 Q1060,170 1200,192 L1200,220 L0,220 Z"
-            fill="rgba(60,90,120,0.22)" />
+            fill="rgba(85,125,160,0.26)" />
         </svg>
-        {/* 雾气带 — 层间水平渐变模糊 */}
-        <div className="absolute pointer-events-none" style={{ left: '-2%', bottom: '20%', width: '104%', height: '34px', background: 'linear-gradient(180deg, transparent, rgba(206,226,245,0.14), transparent)', filter: 'blur(18px)', animation: 'cta-fogDrift 16s ease-in-out infinite alternate' }} />
-        <div className="absolute pointer-events-none" style={{ left: '-2%', bottom: '11%', width: '104%', height: '30px', background: 'linear-gradient(180deg, transparent, rgba(198,220,242,0.12), transparent)', filter: 'blur(16px)' }} />
 
-        {/* 体积云 — SVG滤镜真实云朵（2朵大云 + 1朵远云） */}
-        {/* 云朵1 — 左上大（慢速飘动） */}
-        <svg className="absolute pointer-events-none" style={{ left: '3%', top: '6%', width: '340px', height: '150px', filter: 'drop-shadow(0 8px 20px rgba(80,120,170,0.15))', animation: 'cta-cloudDrift1 26s ease-in-out infinite alternate' }} viewBox="0 0 340 150">
-          <defs>
-            <filter id="cloudFilter1" x="-20%" y="-20%" width="140%" height="140%">
-              <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="3" result="noise" />
-              <feDisplacementMap in="SourceGraphic" in2="noise" scale="12" xChannelSelector="R" yChannelSelector="G" />
-              <feGaussianBlur stdDeviation="2" />
-            </filter>
-            <linearGradient id="cloudGrad1" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="rgba(255,255,255,0.97)" />
-              <stop offset="40%" stopColor="rgba(248,252,255,0.92)" />
-              <stop offset="70%" stopColor="rgba(230,240,250,0.82)" />
-              <stop offset="100%" stopColor="rgba(200,220,235,0.65)" />
-            </linearGradient>
-          </defs>
-          <path d="M60,95 Q50,75 70,55 Q85,35 115,40 Q135,20 170,30 Q200,15 230,38 Q260,25 280,50 Q310,42 320,68 Q330,85 315,100 Q300,118 260,115 Q220,125 170,120 Q130,125 95,110 Q68,105 60,95Z" fill="url(#cloudGrad1)" filter="url(#cloudFilter1)" />
-          <path d="M75,62 Q95,42 130,48 Q160,35 195,46 Q225,38 250,56 Q270,48 290,65 Q295,78 275,86 Q240,92 185,88 Q140,92 100,82 Q78,76 75,62Z" fill="rgba(255,255,255,0.45)" filter="url(#cloudFilter1)" style={{ mixBlendMode: 'overlay' }} />
-        </svg>
-        {/* 云朵2 — 右上中（更扁宽，中速飘动） */}
-        <svg className="absolute pointer-events-none" style={{ right: '8%', top: '13%', width: '300px', height: '130px', filter: 'drop-shadow(0 9px 18px rgba(80,120,170,0.14))', animation: 'cta-cloudDrift2 22s ease-in-out infinite alternate' }} viewBox="0 0 300 130">
-          <defs>
-            <filter id="cloudFilter2" x="-20%" y="-20%" width="140%" height="140%">
-              <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="3" result="noise" />
-              <feDisplacementMap in="SourceGraphic" in2="noise" scale="14" xChannelSelector="R" yChannelSelector="G" />
-              <feGaussianBlur stdDeviation="2" />
-            </filter>
-            <linearGradient id="cloudGrad2" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="rgba(255,255,255,0.96)" />
-              <stop offset="40%" stopColor="rgba(247,251,255,0.9)" />
-              <stop offset="70%" stopColor="rgba(228,238,249,0.8)" />
-              <stop offset="100%" stopColor="rgba(198,218,234,0.62)" />
-            </linearGradient>
-          </defs>
-          <path d="M45,82 Q38,65 52,48 Q68,28 98,34 Q128,18 158,32 Q188,20 218,38 Q248,28 262,52 Q275,68 262,85 Q248,102 205,98 Q158,105 108,96 Q68,100 45,82Z" fill="url(#cloudGrad2)" filter="url(#cloudFilter2)" />
-          <path d="M60,60 Q72,40 102,46 Q132,32 162,46 Q192,36 222,54 Q245,46 255,66 Q258,78 238,84 Q195,90 150,86 Q108,90 78,80 Q58,74 60,60Z" fill="rgba(255,255,255,0.42)" filter="url(#cloudFilter2)" style={{ mixBlendMode: 'overlay' }} />
-        </svg>
-        {/* 云朵3 — 中间偏右远处（更小更淡，快速飘动） */}
-        <svg className="absolute pointer-events-none" style={{ right: '32%', top: '24%', width: '170px', height: '90px', opacity: 0.78, filter: 'drop-shadow(0 6px 12px rgba(80,120,170,0.1))', animation: 'cta-cloudDrift3 18s ease-in-out infinite alternate' }} viewBox="0 0 170 90">
-          <defs>
-            <filter id="cloudFilter3" x="-20%" y="-20%" width="140%" height="140%">
-              <feTurbulence type="fractalNoise" baseFrequency="0.024" numOctaves="2" result="noise" />
-              <feDisplacementMap in="SourceGraphic" in2="noise" scale="9" xChannelSelector="R" yChannelSelector="G" />
-              <feGaussianBlur stdDeviation="1.5" />
-            </filter>
-            <linearGradient id="cloudGrad3" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="rgba(255,255,255,0.95)" />
-              <stop offset="55%" stopColor="rgba(240,247,254,0.85)" />
-              <stop offset="100%" stopColor="rgba(212,228,242,0.6)" />
-            </linearGradient>
-          </defs>
-          <path d="M30,52 Q24,40 38,28 Q54,16 80,22 Q104,12 128,26 Q148,18 156,38 Q162,52 150,62 Q138,74 108,70 Q78,76 50,66 Q32,62 30,52Z" fill="url(#cloudGrad3)" filter="url(#cloudFilter3)" />
-          <path d="M42,40 Q54,28 80,33 Q104,26 126,39 Q140,34 150,50 Q152,58 138,62 Q104,66 70,62 Q48,64 40,54 Q34,48 42,40Z" fill="rgba(255,255,255,0.4)" filter="url(#cloudFilter3)" style={{ mixBlendMode: 'overlay' }} />
-        </svg>
+        {/* 云朵1 — 左上主云 */}
+        <div className="absolute pointer-events-none"
+          style={{
+            left: '2%', top: '8%',
+            width: '320px', height: '120px',
+            borderRadius: '80px',
+            background: `
+              radial-gradient(ellipse 90px 70px at 30% 35%, rgba(255,255,255,0.95) 0%, transparent 65%),
+              radial-gradient(ellipse 70px 55px at 60% 45%, rgba(248,252,255,0.88) 0%, transparent 60%),
+              radial-gradient(ellipse 120px 80px at 50% 60%, rgba(220,235,250,0.75) 0%, transparent 70%),
+              radial-gradient(ellipse 200px 90px at 50% 80%, rgba(180,205,230,0.45) 0%, transparent 75%)
+            `,
+            boxShadow: '0 15px 40px rgba(100,150,200,0.18), inset 0 -8px 20px rgba(180,200,220,0.15)',
+            animation: 'cta-cloudDrift1 28s ease-in-out infinite alternate',
+          }}
+        />
+        <div className="absolute pointer-events-none"
+          style={{
+            left: '6%', top: '4%',
+            width: '140px', height: '65px',
+            borderRadius: '65px',
+            background: 'radial-gradient(ellipse at center, rgba(255,255,255,0.92) 0%, rgba(230,240,250,0.78) 60%, transparent 75%)',
+            animation: 'cta-cloudDrift1 28s ease-in-out infinite alternate',
+          }}
+        />
+        <div className="absolute pointer-events-none"
+          style={{
+            left: '16%', top: '2%',
+            width: '100px', height: '50px',
+            borderRadius: '50px',
+            background: 'radial-gradient(ellipse at center, rgba(255,255,255,0.88) 0%, rgba(228,240,250,0.72) 55%, transparent 70%)',
+            animation: 'cta-cloudDrift1 28s ease-in-out infinite alternate',
+          }}
+        />
+        {/* 云朵2 — 右侧更扁宽更远 */}
+        <div className="absolute pointer-events-none"
+          style={{
+            right: '10%', top: '16%',
+            width: '280px', height: '100px',
+            borderRadius: '70px',
+            background: `
+              radial-gradient(ellipse 80px 60px at 32% 40%, rgba(255,255,255,0.9) 0%, transparent 62%),
+              radial-gradient(ellipse 60px 48px at 58% 48%, rgba(246,251,255,0.82) 0%, transparent 58%),
+              radial-gradient(ellipse 110px 70px at 50% 62%, rgba(214,230,246,0.65) 0%, transparent 68%),
+              radial-gradient(ellipse 180px 80px at 50% 82%, rgba(175,200,225,0.38) 0%, transparent 74%)
+            `,
+            boxShadow: '0 12px 34px rgba(100,150,200,0.15), inset 0 -6px 16px rgba(180,200,220,0.12)',
+            animation: 'cta-cloudDrift2 24s ease-in-out infinite alternate',
+          }}
+        />
+        <div className="absolute pointer-events-none"
+          style={{
+            right: '14%', top: '12%',
+            width: '110px', height: '52px',
+            borderRadius: '52px',
+            background: 'radial-gradient(ellipse at center, rgba(255,255,255,0.86) 0%, rgba(228,240,250,0.7) 58%, transparent 74%)',
+            animation: 'cta-cloudDrift2 24s ease-in-out infinite alternate',
+          }}
+        />
+        {/* 云朵3 — 中间远处最小最淡 */}
+        <div className="absolute pointer-events-none"
+          style={{
+            right: '28%', top: '26%',
+            width: '160px', height: '65px',
+            borderRadius: '45px',
+            background: `
+              radial-gradient(ellipse 46px 38px at 34% 42%, rgba(255,255,255,0.78) 0%, transparent 60%),
+              radial-gradient(ellipse 38px 30px at 58% 50%, rgba(242,248,254,0.7) 0%, transparent 55%),
+              radial-gradient(ellipse 70px 50px at 50% 64%, rgba(206,224,240,0.5) 0%, transparent 66%),
+              radial-gradient(ellipse 120px 60px at 50% 84%, rgba(168,196,222,0.3) 0%, transparent 72%)
+            `,
+            boxShadow: '0 10px 26px rgba(100,150,200,0.12), inset 0 -5px 12px rgba(180,200,220,0.1)',
+            animation: 'cta-cloudDrift3 20s ease-in-out infinite alternate',
+          }}
+        />
 
         {/* 飞鸟剪影 — 2只飞过天空 */}
         <svg className="absolute pointer-events-none" style={{ right: '20%', top: '18%', width: '32px', height: '16px', animation: 'cta-birdFly 16s linear infinite' }} viewBox="0 0 32 16">
@@ -1658,70 +1639,48 @@ export default function AboutPage() {
           <path d="M0,8 Q8,0 16,8 Q24,0 32,8 Q24,6 16,10 Q8,6 0,8Z" fill="rgba(50,60,70,0.22)" />
         </svg>
 
-        {/* 草地层叠 — 4层波浪形自然田野 */}
+        {/* 草地层叠 — 4层波浪形自然田野（提亮） */}
         <svg className="absolute bottom-0 left-0 w-full pointer-events-none" style={{ height: '230px' }} viewBox="0 0 1200 230" preserveAspectRatio="none">
           <defs>
             <linearGradient id="ctaGrass1" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="rgba(140,200,146,0.5)" />
-              <stop offset="100%" stopColor="rgba(112,182,122,0.68)" />
+              <stop offset="0%" stopColor="rgba(165,225,170,0.55)" />
+              <stop offset="100%" stopColor="rgba(134,208,142,0.72)" />
             </linearGradient>
             <linearGradient id="ctaGrass2" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="rgba(98,174,112,0.66)" />
-              <stop offset="100%" stopColor="rgba(72,152,94,0.82)" />
+              <stop offset="0%" stopColor="rgba(120,200,130,0.7)" />
+              <stop offset="100%" stopColor="rgba(94,172,108,0.84)" />
             </linearGradient>
             <linearGradient id="ctaGrass3" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="rgba(62,142,84,0.8)" />
-              <stop offset="100%" stopColor="rgba(42,122,68,0.9)" />
+              <stop offset="0%" stopColor="rgba(82,168,98,0.82)" />
+              <stop offset="100%" stopColor="rgba(58,144,78,0.92)" />
             </linearGradient>
             <linearGradient id="ctaGrass4" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="rgba(36,112,62,0.88)" />
-              <stop offset="100%" stopColor="rgba(22,90,48,0.96)" />
+              <stop offset="0%" stopColor="rgba(56,138,72,0.9)" />
+              <stop offset="100%" stopColor="rgba(38,114,56,0.97)" />
             </linearGradient>
           </defs>
-          {/* 远景草地 — 最淡 */}
           <path d="M0,72 Q90,52 180,68 Q280,46 380,66 Q480,48 580,68 Q690,50 790,68 Q890,48 990,66 Q1080,52 1200,66 L1200,230 L0,230 Z" fill="url(#ctaGrass1)" />
-          {/* 中景草地 — 中等 */}
           <path d="M0,112 Q110,94 220,110 Q330,88 450,108 Q560,92 680,110 Q800,90 920,110 Q1040,94 1200,112 L1200,230 L0,230 Z" fill="url(#ctaGrass2)" />
-          {/* 近景草地 — 深绿 */}
           <path d="M0,152 Q100,136 210,152 Q320,132 440,150 Q560,134 690,152 Q810,134 940,152 Q1060,136 1200,152 L1200,230 L0,230 Z" fill="url(#ctaGrass3)" />
-          {/* 最前景草地 — 最深 + 草丛细节 */}
           <path d="M0,190 Q120,178 240,190 Q360,174 500,190 Q620,176 760,190 Q880,176 1020,190 Q1120,180 1200,190 L1200,230 L0,230 Z" fill="url(#ctaGrass4)" />
-          <path d="M180,190 Q186,176 190,166 Q194,176 198,190 Z" fill="rgba(20,80,44,0.95)" style={{ transformBox: 'fill-box', transformOrigin: 'bottom center', animation: 'cta-grassSway 2.8s ease-in-out infinite alternate' }} />
-          <path d="M520,190 Q528,172 534,158 Q540,172 546,190 Z" fill="rgba(20,80,44,0.95)" style={{ transformBox: 'fill-box', transformOrigin: 'bottom center', animation: 'cta-grassSway 3.1s ease-in-out infinite alternate', animationDelay: '0.4s' }} />
-          <path d="M880,190 Q888,174 894,162 Q900,174 906,190 Z" fill="rgba(20,80,44,0.95)" style={{ transformBox: 'fill-box', transformOrigin: 'bottom center', animation: 'cta-grassSway 2.6s ease-in-out infinite alternate', animationDelay: '0.8s' }} />
+          <path d="M180,190 Q186,176 190,166 Q194,176 198,190 Z" fill="rgba(34,100,52,0.92)" style={{ transformBox: 'fill-box', transformOrigin: 'bottom center', animation: 'cta-grassSway 2.8s ease-in-out infinite alternate' }} />
+          <path d="M520,190 Q528,172 534,158 Q540,172 546,190 Z" fill="rgba(34,100,52,0.92)" style={{ transformBox: 'fill-box', transformOrigin: 'bottom center', animation: 'cta-grassSway 3.1s ease-in-out infinite alternate', animationDelay: '0.4s' }} />
+          <path d="M880,190 Q888,174 894,162 Q900,174 906,190 Z" fill="rgba(34,100,52,0.92)" style={{ transformBox: 'fill-box', transformOrigin: 'bottom center', animation: 'cta-grassSway 2.6s ease-in-out infinite alternate', animationDelay: '0.8s' }} />
         </svg>
 
-        {/* 大气粒子 — 8个（灰尘/花粉 + 光尘） */}
-        {[...Array(8)].map((_, i) => {
-          const isDust = i < 5;
-          return (
-            <div key={`cta-particle-${i}`} className="absolute rounded-full pointer-events-none" style={{
-              width: `${isDust ? 5 + (i % 2) : 4 + (i % 2)}px`,
-              height: `${isDust ? 4 + (i % 2) : 4}px`,
-              left: `${4 + (i * 12) % 92}%`,
-              top: `${8 + (i * 9) % 58}%`,
-              borderRadius: isDust ? '62% 38% 56% 44%' : '50%',
-              background: isDust ? 'rgba(208,178,118,0.5)' : 'rgba(255,250,232,0.85)',
-              boxShadow: isDust ? 'none' : '0 0 8px rgba(255,248,222,0.5)',
-              filter: isDust ? 'blur(0.4px)' : 'none',
-              animation: isDust ? `cta-dustFloat ${9 + i * 1.5}s ease-in-out infinite alternate` : `cta-sparkle ${2.4 + i * 0.4}s ease-in-out infinite alternate`,
-              animationDelay: `${i * 0.3}s`,
-            }} />
-          );
-        })}
-
-        {/* 胶片颗粒噪点 — 极淡 */}
-        <div className="absolute inset-0 pointer-events-none" style={{
-          backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22160%22 height=%22160%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%222%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23n)%22 opacity=%220.5%22/%3E%3C/svg%3E")',
-          backgroundSize: '160px 160px',
-          opacity: 0.05,
-          mixBlendMode: 'overlay',
-        }} />
-
-        {/* 环境光遮蔽 AO — 底部角落微微加深 */}
-        <div className="absolute inset-0 pointer-events-none" style={{
-          background: 'radial-gradient(ellipse 80% 42% at 50% 108%, rgba(18,48,38,0.2) 0%, transparent 60%)',
-        }} />
+        {/* 大气粒子 — 5个暖白色光尘 */}
+        {[...Array(5)].map((_, i) => (
+          <div key={`cta-p-${i}`} className="absolute rounded-full pointer-events-none" style={{
+            width: `${3 + (i % 3)}px`,
+            height: `${3 + (i % 3)}px`,
+            left: `${8 + (i * 17)}%`,
+            top: `${12 + (i * 11)}%`,
+            background: `rgba(255,250,235,${0.6 + (i * 0.08)})`,
+            boxShadow: `0 0 ${4 + i}px rgba(255,248,220,${0.3 + i * 0.1})`,
+            animation: `cta-sparkle ${2 + i * 0.5}s ease-in-out infinite alternate`,
+            animationDelay: `${i * 0.4}s`,
+          }} />
+        ))}
 
         {/* 内容区 */}
         <div className="max-w-4xl mx-auto text-center relative z-10">
@@ -1854,11 +1813,6 @@ export default function AboutPage() {
           0%{opacity:0.7; transform:scale(0.96)}
           100%{opacity:1; transform:scale(1.12)}
         }
-        /* 天空光斑 — 缓慢脉动 */
-        @keyframes cta-skyGlow {
-          0%{opacity:0.55; transform:scale(1)}
-          100%{opacity:1; transform:scale(1.08)}
-        }
         /* 云朵飘动 — 每朵云不同轨迹 */
         @keyframes cta-cloudDrift1 {
           0%{transform:translateX(0) translateY(0)}
@@ -1898,27 +1852,6 @@ export default function AboutPage() {
           5%{opacity:0.22}
           90%{opacity:0.22}
           100%{transform:translateX(220px) translateY(-20px); opacity:0}
-        }
-        /* 光线射线 — 旋转 */
-        @keyframes cta-raySpin {
-          0%{transform:rotate(0deg)}
-          100%{transform:rotate(360deg)}
-        }
-        /* 体积光 — 缓慢呼吸 */
-        @keyframes cta-godray {
-          0%{opacity:0.55; transform:rotate(-40deg) scaleY(0.96)}
-          100%{opacity:1; transform:rotate(-40deg) scaleY(1.05)}
-        }
-        /* 灰尘/花粉粒子 — 缓慢飘浮 */
-        @keyframes cta-dustFloat {
-          0%{transform:translate(0,0) translateY(0); opacity:0.25}
-          50%{transform:translate(5px,-14px); opacity:0.55}
-          100%{transform:translate(-4px,-26px); opacity:0.2}
-        }
-        /* 雾气带 — 缓慢漂移 */
-        @keyframes cta-fogDrift {
-          0%{transform:translateX(-3%)}
-          100%{transform:translateX(3%)}
         }
 
         /* ===== Subtle wave separator animations ===== */
