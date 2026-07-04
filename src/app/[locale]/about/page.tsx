@@ -1519,65 +1519,85 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ===== CTA v263 — 海洋水族馆（Ocean Aquarium） ===== */}
+      {/* ===== CTA v264 — 明亮水晶水族馆（Crystal-Clear Aquarium） ===== */}
       <section
         className="py-24 px-4 sm:px-6 lg:px-8 text-white relative overflow-hidden"
         style={{
-          background: 'linear-gradient(180deg, #0891b2 0%, #0c4a6e 38%, #0c4a6e 62%, #0a1628 100%)',
+          background: 'linear-gradient(180deg, #67e8f9 0%, #06b6d4 35%, #0e7490 68%, #0369a1 100%)',
         }}
       >
-        {/* === 背景装饰层 v263 — 海洋水族馆 === */}
+        {/* === 背景装饰层 v264 — 明亮水晶水族馆 === */}
 
-        {/* 1) God Rays 光柱（从顶部射入水面） */}
+        {/* 1) God Rays 光柱（更宽更亮更动感，从顶部射入水面） */}
         {[0, 1, 2, 3].map((i) => (
           <div key={`ray-${i}`} className="absolute pointer-events-none" style={{
             top: '-20%',
-            left: `${6 + i * 25}%`,
-            width: '13%',
+            left: `${4 + i * 24}%`,
+            width: `${18 + (i % 2) * 4}%`,
             height: '150%',
-            background: 'linear-gradient(105deg, transparent 42%, rgba(186,230,253,0.10) 50%, transparent 58%)',
+            background: 'linear-gradient(105deg, transparent 38%, rgba(220,245,255,0.26) 50%, transparent 62%)',
             transformOrigin: 'top center',
             transform: 'rotate(6deg)',
-            animation: `ocean-godRay ${13 + i * 2.5}s ease-in-out infinite`,
-            animationDelay: `${(i * 1.1).toFixed(1)}s`,
+            animation: `ocean-godRay ${8 + i * 1.2}s ease-in-out infinite`,
+            animationDelay: `${(i * 0.9).toFixed(1)}s`,
           }} />
         ))}
 
-        {/* 2) 水中焦散纹（水底光影） */}
+        {/* 2) 水面波光层（水晶感核心：阳光在水面的反射光斑，缓慢呼吸） */}
+        {[
+          { left: '11%', top: '7%', w: 340, h: 190, d: '0s' },
+          { left: '37%', top: '2%', w: 440, h: 210, d: '1.4s' },
+          { left: '63%', top: '9%', w: 360, h: 190, d: '2.8s' },
+          { left: '83%', top: '4%', w: 300, h: 160, d: '0.7s' },
+        ].map((spot, i) => (
+          <div key={`shimmer-${i}`} className="absolute pointer-events-none" style={{
+            left: spot.left,
+            top: spot.top,
+            width: spot.w,
+            height: spot.h,
+            borderRadius: '50%',
+            background: 'radial-gradient(ellipse at center, rgba(255,255,255,0.20) 0%, rgba(224,247,250,0.10) 45%, transparent 72%)',
+            animation: 'ocean-shimmer 6s ease-in-out infinite',
+            animationDelay: spot.d,
+          }} />
+        ))}
+
+        {/* 3) 水中焦散纹（水底光影，提亮增强） */}
         <div className="absolute pointer-events-none" style={{
           left: '0',
           bottom: '0',
           width: '100%',
           height: '55%',
           background:
-            'radial-gradient(ellipse 42% 60% at 18% 100%, rgba(103,232,249,0.16) 0%, transparent 62%),' +
-            'radial-gradient(ellipse 34% 52% at 52% 100%, rgba(167,243,208,0.14) 0%, transparent 60%),' +
-            'radial-gradient(ellipse 30% 46% at 84% 100%, rgba(103,232,249,0.12) 0%, transparent 60%)',
-          animation: 'ocean-caustic 19s ease-in-out infinite',
+            'radial-gradient(ellipse 42% 60% at 14% 100%, rgba(165,243,252,0.25) 0%, transparent 62%),' +
+            'radial-gradient(ellipse 36% 54% at 38% 100%, rgba(186,230,253,0.22) 0%, transparent 60%),' +
+            'radial-gradient(ellipse 30% 46% at 62% 100%, rgba(103,232,249,0.20) 0%, transparent 60%),' +
+            'radial-gradient(ellipse 28% 44% at 86% 100%, rgba(167,243,208,0.18) 0%, transparent 60%)',
+          animation: 'ocean-caustic 16s ease-in-out infinite',
         }} />
 
-        {/* 3) 漂浮微粒（Plankton / 水中尘埃） */}
-        {['12%', '22%', '35%', '47%', '57%', '67%', '73%', '81%', '88%', '15%', '28%', '42%', '62%', '79%', '91%'].map((left, i) => (
+        {/* 4) 漂浮微粒（Plankton / 水中尘埃，提亮、幅度增大） */}
+        {['12%', '22%', '35%', '47%', '57%', '67%', '73%', '81%', '88%', '15%', '28%', '42%', '62%', '79%', '91%', '33%'].map((left, i) => (
           <div key={`plk-${i}`} className="absolute rounded-full pointer-events-none" style={{
             left,
             top: `${8 + ((i * 11) % 78)}%`,
             width: `${1 + (i % 3)}px`,
             height: `${1 + (i % 3)}px`,
-            background: 'rgba(255,255,255,0.5)',
-            animation: `ocean-plankton ${15 + (i % 7) * 3}s ease-in-out infinite`,
-            animationDelay: `${(i * 0.6).toFixed(1)}s`,
+            background: 'rgba(255,255,255,0.7)',
+            animation: `ocean-plankton ${12 + (i % 7) * 2.5}s ease-in-out infinite`,
+            animationDelay: `${(i * 0.5).toFixed(1)}s`,
           }} />
         ))}
 
-        {/* 4) 游动的鱼群剪影（水族馆灵魂） */}
+        {/* 5) 游动的鱼群剪影（更快更显眼，带正弦上下浮动 + 白色高光描边） */}
         {[
-          { top: '16%', size: 130, dur: 28, delay: '0s', dir: 'right', color: 'rgba(44,130,190,0.5)' },
-          { top: '31%', size: 78, dur: 34, delay: '5s', dir: 'left', color: 'rgba(34,110,170,0.52)' },
-          { top: '47%', size: 158, dur: 40, delay: '2.5s', dir: 'right', color: 'rgba(56,140,200,0.42)' },
-          { top: '39%', size: 56, dur: 23, delay: '10s', dir: 'left', color: 'rgba(30,100,160,0.55)' },
-          { top: '58%', size: 104, dur: 31, delay: '7s', dir: 'right', color: 'rgba(46,134,196,0.45)' },
-          { top: '24%', size: 72, dur: 27, delay: '13s', dir: 'left', color: 'rgba(34,110,170,0.5)' },
-          { top: '66%', size: 92, dur: 35, delay: '16s', dir: 'right', color: 'rgba(40,120,180,0.46)' },
+          { top: '16%', size: 130, dur: 18, delay: '0s', dir: 'right', color: 'rgba(96,165,250,0.72)' },
+          { top: '31%', size: 78, dur: 22, delay: '4s', dir: 'left', color: 'rgba(125,211,252,0.7)' },
+          { top: '47%', size: 158, dur: 24, delay: '2.5s', dir: 'right', color: 'rgba(86,170,235,0.68)' },
+          { top: '39%', size: 56, dur: 15, delay: '9s', dir: 'left', color: 'rgba(110,200,245,0.74)' },
+          { top: '58%', size: 104, dur: 20, delay: '6s', dir: 'right', color: 'rgba(94,180,240,0.7)' },
+          { top: '24%', size: 72, dur: 17, delay: '12s', dir: 'left', color: 'rgba(125,211,252,0.68)' },
+          { top: '66%', size: 92, dur: 21, delay: '15s', dir: 'right', color: 'rgba(90,160,225,0.7)' },
         ].map((fish, i) => (
           <div key={`fish-${i}`} className="absolute pointer-events-none" style={{
             top: fish.top,
@@ -1587,34 +1607,39 @@ export default function AboutPage() {
             animation: `ocean-fish-${fish.dir} ${fish.dur}s linear infinite`,
             animationDelay: fish.delay,
           }}>
-            <svg viewBox="0 0 120 60" width="100%" height="100%" style={{ transform: fish.dir === 'left' ? 'scaleX(-1)' : 'none' }}>
-              <path d="M4,30 C20,12 70,12 90,24 L116,4 L106,30 L116,56 L90,36 C70,48 20,48 4,30 Z" fill={fish.color} />
+            <svg viewBox="0 0 120 60" width="100%" height="100%" style={{ transform: fish.dir === 'left' ? 'scaleX(-1)' : 'none', overflow: 'visible' }}>
+              <path
+                d="M4,30 C20,12 70,12 90,24 L116,4 L106,30 L116,56 L90,36 C70,48 20,48 4,30 Z"
+                fill={fish.color}
+                stroke="rgba(255,255,255,0.3)"
+                strokeWidth="1"
+              />
             </svg>
           </div>
         ))}
 
-        {/* 5) 上升气泡（增强版：摇摆路径 + 高光点） */}
-        {[...Array(10)].map((_, i) => (
+        {/* 6) 上升气泡（增强版：更多更亮 + 高光点） */}
+        {[...Array(16)].map((_, i) => (
           <div key={`bubble-${i}`} className="absolute rounded-full pointer-events-none" style={{
-            left: `${3 + i * 9.6}%`,
+            left: `${2 + i * 6.1}%`,
             bottom: '8px',
-            width: `${4 + (i % 4) * 4}px`,
-            height: `${4 + (i % 4) * 4}px`,
-            background: 'radial-gradient(circle at 34% 28%, rgba(255,255,255,0.55) 0%, rgba(186,230,253,0.18) 55%, transparent 72%)',
-            border: '1px solid rgba(255,255,255,0.28)',
-            boxShadow: '0 0 6px rgba(186,230,253,0.4)',
-            animation: `ocean-bubble-rise ${9 + (i % 6) * 2}s ease-in-out infinite`,
-            animationDelay: `${(i * 0.9).toFixed(1)}s`,
+            width: `${4 + (i % 5) * 3}px`,
+            height: `${4 + (i % 5) * 3}px`,
+            background: 'radial-gradient(circle at 34% 28%, rgba(255,255,255,0.85) 0%, rgba(186,230,253,0.28) 55%, transparent 72%)',
+            border: '1px solid rgba(255,255,255,0.45)',
+            boxShadow: '0 0 10px rgba(186,230,253,0.6), inset 0 0 4px rgba(255,255,255,0.5)',
+            animation: `ocean-bubble-rise ${7 + (i % 6) * 1.4}s ease-in-out infinite`,
+            animationDelay: `${(i * 0.7).toFixed(1)}s`,
           }}>
             <span style={{
               position: 'absolute', top: '16%', left: '20%',
               width: '34%', height: '34%', borderRadius: '50%',
-              background: 'rgba(255,255,255,0.7)',
+              background: 'rgba(255,255,255,0.9)',
             }} />
           </div>
         ))}
 
-        {/* 6) 底部水草 / 海草（随水流摇摆） */}
+        {/* 7) 底部水草 / 海草（随水流摇摆，提亮加宽） */}
         {['left', 'right'].map((side, s) => (
           <div key={`weed-${side}`} className="absolute pointer-events-none" style={{
             left: side === 'left' ? '0' : undefined,
@@ -1628,10 +1653,10 @@ export default function AboutPage() {
                 position: 'absolute',
                 bottom: '0',
                 left: `${(side === 'left' ? 12 : 8) + b * 30}px`,
-                width: `${16 - b * 2}px`,
+                width: `${18 - b * 2}px`,
                 height: `${80 + b * 30}px`,
                 borderRadius: '60% 60% 50% 50% / 0 0 100% 100%',
-                background: 'linear-gradient(to top, rgba(20,184,166,0) 0%, rgba(20,184,166,0.42) 100%)',
+                background: 'linear-gradient(to top, rgba(20,184,166,0) 0%, rgba(20,184,166,0.65) 100%)',
                 transformOrigin: 'bottom center',
                 animation: `ocean-seaweed ${(5 + b * 0.7 + s * 0.6).toFixed(1)}s ease-in-out infinite`,
                 animationDelay: `${(b * 0.4).toFixed(1)}s`,
@@ -1645,21 +1670,21 @@ export default function AboutPage() {
           <div
             className="rounded-3xl px-7 py-12 sm:px-12 text-center"
             style={{
-              background: 'linear-gradient(160deg, rgba(8,30,60,0.55) 0%, rgba(12,45,75,0.65) 100%)',
+              background: 'linear-gradient(160deg, rgba(6,45,80,0.50) 0%, rgba(8,40,70,0.62) 100%)',
               backdropFilter: 'blur(16px)',
               WebkitBackdropFilter: 'blur(16px)',
-              border: '1px solid rgba(103,232,249,0.2)',
-              boxShadow: '0 18px 50px rgba(8,30,52,0.4), inset 0 1px 0 rgba(255,255,255,0.15)',
+              border: '1px solid rgba(165,243,252,0.28)',
+              boxShadow: '0 18px 50px rgba(4,30,60,0.35), inset 0 1px 0 rgba(255,255,255,0.2)',
             }}
           >
             {/* 标题 */}
             <h2
               className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-5 leading-tight text-white"
-              style={{ textShadow: '0 2px 18px rgba(0,0,0,0.5)' }}
+              style={{ textShadow: '0 2px 18px rgba(2,40,70,0.45)' }}
             >
               {t('about.cta.title')}
             </h2>
-            <p className="text-lg sm:text-xl mb-10 max-w-2xl mx-auto leading-relaxed text-white" style={{ textShadow: '0 1px 10px rgba(0,0,0,0.45)' }}>
+            <p className="text-lg sm:text-xl mb-10 max-w-2xl mx-auto leading-relaxed text-white" style={{ textShadow: '0 1px 10px rgba(2,40,70,0.4)' }}>
               {t('about.cta.subtitle')}
             </p>
 
@@ -1681,12 +1706,12 @@ export default function AboutPage() {
               <a href={`tel:${contactPhone.replace(/\s/g, '')}`}
                 className="group relative inline-flex items-center justify-center px-8 py-4 font-semibold rounded-xl cursor-pointer text-base transition-all duration-300 hover:-translate-y-0.5"
                 style={{
-                  background: 'rgba(255,255,255,0.08)',
-                  border: '1.5px solid rgba(103,232,249,0.5)',
+                  background: 'rgba(255,255,255,0.10)',
+                  border: '1.5px solid rgba(165,243,252,0.55)',
                   backdropFilter: 'blur(10px)',
                   WebkitBackdropFilter: 'blur(10px)',
                   color: '#ffffff',
-                  boxShadow: '0 6px 20px rgba(8,30,52,0.2)',
+                  boxShadow: '0 6px 20px rgba(4,30,60,0.18)',
                 }}
               >
                 <Phone className="mr-2 w-4 h-4" />
@@ -1695,11 +1720,11 @@ export default function AboutPage() {
             </div>
 
             {/* 联系信息 */}
-            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-white" style={{ textShadow: '0 1px 8px rgba(0,0,0,0.4)' }}>
-              <a href={`mailto:${contactEmail}`} className="hover:text-cyan-200 transition-colors inline-flex items-center gap-1.5 opacity-90 hover:opacity-100">
+            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-white" style={{ textShadow: '0 1px 8px rgba(2,40,70,0.38)' }}>
+              <a href={`mailto:${contactEmail}`} className="hover:text-cyan-100 transition-colors inline-flex items-center gap-1.5 opacity-95 hover:opacity-100">
                 <Mail className="w-3.5 h-3.5" /> {contactEmail}
               </a>
-              <span className="hidden sm:inline" style={{ opacity: 0.5 }}>|</span>
+              <span className="hidden sm:inline" style={{ opacity: 0.55 }}>|</span>
               <span className="inline-flex items-center gap-1.5">
                 <MapPin className="w-3.5 h-3.5" /> Guangzhou, China
               </span>
@@ -1709,7 +1734,7 @@ export default function AboutPage() {
 
         {/* 底部渐变淡出 — 平滑过渡到 Footer */}
         <div className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none" style={{
-          background: 'linear-gradient(to bottom, transparent, rgba(7,21,37,0.5))',
+          background: 'linear-gradient(to bottom, transparent, rgba(3,40,70,0.45))',
         }} />
       </section>
 
@@ -1780,50 +1805,61 @@ export default function AboutPage() {
           75%{opacity:0.65; transform:translate(5px,-8px)}
         }
 
-        /* ===== CTA v263 — 海洋水族馆动画（Ocean Aquarium） ===== */
+        /* ===== CTA v264 — 明亮水晶水族馆动画（Crystal-Clear Aquarium） ===== */
 
-        /* God Rays 光柱缓慢摇曳 */
+        /* God Rays 光柱大角度摇曳（更亮更动感） */
         @keyframes ocean-godRay {
-          0%,100%{ transform: rotate(3deg) translateX(-6px); opacity: 0.45; }
-          50%{ transform: rotate(9deg) translateX(8px); opacity: 0.9; }
+          0%,100%{ transform: rotate(2deg) translateX(-15px); opacity: 0.6; }
+          50%{ transform: rotate(18deg) translateX(15px); opacity: 1; }
         }
-        /* 水中焦散纹缓慢位移 */
+        /* 水面波光：阳光反射光斑缓慢呼吸（水晶感核心） */
+        @keyframes ocean-shimmer {
+          0%,100%{ transform: translate(0,0) scale(1); opacity: 0.6; }
+          50%{ transform: translate(2%, 1%) scale(1.05); opacity: 1; }
+        }
+        /* 水中焦散纹缓慢位移（提亮） */
         @keyframes ocean-caustic {
-          0%,100%{ transform: translateX(-3%) translateY(0); opacity: 0.8; }
+          0%,100%{ transform: translateX(-3%) translateY(0); opacity: 0.85; }
           50%{ transform: translateX(3%) translateY(-8px); opacity: 1; }
         }
-        /* 漂浮微粒缓慢漂移 */
+        /* 漂浮微粒缓慢漂移（提亮、幅度增大） */
         @keyframes ocean-plankton {
-          0%,100%{ transform: translate(0,0); opacity: 0.22; }
-          50%{ transform: translate(10px,-18px); opacity: 0.55; }
+          0%,100%{ transform: translate(0,0); opacity: 0.35; }
+          50%{ transform: translate(18px,-30px); opacity: 0.75; }
         }
-        /* 鱼群 — 从左向右游 */
+        /* 鱼群 — 从左向右游（更快，带正弦上下浮动） */
         @keyframes ocean-fish-right {
-          0%{ transform: translateX(-160px); opacity: 0; }
-          8%{ opacity: 0.5; }
-          92%{ opacity: 0.5; }
-          100%{ transform: translateX(120vw); opacity: 0; }
+          0%   { transform: translateX(-160px) translateY(0); opacity: 0; }
+          8%   { opacity: 1; }
+          25%  { transform: translateX(20vw) translateY(-8px); }
+          50%  { transform: translateX(45vw) translateY(8px); }
+          75%  { transform: translateX(70vw) translateY(-8px); }
+          92%  { opacity: 1; }
+          100% { transform: translateX(120vw) translateY(0); opacity: 0; }
         }
-        /* 鱼群 — 从右向左游 */
+        /* 鱼群 — 从右向左游（更快，带正弦上下浮动） */
         @keyframes ocean-fish-left {
-          0%{ transform: translateX(120vw); opacity: 0; }
-          8%{ opacity: 0.5; }
-          92%{ opacity: 0.5; }
-          100%{ transform: translateX(-160px); opacity: 0; }
+          0%   { transform: translateX(120vw) translateY(0); opacity: 0; }
+          8%   { opacity: 1; }
+          25%  { transform: translateX(70vw) translateY(-8px); }
+          50%  { transform: translateX(45vw) translateY(8px); }
+          75%  { transform: translateX(20vw) translateY(-8px); }
+          92%  { opacity: 1; }
+          100% { transform: translateX(-160px) translateY(0); opacity: 0; }
         }
         /* 上升气泡：带左右摇摆路径 + 高光 */
         @keyframes ocean-bubble-rise {
           0%{ transform: translate(0,0) scale(0.6); opacity: 0; }
-          10%{ opacity: 0.7; }
-          50%{ transform: translate(10px,-45vh) scale(1); }
-          75%{ transform: translate(-8px,-68vh) scale(0.92); }
-          92%{ opacity: 0.5; }
-          100%{ transform: translate(4px,-90vh) scale(0.7); opacity: 0; }
+          10%{ opacity: 0.85; }
+          50%{ transform: translate(12px,-45vh) scale(1); }
+          75%{ transform: translate(-10px,-68vh) scale(0.92); }
+          92%{ opacity: 0.6; }
+          100%{ transform: translate(5px,-90vh) scale(0.7); opacity: 0; }
         }
         /* 水草随水流摇摆 */
         @keyframes ocean-seaweed {
-          0%,100%{ transform: rotate(-5deg); }
-          50%{ transform: rotate(5deg); }
+          0%,100%{ transform: rotate(-6deg); }
+          50%{ transform: rotate(6deg); }
         }
 
         /* ===== Subtle wave separator animations ===== */
