@@ -53,7 +53,10 @@ export async function GET(request: NextRequest) {
 
       // Product pages for each locale
       for (const product of products) {
-        const url = `${baseUrl}/${locale}/products/${product.slug}`;
+        // 按 store 的 slug 决定公开路径：含 "/" 的（如 applications/...、solutions/...）
+        // 公开路径即 slug 本身；否则落在 /products/ 下（柜体）。
+        const publicPath = product.slug.includes('/') ? product.slug : `products/${product.slug}`;
+        const url = `${baseUrl}/${locale}/${publicPath}`;
         xml += '  <url>\n';
         xml += `    <loc>${escapeXml(url)}</loc>\n`;
         xml += `    <lastmod>${formatDate(product.updatedAt)}</lastmod>\n`;

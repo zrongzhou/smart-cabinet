@@ -1,0 +1,534 @@
+{
+  "sheets": [
+    {
+      "sheet": "按照柜体分类",
+      "dimension": "By cabinets types",
+      "products": [
+        {
+          "sheet": "按照柜体分类",
+          "col": 1,
+          "name_en": "CNC Tool Vending Machines",
+          "url": "/products/cnc-tool-vending-machines.html",
+          "image_count": 3,
+          "images": [
+            {
+              "id": "ID:ID_4910167FF7D84B4CA879563D4F7C5936",
+              "media": "media/image8.png"
+            },
+            {
+              "id": "ID:ID_973CDA94883D457CBF32A93CB02A2B09",
+              "media": "media/image4.jpeg"
+            },
+            {
+              "id": "ID:ID_F4A790BF4F2340858408F7DF76ECBA61",
+              "media": "media/image3.jpeg"
+            }
+          ]
+        },
+        {
+          "sheet": "按照柜体分类",
+          "col": 2,
+          "name_en": "CNC Tool Vending Machines-sub cabinet",
+          "url": "/products/tool-vending-expansion-cabinet.html",
+          "image_count": 3,
+          "images": [
+            {
+              "id": "ID:ID_5251D72AA60E4C24A64D3AF2568250C5",
+              "media": "media/image7.jpeg"
+            },
+            {
+              "id": "ID:ID_96743080979F44EFA9A9BD83993E988A",
+              "media": "media/image15.png"
+            },
+            {
+              "id": "ID:ID_7D33741A7C604010ABD28911D1C38DF2",
+              "media": "media/image9.jpeg"
+            }
+          ]
+        },
+        {
+          "sheet": "按照柜体分类",
+          "col": 3,
+          "name_en": "Smart Tool locker Cabinets",
+          "url": "/products/smart-tool-locker-cabinet.html",
+          "image_count": 2,
+          "images": [
+            {
+              "id": "ID:ID_58F3989212A942A38C2DFF67F0D72444",
+              "media": "media/image10.jpeg"
+            },
+            {
+              "id": "ID:ID_4DB7E72ED08B413FA09A40BEDC964593",
+              "media": "media/image11.jpeg"
+            }
+          ]
+        },
+        {
+          "sheet": "按照柜体分类",
+          "col": 4,
+          "name_en": "Modular Industrial Vending Machines",
+          "url": "/products/modular-industrial-vending-machine.html",
+          "image_count": 3,
+          "images": [
+            {
+              "id": "ID:ID_94A68AFBEA224875A3C5C1FBD35C3039",
+              "media": "media/image12.jpeg"
+            },
+            {
+              "id": "ID:ID_23D4EA6A15B1403AA0D768A58E4ED31F",
+              "media": "media/image13.jpeg"
+            },
+            {
+              "id": "ID:ID_8C4EF7714F3C42168D4EC9459EA63875",
+              "media": "media/image14.jpeg"
+            }
+          ]
+        },
+        {
+          "sheet": "按照柜体分类",
+          "col": 5,
+          "name_en": "Smart Drawer Cabinets",
+          "url": "/products/smart-drawer-tool-cabinet.html",
+          "image_count": 3,
+          "images": [
+            {
+              "id": "ID:ID_BE7BA224E00C4D2ABFFDF29EEDEE4FD7",
+              "media": "media/image16.jpeg"
+            },
+            {
+              "id": "ID:ID_73589EB2C0FF4E2190F7E5E4C15C80A7",
+              "media": "media/image18.jpeg"
+            },
+            {
+              "id": "ID:ID_983D3D52EB4D49F38205020027D37568",
+              "media": "media/image17.jpeg"
+            }
+          ]
+        },
+        {
+          "sheet": "按照柜体分类",
+          "col": 6,
+          "name_en": "Smart Weighing Cabinets",
+          "url": "/products/weight-based-vending-cabinet.html",
+          "image_count": 3,
+          "images": [
+            {
+              "id": "ID:ID_3D2C8826245B45DC9A719D7200983079",
+              "media": "media/image19.jpeg"
+            },
+            {
+              "id": "ID:ID_58199D7C85424A71BE82D3C7E6C0B724",
+              "media": "media/image20.jpeg"
+            },
+            {
+              "id": "ID:ID_46E3AE19983844A1ABD2ED7B4EBC7B02",
+              "media": "media/image22.png"
+            }
+          ]
+        },
+        {
+          "sheet": "按照柜体分类",
+          "col": 7,
+          "name_en": "Micro Warehousing Cabinets",
+          "url": "/products/automated-storage-cabinet.html",
+          "image_count": 1,
+          "images": [
+            {
+              "id": "ID:ID_FF69DAFCA4CF43CAA3AD22BFE5FB1DB7",
+              "media": "media/image21.jpeg"
+            }
+          ]
+        },
+        {
+          "sheet": "按照柜体分类",
+          "col": 8,
+          "name_en": "RFID Smart Cabinets",
+          "url": "/products/rfid-asset-tracking-cabinet.html",
+          "image_count": 3,
+          "images": [
+            {
+              "id": "ID:ID_67658D0CBB4543DD9C99D0B9B5510629",
+              "media": "media/image23.jpeg"
+            },
+            {
+              "id": "ID:ID_C5F01D642A6C4084A84EF0947721B54B",
+              "media": "media/image24.jpeg"
+            },
+            {
+              "id": "FLOAT:image1.png",
+              "media": "media/image1.png"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sheet": "按照物料管理分类",
+      "dimension": "By Managed items",
+      "products": [
+        {
+          "sheet": "按照物料管理分类",
+          "col": 1,
+          "name_en": "CNC Tool Management",
+          "url": "/applications/cnc-tool-vending-machine.html",
+          "image_count": 3,
+          "images": [
+            {
+              "id": "ID:ID_64C6B7DB65FA47B28C6EB00B65757E88",
+              "media": "media/image61.jpeg"
+            },
+            {
+              "id": "ID:ID_0423CA50EDB146DB8C6465503C0A16A6",
+              "media": "media/image5.jpeg"
+            },
+            {
+              "id": "ID:ID_09F9AB7475AA43ABBAB9E5F8D79B176D",
+              "media": "media/image6.jpeg"
+            }
+          ]
+        },
+        {
+          "sheet": "按照物料管理分类",
+          "col": 2,
+          "name_en": "PPE & Safety Supplies",
+          "url": "/applications/ppe-vending-machine.html",
+          "image_count": 3,
+          "images": [
+            {
+              "id": "ID:ID_9EFED604CFF7425A85E61D37A7D40C04",
+              "media": "media/image25.jpeg"
+            },
+            {
+              "id": "ID:ID_1C74E00177D144328D340978E0B3AEF3",
+              "media": "media/image26.jpeg"
+            },
+            {
+              "id": "ID:ID_3373F68D92524954A8F49670ED6D77C2",
+              "media": "media/image27.jpeg"
+            }
+          ]
+        },
+        {
+          "sheet": "按照物料管理分类",
+          "col": 3,
+          "name_en": "Fasteners & Consumables",
+          "url": "/applications/fastener-vending-machine.html",
+          "image_count": 2,
+          "images": [
+            {
+              "id": "ID:ID_3ABB802D9F1E4E8CAC4299CAEF9B6EE9",
+              "media": "media/image28.jpeg"
+            },
+            {
+              "id": "ID:ID_AACF5BFB24F542668B4D436FACDF5F4A",
+              "media": "media/image29.jpeg"
+            }
+          ]
+        },
+        {
+          "sheet": "按照物料管理分类",
+          "col": 4,
+          "name_en": "Documents & Archives",
+          "url": "/applications/smart-file-cabinet.html",
+          "image_count": 3,
+          "images": [
+            {
+              "id": "ID:ID_CB6A53A7EBC54D50B3DA1A6EDEEED5B0",
+              "media": "media/image30.jpeg"
+            },
+            {
+              "id": "ID:ID_B71CD937CFCE46B48FAE769A1B7D3148",
+              "media": "media/image31.jpeg"
+            },
+            {
+              "id": "ID:ID_25D5364E74744B45924D67EABEB690C7",
+              "media": "media/image32.jpeg"
+            }
+          ]
+        },
+        {
+          "sheet": "按照物料管理分类",
+          "col": 5,
+          "name_en": "Employee Personal Storage",
+          "url": "/applications/smart-locker-system.html",
+          "image_count": 3,
+          "images": [
+            {
+              "id": "ID:ID_F963856DF83E4DCD9E94036EC05E7CB9",
+              "media": "media/image33.jpeg"
+            },
+            {
+              "id": "ID:ID_CFAFA6A0E41D46FE8299C5544BA0A745",
+              "media": "media/image34.jpeg"
+            },
+            {
+              "id": "ID:ID_1B2C369EA43E4B85BB5BF85CD0785C05",
+              "media": "media/image35.jpeg"
+            }
+          ]
+        },
+        {
+          "sheet": "按照物料管理分类",
+          "col": 6,
+          "name_en": "Reusable Tools & Assets",
+          "url": "/applications/tool-tracking-system.html",
+          "image_count": 3,
+          "images": [
+            {
+              "id": "ID:ID_D350BC1E28464F2CA08D52F6EC41336E",
+              "media": "media/image36.jpeg"
+            },
+            {
+              "id": "ID:ID_DF629B383CBE40268B36A7E9418F292F",
+              "media": "media/image37.jpeg"
+            },
+            {
+              "id": "ID:ID_828E6749277A4D139289516C4A9F4BD8",
+              "media": "media/image38.jpeg"
+            }
+          ]
+        },
+        {
+          "sheet": "按照物料管理分类",
+          "col": 7,
+          "name_en": "Office Supplies",
+          "url": "/applications/office-supply-vending-machine.html",
+          "image_count": 3,
+          "images": [
+            {
+              "id": "ID:ID_42BF2D2AE593414288C953E6F68D8D13",
+              "media": "media/image64.jpeg"
+            },
+            {
+              "id": "ID:ID_60080969C3E643D588CEE5B5A276E57E",
+              "media": "media/image40.jpeg"
+            },
+            {
+              "id": "ID:ID_88402814F6C24CD4812C77CCFA582029",
+              "media": "media/image39.jpeg"
+            }
+          ]
+        },
+        {
+          "sheet": "按照物料管理分类",
+          "col": 8,
+          "name_en": "Food Pickup and Meal Collection",
+          "url": "/applications/food-pickup-locker.html",
+          "image_count": 1,
+          "images": [
+            {
+              "id": "FLOAT:image2.png",
+              "media": "media/image2.png"
+            }
+          ]
+        },
+        {
+          "sheet": "按照物料管理分类",
+          "col": 9,
+          "name_en": "Chemical Liquid Management",
+          "url": "/applications/chemical-storage-cabinet.html",
+          "image_count": 2,
+          "images": [
+            {
+              "id": "ID:ID_44AC628A30D8456A8BE2FEA41527BC09",
+              "media": "media/image41.jpeg"
+            },
+            {
+              "id": "ID:ID_C9B9B60D3246401DBB4D60B6571E4741",
+              "media": "media/image62.jpeg"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sheet": "按照行业分类",
+      "dimension": "By industries",
+      "products": [
+        {
+          "sheet": "按照行业分类",
+          "col": 1,
+          "name_en": "CNC Machining and Precision Parts Manufacturing",
+          "url": "/solutions/cnc-machining-tool-management.html",
+          "image_count": 3,
+          "images": [
+            {
+              "id": "ID:ID_690FBA587FA942C59415F33E23264716",
+              "media": "media/image51.jpeg"
+            },
+            {
+              "id": "ID:ID_B8816055E87C42059E15327933C5B3CB",
+              "media": "media/image56.jpeg"
+            },
+            {
+              "id": "ID:ID_76C6DD64912D4DD2A549D3DF76A4CA70",
+              "media": "media/image52.jpeg"
+            }
+          ]
+        },
+        {
+          "sheet": "按照行业分类",
+          "col": 2,
+          "name_en": "General Manufacturing and Smart Factory",
+          "url": "/solutions/smart-factory-inventory-management.html",
+          "image_count": 3,
+          "images": [
+            {
+              "id": "ID:ID_C9CFB3CDBE1C4CD898B907A73C29F3D4",
+              "media": "media/image42.jpeg"
+            },
+            {
+              "id": "ID:ID_5FECC3F4AA8947F69685556C0AD7B913",
+              "media": "media/image43.jpeg"
+            },
+            {
+              "id": "ID:ID_106DD28737724CADA7A3163A1C751A8D",
+              "media": "media/image44.jpeg"
+            }
+          ]
+        },
+        {
+          "sheet": "按照行业分类",
+          "col": 3,
+          "name_en": "Hardware, Metal Fabrication and Aluminum Processing",
+          "url": "/solutions/metal-fabrication-tool-management.html",
+          "image_count": 2,
+          "images": [
+            {
+              "id": "ID:ID_30DA5689896441D59E6F422EA24511B2",
+              "media": "media/image53.jpeg"
+            },
+            {
+              "id": "ID:ID_2AE321A7A35140F8AA3EDE2815F88154",
+              "media": "media/image45.jpeg"
+            }
+          ]
+        },
+        {
+          "sheet": "按照行业分类",
+          "col": 4,
+          "name_en": "Mold, Injection Molding and Precision Tooling",
+          "url": "/solutions/mold-shop-tool-management.html",
+          "image_count": 3,
+          "images": [
+            {
+              "id": "ID:ID_8E7DF381E41E40228409F404099B02DE",
+              "media": "media/image13.jpeg"
+            },
+            {
+              "id": "ID:ID_53F5C92349584AB680D12741A2CA266B",
+              "media": "media/image46.jpeg"
+            },
+            {
+              "id": "ID:ID_80B5B3EBDA2A477280DB847D01C24B41",
+              "media": "media/image58.jpeg"
+            }
+          ]
+        },
+        {
+          "sheet": "按照行业分类",
+          "col": 5,
+          "name_en": "Electronics, Semiconductor, Electrical and Optical Manufacturing",
+          "url": "/solutions/electronics-manufacturing-inventory.html",
+          "image_count": 2,
+          "images": [
+            {
+              "id": "ID:ID_898796B1D1BC4A5FA5EBEA778CD6CDF2",
+              "media": "media/image47.jpeg"
+            },
+            {
+              "id": "ID:ID_B7F46B1F72B04484A574B9B1ADC8027A",
+              "media": "media/image48.jpeg"
+            }
+          ]
+        },
+        {
+          "sheet": "按照行业分类",
+          "col": 6,
+          "name_en": "Automotive and EV Components Manufacturing",
+          "url": "/solutions/automotive-manufacturing-inventory.html",
+          "image_count": 2,
+          "images": [
+            {
+              "id": "ID:ID_8214DA59428345B3B8E8668719729D78",
+              "media": "media/image54.jpeg"
+            },
+            {
+              "id": "ID:ID_15EB391CFEC34F2E9C08DC95C2D423D0",
+              "media": "media/image55.jpeg"
+            }
+          ]
+        },
+        {
+          "sheet": "按照行业分类",
+          "col": 7,
+          "name_en": "Medical Device and Life Science Equipment Manufacturing",
+          "url": "/solutions/medical-device-manufacturing-supplies.html",
+          "image_count": 3,
+          "images": [
+            {
+              "id": "ID:ID_E8933838D8F643779BFD0DA6E84E6FFE",
+              "media": "media/image49.jpeg"
+            },
+            {
+              "id": "ID:ID_E4406C64CC8B46FEAB7142E8F0E236A2",
+              "media": "media/image63.jpeg"
+            },
+            {
+              "id": "ID:ID_73E637D6A9CD4C27933FA82F3A744FC4",
+              "media": "media/image57.jpeg"
+            }
+          ]
+        },
+        {
+          "sheet": "按照行业分类",
+          "col": 8,
+          "name_en": "New Materials, Cable and Functional Materials Manufacturing",
+          "url": "/solutions/materials-manufacturing-inventory.html",
+          "image_count": 3,
+          "images": [
+            {
+              "id": "ID:ID_459CEA5E7BBF4A898F799E71B6EA7586",
+              "media": "media/image59.jpeg"
+            },
+            {
+              "id": "ID:ID_2D822DF483DE4BF4A93B9E26691FC512",
+              "media": "media/image50.jpeg"
+            },
+            {
+              "id": "ID:ID_1ED839C82B9943BA82FEA67F0425CF21",
+              "media": "media/image60.jpeg"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sheet": "其他",
+      "dimension": "Others",
+      "products": [
+        {
+          "sheet": "其他",
+          "col": 1,
+          "name_en": "customized",
+          "url": "/solutions/custom-industrial-vending-machine.html",
+          "image_count": 3,
+          "images": [
+            {
+              "id": "ID:ID_20F2CC6E9B5B4B76AA16EDA3F77D5DFE",
+              "media": "media/image65.jpeg"
+            },
+            {
+              "id": "ID:ID_B2EFD6F3B13F477EAB1262223B1D61FE",
+              "media": "media/image66.jpeg"
+            },
+            {
+              "id": "ID:ID_4F7A07AFC42949FF8208FE8F94067F62",
+              "media": "media/image67.jpeg"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

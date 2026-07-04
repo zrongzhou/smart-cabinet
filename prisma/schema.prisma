@@ -26,12 +26,14 @@ model Product {
   relatedProducts   String[] // Product id 数组
   seoTitle         Json?    // { zh, en, ar }
   seoDescription   Json?    // { zh, en, ar }
+  seoKeywords      Json?    // { zh, en, ar } 逗号分隔的关键词数组
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   deletedAt         DateTime? // 软删除
 
   categories        Category[] @relation(map: "ProductCategory")
   tags              Tag[]      @relation(map: "ProductTag")
+  faqs             FAQ[]     // 产品相关 FAQ（v265）
 
   favorites        Favorite[]   // 添加这行
   orderItems       OrderItem[]  // 添加这行
@@ -120,8 +122,13 @@ model FAQ {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
+  // v265: 可选关联到具体产品
+  productId String?
+  product   Product?  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
   @@index([status, category])
   @@index([order])
+  @@index([productId])
   @@map("faqs")
 }
 

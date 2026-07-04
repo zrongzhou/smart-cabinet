@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Package, LayoutGrid, Layers, Box, Building2, Settings, Wrench, Cpu, Shield, Lock, Star, Heart, Truck, Factory, Zap, Clock, Globe, Database, FileText, Image, ZoomIn, Search, ChevronLeft, ChevronRight, ExternalLink, Archive, Briefcase, Code, Cog, Puzzle, Bot, BrainCircuit } from 'lucide-react';
 import { useLocale } from '@/lib/i18n';
+import { getProductHref } from '@/lib/product-url';
 import { Product, Category } from '@/lib/api';
 import { getBaseUrl } from '@/data/unified-data';
 import OceanHeader from '@/components/OceanHeader';
@@ -618,7 +619,7 @@ export default function ProductsPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
               {paginatedProducts.map((product, index) => {
                 const isPriority = index < 3;
-                const detailHref = `/${locale}/products/${product.slug}`;
+                const detailHref = getProductHref(product.slug, locale);
                 const name = locale === 'zh' ? product.name.zh : locale === 'ar' ? product.name.ar : product.name.en;
                 return (
                   <Link key={product.id} href={detailHref}

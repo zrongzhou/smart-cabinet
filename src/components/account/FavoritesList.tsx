@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useLocale } from '@/lib/i18n';
+import { getProductHref } from '@/lib/product-url';
 import { Heart, Trash2 } from 'lucide-react';
 
 interface FavoriteItem {
@@ -55,7 +56,7 @@ export default function FavoritesList({ locale, favorites, onRemove }: Favorites
       {favorites.map((favorite) => {
         const product = favorite.product;
         const productName = product.name?.[locale] || product.name?.en || 'Product';
-        const productHref = `/${locale}/products/${product.slug}`;
+        const productHref = getProductHref(product.slug, locale);
 
         return (
           <div

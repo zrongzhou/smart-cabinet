@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useLocale } from '@/lib/i18n';
+import { getProductHref } from '@/lib/product-url';
 import { Product } from '@/data/unified-data';
 import { fetchUnifiedProducts } from '@/data/unified-data';
 import { motion } from 'framer-motion';
@@ -171,7 +172,7 @@ export default function FeaturedProducts() {
                         onMouseLeave={(e) => { e.currentTarget.style.opacity = '0'; }}
                       >
                         <a
-                          href={`/${locale}/products/${product.slug}`}
+                          href={getProductHref(product.slug, locale)}
                           className="px-6 py-3 rounded-lg font-semibold text-sm transition-all duration-300 hover:scale-105"
                           style={{ backgroundColor: '#ffffff', color: '#2563eb' }}
                         >
@@ -234,7 +235,7 @@ export default function FeaturedProducts() {
                           <span className="text-sm" style={{ color: '#94a3b8' }}>Contact for price</span>
                         )}
                         <a
-                          href={`/${locale}/products/${product.slug}`}
+                          href={getProductHref(product.slug, locale)}
                           className="inline-flex items-center font-semibold text-sm transition-colors duration-300"
                           style={{ color: '#3b82f6' }}
                           onMouseEnter={(e) => { e.currentTarget.style.color = '#2563eb'; }}

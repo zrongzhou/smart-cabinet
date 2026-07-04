@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/AuthProvider';
 import { useLocale } from '@/lib/i18n';
+import { getProductHref } from '@/lib/product-url';
 import { Product } from '@/types/product';
 import Link from 'next/link';
 import {
@@ -352,7 +353,7 @@ export default function AccountPage() {
                   {favorites.slice(0, 4).map((product) => (
                     <Link
                       key={product.id}
-                      href={`/${locale}/products/${product.slug}`}
+                      href={getProductHref(product.slug, locale)}
                       className="group block"
                     >
                       <div className="aspect-square rounded-lg bg-gray-100 overflow-hidden mb-2">
@@ -398,7 +399,7 @@ export default function AccountPage() {
                   {recentlyViewed.slice(0, 4).map((product) => (
                     <Link
                       key={product.id}
-                      href={`/${locale}/products/${product.slug}`}
+                      href={getProductHref(product.slug, locale)}
                       className="group block"
                     >
                       <div className="aspect-square rounded-lg bg-gray-100 overflow-hidden mb-2">

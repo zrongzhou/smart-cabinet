@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useLocale } from '@/lib/i18n';
+import { getProductHref } from '@/lib/product-url';
 import Link from 'next/link';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
@@ -150,7 +151,7 @@ export default function OrdersList({ locale, orders }: OrdersListProps) {
                   {order.items.map((item) => {
                     const itemName = item.name?.[locale] || item.name?.en || 'Product';
                     const productSlug = item.product?.slug || '';
-                    const productHref = productSlug ? `/${locale}/products/${productSlug}` : '#';
+                    const productHref = getProductHref(productSlug, locale);
 
                     return (
                       <div key={item.id} className="flex items-center space-x-4 py-3 border-b border-gray-100 last:border-0">

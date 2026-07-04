@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Package, ArrowLeft, Share2, ChevronRight, ChevronLeft, X, Star, FileText, Ruler, MessageSquare } from 'lucide-react';
 import ReviewList from '@/components/products/ReviewList';
 import SafeImage from '@/components/ui/SafeImage';
+import { getProductHref } from '@/lib/product-url';
 
 // Safe text renderer - handles i18n objects, arrays, null, undefined
 function safeText(value: any, fallback: string = ''): string {
@@ -491,7 +492,7 @@ export default function ProductDetailClient({
               {relatedProducts.map((relatedProduct) => (
                 <a
                   key={relatedProduct.id}
-                  href={`/${locale}/products/${relatedProduct.slug}`}
+                  href={getProductHref(relatedProduct.slug, locale)}
                   className="group glass-card water-ripple rounded-2xl overflow-hidden block relative"
                   onMouseMove={(e: React.MouseEvent) => {
                     const rect = e.currentTarget.getBoundingClientRect();

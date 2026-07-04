@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { ArrowRight, Package, Heart } from 'lucide-react';
 import { useState } from 'react';
 import { useLocale } from '@/lib/i18n';
+import { getProductHref } from '@/lib/product-url';
 
 interface ProductCardProps {
   product: Product;
@@ -17,7 +18,7 @@ const PLACEHOLDER_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000
 export default function ProductCard({ product, locale, showFavoriteButton = true, priority = false }: ProductCardProps) {
   const { t } = useLocale();
   const imageSrc = product.images?.[0] ?? PLACEHOLDER_SVG;
-  const detailHref = `/${locale}/products/${product.slug}`;
+  const detailHref = getProductHref(product.slug, locale);
   const [isFavorite, setIsFavorite] = useState(false);
   const [loading, setLoading] = useState(false);
 

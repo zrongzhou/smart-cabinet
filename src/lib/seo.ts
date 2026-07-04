@@ -10,6 +10,7 @@
 
 import { Metadata } from 'next';
 import { headers } from 'next/headers';
+import { getProductPublicPath } from './product-url';
 
 // ============================================================
 // Dynamic Base URL Helper
@@ -235,6 +236,7 @@ export function jsonLdProduct(product: {
   category?: string;
 }) {
   const baseUrl = getBaseUrl();
+  // 公开路径按 store slug 决定（柜体在 /products/，物料/行业在 /applications/、/solutions/）
   const imageUrl = product.image.startsWith('http') ? product.image : `${baseUrl}${product.image.startsWith('/') ? '' : '/'}${product.image}`;
   return {
     '@context': 'https://schema.org',
@@ -242,7 +244,7 @@ export function jsonLdProduct(product: {
     name: product.name,
     description: product.description,
     image: imageUrl,
-    ...(baseUrl && { url: `${baseUrl}/en/products/${product.slug}` }),
+    ...(baseUrl && { url: `${baseUrl}/en/${getProductPublicPath(product.slug)}` }),
     brand: {
       '@type': 'Brand',
       name: SITE_CONFIG.name,
@@ -473,7 +475,7 @@ export function jsonLdProductList(products: Array<{ name: string; image: string;
           '@type': 'Product',
           name: p.name,
           image: imageUrl,
-          ...(baseUrl && { url: `${baseUrl}/en/products/${p.slug}` }),
+          ...(baseUrl && { url: `${baseUrl}/en/${getProductPublicPath(p.slug)}` }),
           description: p.description,
           ...(p.price && {
             offers: {
