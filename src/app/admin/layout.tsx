@@ -9,8 +9,6 @@ import {
   FileText,
   HelpCircle,
   Settings,
-  Menu,
-  X,
   LogOut,
   ImageIcon,
   FolderOpen,
@@ -26,21 +24,12 @@ interface AdminLayoutProps {
   children: React.ReactNode;
 }
 
-function navClass(path: string, currentPath: string): string {
-  const base = 'flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-300 group relative overflow-hidden';
-  if (path === currentPath) {
-    return base + ' bg-gradient-to-r from-blue-500/20 to-cyan-500/10 text-white shadow-lg shadow-blue-500/10';
-  }
-  return base + ' text-gray-400 hover:text-white hover:bg-white/5';
-}
-
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -60,6 +49,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       router.push('/admin/login');
     }
   }, [isAuthenticated, mounted, pathname]);
+
+  // Close the user dropdown whenever the route changes
+  useEffect(() => {
+    setUserMenuOpen(false);
+  }, [pathname]);
 
   // Don't render anything until client-side mount to prevent hydration mismatch
   if (!mounted) {
@@ -485,220 +479,107 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         }
       `}</style>
 
-      <div className="min-h-screen bg-slate-950 flex">
-        {/* Desktop Sidebar - Modern Industrial Gradient */}
-        <aside className={`hidden md:flex ${isCollapsed ? 'md:w-20' : 'md:w-64'} bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 shadow-2xl flex-col fixed h-full z-30 border-r border-slate-700/50 transition-all duration-300 ease-in-out`}>
-          {/* Logo area */}
-          <div className="h-17 flex items-center border-b border-slate-700/50 px-5 bg-slate-900/80 backdrop-blur-sm">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 via-cyan-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25 flex-shrink-0">
-              <LayoutDashboard className="w-6 h-6 text-white" />
-            </div>
-            {!isCollapsed && (
-              <div className="ml-3 animate-fade-in">
-                <span className="font-bold text-white text-base block leading-tight">管理后台</span>
-                <span className="text-xs text-slate-500 block">Smart Cabinet Pro</span>
+      <div className="min-h-screen flex flex-col bg-slate-50">
+        {/* ===== Top navigation bar (sticky) ===== */}
+        <header className="sticky top-0 z-40 h-16 bg-white/90 backdrop-blur-xl border-b border-slate-200/80 shadow-sm flex items-center justify-between px-4 sm:px-6 gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <Link href="/admin" className="flex items-center gap-2 shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 via-cyan-500 to-blue-600 flex items-center justify-center shadow-md shadow-blue-500/25">
+                <LayoutDashboard className="w-5 h-5 text-white" />
               </div>
-            )}
-            {!isCollapsed && (
-              <button
-                onClick={() => setIsCollapsed(true)}
-                className="ml-auto p-1.5 rounded-lg hover:bg-slate-800 transition-colors opacity-0 group-hover:opacity-100"
-              >
-                <ChevronRight className="w-4 h-4 text-slate-500" />
-              </button>
-            )}
+              <span className="font-bold text-slate-800 text-base whitespace-nowrap">Smart Cabinet Pro</span>
+            </Link>
+
+            {/* Desktop horizontal nav links */}
+            <nav className="hidden lg:flex items-center h-16">
+              {navLinks.map((link) => {
+                const Icon = link.icon;
+                const isActive = link.href === pathname;
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={`relative flex items-center h-16 gap-2 px-3 text-sm font-medium transition-all duration-200 ${isActive ? 'text-blue-600' : 'text-slate-600 hover:text-blue-600 hover:bg-slate-50'}`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    <span>{link.label}</span>
+                    {isActive && (
+                      <span className="absolute bottom-0 left-3 right-3 h-0.5 rounded-full bg-blue-500" />
+                    )}
+                  </Link>
+                );
+              })}
+            </nav>
           </div>
 
-          {/* Collapse Toggle (when collapsed) */}
-          {isCollapsed && (
-            <button
-              onClick={() => setIsCollapsed(false)}
-              className="mx-auto mt-3 p-1.5 rounded-lg hover:bg-slate-800 transition-colors"
-            >
-              <Menu className="w-4 h-4 text-slate-500" />
-            </button>
-          )}
-
-          {/* Navigation */}
-          <nav className={`flex-1 ${isCollapsed ? 'px-2' : 'px-3'} py-5 space-y-1 overflow-y-auto admin-scrollbar`}>
-            {navLinks.map((link) => {
-              const Icon = link.icon;
-              const isActive = link.href === pathname;
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={navClass(link.href, pathname)}
-                  title={isCollapsed ? link.label : undefined}
-                >
-                  {/* Active indicator - left border glow */}
-                  {isActive && (
-                    <>
-                      <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-blue-400 to-cyan-400 rounded-r-full shadow-lg shadow-blue-500/50" />
-                      <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-transparent rounded-xl" />
-                    </>
-                  )}
-
-                  {/* Hover effect - subtle background slide */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl" />
-
-                  <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-cyan-400 drop-shadow-lg drop-shadow-cyan-500/50' : 'text-slate-500 group-hover:text-blue-400 transition-colors duration-300'}`} />
-                  {!isCollapsed && (
-                    <span className="font-medium text-sm relative z-10">{link.label}</span>
-                  )}
-
-                  {/* Active arrow indicator */}
-                  {isActive && !isCollapsed && (
-                    <ChevronRight className="w-4 h-4 text-cyan-400 ml-auto animate-pulse" />
-                  )}
-                </Link>
-              );
-            })}
-          </nav>
-
-          {/* User section */}
-          <div className="p-4 border-t border-slate-700/50">
-            {!isCollapsed ? (
-              <>
-                <div className="flex items-center space-x-3 px-3 py-2 mb-3 group cursor-pointer">
-                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 via-cyan-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold shadow-lg shadow-blue-500/25 flex-shrink-0 group-hover:shadow-blue-500/50 transition-shadow duration-300">
-                    {adminUser[0] || 'A'}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-white truncate">{adminUser}</p>
-                    <p className="text-xs text-slate-500 truncate">系统管理员</p>
-                  </div>
-                </div>
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center space-x-3 px-4 py-2.5 rounded-xl text-red-400/80 hover:bg-red-500/10 hover:text-red-300 w-full transition-all duration-200 text-sm font-medium group"
-                >
-                  <LogOut className="w-4 h-4 group-hover:translate-x-0.5 transition-transform duration-200" />
-                  <span>退出登录</span>
-                </button>
-              </>
-            ) : (
-              <div className="flex flex-col items-center space-y-3">
-                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 via-cyan-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold shadow-lg">
+          {/* Right side - user dropdown */}
+          <div className="flex items-center gap-3 shrink-0">
+            <div className="relative">
+              <button
+                onClick={() => setUserMenuOpen((v) => !v)}
+                className="flex items-center gap-2 pl-2.5 pr-1.5 py-1 rounded-full hover:bg-slate-100 transition-colors duration-200"
+                aria-label="用户菜单"
+              >
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 via-cyan-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold shadow-md">
                   {adminUser[0] || 'A'}
                 </div>
-                <button
-                  onClick={handleLogout}
-                  className="p-2 rounded-lg text-red-400/80 hover:bg-red-500/10 hover:text-red-300 transition-all duration-200"
-                  title="退出登录"
-                >
-                  <LogOut className="w-4 h-4" />
-                </button>
-              </div>
-            )}
-          </div>
-        </aside>
-
-        {/* Mobile overlay */}
-        {sidebarOpen && (
-          <div className="fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-sm transition-opacity duration-300" onClick={() => setSidebarOpen(false)} />
-        )}
-
-        {/* Mobile Sidebar */}
-        <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 shadow-2xl flex-col transform transition-transform duration-300 md:hidden ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-          <div className="h-16 flex items-center justify-between border-b border-slate-700/50 px-5 bg-slate-900/80">
-            <div className="flex items-center">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 via-cyan-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
-                <LayoutDashboard className="w-6 h-6 text-white" />
-              </div>
-              <span className="ml-3 font-bold text-white text-lg">管理后台</span>
-            </div>
-            <button onClick={() => setSidebarOpen(false)} className="p-2 rounded-lg hover:bg-slate-800 transition-colors duration-200">
-              <X className="w-5 h-5 text-slate-400" />
-            </button>
-          </div>
-          <nav className="flex-1 px-3 py-5 space-y-1 overflow-y-auto admin-scrollbar">
-            {navLinks.map((link) => {
-              const Icon = link.icon;
-              const isActive = link.href === pathname;
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setSidebarOpen(false)}
-                  className={navClass(link.href, pathname)}
-                >
-                  {isActive && (
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-blue-400 to-cyan-400 rounded-r-full shadow-lg shadow-blue-500/50" />
-                  )}
-                  <Icon className={`w-5 h-5 ${isActive ? 'text-cyan-400' : 'text-slate-500'}`} />
-                  <span className="font-medium text-sm">{link.label}</span>
-                  {isActive && (
-                    <ChevronRight className="w-4 h-4 text-cyan-400 ml-auto" />
-                  )}
-                </Link>
-              );
-            })}
-          </nav>
-          <div className="p-4 border-t border-slate-700/50">
-            <div className="flex items-center space-x-3 px-3 py-2 mb-3">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 via-cyan-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold">
-                {adminUser[0] || 'A'}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white truncate">{adminUser}</p>
-                <p className="text-xs text-slate-500 truncate">系统管理员</p>
-              </div>
-            </div>
-            <button
-              onClick={() => { handleLogout(); setSidebarOpen(false); }}
-              className="flex items-center space-x-3 px-4 py-2.5 rounded-xl text-red-400/80 hover:bg-red-500/10 w-full transition-colors text-sm font-medium"
-            >
-              <LogOut className="w-4 h-4" />
-              <span>退出登录</span>
-            </button>
-          </div>
-        </aside>
-
-        {/* Main content - Clean Light Theme */}
-        <div className={`flex-1 ${isCollapsed ? 'md:ml-20' : 'md:ml-64'} flex flex-col min-h-screen transition-all duration-300 ease-in-out`}>
-          {/* Header - Enhanced White Header */}
-          <header className="h-16 bg-white/80 backdrop-blur-xl shadow-sm flex items-center justify-between px-4 sm:px-6 sticky top-0 z-20 border-b border-slate-200/80">
-            <div className="flex items-center space-x-3">
-              <button onClick={() => setSidebarOpen(true)} className="p-2 rounded-lg hover:bg-slate-100 md:hidden transition-colors duration-200">
-                <Menu className="w-6 h-5 text-slate-600" />
+                <span className="hidden sm:inline text-sm font-medium text-slate-700">{adminUser}</span>
+                <ChevronRight
+                  className="w-4 h-4 text-slate-400 transition-transform duration-200"
+                  style={{ transform: userMenuOpen ? 'rotate(90deg)' : 'rotate(0deg)' }}
+                />
               </button>
-              <div className="hidden sm:block">
-                <h2 className="text-base font-semibold text-slate-800">
-                  {navLinks.find(l => l.href === pathname)?.label || '管理后台'}
-                </h2>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  {new Date().toLocaleDateString('zh-CN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-                </p>
-              </div>
+              {userMenuOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-slate-200 py-1 z-50 overflow-hidden">
+                  <div className="px-4 py-2.5 border-b border-slate-100">
+                    <p className="text-sm font-medium text-slate-800 truncate">{adminUser}</p>
+                    <p className="text-xs text-slate-500">系统管理员</p>
+                  </div>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 transition-colors duration-200"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    退出登录
+                  </button>
+                </div>
+              )}
             </div>
-            <div className="flex items-center space-x-3">
-              {/* Notification bell could go here */}
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 via-cyan-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold shadow-md cursor-pointer hover:shadow-lg hover:scale-105 transition-all duration-300">
-                {adminUser[0] || 'A'}
-              </div>
-              <div className="hidden sm:block">
-                <p className="text-sm text-slate-700 font-medium">{adminUser}</p>
-                <p className="text-xs text-slate-500">在线</p>
-              </div>
-            </div>
-          </header>
+          </div>
+        </header>
 
-          {/* Main content area - Subtle gradient background */}
-          <main className="flex-1 p-4 sm:p-6 lg:p-8 bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100 min-h-screen">
-            <div className="admin-fade-in">
-              {children}
-            </div>
-          </main>
+        {/* Mobile nav - horizontal scroll */}
+        <nav className="lg:hidden flex items-center gap-1 overflow-x-auto px-3 py-2 bg-white/80 border-b border-slate-200/70">
+          {navLinks.map((link) => {
+            const Icon = link.icon;
+            const isActive = link.href === pathname;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors duration-200 ${isActive ? 'text-blue-600 bg-blue-50' : 'text-slate-600 hover:text-blue-600 hover:bg-slate-50'}`}
+              >
+                <Icon className="w-4 h-4" />
+                <span>{link.label}</span>
+              </Link>
+            );
+          })}
+        </nav>
 
-          {/* Optional Footer */}
-          <footer className="px-6 py-4 bg-white/50 backdrop-blur-sm border-t border-slate-200/50">
-            <div className="flex items-center justify-between text-xs text-slate-500">
-              <span>© 2024 Smart Cabinet Pro. All rights reserved.</span>
-              <span>v2.0.0</span>
-            </div>
-          </footer>
-        </div>
+        {/* Main content area - full width, subtle gradient */}
+        <main className="flex-1 w-full p-4 sm:p-6 lg:p-8 bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100">
+          <div className="admin-fade-in">
+            {children}
+          </div>
+        </main>
+
+        {/* Footer */}
+        <footer className="px-6 py-4 bg-white/50 backdrop-blur-sm border-t border-slate-200/50">
+          <div className="flex items-center justify-between text-xs text-slate-500">
+            <span>© 2024 Smart Cabinet Pro. All rights reserved.</span>
+            <span>v2.0.0</span>
+          </div>
+        </footer>
       </div>
     </>
   );
