@@ -66,8 +66,10 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
     'aerospace-manufacturers-smart-tool-management-benefits': '/images/blog/aerospace-fod-prevention.jpg',
     'future-of-smart-warehousing-beyond-tool-cabinets': '/images/blog/future-smart-factory.jpg',
     // 新增博客 2026
-    'industrial-vending-machine-trends-2026': '/images/blog/smart-cabinet-warehouse.jpg',
-    'cnc-tool-inventory-management-guide': '/images/blog/cnc-machining-roi.jpg',
+    '13': '/images/blog/vending-machine-trends-2026.jpg',
+    '14': '/images/blog/cnc-tool-inventory-guide.jpg',
+    'industrial-vending-machine-trends-2026': '/images/blog/vending-machine-trends-2026.jpg',
+    'cnc-tool-inventory-management-guide': '/images/blog/cnc-tool-inventory-guide.jpg',
   };
 
   /** v152b: 只在正文开头插入封面图（避免重复图片） */

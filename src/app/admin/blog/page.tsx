@@ -213,6 +213,7 @@ export default function AdminBlogPage() {
                     <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">文章标题</th>
                     <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">摘要预览</th>
                     <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">分类</th>
+                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Slug</th>
                     <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">状态</th>
                     <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">精选</th>
                     <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">更新时间</th>
@@ -262,6 +263,17 @@ export default function AdminBlogPage() {
                         <span className="px-4 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
                           {getCategoryName(post.category)}
                         </span>
+                      </td>
+                      <td className="px-6 py-5">
+                        <button
+                          type="button"
+                          onClick={() => navigator.clipboard?.writeText(post.slug || '')}
+                          className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-blue-600 font-mono bg-gray-50 hover:bg-blue-50 border border-gray-200 rounded-md px-2 py-1 transition-colors"
+                          title="点击复制 Slug"
+                        >
+                          <span className="max-w-[160px] truncate">{post.slug || '-'}</span>
+                          <span className="text-xs">📋</span>
+                        </button>
                       </td>
                       <td className="px-6 py-5">
                         <button

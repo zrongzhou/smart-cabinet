@@ -63,8 +63,11 @@ function formatDate(dateString: string, locale: string = 'en'): string {
 
 export default function BlogPage() {
   const { locale } = useLocale();
+  const PAGE_SIZE = 9;
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
 
   // === v151 图片方案：按 slug 精确匹配主题图片，确保图文相关 ===
   const BLOG_IMAGE_FALLBACKS = [
@@ -115,6 +118,11 @@ export default function BlogPage() {
     'top-10-features-smart-tool-cabinets-buying-guide': '/images/blog/buying-guide-smart-cabinet.jpg',
     'aerospace-manufacturers-smart-tool-management-benefits': '/images/blog/aerospace-fod-prevention.jpg',
     'future-of-smart-warehousing-beyond-tool-cabinets': '/images/blog/future-smart-factory.jpg',
+    // 新增博客 2026 (id 13, 14)
+    '13': '/images/blog/vending-machine-trends-2026.jpg',
+    '14': '/images/blog/cnc-tool-inventory-guide.jpg',
+    'industrial-vending-machine-trends-2026': '/images/blog/vending-machine-trends-2026.jpg',
+    'cnc-tool-inventory-management-guide': '/images/blog/cnc-tool-inventory-guide.jpg',
   };
 
   // 分类颜色映射（用于 badge 颜色）
@@ -141,14 +149,21 @@ export default function BlogPage() {
     return iconMap[categoryLower] || FileText;
   }
 
-  // Load blogs from API
+  // Initialise the current page from the ?page= query param (client-only)
+  useEffect(() => {
+    const urlPage = parseInt(new URLSearchParams(window.location.search).get('page') || '1', 10);
+    if (!isNaN(urlPage) && urlPage > 0) setPage(urlPage);
+  }, []);
+
+  // Load the current page of blogs from the API (server-side pagination)
   useEffect(() => {
     let cancelled = false;
     async function loadData() {
       try {
-        const data = await fetchBlogs({ published: true, pageSize: 12 });
+        const data = await fetchBlogs({ published: true, pageSize: PAGE_SIZE, page });
         if (cancelled) return;
         setBlogs(data.data || data || []);
+        setTotal(data.total || (data.data ? data.data.length : 0));
       } catch (e) {
         console.error('Failed to load blogs:', e);
       } finally {
@@ -157,7 +172,7 @@ export default function BlogPage() {
     }
     loadData();
     return () => { cancelled = true; };
-  }, []);
+  }, [page]);
 
   const content = {
     en: {
@@ -181,6 +196,55 @@ export default function BlogPage() {
   };
 
   const t = content[locale as keyof typeof content] || content.en;
+
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+
+  const goToPage = (target: number) => {
+    const next = Math.min(Math.max(1, target), totalPages);
+    if (next === page) return;
+    setPage(next);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const base = window.location.pathname;
+    window.history.replaceState(null, '', next === 1 ? base : `${base}?page=${next}`);
+  };
+
+  // Build page-number buttons with an ellipsis when there are many pages
+  const renderPageNumbers = () => {
+    const pages: (number | '...')[] = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      const showLeftEllipsis = page > 4;
+      const showRightEllipsis = page < totalPages - 3;
+      if (!showLeftEllipsis) {
+        for (let i = 2; i <= Math.min(5, totalPages - 1); i++) pages.push(i);
+        if (showRightEllipsis) pages.push('...');
+      } else if (!showRightEllipsis) {
+        pages.push('...');
+        for (let i = totalPages - 4; i <= totalPages - 1; i++) pages.push(i);
+      } else {
+        pages.push('...');
+        for (let i = page - 1; i <= page + 1; i++) pages.push(i);
+        pages.push('...');
+      }
+      pages.push(totalPages);
+    }
+    return pages.map((p, idx) =>
+      p === '...' ? (
+        <span key={`ellipsis-${idx}`} className="px-3 py-2 text-gray-400 select-none">…</span>
+      ) : (
+        <button
+          key={p}
+          onClick={() => goToPage(p)}
+          aria-label={`Go to page ${p}`}
+          className={`w-10 h-10 rounded-full text-sm font-medium transition-colors ${p === page ? 'bg-blue-600 text-white shadow-md' : 'border border-gray-200 text-gray-600 hover:bg-gray-100'}`}
+        >
+          {p}
+        </button>
+      )
+    );
+  };
 
   if (loading) {
     return (
@@ -340,6 +404,27 @@ export default function BlogPage() {
                 </a>
               );
             })}
+          </div>
+        )}
+
+        {/* Pagination control */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2 mt-12 flex-wrap">
+            <button
+              onClick={() => goToPage(page - 1)}
+              disabled={page === 1}
+              className="px-4 py-2 rounded-full text-sm font-medium border border-gray-200 text-gray-600 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              {locale === 'zh' ? '上一页' : locale === 'ar' ? 'السابق' : 'Previous'}
+            </button>
+            {renderPageNumbers()}
+            <button
+              onClick={() => goToPage(page + 1)}
+              disabled={page === totalPages}
+              className="px-4 py-2 rounded-full text-sm font-medium border border-gray-200 text-gray-600 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              {locale === 'zh' ? '下一页' : locale === 'ar' ? 'التالي' : 'Next'}
+            </button>
           </div>
         )}
       </section>

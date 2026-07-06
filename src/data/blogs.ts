@@ -1043,7 +1043,7 @@ const blogs: BlogPost[] = [
     publishedAt: '2026-07-06T00:00:00.000Z',
     category: 'Industry Trends',
     tags: ['industrial vending machine', 'smart material cabinet', 'MRO inventory'],
-    image: '/images/blog/smart-cabinet-warehouse.jpg',
+    image: '/images/blog/vending-machine-trends-2026.jpg',
     featured: true,
   },
   {
@@ -1206,7 +1206,7 @@ const blogs: BlogPost[] = [
     publishedAt: '2026-07-06T12:00:00.000Z',
     category: 'Technical Guide',
     tags: ['CNC tool management', 'tool vending machine', 'cutting tool'],
-    image: '/images/blog/cnc-machining-roi.jpg',
+    image: '/images/blog/cnc-tool-inventory-guide.jpg',
     featured: true,
   },
 ];

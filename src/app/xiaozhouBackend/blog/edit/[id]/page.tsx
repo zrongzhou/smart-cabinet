@@ -39,6 +39,8 @@ export default function EditBlogPage() {
     category: '',
     tags: [] as string[],
     image: '',
+    slug: '',
+    seoKeywords: '',
   });
 
   useEffect(() => {
@@ -91,6 +93,8 @@ export default function EditBlogPage() {
           category: post.category || '',
           tags: post.tags?.map((t: any) => t.tagId) || [],
           image: post.image || '',
+          slug: post.slug || '',
+          seoKeywords: post.seoKeywords || '',
         });
       } catch (err: any) {
         setError(err.message || '加载文章失败');
@@ -114,8 +118,12 @@ export default function EditBlogPage() {
     try {
       setSaving(true);
 
-      // Generate slug from English title, fallback to Chinese title or timestamp
-      let slug = formData.titleEn.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+      // Use the manually-entered slug if valid, otherwise auto-generate from title
+      const rawSlug = (formData.slug || '').trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+      let slug = rawSlug;
+      if (!slug) {
+        slug = formData.titleEn.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+      }
       if (!slug) {
         slug = formData.titleZh.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9\u4e00-\u9fff-]/g, '').toLowerCase();
       }
@@ -133,6 +141,7 @@ export default function EditBlogPage() {
         category: formData.category || null,
         tagIds: formData.tags,
         image: formData.image || null,
+        seoKeywords: formData.seoKeywords || null,
       };
 
       await adminApi.updateBlog(postId, postData);
@@ -373,6 +382,35 @@ export default function EditBlogPage() {
             <option value="published">发布</option>
             <option value="archived">归档</option>
           </select>
+        </div>
+
+        {/* SEO 设置 */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">SEO 设置</h2>
+          <div className="space-y-5">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">URL Slug</label>
+              <input
+                type="text"
+                value={formData.slug}
+                onChange={(e) => setFormData(f => ({ ...f, slug: e.target.value }))}
+                className="admin-form-input w-full"
+                placeholder="例如: industrial-vending-machine-trends-2026"
+              />
+              <p className="text-xs text-gray-400 mt-1">仅限小写字母、数字和连字符，用于博客详情页网址。</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">SEO Keywords</label>
+              <textarea
+                rows={2}
+                value={formData.seoKeywords}
+                onChange={(e) => setFormData(f => ({ ...f, seoKeywords: e.target.value }))}
+                className="admin-form-input w-full resize-none"
+                placeholder="多个关键词用逗号分隔"
+              />
+              <p className="text-xs text-gray-400 mt-1">用于搜索引擎优化，多个关键词用英文逗号分隔。</p>
+            </div>
+          </div>
         </div>
 
         {/* 内容（富文本，中文） */}
