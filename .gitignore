@@ -32,3 +32,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# build/deploy artifacts & temporary backups (do not commit)
+*.tar.gz
+*.tgz
+deploy-*.tar.gz
+v*-*.tar.gz
+QA_VERIFICATION_REPORT_*.md
