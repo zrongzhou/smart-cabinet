@@ -86,12 +86,22 @@ export async function buildProductMetadata(
   const description = productAny.seoDescription?.[locale] || translate(productAny.description, locale) || '';
   const image = productAny.images?.[0] || '';
 
-  // SEO 关键词：取当前 locale 的 seoKeywords，缺省时回退到 en
-  const locKw = productAny.seoKeywords?.[locale];
-  const enKw = productAny.seoKeywords?.en;
-  const kwArr = Array.isArray(locKw) && locKw.length
-    ? locKw
-    : (Array.isArray(enKw) ? enKw : []);
+  // SEO 关键词：兼容多种存储形态（{en:string[]|string, zh:..., ar:...}、纯字符串或纯数组）。
+  // 取当前 locale 的关键词，缺省时回退到 en；无论源头是 string 还是 string[] 都归一为 string[]。
+  const kwSource = productAny.seoKeywords;
+  const normalizeKw = (raw: any): string[] => {
+    if (Array.isArray(raw)) return raw.filter((x: any) => typeof x === 'string');
+    if (typeof raw === 'string') return raw.split(',').map((s: string) => s.trim()).filter(Boolean);
+    return [];
+  };
+  let kwArr: string[] = [];
+  if (typeof kwSource === 'string') {
+    kwArr = normalizeKw(kwSource);
+  } else {
+    const locKwRaw = kwSource?.[locale];
+    const enKwRaw = kwSource?.en;
+    kwArr = normalizeKw(locKwRaw).length ? normalizeKw(locKwRaw) : normalizeKw(enKwRaw);
+  }
   const keywords = kwArr.length ? kwArr.join(', ') : undefined;
 
   // Dynamically determine the base URL from the request headers
@@ -193,7 +203,6 @@ export default async function ProductDetailView({ locale, lookupSlug, canonicalP
   // Generate JSON-LD data
   const jsonLdData = generateJsonLd(product, locale);
 
-  // === CRITICAL: Pre-resolve all i18n data on the server side ===
   const productAny = product as any;
   const resolvedProduct = {
     ...productAny,

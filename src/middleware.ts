@@ -28,9 +28,18 @@ export function middleware(request: NextRequest) {
   const validLocales = ['en', 'zh', 'ar'];
   const segments = pathname.split('/').filter(Boolean);
   if (segments.length > 0 && validLocales.includes(segments[0])) {
+    // 产品列表页 HTML：禁止浏览器/代理缓存。分类排序等前端逻辑依赖最新 JS，
+    // 旧的 HTML 缓存会让用户停留在旧包，导致「排序不生效」等回归问题。
+    // 静态资源(_next/static)仍走长缓存，不受影响。
+    if (pathname.endsWith('/products')) {
+      const response = NextResponse.next();
+      response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+      response.headers.set('Pragma', 'no-cache');
+      response.headers.set('Expires', '0');
+      return response;
+    }
     // Valid locale route, allow with appropriate cache
-    const response = NextResponse.next();
-    return response;
+    return NextResponse.next();
   }
 
   return NextResponse.next();

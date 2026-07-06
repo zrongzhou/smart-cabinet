@@ -16,28 +16,6 @@ export interface Category {
   };
 }
 
-// Dimension labels for UI filtering (keys must match Category.type values in DB)
-export const dimensionLabels = {
-  en: {
-    'cabinet-type': 'By Cabinet Type',
-    'managed-items': 'By Managed Items',
-    industry: 'By Industry',
-    'custom-solution': 'Custom Solutions',
-  },
-  zh: {
-    'cabinet-type': '柜型分类',
-    'managed-items': '管理物料分类',
-    industry: '行业分类',
-    'custom-solution': '定制方案',
-  },
-  ar: {
-    'cabinet-type': 'حسب نوع الخزانة',
-    'managed-items': 'حسب المواد المدارة',
-    industry: 'حسب الصناعة',
-    'custom-solution': 'حلول مخصصة',
-  },
-};
-
 // ① 柜型分类 (9 categories)
 const cabinetTypes: Category[] = [
   {

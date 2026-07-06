@@ -128,7 +128,7 @@ const DEFAULT_BLOCKS: Record<string, ContentBlock[]> = {
     { id: 'home-hero-1', type: 'hero', title: { zh: '首页 Hero 区域', en: 'Home Hero Section', ar: 'قسم البطل الرئيسي' }, content: { subtitle: '高效•安全•智能', subtitleEn: 'Efficient • Secure • Intelligent', subtitleAr: 'كفاءة • أمان • ذكي', description: '专业智能柜解决方案，为现代制造业提供智能化管理', descriptionEn: 'Professional smart cabinet solutions for modern manufacturing', descriptionAr: '', imageUrl: '' }, images: [], order: 0, status: 'active' },
     { id: 'home-features-1', type: 'features', title: { zh: '核心特性', en: 'Key Features', ar: 'الميزات الأساسية' }, content: { bodyZh: '', bodyEn: '', bodyAr: '' }, images: [], order: 1, status: 'active' },
     { id: 'home-cta-1', type: 'cta', title: { zh: '行动号召', en: 'Call to Action', ar: 'دعوة للعمل' }, content: { ctaTextZh: '立即联系我们获取方案', ctaTextEn: 'Contact us today for a solution', ctaTextAr: '', ctaLink: '/zh/contact' }, images: [], order: 2, status: 'active' },
-    { id: 'home-stats-1', type: 'stats', title: { zh: '数据统计', en: 'Statistics', ar: 'إحصائيات' }, content: { stat1Label: '服务客户', stat1Value: '500+', stat2Label: '产品型号', stat2Value: '100+', stat3Label: '国家地区', stat3Value: '30+' }, images: [], order: 3, status: 'active' },
+    { id: 'home-stats-1', type: 'stats', title: { zh: '数据统计', en: 'Statistics', ar: 'إحصائيات' }, content: { stat1Label: '服务客户', stat1Value: '800+', stat2Label: '产品型号', stat2Value: '100+', stat3Label: '国家地区', stat3Value: '30+' }, images: [], order: 3, status: 'active' },
   ],
   about: [
     { id: 'about-intro-1', type: 'text', title: { zh: '公司简介', en: 'Company Intro', ar: 'مقدمة الشركة' }, content: { bodyZh: '广州秋彦科技有限公司专注于智能存储解决方案的研发与制造...', bodyEn: 'Guangzhou Qiuyan Technology specializes in R&D and manufacturing of intelligent storage solutions...', bodyAr: '' }, images: [], order: 0, status: 'active' },
@@ -954,6 +954,15 @@ export default function EditorPage() {
   );
 }
 
+// 安全读取三语字段的某语言值，避免把数组直接塞进 <input value> 触发 React "Expected value to be a string" 崩溃。
+// 数组 -> 逗号分隔串；字符串 -> 原样；其它/缺失 -> 空串。
+function mlFieldToStr(field: any, lang: 'en' | 'zh' | 'ar'): string {
+  const v = field ? field[lang] : undefined;
+  if (Array.isArray(v)) return v.join(', ');
+  if (typeof v === 'string') return v;
+  return '';
+}
+
 // Block Edit Modal Component
 function BlockEditModal({ block, onSave, onClose, onPickImage }: any) {
   const [draft, setDraft] = useState<ContentBlock>({ ...block });
@@ -1011,7 +1020,7 @@ function BlockEditModal({ block, onSave, onClose, onPickImage }: any) {
               <label className="block text-sm font-medium text-gray-700 mb-1">标题（中文）</label>
               <input
                 type="text"
-                value={draft.title?.zh || ''}
+                value={mlFieldToStr(draft.title, 'zh')}
                 onChange={(e) => updateTitle('zh', e.target.value)}
                 className="admin-form-input w-full"
                 placeholder="中文标题"
@@ -1021,7 +1030,7 @@ function BlockEditModal({ block, onSave, onClose, onPickImage }: any) {
               <label className="block text-sm font-medium text-gray-700 mb-1">Title (English)</label>
               <input
                 type="text"
-                value={draft.title?.en || ''}
+                value={mlFieldToStr(draft.title, 'en')}
                 onChange={(e) => updateTitle('en', e.target.value)}
                 className="admin-form-input w-full"
                 placeholder="English title"
@@ -1031,7 +1040,7 @@ function BlockEditModal({ block, onSave, onClose, onPickImage }: any) {
               <label className="block text-sm font-medium text-gray-700 mb-1">العنوان (العربية)</label>
               <input
                 type="text"
-                value={draft.title?.ar || ''}
+                value={mlFieldToStr(draft.title, 'ar')}
                 onChange={(e) => updateTitle('ar', e.target.value)}
                 className="admin-form-input w-full text-right"
                 placeholder="العنوان بالعربية"

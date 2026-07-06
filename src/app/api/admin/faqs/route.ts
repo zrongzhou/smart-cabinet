@@ -25,6 +25,7 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status');
     const category = searchParams.get('category');
     const search = searchParams.get('search');
+    const productId = searchParams.get('productId');
 
     const skip = (page - 1) * pageSize;
 
@@ -39,6 +40,11 @@ export async function GET(request: NextRequest) {
     // 分类筛选
     if (category) {
       where.category = category;
+    }
+
+    // v-product-faq: 传入 productId 则只返回该产品 FAQ；不传维持返回全部以兼容全局管理页
+    if (productId) {
+      where.productId = productId;
     }
 
     // 搜索
@@ -128,6 +134,12 @@ export async function POST(request: NextRequest) {
       featured: body.featured || false,
     };
 
+    // v-product-faq: 绑定产品归属。Prisma v6 不直接暴露 FK 标量写入，需用关系 connect；
+    // 不带 productId 时 omit，保持 productId=null（全局 FAQ）。
+    if (body.productId) {
+      faqData.product = { connect: { id: body.productId } };
+    }
+
     // 创建 FAQ
     const faq = await prisma.fAQ.create({
       data: faqData,
@@ -180,6 +192,13 @@ export async function PUT(request: NextRequest) {
     if (body.order !== undefined) updateData.order = body.order;
     if (body.status !== undefined) updateData.status = body.status;
     if (body.featured !== undefined) updateData.featured = body.featured;
+    // v-product-faq: 可选更新归属（前端通常不修改，但后端需可接收）。
+    // Prisma v6 不直接暴露 FK 标量写入，需用关系 connect / disconnect。
+    if (body.productId !== undefined) {
+      updateData.product = body.productId
+        ? { connect: { id: body.productId } }
+        : { disconnect: true };
+    }
 
     const updatedFaq = await prisma.fAQ.update({
       where: { id },

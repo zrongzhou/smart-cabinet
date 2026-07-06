@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { Package, LayoutGrid, Layers, Box, Building2, Settings, Wrench, Cpu, Shield, Lock, Star, Heart, Truck, Factory, Zap, Clock, Globe, Database, FileText, Image, ZoomIn, Search, ChevronLeft, ChevronRight, ExternalLink, Archive, Briefcase, Code, Cog, Puzzle, Bot, BrainCircuit } from 'lucide-react';
+import { Package, LayoutGrid, Search, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
 import { useLocale } from '@/lib/i18n';
 import { getProductHref } from '@/lib/product-url';
 import { Product, Category } from '@/lib/api';
@@ -10,97 +10,56 @@ import { getBaseUrl } from '@/data/unified-data';
 import OceanHeader from '@/components/OceanHeader';
 
 // ===========================================================
-// DIMENSION ICON SYSTEM — Lucide React components only (v133)
-// NO emoji — emojis render inconsistently across platforms/themes
-// Priority: Admin DB setting > Built-in default > Settings fallback
+// PRODUCTS FILTER — L2 sub-category Pills (v266)
+// 产品列表页筛选只展示 4 个 L2 子分类（柜体类型 / 管理物料 / 行业 / 其他）
+// 不展示 L1 容器、不展示 type 维度 Tab。
+// 顺序固定：sub-cabinet-types → sub-managed-items → sub-industries → sub-others
 // ===========================================================
 
-/** Built-in DEFAULT icons for dimension types — used ONLY when admin hasn't set a custom one */
-const dimensionDefaultIcons: Record<string, any> = {
-  'cabinet-type':   Archive,     // file cabinet
-  'managed-items':  Package,     // box/package
-  'industry':       Building2,   // building (v134: changed from Factory which rendered blank on some browsers)
-  'custom-solution': Settings,    // gear
-  'robots':         Cpu,         // processor chip
-  'robotics':       Cpu,
-};
-
-/** All supported Lucide icons — registry for admin-selected icon names from DB */
-const lucideIconRegistry: Record<string, any> = {
-  Package, Archive, Box, Briefcase, Building2, Factory, Settings, Wrench, Cpu,
-  Shield, Lock, Star, Heart, Truck, Zap, Clock, Globe, Database, FileText,
-  Image, Layers, Code, Cog, Puzzle, Bot, BrainCircuit,
-};
-
-/** Dimension visual config — FIXED colors (no CSS variables) */
-const dimensionColors: Record<string, {
-  colorClass: string;
-  activeBg: string;
-  barColor: string;
-  textColor: string;
-}> = {
-  'cabinet-type':    { colorClass: 'text-blue-600', activeBg: 'bg-blue-600', barColor: 'bg-blue-600', textColor: 'text-blue-600' },
-  'managed-items':   { colorClass: 'text-blue-600', activeBg: 'bg-blue-600', barColor: 'bg-blue-600', textColor: 'text-blue-600' },
-  'industry':        { colorClass: 'text-blue-600', activeBg: 'bg-blue-600', barColor: 'bg-blue-600', textColor: 'text-blue-600' },
-  'custom-solution': { colorClass: 'text-blue-600', activeBg: 'bg-blue-600', barColor: 'bg-blue-600', textColor: 'text-blue-600' },
-};
-const defaultDimColor = { colorClass: 'text-blue-600', activeBg: 'bg-blue-600', barColor: 'bg-blue-600', textColor: 'text-blue-600' };
+/** Fixed display order for L2 sub-category pills — now sorted by name char length (descending, longer first) */
+const L2_SLUG_ORDER: string[] = [
+  // 保留此数组作为 fallback，但实际渲染已改为按名称长度排序
+  // （保留常量定义以避免引用它的其他代码报错）
+];
 
 /**
- * Resolve icon for a dimension type.
- * Priority: customIcons (from DB/API) → built-in defaults → Settings
- * ALWAYS returns a Lucide React component.
+ * Resolve a localized category name from its trilingual `name` field.
+ * Priority by locale, with graceful fallbacks to other locales / slug.
  */
-function resolveDimensionIcon(type: string, customIcons: Record<string, any>): any {
-  const normalized = type.toLowerCase().replace(/[_\s]+/g, '-');
-
-  // 1. Admin-customized icon from database (HIGHEST priority — admin is always right!)
-  const customIconName = (customIcons[normalized] || customIcons[type])?.icon;
-  if (customIconName && typeof customIconName === 'string') {
-    const registered = lucideIconRegistry[customIconName];
-    if (registered) return registered;
-    // If admin set an unrecognized name, fall through to default
+function getLocalizedCategoryName(
+  name: { zh?: string; en?: string; ar?: string } | any,
+  locale: string
+): string {
+  if (name && typeof name === 'object') {
+    if (locale === 'zh') return name.zh || name.en || name.ar || '';
+    if (locale === 'ar') return name.ar || name.en || name.zh || '';
+    return name.en || name.zh || name.ar || '';
   }
-
-  // 2. Built-in default icon
-  if (dimensionDefaultIcons[normalized]) return dimensionDefaultIcons[normalized];
-  if (dimensionDefaultIcons[type]) return dimensionDefaultIcons[type];
-
-  // 3. Universal fallback
-  return Settings;
+  return String(name || '');
 }
 
-  // Label maps for dimension tabs - matches Category.type values in DB
-  const labelMapZh: Record<string, string> = {
-    'cabinet-type': '柜型分类',
-    'managed-items': '管理物料',
-    'industry': '行业分类',
-    'custom-solution': '定制方案',
-    // Note: Custom dimensions like "robots" are now loaded from DB via API — no need to hardcode here
-  };
-
-  const labelMapEn: Record<string, string> = {
-    'cabinet-type': 'By Cabinet Type',
-    'managed-items': 'By Managed Items',
-    'industry': 'By Industry',
-    'custom-solution': 'Custom Solutions',
-    // Note: Custom dimensions loaded from DB via API
-  };
-
-  const labelMapAr: Record<string, string> = {
-    'cabinet-type': 'حسب نوع الخزانة',
-    'managed-items': 'حسب المواد المدارة',
-    'industry': 'حسب الصناعة',
-    'custom-solution': 'حلول مخصصة',
-    // Note: Custom dimensions loaded from DB via API
-  };
+/**
+ * Resolve the sort key for a category.
+ *
+ * Category.name is a trilingual object ({ zh, en, ar }); the schema has NO
+ * top-level `nameEn` / `nameZh` fields, so sorting purely by
+ * `a.name?.en || a.name?.zh || ''` is both correct and the simplest form.
+ * Longer names sort first (descending by character length).
+ */
+function categoryNameForSort(
+  name: { zh?: string; en?: string; ar?: string } | any
+): string {
+  if (name && typeof name === 'object') {
+    return name.en || name.zh || name.ar || '';
+  }
+  return String(name || '');
+}
 
 const PRODUCTS_PER_PAGE = 6;
 
 export default function ProductsPage() {
   const { locale, t } = useLocale();
-  const [activeDimension, setActiveDimension] = useState<string>('all');
-  const [activeCategories, setActiveCategories] = useState<string[]>([]);
+  const [activeCategorySlug, setActiveCategorySlug] = useState<string>('all');
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -108,95 +67,13 @@ export default function ProductsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [categoryExpanded, setCategoryExpanded] = useState<Record<string, boolean>>({});
-  const [customDimLabels, setCustomDimLabels] = useState<Record<string, string>>({});
-  const [customDimLabelsI18n, setCustomDimLabelsI18n] = useState<Record<string, {zh?: string, en?: string, ar?: string}>>({});
-  /** Custom icons from admin DB/API — overrides built-in defaults */
-  const [customDimIcons, setCustomDimIcons] = useState<Record<string, {icon?: string}>>({});
+  // L1 parent-category selection. null = "All" (show every L2 pill), otherwise shows only that L1's children.
+  const [activeL1Id, setActiveL1Id] = useState<string | null>(null);
 
   // Ref to the products grid section — used to scroll into view on mobile when a filter is applied
   const productsGridRef = useRef<HTMLElement | null>(null);
 
-  // Load custom dimension labels — API (DB) as PRIMARY, localStorage as cache/fallback
-  useEffect(() => {
-    const loadDimLabels = async () => {
-      // ① Try loading from database via dedicated dimension-labels API
-      try {
-        const dimRes = await fetch('/api/dimension-labels');
-        if (dimRes.ok) {
-          const rawLabels = await dimRes.json();
-          if (rawLabels && typeof rawLabels === 'object' && Object.keys(rawLabels).length > 0) {
-            parseAndSetLabels(rawLabels);
-            return; // DB data loaded successfully, skip localStorage
-          }
-        }
-      } catch (e) {
-        console.warn('[products] Failed to load dimension labels from API, using fallback:', e);
-      }
 
-      // ② Fallback: load from localStorage
-      try {
-        const saved = localStorage.getItem('admin_custom_dimensions');
-        if (saved) { parseAndSetLabels(JSON.parse(saved)); }
-      } catch (e) {
-        console.error('Failed to load custom dimension labels:', e);
-      }
-    };
-
-    const parseAndSetLabels = (dims: any) => {
-      if (!dims || typeof dims !== 'object') return;
-      const labels: Record<string, string> = {};
-      const labelsI18n: Record<string, {zh?: string, en?: string, ar?: string}> = {};
-      const icons: Record<string, {icon?: string}> = {};
-
-      Object.entries(dims).forEach(([key, val]: [string, any]) => {
-        if (val && typeof val === 'object') {
-          labels[key] = val.labelZh || val.labelEn || val.label || key;
-          labelsI18n[key] = {
-            zh: val.labelZh || val.label || undefined,
-            en: val.labelEn || val.label || undefined,
-            ar: val.labelAr || val.label || undefined,
-          };
-          // Extract icon — this is what admin sets in the backend!
-          if (val.icon) {
-            icons[key] = { icon: String(val.icon) };
-          }
-        } else if (typeof val === 'string' && val) {
-          labels[key] = val;
-          labelsI18n[key] = { zh: val, en: val, ar: val };
-        }
-      });
-
-      setCustomDimLabels(labels);
-      setCustomDimLabelsI18n(labelsI18n);
-      setCustomDimIcons(icons); // Store custom icons for resolveDimensionIcon()
-    };
-
-    loadDimLabels();
-  }, []);
-
-  // Helper to get dimension label
-  const getDimensionLabel = (type: string): string => {
-    // 1. Check built-in label maps first
-    if (locale === 'zh' && labelMapZh[type]) return labelMapZh[type];
-    if (locale === 'en' && labelMapEn[type]) return labelMapEn[type];
-    if (locale === 'ar' && labelMapAr[type]) return labelMapAr[type];
-    
-    // 2. Custom dimension labels from localStorage (i18n) - CORRECT approach!
-    const dimLabel = customDimLabelsI18n[type];
-    if (dimLabel) {
-      return dimLabel[locale] || dimLabel.en || dimLabel.zh || dimLabel.ar || type;
-    }
-    
-    // 3. Fallback to old single-language customDimLabels
-    if (customDimLabels[type]) return customDimLabels[type];
-    
-    // 4. Final fallback: return generic label for custom dimensions (DO NOT use category name!)
-    // This prevents dimension tab from showing a category name like "机器狗"
-    if (locale === 'zh') return '自定义维度';
-    if (locale === 'en') return 'Custom Dimension';
-    if (locale === 'ar') return 'بعد مخصص';
-    return type;
-  };
 
   // Load products and categories from API
   useEffect(() => {
@@ -205,7 +82,7 @@ export default function ProductsPage() {
       try {
         const baseUrl = getBaseUrl();
         const [productsRes, categoriesRes] = await Promise.all([
-          fetch(`${baseUrl}/api/products?status=active`),
+          fetch(`${baseUrl}/api/products?status=active&pageSize=100`),
           fetch(`${baseUrl}/api/categories`),
         ]);
         if (cancelled) return;
@@ -215,7 +92,26 @@ export default function ProductsPage() {
         }
         if (categoriesRes.ok) {
           const data = await categoriesRes.json();
-          setCategories(data || []);
+          const cats = data || [];
+          setCategories(cats);
+
+          // 从 URL 读取 ?category=<slug> 预选 L2 子分类（导航点击 L2 带入）。
+          // 用 window.location.search 而非 useSearchParams，避免触发 Suspense 边界要求。
+          // 仅匹配「子分类(L2, 含 parentId 或 parent)」，直接设 activeCategorySlug。
+          try {
+            const params = new URLSearchParams(window.location.search);
+            const catSlug = params.get('category');
+            if (catSlug) {
+              const l2 = cats.find(
+                (c: any) => c.slug === catSlug && (c.parentId || c.parent)
+              );
+              if (l2) {
+                setActiveCategorySlug(l2.slug);
+              }
+            }
+          } catch {
+            /* 忽略 URL 解析异常，保持默认（全部）展示 */
+          }
         }
       } catch (e) {
         console.error('Failed to load products/categories:', e);
@@ -230,45 +126,57 @@ export default function ProductsPage() {
   // Reset page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, activeDimension, activeCategories]);
+  }, [searchQuery, activeCategorySlug]);
 
   // Scroll the products grid into view when the active category selection changes,
   // so the grid is never hidden behind the sticky filter panel on mobile.
   useEffect(() => {
-    if (activeCategories.length > 0 && productsGridRef.current) {
+    if (activeCategorySlug !== 'all' && productsGridRef.current) {
       productsGridRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-  }, [activeCategories]);
+  }, [activeCategorySlug]);
 
-  // Get category types for filter display - show all types (built-in + custom)
-  const builtInTypeOrder = ['cabinet-type', 'managed-items', 'industry', 'custom-solution'];
-  const categoryTypes = [...new Set(categories.map(c => c.type).filter(Boolean))] as string[];
-  // Sort: built-in types first in order, then custom types alphabetically
-  categoryTypes.sort((a, b) => {
-    const aIdx = builtInTypeOrder.indexOf(a);
-    const bIdx = builtInTypeOrder.indexOf(b);
-    if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx;
-    if (aIdx !== -1) return -1;
-    if (bIdx !== -1) return 1;
-    return a.localeCompare(b);
-  });
+  // L2 sub-category pills (柜体类型 / 管理物料 / 行业 / 其他)
+  // 按名称字符长度降序排列（字符多的在前，字符少的在后）
+  const l2Categories: Category[] = useMemo(() => {
+    const l2 = categories.filter((c) => c.parentId != null || (c as any).parent != null);
+    return [...l2].sort((a: any, b: any) => {
+      const na = categoryNameForSort(a.name).length;
+      const nb = categoryNameForSort(b.name).length;
+      return nb - na; // descending: longer names first
+    });
+  }, [categories]);
 
-  // Toggle category selection (multi-select)
-  const toggleCategory = (categoryId: string) => {
-    setActiveCategories((prev) =>
-      prev.includes(categoryId)
-        ? prev.filter((id) => id !== categoryId)
-        : [...prev, categoryId]
-    );
-  };
+  // L1 parent categories (parentId === null) with their L2 children grouped underneath.
+  // Each L1 is a real hierarchy container; its L2 children are the filter pills.
+  // L1 按名称长度降序排列；组内 L2 也按名称长度降序
+  const l1Groups = useMemo(() => {
+    const l1 = categories.filter((c: any) => c.parentId == null || c.parent != null);
+    return l1
+      // Sort L1 groups by name length descending (longer names first)
+      .sort((a: any, b: any) => {
+        const na = categoryNameForSort(a.name).length;
+        const nb = categoryNameForSort(b.name).length;
+        return nb - na;
+      })
+      .map((g: any) => {
+        const children = l2Categories.filter(
+          (c: any) => c.parentId === g.id || (c.parent && c.parent.id === g.id)
+        );
+        // L2 within group: also by name length descending
+        children.sort((a: any, b: any) => {
+          const na = categoryNameForSort(a.name).length;
+          const nb = categoryNameForSort(b.name).length;
+          return nb - na;
+        });
+        return { group: g, children };
+      })
+      .filter((g: any) => g.children.length > 0);
+  }, [categories, l2Categories]);
 
-  // Clear category selection when dimension changes
-  const handleDimensionChange = (dimension: string) => {
-    setActiveDimension(dimension);
-    setActiveCategories([]);
-  };
+  // Pill selection is handled inline via setActiveCategorySlug (single-select L2 filter).
 
-  // Filter products based on selection + search
+  // Filter products based on selected L2 sub-category + search
   const filteredProducts = useMemo(() => {
     let result = products;
 
@@ -284,22 +192,36 @@ export default function ProductsPage() {
       });
     }
 
-    // Dimension filter (categories are objects with .type)
-    if (activeDimension !== 'all') {
-      result = result.filter((product) => {
-        return product.categories?.some((cat: any) => cat.type === activeDimension);
-      });
+    // L1 parent-category filter: when an L1 tab is active, restrict the result
+    // to products that belong to any of that L1 group's L2 children. This makes
+    // clicking "By Cabinets types (8)" show only its 8 sub-category products
+    // instead of the whole catalog (the original bug).
+    if (activeL1Id) {
+      const l1Group = l1Groups.find((g: any) => g.group.id === activeL1Id);
+      if (l1Group && l1Group.children.length > 0) {
+        const childIds = l1Group.children.map((c: any) => c.id);
+        result = result.filter((product) =>
+          (product.categories || []).some(
+            (cat: any) => childIds.includes(cat.id) || childIds.includes(cat.slug)
+          )
+        );
+      }
     }
 
-    // Category filter (categories are objects with .id)
-    if (activeCategories.length > 0) {
-      result = result.filter((product) =>
-        product.categories?.some((cat: any) => activeCategories.includes(cat.id))
-      );
+    // L2 sub-category filter (single-select)
+    if (activeCategorySlug !== 'all') {
+      const target = l2Categories.find((c) => c.slug === activeCategorySlug);
+      if (target) {
+        result = result.filter((product) =>
+          (product.categories || []).some(
+            (cat: any) => cat.id === target.id || cat.slug === target.slug
+          )
+        );
+      }
     }
 
     return result;
-  }, [activeDimension, activeCategories, products, categories, searchQuery]);
+  }, [activeCategorySlug, activeL1Id, l1Groups, l2Categories, products, searchQuery]);
 
   // Pagination
   const totalPages = Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE);
@@ -317,20 +239,6 @@ export default function ProductsPage() {
     });
   });
 
-  // Compute product count per dimension type
-  const dimensionProductCount: Record<string, number> = {};
-  categoryTypes.forEach(t => { dimensionProductCount[t] = 0; });
-  products.forEach(p => {
-    (p.categories || []).forEach(c => {
-      if (c.type && dimensionProductCount[c.type] !== undefined) {
-        dimensionProductCount[c.type] = (dimensionProductCount[c.type] || 0) + 1;
-      }
-    });
-  });
-
-  // Get categories for active dimension (only show categories that have products, or keep all but show count)
-  const dimensionCategories =
-    activeDimension === 'all' ? [] : categories.filter(c => c.type === activeDimension);
 
   // Skeleton loading component
   if (loading) {
@@ -354,21 +262,12 @@ export default function ProductsPage() {
               <div className="w-full h-11 bg-blue-50 rounded-xl animate-pulse" />
             </div>
 
-            {/* Dimension tabs skeleton */}
-            <div className="flex flex-wrap gap-3 justify-center mb-5">
-              {[1, 2, 3, 4, 5].map(i => (
-                <div key={i} className="h-10 w-28 bg-blue-50 rounded-full animate-pulse" />
+            {/* Row 0: L1 parent tabs + All-tab skeleton (default state shows only this row) — centered, unified sizes */}
+            <div className="flex flex-wrap justify-center gap-2">
+              <div className="h-9 w-24 bg-blue-50 rounded-full animate-pulse" />
+              {[1, 2, 3, 4].map(i => (
+                <div key={i} className="h-9 w-32 bg-blue-50 rounded-full animate-pulse" />
               ))}
-            </div>
-
-            {/* Category pills skeleton */}
-            <div className="pt-3 border-t border-gray-200">
-              <div className="h-4 w-24 bg-blue-50 rounded-full animate-pulse mb-2.5 mx-auto" />
-              <div className="flex flex-wrap gap-[6px] justify-start">
-                {[1, 2, 3, 4, 5, 6].map(i => (
-                  <div key={i} className="h-8 w-20 bg-blue-50 rounded-full animate-pulse" />
-                ))}
-              </div>
             </div>
           </div>
         </section>
@@ -442,148 +341,104 @@ export default function ProductsPage() {
             {/* Subtle accent bar - shows under active dimension tab instead of top line */}
             <div className="h-1" />
             
-            {/* Row 1: Dimension Tabs - unified design system */}
-            <div className="flex flex-wrap items-center justify-center gap-2">
-              {/* "All" button */}
+            {/* Row 0: L1 parent-category tabs + "All" button — centered */}
+            <div className="flex flex-wrap items-center justify-center gap-2 mt-4">
+              {/* "All" button — same size/weight as L1 tabs (px-4 py-2 text-[13px] font-semibold) */}
               <button
-                onClick={() => handleDimensionChange('all')}
-                className={`relative px-4 py-2.5 rounded-full text-[14px] font-bold transition-all duration-200 inline-flex items-center gap-1.5 water-ripple ${
-                  activeDimension === 'all'
+                onClick={() => { setActiveCategorySlug('all'); setActiveL1Id(null); }}
+                className={`relative px-4 py-2 rounded-full text-[13px] font-semibold transition-all duration-200 inline-flex items-center gap-1.5 water-ripple ${
+                  activeCategorySlug === 'all'
                     ? 'text-white shadow-lg shadow-blue-500/25 hover:shadow-xl hover:-translate-y-0.5'
                     : 'glass-btn text-gray-700 hover:-translate-y-0.5'
                 }`}
-                style={activeDimension === 'all' ? {
+                style={activeCategorySlug === 'all' ? {
                   background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
                 } : undefined}
               >
                 {/* Left accent bar for active state */}
-                {activeDimension === 'all' && (
+                {activeCategorySlug === 'all' && (
                   <div className="absolute left-0 top-1.5 bottom-1.5 w-[3px] bg-white/60 rounded-r" />
                 )}
                 <LayoutGrid className="w-[14px] h-[14px] flex-shrink-0"
-                  style={{ color: activeDimension === 'all' ? '#ffffff' : '#2563eb' }} />
-                <span style={activeDimension !== 'all' ? { color: 'inherit' } : undefined}>
+                  style={{ color: activeCategorySlug === 'all' ? '#ffffff' : '#2563eb' }} />
+                <span style={activeCategorySlug !== 'all' ? { color: 'inherit' } : undefined}>
                   {t('products.filterAll') || 'All'}
                 </span>
                 <span className={`text-[11px] font-normal tabular-nums ml-0.5`}
-                  style={{ color: activeDimension === 'all' ? 'rgba(255,255,255,0.7)' : '#6b7280' }}>
+                  style={{ color: activeCategorySlug === 'all' ? 'rgba(255,255,255,0.7)' : '#6b7280' }}>
                   ({products.length})
                 </span>
               </button>
-              {categoryTypes.map((type) => {
-                const count = dimensionProductCount[type] || 0;
-                const isEmpty = count === 0;
-                const dc = dimensionColors[type] || defaultDimColor;
-                const IconComp = resolveDimensionIcon(type, customDimIcons); // Admin DB > built-in default
-                const isActive = activeDimension === type && !isEmpty;
 
-                // Render Lucide icon — white when active, blue when inactive
-                const dimensionIcon = (
-                  <IconComp
-                    className="w-[14px] h-[14px] flex-shrink-0"
-                    style={{ color: isActive ? '#ffffff' : '#2563eb' }}
-                  />
+              {/* L1 parent-category tabs */}
+              {l1Groups.map(({ group, children }) => {
+                const isActiveL1 = activeL1Id === group.id;
+                const totalInGroup = children.reduce(
+                  (sum: number, c: any) => sum + (categoryProductCount[c.id] || 0),
+                  0
                 );
-
-                const label = getDimensionLabel(type);
-
                 return (
                   <button
-                    key={type}
-                    onClick={() => handleDimensionChange(type)}
-                    className={`relative px-4 py-2.5 rounded-full text-[14px] font-bold transition-all duration-200 inline-flex items-center gap-1.5 water-ripple ${
-                      isActive
-                        ? 'text-white shadow-lg shadow-blue-500/25 hover:shadow-xl hover:-translate-y-0.5'
-                        : 'glass-btn text-gray-700 hover:-translate-y-0.5'
+                    key={group.id}
+                    onClick={() => {
+                      if (isActiveL1) {
+                        // Re-click the active L1 → collapse pills AND clear any L2
+                        // filter, returning to the clean default state.
+                        setActiveL1Id(null);
+                        setActiveCategorySlug('all');
+                      } else {
+                        // Click a different L1 → expand that group's L2 pills.
+                        // Clear any previously selected L2 (activeCategorySlug) so
+                        // we don't accidentally combine L1 + L2 filters and get an
+                        // empty result.
+                        setActiveL1Id(group.id);
+                        setActiveCategorySlug('all');
+                      }
+                    }}
+                    className={`px-4 py-2 rounded-full text-[13px] font-semibold transition-all duration-200 border ${
+                      isActiveL1
+                        ? 'text-blue-600 bg-blue-50 border-blue-200'
+                        : 'text-gray-400 border-transparent hover:text-gray-600 hover:border-blue-200'
                     }`}
-                    style={isActive ? {
-                      background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-                    } : undefined}
-                    title={isEmpty ? (locale === 'zh' ? '该维度暂无产品' : 'No products in this dimension') : ''}
                   >
-                    {/* Left accent bar for active state */}
-                    {isActive && (
-                      <div className="absolute left-0 top-1.5 bottom-1.5 w-[3px] bg-white/60 rounded-r" />
-                    )}
-                    {/* Dimension icon — inline style color for reliability */}
-                    {dimensionIcon && <span className="flex-shrink-0">{dimensionIcon}</span>}
-                    {/* Label — inherit from button inline style */}
-                    <span style={!isActive ? { color: 'inherit' } : undefined}>{label}</span>
-                    {/* Count badge — explicit fallback color */}
-                    <span
-                      className={`text-[11px] font-normal tabular-nums ml-0.5`}
-                      style={{ color: isActive ? 'rgba(255,255,255,0.7)' : '#6b7280' }}
-                    >
-                      ({count})
-                    </span>
+                    {getLocalizedCategoryName(group.name, locale)}
+                    <span className="text-[10px] ml-0.5 opacity-60">({totalInGroup})</span>
                   </button>
                 );
               })}
             </div>
 
-            {/* Row 2: Sub-category Pills */}
-            {activeDimension !== 'all' && dimensionCategories.length > 0 && (() => {
-              const allCats = dimensionCategories;
-              // Inherit color from the active parent dimension
-              const dc = dimensionColors[activeDimension] || defaultDimColor;
-              const dimLabel = getDimensionLabel(activeDimension);
+            {/* Row 1: L2 sub-category pills — ONLY shown when an L1 group is active.
+                Default state (activeL1Id === null) shows NO L2 pills, keeping the
+                filter area to a single clean row. */}
+            {activeL1Id !== null && (
+              <div className="flex flex-wrap items-center justify-center gap-[6px] mt-3 pt-3 border-t border-gray-100">
+                {(l1Groups.find((g: any) => g.group.id === activeL1Id)?.children || []).map((cat: any) => {
+                  const count = categoryProductCount[cat.id] || 0;
+                  const isActive = activeCategorySlug === cat.slug;
+                  return (
+                    <button
+                      key={cat.id}
+                      onClick={() => setActiveCategorySlug(isActive ? 'all' : cat.slug)}
+                      className={`relative px-3 py-1.5 rounded-full text-[12px] font-medium transition-all duration-200 inline-flex items-center gap-1.5 water-ripple ${
+                        isActive ? 'text-white shadow-lg shadow-blue-500/25 hover:shadow-xl hover:-translate-y-0.5'
+                          : 'glass-btn text-gray-700 hover:-translate-y-0.5'
+                      }`}
+                      style={isActive ? { background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)' } : undefined}
+                    >
+                      {isActive && (<div className="absolute left-0 top-1.5 bottom-1.5 w-[3px] bg-white/60 rounded-r" />)}
+                      <span style={!isActive ? { color: 'inherit' } : undefined}>{getLocalizedCategoryName(cat.name, locale)}</span>
+                      <span className={`text-[11px] font-normal tabular-nums ml-0.5`} style={{ color: isActive ? 'rgba(255,255,255,0.7)' : '#6b7280' }}>({count})</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
 
-              return (
-                <div className="mt-3 pt-3 border-t" style={{ borderColor: '#d1d5db' }}>
-                  {/* Label row — BOLD and visible */}
-                  <div className="flex items-center justify-center gap-2 mb-2.5 px-1">
-                    <div className={`h-[2px] w-5 rounded-full ${dc.barColor}`} />
-                    <span className={`text-[12px] font-bold uppercase tracking-wider ${dc.textColor}`}>
-                      {dimLabel}
-                    </span>
-                    <span className="text-[11px] font-semibold" style={{ color: '#4b5563' }}>
-                      — {locale === 'zh' ? '子分类' : locale === 'ar' ? 'تصنيفات فرعية' : 'sub-categories'}
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap items-center justify-center gap-[6px]">
-                    {allCats.map((cat) => {
-                      const count = categoryProductCount[cat.id] || 0;
-                      const isSelected = activeCategories.includes(cat.id);
-                      return (
-                        <button
-                          key={cat.id}
-                          onClick={() => toggleCategory(cat.id)}
-                          className={`relative px-3.5 py-[7px] rounded-full text-[12px] font-medium transition-all duration-200 leading-none inline-flex items-center water-ripple ${
-                            isSelected
-                              ? `text-white shadow-md hover:shadow-lg`
-                              : `glass-btn text-gray-600 hover:-translate-y-0.5`
-                          }`}
-                          style={isSelected ? { backgroundColor: '#2563eb' } : undefined}
-                        >
-                            {isSelected && (
-                            <span className="inline-block w-1.5 h-1.5 rounded-full bg-white/90 mr-1.5" />
-                          )}
-                          <span>{(() => {
-                            const n = (cat as any).name;
-                            if (n && typeof n === 'object') {
-                              if (locale === 'zh') return n.zh || n.en || n.ar || cat.slug || '';
-                              if (locale === 'ar') return n.ar || n.en || n.zh || cat.slug || '';
-                              return n.en || n.zh || n.ar || cat.slug || '';
-                            }
-                            return String(n || cat.slug || '');
-                          })()}</span>
-                          {/* Count — always clearly visible */}
-                          <span className={`ml-1.5 text-[11px] tabular-nums ${isSelected ? 'text-white/80' : ''}`}
-                            style={!isSelected ? { color: '#4b5563' } : undefined}
-                          >
-                            ({count})
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })()}
           </div>
 
           {/* Results count */}
-          {(searchQuery || activeCategories.length > 0 || activeDimension !== 'all') && (
+          {(searchQuery || activeCategorySlug !== 'all') && (
             <div className="text-center mt-4">
               <span className="inline-flex items-center px-3.5 py-1 glass-btn rounded-full text-[12px] font-medium text-gray-600">
                 {locale === 'zh'
@@ -605,9 +460,9 @@ export default function ProductsPage() {
             <p className="text-2xl" style={{ color: '#4b5563' }}>
               {t('products.noProducts') || 'No products found.'}
             </p>
-            {(searchQuery || activeDimension !== 'all') && (
+            {(searchQuery || activeCategorySlug !== 'all' || activeL1Id) && (
               <button
-                onClick={() => { setSearchQuery(''); handleDimensionChange('all'); }}
+                onClick={() => { setSearchQuery(''); setActiveCategorySlug('all'); }}
                 className="mt-4 px-4 py-2 text-blue-600 hover:opacity-80 font-medium text-sm"
               >
                 {locale === 'zh' ? '清除筛选' : locale === 'ar' ? 'مسح الفلاتر' : 'Clear Filters'}

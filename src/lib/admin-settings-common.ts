@@ -225,18 +225,7 @@ export function useSettings(): UseSettingsReturn {
       setSettings(normaliseSettings(data));
     } catch (err: any) {
       setError(err.message || '加载设置失败');
-      // Fallback to localStorage
-      if (typeof window !== 'undefined') {
-        const savedSettings = localStorage.getItem('admin_settings');
-        if (savedSettings) {
-          try {
-            const data = JSON.parse(savedSettings);
-            setSettings(normaliseSettings(data));
-          } catch {
-            setSettings(DEFAULT_SETTINGS);
-          }
-        }
-      }
+      // Settings are DB-backed only — no localStorage fallback.
     } finally {
       setLoading(false);
     }

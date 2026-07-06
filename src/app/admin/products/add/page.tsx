@@ -265,6 +265,12 @@ export default function AddProductPage() {
           zh: form.specificationsZh,
           ar: form.specificationsAr,
         },
+        // SEO 关键词：存为三语对象，使 buildProductMetadata 能渲染到 <meta keywords>
+        seoKeywords: {
+          en: form.seoKeywords,
+          zh: form.seoKeywords,
+          ar: form.seoKeywords,
+        },
       });
       router.push('/admin/products');
     } catch (err: any) {
@@ -359,63 +365,54 @@ export default function AddProductPage() {
             分类
           </h2>
           {categories.length > 0 ? (() => {
-            // Group categories by type
-            const grouped = categories.reduce((acc: Record<string, typeof categories>, cat) => {
-              const type = cat.type || 'other';
-              if (!acc[type]) acc[type] = [];
-              acc[type].push(cat);
-              return acc;
-            }, {} as Record<string, typeof categories>);
+            // 仅显示子分类(L2, parentId 有值)；L1 容器不进入产品多选。
+            // 分组标题改用其 L1 parent 的真实名称（从 categories 数据动态推导），不再硬编码中文维度名。
+            const parentMap: Record<string, any> = {};
+            categories.forEach((c: any) => { if (!c.parentId) parentMap[c.id] = c; });
 
-            const typeLabels: Record<string, string> = {
-              'cabinet-type': '📁 柜型分类',
-              'managed-items': '📦 管理物料',
-              'industry': '🏭 行业分类',
-              'custom-solution': '⚙️ 定制方案',
+            const grouped = categories.reduce((acc: Record<string, any[]>, cat: any) => {
+              if (!cat.parentId) return acc; // 跳过 L1 容器
+              const groupKey = cat.parentId || (cat.type || 'other');
+              if (!acc[groupKey]) acc[groupKey] = [];
+              acc[groupKey].push(cat);
+              return acc;
+            }, {} as Record<string, any[]>);
+
+            const groupLabel = (groupKey: string): string => {
+              const parent = parentMap[groupKey];
+              if (parent) return parent.nameEn || parent.nameZh || parent.name || groupKey;
+              return groupKey;
             };
 
-            // Load custom dimension labels from localStorage
-            const customLabels: Record<string, string> = {};
-            if (typeof window !== 'undefined') {
-              try {
-                const saved = localStorage.getItem('admin_custom_dimensions');
-                if (saved) {
-                  const dims = JSON.parse(saved);
-                  Object.entries(dims).forEach(([key, val]: [string, any]) => {
-                    if (val && typeof val === 'object' && val.labelZh) {
-                      customLabels[key] = val.labelZh;
-                    } else if (typeof val === 'string') {
-                      customLabels[key] = val;
-                    }
-                  });
-                }
-              } catch {}
-            }
-
-            // Clean up display name: remove emoji/icons/garbled chars
-            const cleanName = (name: any): string => {
-              const raw = name?.zh || name?.en || name || '';
-              // Remove common garbled patterns (diamonds, icons, etc.)
-              return raw.replace(/[\u25c6\u25c7\u2666\u25a0\u25cf\u25cb\u25ce\u25d8\u25d9\u2b1b\u2b1c]+/g, '').replace(/\u25c6+/g, '').trim() || raw || '未命名';
+            // 清理显示名称：去除 emoji / 乱码字符
+            const cleanName = (text: string | undefined | null): string => {
+              if (!text) return '';
+              return text
+                .replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}\u{25A0}-\u{25FF}\u{2702}-\u{27B0}]/gu, '')
+                .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]/g, '')
+                .replace(/v\d+[\x80-\uffff]+/gi, '')
+                .replace(/[◆●■▲▼♦]{3,}/g, '')
+                .replace(/\s+/g, ' ')
+                .trim();
             };
 
             return (
               <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
-                {Object.entries(grouped).map(([type, cats]) => (
-                  <div key={type}>
+                {Object.entries(grouped).map(([groupKey, cats]) => (
+                  <div key={groupKey}>
                     <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 sticky top-0 bg-white py-1">
-                      {typeLabels[type] || customLabels[type] || type}
+                      {groupLabel(groupKey)}
                       <span className="ml-2 text-gray-300">({cats.length})</span>
                     </div>
                     <div className="flex flex-wrap gap-2">
-                      {cats.map(cat => (
+                      {cats.map((cat: any) => (
                         <button type="button" key={cat.id} onClick={() => handleCategoryToggle(cat.id)}
                           className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${
                             form.categoryIds.includes(cat.id)
                               ? 'bg-blue-600 text-white border-blue-600'
                               : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400 hover:bg-blue-50'
                           }`}>
-                          {cleanName(cat.name)}
+                          {cleanName(cat.name?.en) || cleanName(cat.name?.zh) || cleanName(String(cat.name)) || '分类'}
                         </button>
                       ))}
                     </div>

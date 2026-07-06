@@ -374,16 +374,16 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
 
               {/* Navigation Links - 44px min touch targets */}
               <nav className="space-y-1 mb-6">
-                {navLinks.map((link) => (
-                  <a
-                    key={link.key}
-                    href={link.href}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="block py-3 px-4 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors font-medium min-h-[44px] flex items-center"
-                  >
-                    {link.label}
-                  </a>
-                ))}
+              {navLinks.map((link) => (
+                <a
+                  key={link.key}
+                  href={link.href}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="block py-3 px-4 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors font-medium min-h-[44px] flex items-center"
+                >
+                  {link.label}
+                </a>
+              ))}
               </nav>
 
               {/* Get a Quote Button Mobile */}

@@ -15,7 +15,7 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Admin / panel 路由：强制 no-store，禁止浏览器缓存
-  if (pathname.startsWith('/admin') || pathname.startsWith('/panel')) {
+  if (pathname.startsWith('/admin') || pathname.startsWith('/xiaozhouBackend') || pathname.startsWith('/panel')) {
     const response = NextResponse.next();
     response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
     response.headers.set('Pragma', 'no-cache');
@@ -37,7 +37,19 @@ export function middleware(request: NextRequest) {
     (locale) =>
       pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
   );
-  if (hasLocale) return;
+  if (hasLocale) {
+    // 产品列表页 HTML：禁止浏览器/代理缓存。分类排序等前端逻辑依赖最新 JS，
+    // 旧的 HTML 缓存会让用户停留在旧包，导致「排序不生效」等回归问题。
+    // 静态资源(_next/static)仍走长缓存，不受影响。
+    if (pathname.endsWith('/products')) {
+      const response = NextResponse.next();
+      response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+      response.headers.set('Pragma', 'no-cache');
+      response.headers.set('Expires', '0');
+      return response;
+    }
+    return;
+  }
 
   // 重定向到对应语言的路径
   const locale = getLocale(request);

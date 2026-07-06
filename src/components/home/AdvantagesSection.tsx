@@ -86,11 +86,14 @@ export default function AdvantagesSection() {
             style={{ background: 'linear-gradient(135deg, rgba(59,130,246,0.10) 0%, rgba(139,92,246,0.10) 100%)', color: '#6366f1', border: '1px solid rgba(99,102,241,0.2)' }}
           >
             <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" style={{ boxShadow: '0 0 6px rgba(59,130,246,0.5)' }} />
-            {t('advantages.subtitle')}
+            {t('advantages.badge')}
           </div>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4" style={{ color: '#0f172a' }}>
             {t('advantages.title')}
           </h2>
+          <p className="text-lg md:text-xl max-w-3xl mx-auto mb-4 leading-relaxed" style={{ color: '#475569' }}>
+            {t('advantages.subtitle')}
+          </p>
           <div className="w-20 h-1 mx-auto rounded-full" style={{ background: 'linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899)' }} />
         </motion.div>
 

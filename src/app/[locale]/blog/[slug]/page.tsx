@@ -65,6 +65,9 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
     'top-10-features-smart-tool-cabinets-buying-guide': '/images/blog/buying-guide-smart-cabinet.jpg',
     'aerospace-manufacturers-smart-tool-management-benefits': '/images/blog/aerospace-fod-prevention.jpg',
     'future-of-smart-warehousing-beyond-tool-cabinets': '/images/blog/future-smart-factory.jpg',
+    // 新增博客 2026
+    'industrial-vending-machine-trends-2026': '/images/blog/smart-cabinet-warehouse.jpg',
+    'cnc-tool-inventory-management-guide': '/images/blog/cnc-machining-roi.jpg',
   };
 
   /** v152b: 只在正文开头插入封面图（避免重复图片） */

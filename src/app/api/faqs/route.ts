@@ -16,6 +16,7 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category');
+    const productId = searchParams.get('productId');
     const page = parseInt(searchParams.get('page') || '1', 10);
     const pageSize = parseInt(searchParams.get('pageSize') || '20', 10);
 
@@ -25,6 +26,15 @@ export async function GET(request: NextRequest) {
     const where: Record<string, unknown> = {
       status: 'active',
     };
+
+    // 产品 FAQ 筛选：指定 productId 时按产品过滤；
+    // 默认（公共 FAQ 场景）只返回全局 FAQ（productId 为空的记录），
+    // 自动排除 per-product FAQ，避免污染公共 FAQ 页。
+    if (productId) {
+      where.productId = productId;
+    } else {
+      where.productId = null;
+    }
 
     // 分类筛选
     if (category) {

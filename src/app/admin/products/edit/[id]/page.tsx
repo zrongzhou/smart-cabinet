@@ -3,8 +3,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Save, Loader2, Upload, X, Plus, Image as ImageIcon, FolderOpen, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, Upload, X, Plus, Image as ImageIcon, FolderOpen, ExternalLink, PackageX } from 'lucide-react';
 import { adminApi } from '@/data/unified-data';
+import ProductFaqBlock from '@/components/admin/ProductFaqBlock';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,6 +23,67 @@ function cleanName(text: string | undefined | null): string {
     .trim();
 }
 
+// 安全读取三语字段的某语言值，避免把数组/数字/嵌套对象直接塞进输入框触发
+// React "Expected value to be a string" 崩溃。兼容 product.name 的多种形态：
+//   - {en, zh, ar} 对象 -> 取对应语言值
+//   - 纯字符串        -> 原样返回（三种语言用同一串）
+//   - 数字            -> 转字符串
+//   - 数组            -> 逗号分隔串
+//   - null / undefined / 其它 -> 空串
+function mlFieldToStr(field: any, lang: 'en' | 'zh' | 'ar'): string {
+  if (field == null) return '';
+  if (typeof field === 'string') return field;
+  if (typeof field === 'number') return String(field);
+  if (Array.isArray(field)) return field.filter((x: any) => x != null).map((x: any) => String(x)).join(', ');
+  if (typeof field === 'object') {
+    const v = (field as any)[lang];
+    if (Array.isArray(v)) return v.filter((x: any) => x != null).map((x: any) => String(x)).join(', ');
+    if (typeof v === 'string') return v;
+    if (typeof v === 'number') return String(v);
+    return '';
+  }
+  return '';
+}
+
+// 安全读取三语「多行」字段（如 features），兼容以下形态：
+//   - 数组        -> 元素转字符串后以换行 join
+//   - 字符串      -> 原样
+//   - 数字        -> 转字符串
+//   - {en,zh,ar} 对象 -> 取第一个存在的语言值（整对象被误传时的兜底）
+//   - null / undefined / 其它 -> 空串
+function mlFieldLines(raw: any): string {
+  if (raw == null) return '';
+  if (typeof raw === 'string') return raw;
+  if (typeof raw === 'number') return String(raw);
+  if (Array.isArray(raw)) return raw.filter((x: any) => x != null).map((x: any) => String(x)).join('\n');
+  if (typeof raw === 'object') {
+    const values = Object.values(raw).filter((v: any) => v != null);
+    const first = values[0];
+    if (typeof first === 'string') return first;
+    if (Array.isArray(first)) return first.filter((x: any) => x != null).map((x: any) => String(x)).join('\n');
+  }
+  return '';
+}
+
+// 安全读取实体（分类/标签等）的展示名，避免把 trilingual 对象直接作为 React 子元素渲染，
+// 触发 "Objects are not valid as a React child"（React Error #31，会导致组件崩溃、
+// 被外层 catch 误判为"未找到产品"）。
+// 解析优先级：顶层 nameEn/nameZh/nameAr（部分接口形态） → name 字段（字符串或 trilingual 对象）。
+function entityName(entity: any, fallback: string = ''): string {
+  if (!entity) return fallback;
+  if (typeof entity.nameEn === 'string' && entity.nameEn) return entity.nameEn;
+  if (typeof entity.nameZh === 'string' && entity.nameZh) return entity.nameZh;
+  if (typeof entity.nameAr === 'string' && entity.nameAr) return entity.nameAr;
+  const n = entity.name;
+  if (typeof n === 'string' && n) return n;
+  if (n && typeof n === 'object') {
+    const v = n.en || n.zh || n.ar;
+    if (typeof v === 'string') return v;
+    if (typeof v === 'number') return String(v);
+  }
+  return fallback;
+}
+
 export default function EditProductPage() {
   const router = useRouter();
   const params = useParams();
@@ -30,6 +92,14 @@ export default function EditProductPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  // 标记单条产品是否真正加载成功；为 false 时（未找到 / 加载异常）渲染友好的错误页而非表单，
+  // 避免拿到 null/畸形数据时仍尝试渲染表单导致白屏。
+  const [productFound, setProductFound] = useState(false);
+  // 当访问的 id 在 DB 中不存在（如用户从书签/历史打开的旧链接）时，
+  // 记录第一个有效产品的 id，提供「一键跳转到第一个产品」的逃生出口，
+  // 避免用户卡在死页面、无法回到正常工作流。
+  const [firstProductId, setFirstProductId] = useState<string | null>(null);
+  const [redirectingToFirst, setRedirectingToFirst] = useState(false);
   const [categories, setCategories] = useState<any[]>([]);
   const [tags, setTags] = useState<any[]>([]);
   // Media picker state
@@ -53,7 +123,9 @@ export default function EditProductPage() {
     featuresZh: '',
     featuresAr: '',
     images: [] as string[],
-    status: 'active' as 'active' | 'inactive' | 'coming-soon',
+    // 与 Prisma Product.status（String）实际取值保持一致：active/draft/coming-soon/discontinued
+    // 原类型 'active' | 'inactive' | 'coming-soon' 与 DB 不符，且 'inactive' 并非合法产品状态。
+    status: 'active' as 'active' | 'draft' | 'coming-soon' | 'discontinued',
     featured: false,
     hidePrice: false,
     order: 0,
@@ -157,48 +229,120 @@ export default function EditProductPage() {
     const load = async () => {
       setLoading(true);
       try {
-        const [products, cats, allTags] = await Promise.all([
-          adminApi.fetchAdminProducts(),
+        // 分类/标签仍需全量；产品则直接按 id 拉取（避免分页漏数据导致"未找到产品"）
+        const [cats, allTags] = await Promise.all([
           adminApi.getCategories(),
           adminApi.getTags(),
         ]);
         setCategories(cats);
         setTags(allTags);
-        
-        const product = products.find((p: any) => p.id === productId);
+
+        // 直接按 id 查询单条产品（/api/admin/products?id= 已支持单条返回）
+        // 使用正确的登录 token key（admin_token）并附带 cookie 鉴权，
+        // 修复因误用 adminToken 导致 Bearer 为空、鉴权失败而"未找到产品"的问题。
+        const token = typeof window !== 'undefined' ? localStorage.getItem('admin_token') || '' : '';
+        const prodRes = await fetch(`/api/admin/products?id=${encodeURIComponent(productId)}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          credentials: 'include',
+        });
+        if (!prodRes.ok) {
+          // [DEBUG] 记录鉴权/接口错误，便于线上排查"未找到产品"
+          console.log('[EditProduct] load() HTTP error:', {
+            productId,
+            status: prodRes.status,
+            statusText: prodRes.statusText,
+          });
+          throw new Error('加载产品失败');
+        }
+        const prodJson = await prodRes.json();
+        // [DEBUG] 输出关键诊断信息（productId / 状态码 / 返回体前 200 字符），
+        // 便于线上排查"未找到产品"问题，不改动既有解析与错误处理逻辑。
+        console.log('[EditProduct] load() response:', {
+          productId,
+          status: prodRes.status,
+          ok: prodRes.ok,
+          bodyPreview: (() => {
+            try { return JSON.stringify(prodJson).slice(0, 200); } catch { return '(unserializable)'; }
+          })(),
+        });
+        // 兼容多种返回形态：数组 / { data:[...] } / 单对象
+        const product = Array.isArray(prodJson)
+          ? prodJson[0]
+          : (prodJson.data && prodJson.data.length ? prodJson.data[0] : (prodJson && prodJson.id ? prodJson : null));
         if (!product) {
+          setProductFound(false);
           setError('未找到产品');
+          // 当前 id 在数据库中不存在（多半是书签/历史里的旧链接）。
+          // 拉取第一个有效产品，提供「一键跳转」逃生出口，避免用户卡死在错误页。
+          try {
+            const listRes = await fetch('/api/admin/products?pageSize=1', {
+              headers: token ? { Authorization: `Bearer ${token}` } : {},
+              credentials: 'include',
+            });
+            if (listRes.ok) {
+              const listJson = await listRes.json();
+              const first = Array.isArray(listJson)
+                ? listJson[0]
+                : (listJson.data && listJson.data[0]);
+              if (first && first.id) setFirstProductId(first.id);
+            }
+          } catch {
+            /* 获取失败不影响错误页展示，仅不显示「跳转到第一个产品」按钮 */
+          }
           return;
         }
-        
+
+        // 畸形数据兜底：即便 API 返回了"非 null"但字段缺失/类型异常的对象，
+        // 下方所有 mlFieldToStr / mlFieldLines 调用都已做防御，不会抛异常。
         setForm({
-          nameEn: product.name?.en || '',
-          nameZh: product.name?.zh || '',
-          nameAr: product.name?.ar || '',
-          sku: product.sku || '',
-          price: product.price?.toString() || '',
+          nameEn: mlFieldToStr(product.name, 'en'),
+          nameZh: mlFieldToStr(product.name, 'zh'),
+          nameAr: mlFieldToStr(product.name, 'ar'),
+          sku: product.sku != null ? String(product.sku) : '',
+          price: product.price != null ? String(product.price) : '',
           // Fix: Extract IDs from categories/tags objects
-          categoryIds: (product as any).categoryIds || (product.categories || []).map((c: any) => c.id),
-          tagIds: (product as any).tagIds || (product.tags || []).map((t: any) => t.id),
-          descriptionEn: product.description?.en || '',
-          descriptionZh: product.description?.zh || '',
-          descriptionAr: product.description?.ar || '',
-          featuresEn: (product.features?.en || []).join('\n'),
-          featuresZh: (product.features?.zh || []).join('\n'),
-          featuresAr: (product.features?.ar || []).join('\n'),
-          specificationsEn: product.specifications?.en || '',
-          specificationsZh: product.specifications?.zh || '',
-          specificationsAr: product.specifications?.ar || '',
-          images: product.images || [],
-          slug: product.slug || '',
-          status: product.status || 'active',
-          featured: product.featured || false,
-          hidePrice: product.hidePrice || false,
-          order: product.order || 0,
-          seoKeywords: product.seoKeywords || '', // Added for SEO keywords
+          categoryIds: Array.isArray((product as any).categoryIds)
+            ? (product as any).categoryIds
+            : Array.isArray(product.categories)
+              ? product.categories.map((c: any) => c?.id).filter(Boolean)
+              : [],
+          tagIds: Array.isArray((product as any).tagIds)
+            ? (product as any).tagIds
+            : Array.isArray(product.tags)
+              ? product.tags.map((t: any) => t?.id).filter(Boolean)
+              : [],
+          descriptionEn: mlFieldToStr(product.description, 'en'),
+          descriptionZh: mlFieldToStr(product.description, 'zh'),
+          descriptionAr: mlFieldToStr(product.description, 'ar'),
+          featuresEn: mlFieldLines(product.features?.en),
+          featuresZh: mlFieldLines(product.features?.zh),
+          featuresAr: mlFieldLines(product.features?.ar),
+          specificationsEn: mlFieldToStr(product.specifications, 'en'),
+          specificationsZh: mlFieldToStr(product.specifications, 'zh'),
+          specificationsAr: mlFieldToStr(product.specifications, 'ar'),
+          images: Array.isArray(product.images) ? product.images.filter((x: any) => typeof x === 'string') : [],
+          slug: product.slug != null ? String(product.slug) : '',
+          status: typeof product.status === 'string' ? product.status : 'active',
+          featured: !!product.featured,
+          hidePrice: !!product.hidePrice,
+          order: typeof product.order === 'number' ? product.order : 0,
+          // seoKeywords：DB 存为 {en:string[],zh:string[],ar:string[]}（数组形态）或字符串或 null；
+          // 编辑框需要纯字符串，故当 .en 为数组时 join 为逗号分隔串回填，避免 <input value={数组}> 崩溃。
+          // 也兼容 .en 为数字/嵌套对象的畸形情况。
+          seoKeywords: (() => {
+            const sk = product.seoKeywords;
+            if (typeof sk === 'string') return sk;
+            if (sk && Array.isArray(sk.en)) return sk.en.filter((x: any) => x != null).map((x: any) => String(x)).join(', ');
+            if (sk && typeof sk.en === 'string') return sk.en;
+            if (sk && typeof sk.en === 'number') return String(sk.en);
+            if (typeof sk === 'number') return String(sk);
+            return '';
+          })(),
         });
+        setProductFound(true);
       } catch (err: any) {
-        setError(err.message || '加载产品失败');
+        setProductFound(false);
+        setError(err?.message || '加载产品失败');
       } finally {
         setLoading(false);
       }
@@ -338,6 +482,12 @@ export default function EditProductPage() {
         featured: form.featured,
         hidePrice: form.hidePrice,
         order: form.order,
+        // SEO 关键词：存为三语对象，使 buildProductMetadata 能渲染到 <meta keywords>
+        seoKeywords: {
+          en: form.seoKeywords,
+          zh: form.seoKeywords,
+          ar: form.seoKeywords,
+        },
       });
       router.push('/admin/products');
     } catch (err: any) {
@@ -351,6 +501,60 @@ export default function EditProductPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      </div>
+    );
+  }
+
+  // 未找到产品 / 加载异常：渲染友好的错误页（带返回按钮），不再尝试渲染表单，
+  // 避免拿到 null/畸形数据时仍渲染表单导致白屏。
+  if (error || !productFound) {
+    const jumpToFirst = () => {
+      if (!firstProductId) return;
+      setRedirectingToFirst(true);
+      router.push(`/admin/products/edit/${firstProductId}`);
+    };
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+        <div className="max-w-md w-full bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center">
+          <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-red-50 flex items-center justify-center">
+            <PackageX className="w-7 h-7 text-red-500" />
+          </div>
+          <h1 className="text-xl font-bold text-gray-900 mb-2">产品未找到</h1>
+          <p className="text-sm text-gray-500 mb-2">
+            {error || '未能加载该产品，它可能已被删除或链接无效。'}
+          </p>
+          {productId && (
+            <p className="text-xs text-gray-400 mb-6 font-mono break-all">
+              无效的产品 ID：{productId}
+            </p>
+          )}
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            {firstProductId && (
+              <button
+                type="button"
+                onClick={jumpToFirst}
+                disabled={redirectingToFirst}
+                className="px-5 py-2.5 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors text-sm font-medium disabled:opacity-50"
+              >
+                {redirectingToFirst ? '跳转中...' : '跳转到第一个有效产品'}
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => router.push('/admin/products')}
+              className="px-5 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors text-sm font-medium"
+            >
+              返回产品列表
+            </button>
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="px-5 py-2.5 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors text-sm font-medium"
+            >
+              重试
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -462,9 +666,15 @@ export default function EditProductPage() {
                 onChange={e => handleChange('status', e.target.value)}
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="active">启用</option>
-                <option value="draft">草稿</option>
-                <option value="archived">归档</option>
+                <option value="active">启用 (Active)</option>
+                <option value="draft">草稿 (Draft)</option>
+                <option value="coming-soon">即将推出 (Coming Soon)</option>
+                <option value="discontinued">已停售 (Discontinued)</option>
+                {/* 兜底：若 DB 中存在非预期 status 值，仍保留当前值作为 option，
+                    避免受控 <select> 的 value 与所有 option 都不匹配导致渲染异常/白屏 */}
+                {!['active', 'draft', 'coming-soon', 'discontinued'].includes(form.status) && form.status && (
+                  <option value={form.status}>{form.status}</option>
+                )}
               </select>
             </div>
           </div>
@@ -488,56 +698,46 @@ export default function EditProductPage() {
             分类
           </h2>
           {categories.length > 0 ? (() => {
-            // Group categories by type
-            const grouped = categories.reduce((acc: Record<string, typeof categories>, cat) => {
-              const type = cat.type || 'other';
-              if (!acc[type]) acc[type] = [];
-              acc[type].push(cat);
+            // 仅显示子分类(L2, parentId 有值)；L1 容器不进入产品多选。
+            // 分组标题改用其 L1 parent 的真实英文名（从 categories 推导），不再硬编码中文。
+            const parentMap: Record<string, any> = {};
+            categories.forEach((c: any) => { if (!c.parentId) parentMap[c.id] = c; });
+
+            const grouped = categories.reduce((acc: Record<string, any[]>, cat: any) => {
+              if (!cat.parentId) return acc; // 跳过 L1 容器
+              const parentId = cat.parentId;
+              const groupKey = parentId || (cat.type || 'other');
+              if (!acc[groupKey]) acc[groupKey] = [];
+              acc[groupKey].push(cat);
               return acc;
-            }, {} as Record<string, typeof categories>);
+            }, {} as Record<string, any[]>);
 
-            const typeLabels: Record<string, string> = {
-              'cabinet-type': '📁 柜型分类',
-              'managed-items': '📦 管理物料',
-              'industry': '🏭 行业分类',
-              'custom-solution': '⚙️ 定制方案',
+            const groupLabel = (groupKey: string): string => {
+              const parent = parentMap[groupKey];
+              // 用安全解析读取 L1 父级展示名：优先顶层 nameEn/nameZh/nameAr，
+              // 其次 trilingual 对象 name.en/zh/ar。绝不直接返回对象，
+              // 否则 React 会抛 "Objects are not valid as a React child"（Error #31）。
+              if (parent) return entityName(parent, groupKey);
+              return groupKey;
             };
-
-            // Load custom dimension labels from localStorage
-            const customLabels: Record<string, string> = {};
-            if (typeof window !== 'undefined') {
-              try {
-                const saved = localStorage.getItem('admin_custom_dimensions');
-                if (saved) {
-                  const dims = JSON.parse(saved);
-                  Object.entries(dims).forEach(([key, val]: [string, any]) => {
-                    if (val && typeof val === 'object' && val.labelZh) {
-                      customLabels[key] = val.labelZh;
-                    } else if (typeof val === 'string') {
-                      customLabels[key] = val;
-                    }
-                  });
-                }
-              } catch {}
-            }
 
             return (
               <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
-                {Object.entries(grouped).map(([type, cats]) => (
-                  <div key={type}>
+                {Object.entries(grouped).map(([groupKey, cats]) => (
+                  <div key={groupKey}>
                     <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 sticky top-0 bg-white py-1">
-                      {typeLabels[type] || customLabels[type] || type}
+                      {groupLabel(groupKey)}
                       <span className="ml-2 text-gray-300">({cats.length})</span>
                     </div>
                     <div className="flex flex-wrap gap-2">
-                      {cats.map(cat => (
+                      {cats.map((cat: any) => (
                         <button type="button" key={cat.id} onClick={() => handleCategoryToggle(cat.id)}
                           className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${
                             form.categoryIds.includes(cat.id)
                               ? 'bg-blue-600 text-white border-blue-600'
                               : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400 hover:bg-blue-50'
                           }`}>
-                          {cleanName(cat.name?.zh) || cleanName(cat.name?.en) || cleanName(String(cat.name)) || '分类'}
+                          {cleanName(cat.name?.en) || cleanName(cat.name?.zh) || cleanName(String(cat.name)) || '分类'}
                         </button>
                       ))}
                     </div>
@@ -563,7 +763,7 @@ export default function EditProductPage() {
                       ? 'bg-green-600 text-white border-green-600'
                       : 'bg-white text-gray-700 border-gray-300 hover:border-green-400'
                   }`}>
-                  {tag.name?.zh || tag.name?.en || tag.name || '标签'}
+                  {entityName(tag, '标签')}
                 </button>
               ))}
             </div>
@@ -850,6 +1050,9 @@ export default function EditProductPage() {
             <p className="mt-1 text-xs text-gray-500">用逗号分隔多个关键词</p>
           </div>
         </div>
+
+        {/* ===== Product FAQ (per-product) ===== */}
+        <ProductFaqBlock productId={productId} />
 
         {/* Submit */}
         <div className="flex items-center justify-end gap-3">

@@ -25,8 +25,10 @@ export default function AdminProductsPage() {
   // Filter state (for display only - actual filtering uses params)
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
-  const [customDimensionLabels, setCustomDimensionLabels] = useState<Record<string, string>>({});
-  
+  // Language used to render category names in the filter dropdown (EN by default
+  // to preserve the existing behaviour; user can switch to 中文).
+  const [categoryLang, setCategoryLang] = useState<'en' | 'zh'>('en');
+
   // Batch management state
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [batchLoading, setBatchLoading] = useState(false);
@@ -52,7 +54,7 @@ export default function AdminProductsPage() {
       const [productsRes, categoriesData] = await Promise.all([
         fetch(`/api/admin/products?${params.toString()}`, {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('adminToken') || ''}`,
+            'Authorization': `Bearer ${localStorage.getItem('admin_token') || ''}`,
           },
         }),
         fetchUnifiedCategories(),
@@ -73,22 +75,6 @@ export default function AdminProductsPage() {
   }, []);  // No dependencies - all values passed as params
 
   useEffect(() => {
-    // Load custom dimension labels from localStorage
-    if (typeof window !== 'undefined') {
-      try {
-        const savedDims = localStorage.getItem('admin_custom_dimensions');
-        if (savedDims) {
-          const dimLabels = JSON.parse(savedDims);
-          const labelsMap: Record<string, string> = {};
-          Object.entries(dimLabels).forEach(([key, val]: [string, any]) => {
-            labelsMap[key] = val.labelZh || val.labelEn || val.label || key;
-          });
-          setCustomDimensionLabels(labelsMap);
-        }
-      } catch (e) {
-        console.warn('Failed to load custom dimension labels:', e);
-      }
-    }
     // Initial load with explicit empty filters
     loadProducts(1, pageSize, '', '');
   }, []);  // eslint-disable-line react-hooks/exhaustive-deps
@@ -120,14 +106,37 @@ export default function AdminProductsPage() {
     loadProducts(1, size, searchQuery, selectedCategory);
   };
 
-  // Get unique dimensions from categories
-  const dimensionLabels: Record<string, string> = {
-    'cabinet-type': '柜型分类',
-    'managed-items': '管理物料',
-    'industry': '行业分类',
-    'custom-solution': '定制方案',
-    ...customDimensionLabels,
+  // 层级分组展示：L1 一级分类（parentId === null）作为 optgroup 标签，
+  // L2 子分类（parentId 有值）作为可选项放入对应 optgroup，按 order 排序。
+  // L1 本身不可选，仅 L2 可选（与后端按 categories.some:{id} 过滤一致）。
+  const resolveCategoryName = (cat: any): string => {
+    // When Chinese is selected, prefer the Chinese name, then fall back to others.
+    if (categoryLang === 'zh') {
+      const zh = cat.nameZh || (cat.name && typeof cat.name === 'object' ? cat.name.zh : '') || '';
+      if (zh) return zh;
+    }
+    // Default / English preference: English → Chinese → Arabic.
+    const direct = cat.nameEn || cat.nameZh || cat.nameAr || '';
+    if (direct) return direct;
+    if (cat.name && typeof cat.name === 'object') return cat.name.en || cat.name.zh || cat.name.ar || '';
+    return 'Unnamed';
   };
+
+  const l1Categories = categories
+    .filter((c: any) => !c.parentId)
+    .sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+
+  const l2ByParent: Record<string, any[]> = {};
+  categories.forEach((c: any) => {
+    if (c.parentId) {
+      if (!l2ByParent[c.parentId]) l2ByParent[c.parentId] = [];
+      l2ByParent[c.parentId].push(c);
+    }
+  });
+  Object.keys(l2ByParent).forEach((pid) => {
+    l2ByParent[pid].sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+  });
+
   const dimensions = [...new Set(categories.map(c => c.type))];
   const [expandedDimensions, setExpandedDimensions] = useState<Set<string>>(new Set(dimensions));
 
@@ -139,13 +148,6 @@ export default function AdminProductsPage() {
       return next;
     });
   };
-
-  // Group categories by dimension
-  const groupedCategories = dimensions.map(dim => ({
-    dimension: dim,
-    label: dimensionLabels[dim] || dim,
-    categories: categories.filter(c => c.type === dim)
-  }));
 
   // Batch selection handlers
   const handleSelectAll = (checked: boolean) => {
@@ -173,7 +175,7 @@ export default function AdminProductsPage() {
     setBatchLoading(true);
     setBatchError('');
     try {
-      const token = localStorage.getItem('adminToken') || '';
+      const token = localStorage.getItem('admin_token') || '';
       const deletePromises = Array.from(selectedIds).map(id =>
         fetch(`/api/admin/products?id=${id}`, {
           method: 'DELETE',
@@ -204,7 +206,7 @@ export default function AdminProductsPage() {
     setBatchLoading(true);
     setBatchError('');
     try {
-      const token = localStorage.getItem('adminToken') || '';
+      const token = localStorage.getItem('admin_token') || '';
       const updatePromises = Array.from(selectedIds).map(id =>
         fetch(`/api/admin/products?id=${id}`, {
           method: 'PUT',
@@ -236,7 +238,7 @@ export default function AdminProductsPage() {
     if (!confirm(`确定要删除产品"${name}"吗？`)) return;
     setDeletingId(id);
     try {
-      const token = localStorage.getItem('adminToken') || '';
+      const token = localStorage.getItem('admin_token') || '';
       const res = await fetch(`/api/admin/products?id=${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` },
@@ -386,7 +388,7 @@ export default function AdminProductsPage() {
         )}
 
         {/* Search and Filter */}
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-5 flex-wrap">
           {/* Search Box */}
           <div className="relative flex-1 max-w-lg">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400" />
@@ -399,25 +401,55 @@ export default function AdminProductsPage() {
             />
           </div>
 
-          {/* Category Filter - Grouped by Dimension */}
-          <div className="relative">
-            <Filter className="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400" />
-            <select
-              value={selectedCategory}
-              onChange={(e) => handleCategoryFilter(e.target.value)}
-              className="pl-12 pr-10 py-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-base bg-white min-w-[300px]"
-            >
-              <option value="">所有分类</option>
-              {groupedCategories.map(group => (
-                <optgroup key={group.dimension} label={`${group.label} (${group.categories.length})`}>
-                  {group.categories.map(cat => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.nameZh || cat.nameEn || cat.name}
-                    </option>
-                  ))}
-                </optgroup>
-              ))}
-            </select>
+          {/* Category Filter + language toggle */}
+          <div className="flex items-center gap-3">
+            {/* Language switch: EN / 中文 */}
+            <div className="flex items-center space-x-1 bg-gray-100 rounded-xl p-1.5">
+              <button
+                type="button"
+                onClick={() => setCategoryLang('en')}
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${categoryLang === 'en' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}
+              >
+                EN
+              </button>
+              <button
+                type="button"
+                onClick={() => setCategoryLang('zh')}
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${categoryLang === 'zh' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}
+              >
+                中文
+              </button>
+            </div>
+
+            {/* Category Filter - Grouped by Dimension */}
+            <div className="relative">
+              <Filter className="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400" />
+              <select
+                value={selectedCategory}
+                onChange={(e) => handleCategoryFilter(e.target.value)}
+                className="pl-12 pr-10 py-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-base bg-white min-w-[320px]"
+              >
+                <option value="">所有分类</option>
+                {l1Categories.map((l1: any) => {
+                  const children = l2ByParent[l1.id] || [];
+                  if (children.length === 0) return null;
+                  const groupLabel = resolveCategoryName(l1);
+                  return (
+                    <optgroup key={l1.id} label={groupLabel}>
+                      {children.map((cat: any, idx: number) => {
+                        const isLast = idx === children.length - 1;
+                        const treePrefix = isLast ? '└ ' : '├ ';
+                        return (
+                          <option key={cat.id} value={cat.id}>
+                            {`${treePrefix}${resolveCategoryName(cat)}`}
+                          </option>
+                        );
+                      })}
+                    </optgroup>
+                  );
+                })}
+              </select>
+            </div>
           </div>
 
           {/* Clear Filters */}

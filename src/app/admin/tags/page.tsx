@@ -70,21 +70,25 @@ export default function AdminTagsPage() {
       const tagsData = await fetchUnifiedTags();
       setTags(tagsData);
 
-      // Load product counts from localStorage (or API if available)
-      if (typeof window !== 'undefined') {
-        const savedProducts = localStorage.getItem('admin_products');
-        if (savedProducts) {
-          const products = JSON.parse(savedProducts);
-          const counts: Record<string, number> = {};
-          products.forEach((p: any) => {
-            if (p.tags && Array.isArray(p.tags)) {
-              p.tags.forEach((tagId: string) => {
-                counts[tagId] = (counts[tagId] || 0) + 1;
-              });
-            }
+      // Load product counts from the DB (products API) — no localStorage fallback.
+      // Counts are keyed by tag id so the UI can show how many products use each tag.
+      try {
+        const productsRes = await fetch('/api/products?status=all');
+        const productsJson = await productsRes.json();
+        const products = productsJson.data || productsJson || [];
+        const counts: Record<string, number> = {};
+        products.forEach((p: any) => {
+          const tagIds = Array.isArray(p.tags)
+            ? p.tags.map((t: any) => (typeof t === 'string' ? t : t.id)).filter(Boolean)
+            : [];
+          tagIds.forEach((tagId: string) => {
+            counts[tagId] = (counts[tagId] || 0) + 1;
           });
-          setProductCounts(counts);
-        }
+        });
+        setProductCounts(counts);
+      } catch (e) {
+        console.warn('[tags] Failed to load product counts from API:', e);
+        setProductCounts({});
       }
     } catch (err: any) {
       setError(err.message || '加载数据失败');
@@ -102,7 +106,6 @@ export default function AdminTagsPage() {
       { id: 'tag-4', nameZh: '推荐', nameEn: 'Recommended', nameAr: 'موصى به', slug: 'recommended', color: '#F59E0B', status: 'active', createdAt: new Date().toISOString() },
     ];
     setTags(defaultTags);
-    localStorage.setItem('admin_tags', JSON.stringify(defaultTags));
   };
 
   // Save tags via API
@@ -194,18 +197,8 @@ export default function AdminTagsPage() {
     );
   });
 
-  // Get product count for a tag
-  const getProductCount = (tagId: string) => {
-    if (typeof window === 'undefined') return 0;
-    const savedProducts = localStorage.getItem('admin_products');
-    if (!savedProducts) return 0;
-    try {
-      const products = JSON.parse(savedProducts);
-      return products.filter((p: any) => p.tags && p.tags.includes(tagId)).length;
-    } catch {
-      return 0;
-    }
-  };
+  // NOTE: product counts are read from the DB-derived `productCounts` state
+  // (populated in loadData), not from localStorage.
 
   return (
     <div>

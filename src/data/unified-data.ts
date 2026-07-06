@@ -228,9 +228,14 @@ function cleanStringValue(val: any): string {
  * Fetch products from API ONLY.
  * No localStorage fallback. Returns [] on error.
  */
-export async function fetchUnifiedProducts(status: string = 'active'): Promise<Product[]> {
+export async function fetchUnifiedProducts(status: string = 'active', featured?: boolean): Promise<Product[]> {
   try {
-    const res = await fetch(`${getBaseUrl()}/api/products?status=${status}`);
+    const params = new URLSearchParams({ status });
+    // When the caller explicitly wants featured products, push the filter down to
+    // the API so the DB-level `where.featured` clause guarantees the correct set
+    // is returned (decoupled from client-side field serialization).
+    if (featured) params.set('featured', 'true');
+    const res = await fetch(`${getBaseUrl()}/api/products?${params.toString()}`);
     if (!res.ok) throw new Error(`API error: ${res.status}`);
     const json = await res.json();
     return json.data || [];
@@ -341,12 +346,10 @@ export async function fetchUnifiedCategories(): Promise<LocalCategory[]> {
 export async function fetchCategoriesGrouped(): Promise<{ type: string; label: string; categories: LocalCategory[] }[]> {
   const allCats = await fetchUnifiedCategories();
   const typeOrder = ['cabinet-type', 'managed-items', 'industry', 'custom-solution'];
-  const labels: Record<string, string> = {
-    'cabinet-type': '柜型分类',
-    'managed-items': '管理物料',
-    industry: '行业分类',
-    'custom-solution': '定制方案',
-  };
+
+  // Build a map of L1 parent categories (parentId === null) to derive DB-backed group labels.
+  const parentMap: Record<string, LocalCategory> = {};
+  allCats.forEach((c: any) => { if (!c.parentId) parentMap[c.id] = c; });
 
   // Collect all active types from actual data + built-in order
   const activeTypes = [...new Set(allCats.map(c => c.type))];
@@ -355,11 +358,17 @@ export async function fetchCategoriesGrouped(): Promise<{ type: string; label: s
     ...activeTypes.filter(t => !typeOrder.includes(t))
   ];
 
-  return sortedTypes.map(type => ({
-    type,
-    label: labels[type] || type,
-    categories: allCats.filter(c => c.type === type),
-  })).filter(g => g.categories.length > 0);
+  return sortedTypes.map(type => {
+    // Derive the group label from the DB-backed L1 parent name of the group's representative member.
+    const representative = allCats.find(c => c.type === type);
+    const parent = representative && representative.parentId ? parentMap[representative.parentId] : null;
+    const label = parent ? (parent.nameEn || parent.nameZh || parent.nameAr || type) : type;
+    return {
+      type,
+      label,
+      categories: allCats.filter(c => c.type === type),
+    };
+  }).filter(g => g.categories.length > 0);
 }
 
 /**
@@ -564,8 +573,12 @@ export const adminApi = {
   },
 
   // FAQs
-  async fetchAdminFaqs(): Promise<FAQ[]> {
-    const res = await authFetch('/api/admin/faqs');
+  async fetchAdminFaqs(productId?: string, pageSize = 200): Promise<FAQ[]> {
+    let url = '/api/admin/faqs';
+    if (productId) {
+      url += `?productId=${encodeURIComponent(productId)}&pageSize=${pageSize}`;
+    }
+    const res = await authFetch(url);
     if (!res.ok) throw new Error(`API error: ${res.status}`);
     const json = await res.json();
     return json.data || [];

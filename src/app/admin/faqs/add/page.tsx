@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { adminApi } from '@/data/unified-data';
+import JsonTrilingualInput from '@/components/admin/JsonTrilingualInput';
+import { FAQ_CATEGORIES } from '@/data/faq-constants';
 
 // Force dynamic rendering (no static generation)
 export const dynamic = 'force-dynamic';
@@ -60,19 +62,7 @@ export default function AdminFaqAddPage() {
     }
   };
 
-  const categoryOptions = [
-    { key: 'features', label: '功能特性' },
-    { key: 'security', label: '安全权限' },
-    { key: 'tracking', label: '追踪追溯' },
-    { key: 'reporting', label: '报表导出' },
-    { key: 'integration', label: '系统集成' },
-    { key: 'products', label: '产品相关' },
-    { key: 'customization', label: '定制开发' },
-    { key: 'applications', label: '应用场景' },
-    { key: 'sales', label: '购买咨询' },
-    { key: 'support', label: '售后服务' },
-    { key: 'company', label: '关于公司' },
-  ];
+  // 分类选项复用全局 FAQ_CATEGORIES 常量（与产品 FAQ 区块共用）
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -117,105 +107,34 @@ export default function AdminFaqAddPage() {
                 required
               >
                 <option value="">请选择分类</option>
-                {categoryOptions.map(({ key, label }) => (
-                  <option key={key} value={key}>{label}</option>
+                {FAQ_CATEGORIES.map(({ value, label }) => (
+                  <option key={value} value={value}>{label}</option>
                 ))}
               </select>
             </div>
 
-            {/* 问题输入 */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">问题</h3>
+            {/* 问题输入（三语，共用 JsonTrilingualInput 组件） */}
+            <JsonTrilingualInput
+              label="问题"
+              requireZh
+              requireEn
+              value={{ zh: formData.questionZh, en: formData.questionEn, ar: formData.questionAr }}
+              onChange={(next) =>
+                setFormData({ ...formData, questionZh: next.zh || '', questionEn: next.en || '', questionAr: next.ar || '' })
+              }
+            />
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  问题（中文） <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.questionZh}
-                  onChange={(e) => setFormData({ ...formData, questionZh: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
-                  placeholder="请输入中文问题"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Question (English) <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.questionEn}
-                  onChange={(e) => setFormData({ ...formData, questionEn: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
-                  placeholder="Please enter English question"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  سؤال (العربية)
-                </label>
-                <input
-                  type="text"
-                  value={formData.questionAr}
-                  onChange={(e) => setFormData({ ...formData, questionAr: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
-                  placeholder="أدخل السؤال باللغة العربية"
-                  dir="rtl"
-                />
-              </div>
-            </div>
-
-            {/* 答案输入 */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">答案</h3>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  答案（中文） <span className="text-red-500">*</span>
-                </label>
-                <textarea
-                  required
-                  rows={6}
-                  value={formData.answerZh}
-                  onChange={(e) => setFormData({ ...formData, answerZh: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all resize-none"
-                  placeholder="请输入中文答案"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Answer (English) <span className="text-red-500">*</span>
-                </label>
-                <textarea
-                  required
-                  rows={6}
-                  value={formData.answerEn}
-                  onChange={(e) => setFormData({ ...formData, answerEn: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all resize-none"
-                  placeholder="Please enter English answer"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  جواب (العربية)
-                </label>
-                <textarea
-                  rows={6}
-                  value={formData.answerAr}
-                  onChange={(e) => setFormData({ ...formData, answerAr: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all resize-none"
-                  placeholder="أدخل الإجابة باللغة العربية"
-                  dir="rtl"
-                />
-              </div>
-            </div>
+            {/* 答案输入（三语，共用 JsonTrilingualInput 组件） */}
+            <JsonTrilingualInput
+              label="答案"
+              multiline
+              requireZh
+              requireEn
+              value={{ zh: formData.answerZh, en: formData.answerEn, ar: formData.answerAr }}
+              onChange={(next) =>
+                setFormData({ ...formData, answerZh: next.zh || '', answerEn: next.en || '', answerAr: next.ar || '' })
+              }
+            />
 
             {/* 状态选择 */}
             <div>

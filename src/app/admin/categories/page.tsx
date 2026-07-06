@@ -4,8 +4,25 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Plus, Pencil, Trash2, ArrowLeft, GripVertical, X, Check, Search, RefreshCw, AlertCircle, Loader2,
   FolderOpen, Package, Box, Wrench, Settings, Cpu, Shield, Lock, Star, Heart, Truck, Building2, Factory, Layers, Zap, Clock, Globe, Database, FileText, Image } from 'lucide-react';
-import { getAllCategoryTypes, getCategoriesByType, dimensionLabels, default as allDefaultCategories } from '@/data/categories';
-import { fetchUnifiedCategories, fetchCategoriesGrouped, adminApi, type LocalCategory } from '@/data/unified-data';
+import { useLocale } from '@/lib/i18n';
+import { fetchUnifiedCategories, adminApi, type LocalCategory } from '@/data/unified-data';
+
+// Resolve a category's trilingual label from the normalized fields returned by
+// fetchUnifiedCategories (nameZh / nameEn / nameAr). Falls back gracefully so the
+// admin page and the public page always show identical names sourced from the DB.
+function resolveCategoryLabel(cat: any, locale: string): string {
+  if (!cat) return '';
+  // Fallback: the object may already carry a normalized `label` field (e.g. the
+  // customDimensions mapping produced in loadData), which has no name/nameZh.
+  // Use it directly so derived tabs show the correct localized name.
+  if (cat.label && typeof cat.label === 'string' && cat.label.trim()) return cat.label;
+  const zh = cat.nameZh || (cat.name && cat.name.zh) || '';
+  const en = cat.nameEn || (cat.name && cat.name.en) || '';
+  const ar = cat.nameAr || (cat.name && cat.name.ar) || '';
+  if (locale === 'zh') return zh || en || ar || '';
+  if (locale === 'ar') return ar || en || zh || '';
+  return en || zh || ar || '';
+}
 
 // Force dynamic rendering (no static generation)
 export const dynamic = 'force-dynamic';
@@ -17,9 +34,16 @@ const ICON_MAP: Record<string, any> = {
 };
 const getIconComponent = (name: string) => ICON_MAP[name] || null;
 
+// NOTE: The L2 "所属维度" (parent dimension) selector is now DB-derived. Its options
+// come from `customDimensions` (built in loadData from the real L1 parent categories),
+// so there is no longer any hardcoded Chinese dimension label array. The selected
+// dimension is stored as `categoryForm.parentId` (the L1 parent category id) — the
+// same id used as the tab key and as `activeTab`.
+
 type CategoryType = 'cabinet-type' | 'managed-items' | 'industry' | 'custom-solution' | string;
 
 export default function AdminCategoriesPage() {
+  const { locale: adminLocale } = useLocale();
   const [activeTab, setActiveTab] = useState<CategoryType>('cabinet-type');
   const [categories, setCategories] = useState<LocalCategory[]>([]);
   const [customDimensions, setCustomDimensions] = useState<{key: string; label: string; labelZh: string; labelEn: string; labelAr: string; icon: string}[]>([]);
@@ -40,6 +64,7 @@ export default function AdminCategoriesPage() {
     descriptionEn: '',
     descriptionAr: '',
     type: 'cabinet-type' as CategoryType,
+    parentId: null as string | null,
     status: 'active' as 'active' | 'inactive',
   });
   const [dimensionForm, setDimensionForm] = useState({ key: '', labelZh: '', labelEn: '', labelAr: '', icon: '' });
@@ -64,67 +89,23 @@ export default function AdminCategoriesPage() {
       const categoriesData = await fetchUnifiedCategories();
       setCategories(categoriesData);
 
-      // Extract custom dimensions from category types
-      const builtIn = new Set(['cabinet-type', 'managed-items', 'industry', 'custom-solution']);
-      const dims = [...new Set(categoriesData.map((c: any) => c.type))]
-        .filter((t: string) => !builtIn.has(t))
-        .map((t: string) => ({ key: t, label: t }));
+      // Derive the dimension tabs from the REAL hierarchy: L1 parent categories
+      // (parentId === null). The tab key is the L1 category id and the label is read
+      // from its trilingual `name` field (normalized into nameZh/nameEn/nameAr by
+      // fetchUnifiedCategories). Built-in dimension names are NO LONGER hardcoded — the
+      // admin and public pages now show identical, DB-backed names. This also removes the
+      // old "product" leak, because the `type='product'` rows ARE the L1 parents (tabs),
+      // not a stray custom dimension.
+      const l1List = categoriesData.filter((c: any) => c.parentId == null || c.parent != null);
+      setCustomDimensions(l1List.map((l1: any) => ({
+        key: l1.id,
+        label: resolveCategoryLabel(l1, adminLocale),
+        labelZh: l1.nameZh || (l1.name && l1.name.zh) || '',
+        labelEn: l1.nameEn || (l1.name && l1.name.en) || '',
+        labelAr: l1.nameAr || (l1.name && l1.name.ar) || '',
+        icon: l1.icon || '',
+      })));
 
-      // Load custom dimension labels — API (DB) as PRIMARY source, localStorage as cache
-      if (typeof window !== 'undefined') {
-        let dbDimLabels: Record<string, {labelZh: string; labelEn: string; labelAr: string; icon: string}> | null = null;
-
-        // ① Try loading from database via dedicated dimension-labels API
-        try {
-          const dimRes = await fetch('/api/dimension-labels');
-          if (dimRes.ok) {
-            const rawLabels = await dimRes.json();
-            if (rawLabels && typeof rawLabels === 'object' && Object.keys(rawLabels).length > 0) {
-              dbDimLabels = rawLabels as Record<string, {labelZh: string; labelEn: string; labelAr: string; icon: string}>;
-              console.log('[categories] Dimension labels loaded from DB:', Object.keys(dbDimLabels));
-            }
-          }
-        } catch (e) {
-          console.warn('[categories] Failed to load dimension labels from API, will use fallback:', e);
-        }
-
-        // ② Load from localStorage as cache/fallback
-        let localLabels: Record<string, {labelZh: string; labelEn: string; labelAr: string; icon: string}> | null = null;
-        const savedDims = localStorage.getItem('admin_custom_dimensions');
-        if (savedDims) { localLabels = JSON.parse(savedDims); }
-
-        // ③ Merge: DB is primary, localStorage fills gaps, key-only dims get sensible defaults
-        const mergedLabels: Record<string, {labelZh: string; labelEn: string; labelAr: string; icon: string}> = {};
-        
-        // First apply DB labels
-        if (dbDimLabels) { Object.assign(mergedLabels, dbDimLabels); }
-        // Then overlay with localStorage (more recent manual edits)
-        if (localLabels) { 
-          Object.keys(localLabels).forEach(k => {
-            if (!mergedLabels[k] || !mergedLabels[k].labelZh || mergedLabels[k].labelZh === k) {
-              // Only use localStorage when DB has missing or fallback values
-              mergedLabels[k] = localLabels[k];
-            }
-          });
-        }
-
-        setCustomDimensions(dims.map(d => ({
-          key: d.key,
-          label: mergedLabels[d.key]?.labelZh || d.label,
-          labelZh: mergedLabels[d.key]?.labelZh || d.label,
-          labelEn: mergedLabels[d.key]?.labelEn || d.label,
-          labelAr: mergedLabels[d.key]?.labelAr || d.label,
-          icon: mergedLabels[d.key]?.icon || '',
-        })));
-
-        // ④ Sync back to localStorage so it's available for frontend products page
-        if (dbDimLabels && JSON.stringify(dbDimLabels) !== savedDims) {
-          localStorage.setItem('admin_custom_dimensions', JSON.stringify(mergedLabels));
-        }
-      } else {
-        // SSR fallback (shouldn't normally happen)
-        setCustomDimensions(dims.map(d => ({ key: d.key, label: d.label, labelZh: d.label, labelEn: d.label, labelAr: d.label, icon: '' })));
-      }
 
       // Load product counts from API (not localStorage)
       try {
@@ -143,23 +124,8 @@ export default function AdminCategoriesPage() {
         });
         setProductCounts(counts);
       } catch (e) {
-        console.warn('[categories] Failed to load product counts from API, trying localStorage:', e);
-        // Fallback to localStorage
-        if (typeof window !== 'undefined') {
-          const savedProducts = localStorage.getItem('admin_products');
-          if (savedProducts) {
-            const products = JSON.parse(savedProducts);
-            const counts: Record<string, number> = {};
-            products.forEach((p: any) => {
-              if (p.categories && Array.isArray(p.categories)) {
-                p.categories.forEach((catId: string) => {
-                  counts[catId] = (counts[catId] || 0) + 1;
-                });
-              }
-            });
-            setProductCounts(counts);
-          }
-        }
+        // API failed — leave product counts empty (no localStorage fallback by design).
+        console.warn('[categories] Failed to load product counts from API:', e);
       }
     } catch (err: any) {
       setError(err.message || '加载数据失败');
@@ -174,81 +140,69 @@ export default function AdminCategoriesPage() {
     // Note: Individual category changes are now handled via API
   };
 
-  // Dimension CRUD
+  // Dimension (L1 parent category) CRUD.
+  // The "维度" concept is now a real L1 Category row: creating/editing a dimension
+  // creates or updates a Category with parentId=null, type='product'. We no longer
+  // write to the custom_dimensions table or localStorage — the categories API is the
+  // single source of truth, so the admin page and the public page show identical names.
   const handleDimensionSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!dimensionForm.key.trim()) return;
+    if (!dimensionForm.labelEn.trim() && !dimensionForm.labelZh.trim()) return;
 
     try {
       setSaving(true);
-      const key = dimensionForm.key.toLowerCase().replace(/[^a-z0-9-]/g, '');
-      const newDim = {
-        key,
-        label: dimensionForm.labelZh || key,
-        labelZh: dimensionForm.labelZh || dimensionForm.labelEn || key,
-        labelEn: dimensionForm.labelEn || dimensionForm.labelZh || key,
-        labelAr: dimensionForm.labelAr || dimensionForm.labelZh || key,
-        icon: dimensionForm.icon || '',
+      setError(null);
+
+      const name = {
+        zh: dimensionForm.labelZh || dimensionForm.labelEn,
+        en: dimensionForm.labelEn || dimensionForm.labelZh,
+        ar: dimensionForm.labelAr || dimensionForm.labelZh,
       };
+      // Slug: use the explicit key (dimension identifier) when provided, else derive from EN name.
+      const slugBase = dimensionForm.key.trim() || (dimensionForm.labelEn || dimensionForm.labelZh);
+      const slug = slugBase.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+      const icon = dimensionForm.icon || '';
 
-      // Save custom dimension labels to localStorage (cache)
-      const dimLabels: Record<string, {labelZh: string; labelEn: string; labelAr: string; icon: string}> = {};
-      (editingDimension ? customDimensions.map(d => d.key === editingDimension.key ? key : d.key) : [...customDimensions.map(d => d.key), key]).forEach(k => {
-        const found = k === key ? newDim : customDimensions.find(d => d.key === k);
-        if (found) dimLabels[k] = { labelZh: found.labelZh, labelEn: found.labelEn, labelAr: found.labelAr, icon: found.icon || '' };
-      });
-      localStorage.setItem('admin_custom_dimensions', JSON.stringify(dimLabels));
-
-      // Persist to database (source of truth — survives cache clear)
-      // ① Primary: custom_dimensions table (v129)
-      // ② Backup: site_settings (backwards compatibility)
-      try {
-        await fetch('/api/admin/custom-dimensions', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ dimensions: dimLabels }),
-        });
-        console.log('[categories] Dimension labels persisted to custom_dimensions table');
-      } catch (e) {
-        console.warn('[categories] Failed to persist to custom_dimensions table:', e);
-        // Fallback to legacy API if new one fails
-        try {
-          await fetch('/api/admin/settings', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ key: 'custom_dimension_labels', value: JSON.stringify(dimLabels) }),
-          });
-        } catch (e2) {
-          console.warn('[categories] Fallback to site_settings also failed:', e2);
-        }
-      }
-
-      // Update state
       if (editingDimension) {
-        setCustomDimensions(prev => prev.map(d => d.key === editingDimension.key ? { ...newDim, key } : d));
-        if (key !== editingDimension.key) {
-          setCategories(prev => prev.map(c => c.type === editingDimension.key ? {...c, type: key} : c));
-          setActiveTab(key);
-        }
-      } else {
-        setCustomDimensions(prev => {
-          if (prev.some(d => d.key === key)) return prev;
-          return [...prev, { ...newDim, key }];
+        // editingDimension.key holds the L1 category id
+        const existing = categories.find((c: any) => c.id === editingDimension.key);
+        const updated = await adminApi.updateCategory(editingDimension.key, {
+          name,
+          slug: existing?.slug || slug,
+          icon,
+          description: { zh: '', en: '', ar: '' },
+          parentId: null,
+          order: existing?.order ?? 0,
+          status: 'active',
+          type: existing?.type || 'product',
         });
+        setCategories(prev => prev.map(c => c.id === editingDimension.key ? (updated as any) : c));
+      } else {
+        const created: any = await adminApi.createCategory({
+          name,
+          slug,
+          icon,
+          description: { zh: '', en: '', ar: '' },
+          parentId: null,
+          order: categories.length,
+          status: 'active',
+          type: 'product',
+        });
+        setCategories(prev => [...prev, created]);
+        setActiveTab(created.id);
       }
 
       setShowDimensionModal(false);
       setEditingDimension(null);
       setDimensionForm({ key: '', labelZh: '', labelEn: '', labelAr: '', icon: '' });
-      if (!editingDimension) setActiveTab(key);
     } catch (err: any) {
-      setError(err.message || '保存维度失败');
+      setError(err.message || '保存一级分类失败');
     } finally {
       setSaving(false);
     }
   };
 
-  // Edit dimension handler
+  // Edit dimension handler (editing an existing L1 parent category)
   const handleEditDimension = (dim: typeof customDimensions[0]) => {
     setEditingDimension({ key: dim.key });
     setDimensionForm({
@@ -261,38 +215,25 @@ export default function AdminCategoriesPage() {
     setShowDimensionModal(true);
   };
 
-  // Delete dimension handler
+  // Delete dimension handler — deletes the L1 parent Category row via the categories API.
+  // (Child L2 categories keep their rows but become unparented; an admin can re-parent them
+  // later. No data is lost.)
   const handleDeleteDimension = async (key: string) => {
-    if (!confirm(`确定要删除维度 "${key}" 吗？该维度下的分类将变为未归类。`)) return;
+    if (!confirm('确定要删除这个一级分类吗？其下的子分类将变为未归类（可在分类列表中重新归类）。')) return;
 
-    // Update state
-    const newDims = customDimensions.filter(d => d.key !== key);
-    setCustomDimensions(newDims);
-    setCategories(prev => prev.map(c => c.type === key ? {...c, type: 'custom-solution'} : c));
-    if (activeTab === key) setActiveTab('cabinet-type');
-
-    // Remove from localStorage
-    const savedDims = localStorage.getItem('admin_custom_dimensions');
-    if (savedDims) {
-      const dimLabels = JSON.parse(savedDims);
-      delete dimLabels[key];
-      localStorage.setItem('admin_custom_dimensions', JSON.stringify(dimLabels));
-
-      // Sync removal to database (primary + backup)
-      try {
-        // Primary: custom_dimensions table
-        await fetch(`/api/admin/custom-dimensions?key=${encodeURIComponent(key)}`, { method: 'DELETE' });
-        console.log(`[categories] Dimension "${key}" removed from custom_dimensions table`);
-      } catch (e) {
-        // Fallback to legacy API
-        try {
-          await fetch('/api/admin/settings', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ key: 'custom_dimension_labels', value: JSON.stringify(dimLabels) }),
-          });
-        } catch (e2) { console.warn('[categories] Failed to sync dimension delete:', e2); }
+    try {
+      setSaving(true);
+      await adminApi.deleteCategory(key);
+      setCategories(prev => prev.filter(c => c.id !== key));
+      setCustomDimensions(prev => prev.filter(d => d.key !== key));
+      if (activeTab === key) {
+        const remaining = customDimensions.filter(d => d.key !== key);
+        setActiveTab(remaining[0]?.key || '');
       }
+    } catch (err: any) {
+      setError(err.message || '删除一级分类失败');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -317,7 +258,9 @@ export default function AdminCategoriesPage() {
           en: categoryForm.descriptionEn,
           ar: categoryForm.descriptionAr || categoryForm.descriptionEn,
         },
-        parentId: null,
+        parentId: editingCategory
+          ? ((editingCategory as any).parentId ?? null)
+          : (categoryForm.parentId ?? null),
         order: editingCategory ? editingCategory.order : categories.length,
         status: categoryForm.status,
         type: categoryForm.type,
@@ -345,6 +288,7 @@ export default function AdminCategoriesPage() {
         descriptionEn: '',
         descriptionAr: '',
         type: activeTab,
+        parentId: null,
         status: 'active',
       });
     } catch (err: any) {
@@ -366,6 +310,7 @@ export default function AdminCategoriesPage() {
       descriptionEn: category.description?.en || '',
       descriptionAr: category.description?.ar || '',
       type: category.type as CategoryType,
+      parentId: (category as any).parentId ?? null,
       status: category.status as 'active' | 'inactive',
     });
     setShowModal(true);
@@ -385,9 +330,12 @@ export default function AdminCategoriesPage() {
     }
   };
 
-  // Filter categories by active tab and search
+  // Filter categories by active tab (L1 parent id) and search.
+  // Rows shown = the L2 children whose parentId === the selected L1.
+  const isChildOf = (c: any, l1Id: string) =>
+    c.parentId === l1Id || (c.parent && c.parent.id === l1Id);
   const filteredCategories = categories.filter(c => {
-    const matchesTab = c.type === activeTab;
+    const matchesTab = isChildOf(c, activeTab as string);
     const matchesSearch = !searchQuery ||
       c.nameZh.toLowerCase().includes(searchQuery.toLowerCase()) ||
       c.nameEn.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -395,34 +343,23 @@ export default function AdminCategoriesPage() {
     return matchesTab && matchesSearch;
   });
 
-  // Tab configuration — built-in + custom dimensions
-  // Force icon mapping for known dimensions (fix Bug #4: robot dimension shows ❤️)
-  const FORCED_DIMENSION_ICONS: Record<string, string> = {
-    'testrobot': '⚙️',  // Force robot dimension to use gear icon
-    'robot': '⚙️',
-    'service': '⚙️',
-    'solution': '⚙️',
+  // Infer the `type` for a new L2 child from its L1 siblings (fallback 'custom-solution').
+  const getInheritedType = (l1Id: string): string => {
+    const children = categories.filter((c: any) => isChildOf(c, l1Id));
+    return (children[0] && (children[0] as any).type) || 'custom-solution';
   };
-  const baseTabs: { key: CategoryType; label: string; icon: string }[] = [
-    { key: 'cabinet-type', label: '柜型分类', icon: '🗄️' },
-    { key: 'managed-items', label: '管理物料', icon: '📦' },
-    { key: 'industry', label: '行业分类', icon: '🏭' },
-    { key: 'custom-solution', label: '定制方案', icon: '⚙️' },
-  ];
-  const builtInLabels: Record<string, { key: string; label: string; labelZh: string; labelEn: string; labelAr: string; icon: string }> = {
-    cabinet: { key: 'cabinet-type', label: '柜型分类', labelZh: '柜型分类', labelEn: 'Cabinet Type', labelAr: 'نوع الخزانة', icon: '🗄️' },
-    item: { key: 'managed-items', label: '管理物料', labelZh: '管理物料', labelEn: 'Managed Items', labelAr: 'المواد المدارة', icon: '📦' },
-    industry: { key: 'industry', label: '行业分类', labelZh: '行业分类', labelEn: 'Industry', labelAr: 'الصناعة', icon: '🏭' },
-    custom: { key: 'custom-solution', label: '定制方案', labelZh: '定制方案', labelEn: 'Custom', labelAr: 'مخصص', icon: '⚙️' },
-  };
-  // Map custom dimensions with forced icon replacement
-  const allTabs = [...baseTabs, ...customDimensions.map(d => {
-    const forcedIcon = FORCED_DIMENSION_ICONS[d.key] || FORCED_DIMENSION_ICONS[d.key.toLowerCase()] || null;
-    const icon = forcedIcon || (d as any).icon || '⚙️';
-    // If the stored icon is an emoji like ❤️, replace with forced icon
-    const finalIcon = (icon === '❤️' || icon === '💖' || icon === '💗') ? '⚙️' : icon;
-    return { key: d.key as CategoryType, label: d.label, icon: finalIcon };
-  })];
+
+  // Dimension tabs are now the L1 parent categories. Labels are resolved live from the
+  // trilingual `name` field (DB-backed) so the admin and public pages stay in sync.
+  // No hardcoded Chinese dimension labels remain.
+  const allTabs = customDimensions.map(d => ({
+    key: d.key as CategoryType,
+    // Use the label already resolved in loadData (d.label) instead of calling
+    // resolveCategoryLabel again — d has no name/nameZh fields, so the second
+    // call would return an empty string (the root cause of the empty L1 tab).
+    label: d.label || d.labelEn || d.labelZh || '',
+    icon: d.icon || '🗂️',
+  }));
 
   return (
     <div>
@@ -481,53 +418,51 @@ export default function AdminCategoriesPage() {
             {/* Tabs + Search + Add */}
             <div className="border-b border-gray-200">
               {/* Tab Navigation */}
-              <div className="flex gap-2 px-6 pt-5 flex-wrap">
+              <div className="flex gap-1.5 px-5 pt-4 flex-wrap">
                 {allTabs.map((tab) => {
-                  const isCustom = !['cabinet-type','managed-items','industry','custom-solution'].includes(tab.key);
-                  const customDim = isCustom ? customDimensions.find(d => d.key === tab.key) : null;
+                  // Each tab is an L1 parent category; the badge counts its L2 children.
+                  const childCount = categories.filter((c: any) => isChildOf(c, tab.key as string)).length;
                   return (
                     <div key={tab.key} className="flex items-center gap-1">
                       <button
                         onClick={() => setActiveTab(tab.key)}
-                        className={`px-6 py-3.5 text-base font-medium transition-all rounded-t-xl ${
+                        className={`px-4 py-2.5 text-sm font-medium transition-all rounded-t-lg ${
                           activeTab === tab.key
                             ? 'bg-blue-50 text-blue-600 border-b-2 border-blue-600 shadow-sm'
                             : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                         }`}
                       >
-                        <span className="mr-2.5 text-lg">{tab.icon}</span>
+                        <span className="mr-2 text-base">{tab.icon}</span>
                         {tab.label}
-                        <span className="ml-3 px-3 py-0.5 bg-gray-100 text-gray-600 rounded-full text-sm">
-                          {categories.filter(c => c.type === tab.key).length}
+                        <span className="ml-2 px-2 py-0.5 bg-gray-100 text-gray-500 rounded-full text-xs">
+                          {childCount}
                         </span>
                       </button>
-                      {/* Edit/Delete buttons */}
+                      {/* Edit/Delete buttons — every tab is a real L1 category */}
                       <button
-                        onClick={(e) => { e.stopPropagation(); handleEditDimension(isCustom ? (customDim || { key: tab.key, label: tab.key, labelZh: tab.key, labelEn: tab.key, labelAr: tab.key, icon: '' }) : (builtInLabels[tab.key] || { key: tab.key, label: tab.label, labelZh: tab.label, labelEn: tab.label, labelAr: tab.label, icon: '' })); }}
+                        onClick={(e) => { e.stopPropagation(); const l1 = customDimensions.find(d => d.key === tab.key); handleEditDimension({ key: tab.key, label: tab.label, labelZh: l1?.labelZh || tab.label, labelEn: l1?.labelEn || tab.label, labelAr: l1?.labelAr || tab.label, icon: tab.icon }); }}
                         className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                        title="编辑维度名称（三语言）"
+                        title="编辑一级分类名称（三语言）"
                       >
                         <Pencil className="w-4 h-4" />
                       </button>
-                      {isCustom && (
-                        <button
-                          onClick={(e) => { e.stopPropagation(); handleDeleteDimension(tab.key); }}
-                          className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          title="删除维度"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      )}
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleDeleteDimension(tab.key); }}
+                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        title="删除一级分类"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     </div>
                   );
                 })}
-                {/* New Dimension Button */}
+                {/* New L1 Category (一级分类) Button */}
                 <button
                   onClick={() => { setEditingDimension(null); setDimensionForm({ key: '', labelZh: '', labelEn: '', labelAr: '', icon: '' }); setShowDimensionModal(true); }}
                   className="px-6 py-3.5 text-base font-medium transition-all rounded-t-xl text-blue-500 hover:text-blue-700 hover:bg-blue-50 border-2 border-dashed border-blue-300"
-                  title="新建一级分类（新维度）"
+                  title="新建一级分类"
                 >
-                  + 新建维度
+                  + 新建一级分类
                 </button>
               </div>
 
@@ -547,7 +482,6 @@ export default function AdminCategoriesPage() {
                   <button
                     onClick={() => {
                       if (confirm('确定要重置为默认分类数据吗？当前自定义分类将丢失。')) {
-                        localStorage.removeItem('admin_categories');
                         loadData();
                       }
                     }}
@@ -560,6 +494,8 @@ export default function AdminCategoriesPage() {
                   <button
                     onClick={() => {
                       setEditingCategory(null);
+                      // Create an L2 child of the currently selected L1 parent.
+                      const inheritedType = getInheritedType(activeTab as string);
                       setCategoryForm({
                         nameZh: '',
                         nameEn: '',
@@ -569,7 +505,8 @@ export default function AdminCategoriesPage() {
                         descriptionZh: '',
                         descriptionEn: '',
                         descriptionAr: '',
-                        type: activeTab,
+                        type: inheritedType,
+                        parentId: activeTab as string,
                         status: 'active',
                       });
                       setShowModal(true);
@@ -689,17 +626,23 @@ export default function AdminCategoriesPage() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">所属维度 *</label>
                   <select
-                    value={categoryForm.type}
-                    onChange={(e) => setCategoryForm({ ...categoryForm, type: e.target.value as CategoryType })}
+                    value={categoryForm.parentId ?? ''}
+                    onChange={(e) => setCategoryForm({ ...categoryForm, parentId: e.target.value || null })}
                     className="admin-form-input w-full"
                     required
                   >
-                    {allTabs.map(tab => (
-                      <option key={tab.key} value={tab.key}>
-                        {tab.label}
+                    {customDimensions.map(d => (
+                      <option key={d.key} value={d.key}>
+                        {d.labelZh || d.labelEn || d.labelAr || d.label}
                       </option>
                     ))}
                   </select>
+                  <p className="text-xs text-gray-400 mt-1">
+                    将作为「{resolveCategoryLabel(
+                      customDimensions.find((d: any) => d.key === categoryForm.parentId) || { nameZh: '', nameEn: '', nameAr: '' },
+                      adminLocale
+                    ) || '未选择父级'}」下的子分类
+                  </p>
                 </div>
               )}
 
@@ -759,31 +702,13 @@ export default function AdminCategoriesPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">图标</label>
                 <div className="space-y-2">
-                  {/* Icon picker grid */}
-                  <div className="grid grid-cols-10 gap-1.5 p-2 border border-gray-200 rounded-lg bg-gray-50 max-h-32 overflow-y-auto">
-                    {['FolderOpen','Package','Box','Wrench','Settings','Cpu','Shield','Lock','Star','Heart','Truck','Building2','Factory','Layers','Zap','Clock','Globe','Database','FileText','Image'].map(iconName => (
-                      <button
-                        key={iconName}
-                        type="button"
-                        onClick={() => setCategoryForm({ ...categoryForm, icon: iconName })}
-                        className={`w-8 h-8 flex items-center justify-center rounded-md text-xs transition-all ${
-                          categoryForm.icon === iconName
-                            ? 'bg-blue-500 text-white shadow-sm'
-                            : 'bg-white text-gray-500 hover:bg-blue-50 hover:text-blue-600 border border-gray-200'
-                        }`}
-                        title={iconName}
-                      >
-                        {iconName.charAt(0)}
-                      </button>
-                    ))}
-                  </div>
-                  {/* Manual input fallback */}
+                  {/* Manual input only — 图标选择器网格已移除 */}
                   <input
                     type="text"
                     value={categoryForm.icon}
                     onChange={(e) => setCategoryForm({ ...categoryForm, icon: e.target.value })}
                     className="admin-form-input w-full font-mono text-sm"
-                    placeholder="或输入图标名称: FolderOpen, Package..."
+                    placeholder="图标名称或 emoji，如 📦 🔧 🏭（留空则使用默认）"
                   />
                 </div>
               </div>
@@ -922,28 +847,12 @@ export default function AdminCategoriesPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">维度图标</label>
                 <div className="space-y-2">
-                  <div className="grid grid-cols-10 gap-1.5 p-2 border border-gray-200 rounded-lg bg-gray-50 max-h-28 overflow-y-auto">
-                    {['📁','📦','🔧','⚙️','💻','🛡️','🔒','⭐','🚚','🏢','🏭','📚','⚡','🕐','🌐','🗄️','📄','🖼️','🤖','🧭','🔬','💡','🚀','⚙️'].map(emoji => (
-                      <button
-                        key={emoji}
-                        type="button"
-                        onClick={() => setDimensionForm({ ...dimensionForm, icon: emoji })}
-                        className={`w-8 h-8 flex items-center justify-center rounded-md text-base transition-all ${
-                          dimensionForm.icon === emoji
-                            ? 'bg-blue-500 text-white shadow-sm'
-                            : 'bg-white text-gray-500 hover:bg-blue-50 hover:text-blue-600 border border-gray-200'
-                        }`}
-                      >
-                        {emoji}
-                      </button>
-                    ))}
-                  </div>
                   <input
                     type="text"
                     value={dimensionForm.icon}
                     onChange={(e) => setDimensionForm({ ...dimensionForm, icon: e.target.value })}
                     className="admin-form-input w-full font-mono text-sm"
-                    placeholder="或输入 emoji/图标名，如 🤖"
+                    placeholder="图标名称或 emoji，如 🤖 🏭（留空则使用默认 🗂️）"
                   />
                 </div>
               </div>
@@ -962,7 +871,7 @@ export default function AdminCategoriesPage() {
                   >
                     <Trash2 className="w-4 h-4" /> 删除此维度
                   </button>
-                  <p className="text-xs text-gray-400 mt-1 text-center">删除后该维度下的所有分类将移至"定制方案"</p>
+                  <p className="text-xs text-gray-400 mt-1 text-center">删除后该维度下的所有分类将移至默认维度</p>
                 </div>
               )}
 

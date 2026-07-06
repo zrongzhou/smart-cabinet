@@ -95,20 +95,40 @@ export default function AddBlogPage() {
     }
   };
 
+  // Upload the chosen cover image to the server media store (instead of embedding
+  // a base64 data URL in the DB), then use the returned public URL as the cover.
   const handleCoverUpload = () => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
-    input.onchange = (e: any) => {
+    input.onchange = async (e: any) => {
       const file = e.target.files?.[0];
       if (!file) return;
       setUploading(true);
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        setFormData(f => ({ ...f, image: ev.target?.result as string }));
+      try {
+        const token = typeof window !== 'undefined' ? localStorage.getItem('admin_token') : null;
+        const uploadHeaders: Record<string, string> = {};
+        if (token) uploadHeaders['Authorization'] = `Bearer ${token}`;
+        const formData = new FormData();
+        formData.append('file', file);
+        const res = await fetch('/api/admin/media/upload', {
+          method: 'POST',
+          credentials: 'include',
+          headers: uploadHeaders,
+          body: formData,
+        });
+        const result = await res.json();
+        if (res.ok && result.url) {
+          setFormData(f => ({ ...f, image: result.url }));
+        } else {
+          setError(result.error || '封面上传失败');
+        }
+      } catch (err) {
+        console.error('Cover upload failed:', err);
+        setError('封面上传失败，请重试');
+      } finally {
         setUploading(false);
-      };
-      reader.readAsDataURL(file);
+      }
     };
     input.click();
   };

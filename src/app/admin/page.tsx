@@ -93,27 +93,18 @@ export default function AdminDashboardPage() {
       console.error('Failed to load dashboard data:', err);
       setError(err.message || 'Failed to load data');
 
-      // Fallback to localStorage if API fails
-      if (typeof window !== 'undefined') {
-        const savedProducts = localStorage.getItem('admin_products');
-        const products = savedProducts ? JSON.parse(savedProducts) : [];
-        const savedBlogs = localStorage.getItem('admin_blogs');
-        const blogs = savedBlogs ? JSON.parse(savedBlogs) : [];
-        const savedFaqs = localStorage.getItem('admin_faqs');
-        const faqs = savedFaqs ? JSON.parse(savedFaqs) : [];
-
-        setStats({
-          totalProducts: products.length,
-          totalBlogs: blogs.length,
-          totalFaqs: faqs.length,
-          totalMessages: 0,
-          totalCategories: 0,
-          productTrend: 0,
-          blogTrend: 0,
-          faqTrend: 0,
-          messageTrend: 0,
-        });
-      }
+      // API failed — show empty stats (no localStorage fallback by design).
+      setStats({
+        totalProducts: 0,
+        totalBlogs: 0,
+        totalFaqs: 0,
+        totalMessages: 0,
+        totalCategories: 0,
+        productTrend: 0,
+        blogTrend: 0,
+        faqTrend: 0,
+        messageTrend: 0,
+      });
     } finally {
       setLoading(false);
     }

@@ -24,6 +24,21 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status');
     const search = searchParams.get('search');
     const category = searchParams.get('category');
+    const id = searchParams.get('id');
+
+    // 单条查询：?id= 直接按 id 返回该产品（含 categories/tags）。
+    // 修复编辑页"未找到产品"——前台 fetchAdminProducts 默认 pageSize=20，
+    // 超过 20 个产品时目标 id 落在第 2 页，.find() 漏数据。
+    if (id) {
+      const product = await prisma.product.findFirst({
+        where: { id, deletedAt: null },
+        include: { categories: true, tags: true },
+      });
+      if (!product) {
+        return NextResponse.json({ data: [] });
+      }
+      return NextResponse.json({ data: [product] });
+    }
 
     const skip = (page - 1) * pageSize;
 
@@ -149,6 +164,7 @@ export async function POST(request: NextRequest) {
       relatedProducts: body.relatedProducts || [],
       seoTitle: body.seoTitle || null,
       seoDescription: body.seoDescription || null,
+      seoKeywords: body.seoKeywords ?? null,
     };
 
     // 创建产品（含分类和标签关联）
@@ -262,6 +278,7 @@ export async function PUT(request: NextRequest) {
     if (body.relatedProducts !== undefined) updateData.relatedProducts = body.relatedProducts;
     if (body.seoTitle !== undefined) updateData.seoTitle = body.seoTitle;
     if (body.seoDescription !== undefined) updateData.seoDescription = body.seoDescription;
+    if (body.seoKeywords !== undefined) updateData.seoKeywords = body.seoKeywords;
 
     // 处理分类关联
     if (body.categoryIds !== undefined) {

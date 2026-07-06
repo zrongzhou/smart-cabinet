@@ -1,0 +1,538 @@
+{
+  "sheet": "按照行业分类",
+  "dimension": "By industries",
+  "products": [
+    {
+      "slug": "solutions/cnc-machining-tool-management.html",
+      "sku": "IND-001",
+      "url": "/solutions/cnc-machining-tool-management.html",
+      "name_en": "CNC Machining and Precision Parts Manufacturing",
+      "seoTitle_en": "CNC Tool Vending Machine Solution for CNC Machining and Precision Parts",
+      "description_en": "CNC machining and precision parts factories use a large number of cutting tools, measuring tools and MRO supplies every day. Smart cabinets help control tool issuing, record usage, reduce untracked pickup and keep critical tools available near machining centers.",
+      "features_en": [
+        "Use CNC tool vending machines for controlled cutting tool dispensing",
+        "Use smart drawer cabinets for gauges, calipers and measuring tools",
+        "Track tool pickup by employee, machine, department or cost center",
+        "Set low-stock alerts for high-frequency cutting tools",
+        "Use auxiliary cabinets or modular vending systems for capacity expansion"
+      ],
+      "specs_en": "",
+      "seoKeywords_en": [
+        "CNC tool vending machine",
+        "CNC tool management",
+        "cutting tool inventory management",
+        "machine shop tool management",
+        "tool dispensing cabinet",
+        "carbide insert"
+      ],
+      "faqs": [
+        {
+          "q_en": "What materials can be managed for CNC machining factories?",
+          "a_en": "The system can manage end mills, drills, taps, carbide inserts, reamers, boring tools, gauges, tool holders, PPE, fasteners and MRO supplies."
+        },
+        {
+          "q_en": "Can the cabinet track tool usage by CNC machine?",
+          "a_en": "Yes. Tool pickup can be recorded by employee, machine, department, job number or cost center depending on the software setup."
+        },
+        {
+          "q_en": "Can it help reduce cutting tool costs?",
+          "a_en": "Yes. Usage reports help managers analyze tool consumption, reduce unrecorded collection and identify abnormal use of inserts, drills or end mills."
+        },
+        {
+          "q_en": "Which cabinet is best for cutting tools?",
+          "a_en": "CNC tool vending machines are best for standard cutting tools, while drawer cabinets are better for gauges and reusable measuring tools."
+        },
+        {
+          "q_en": "Can used tools be returned through the system?",
+          "a_en": "Yes. Used tool return can be managed through return lockers or assigned compartments depending on the cabinet configuration."
+        },
+        {
+          "q_en": "Can it work for 24-hour CNC workshops?",
+          "a_en": "Yes. Authorized operators can collect approved tools at any time, reducing dependence on manual tool room issuing."
+        },
+        {
+          "q_en": "Can the system alert us before tools run out?",
+          "a_en": "Yes. Minimum stock levels can be set for each SKU, and low-stock reminders can support timely replenishment."
+        },
+        {
+          "q_en": "Can the cabinet connect with ERP or MES?",
+          "a_en": "ERP, MES, SAP or other inventory systems can be integrated according to project requirements."
+        },
+        {
+          "q_en": "Can the storage capacity be expanded later?",
+          "a_en": "Yes. Auxiliary cabinets and modular vending systems can be added as tool SKU quantity increases."
+        },
+        {
+          "q_en": "Is this suitable for precision parts manufacturers?",
+          "a_en": "Yes. It is especially suitable for precision parts factories that need strict tool control, cost tracking and production continuity."
+        }
+      ]
+    },
+    {
+      "slug": "solutions/smart-factory-inventory-management.html",
+      "sku": "IND-002",
+      "url": "/solutions/smart-factory-inventory-management.html",
+      "name_en": "General Manufacturing and Smart Factory",
+      "seoTitle_en": "Industrial Vending Machine Solution for Smart Factory Inventory Management",
+      "description_en": "General manufacturing plants manage many material categories across production lines, warehouses and maintenance areas. Smart industrial vending cabinets provide controlled self-service access for tools, PPE, spare parts and consumables while keeping inventory data visible.",
+      "features_en": [
+        "Reduce manual warehouse issuing work",
+        "Improve material availability across production areas",
+        "Support mixed-material management in one platform",
+        "Provide data for smart factory and lean manufacturing",
+        "Improve replenishment planning with stock alerts"
+      ],
+      "specs_en": "",
+      "seoKeywords_en": [
+        "smart factory inventory management",
+        "industrial vending machine",
+        "MRO inventory management",
+        "smart cabinet system",
+        "factory supplies vending",
+        "manufacturing inventory control",
+        "industrial supplies vending cabinet"
+      ],
+      "faqs": [
+        {
+          "q_en": "What materials can a smart factory cabinet system manage?",
+          "a_en": "It can manage tools, PPE, spare parts, fasteners, office supplies, batteries, labels, maintenance kits and other MRO consumables."
+        },
+        {
+          "q_en": "Can one system manage multiple departments?",
+          "a_en": "Yes. Users, departments, item categories and cabinet locations can be managed through the software."
+        },
+        {
+          "q_en": "Can the cabinet reduce manual warehouse issuing?",
+          "a_en": "Yes. Employees can collect approved items by themselves, while the system automatically records each pickup."
+        },
+        {
+          "q_en": "Is it suitable for smart factory projects?",
+          "a_en": "Yes. The system supports digital inventory data, usage records, reports and optional ERP/MES integration."
+        },
+        {
+          "q_en": "Can different cabinet types be combined?",
+          "a_en": "Yes. Locker cabinets, drawer cabinets, weighing cabinets and vending machines can be combined for mixed material management."
+        },
+        {
+          "q_en": "Can low-stock alerts be set for each SKU?",
+          "a_en": "Yes. Minimum stock and warning stock levels can be set for each item."
+        },
+        {
+          "q_en": "Can it support multiple factory locations?",
+          "a_en": "Multiple cabinets can be deployed across different workshops, warehouses or plants depending on the software configuration."
+        },
+        {
+          "q_en": "Can pickup limits be set for consumables?",
+          "a_en": "Yes. Collection rules can be set by user, department, item category or time period."
+        },
+        {
+          "q_en": "Can reports be exported for purchasing?",
+          "a_en": "Yes. Pickup records and stock reports can support purchasing, warehouse management and cost analysis."
+        },
+        {
+          "q_en": "Can cabinet layout be customized?",
+          "a_en": "Yes. Locker sizes, drawer layout, weighing shelves and cabinet combinations can be customized according to material types."
+        }
+      ]
+    },
+    {
+      "slug": "solutions/metal-fabrication-tool-management.html",
+      "sku": "IND-003",
+      "url": "/solutions/metal-fabrication-tool-management.html",
+      "name_en": "Hardware, Metal Fabrication and Aluminum Processing",
+      "seoTitle_en": "Industrial Vending Cabinet for Metal Fabrication Tools, Fasteners and PPE",
+      "description_en": "Hardware, metal fabrication and aluminum processing workshops use many fasteners, abrasives, hand tools, cutting tools and PPE every day. Smart cabinets help organize line-side materials, reduce tool loss and keep consumables available for production.",
+      "features_en": [
+        "Improve workshop material control for metal fabrication",
+        "Reduce missing tools and uncontrolled consumable use",
+        "Support fastener and small-parts inventory accuracy",
+        "Improve PPE availability near production areas",
+        "Track material usage by team or project"
+      ],
+      "specs_en": "",
+      "seoKeywords_en": [
+        "metal fabrication tool management",
+        "fastener vending machine",
+        "industrial consumables cabinet",
+        "workshop tool cabinet",
+        "aluminum processing tools",
+        "PPE vending cabinet",
+        "MRO supplies cabinet"
+      ],
+      "faqs": [
+        {
+          "q_en": "What materials are common in metal fabrication workshops?",
+          "a_en": "Common items include screws, nuts, bolts, washers, rivets, grinding discs, cutting discs, drill bits, welding tips, hand tools and PPE."
+        },
+        {
+          "q_en": "Which cabinet is suitable for fasteners?",
+          "a_en": "A fastener vending machine or weight-based vending cabinet is suitable for screws, nuts, bolts, washers and other bulk small parts."
+        },
+        {
+          "q_en": "Can abrasive consumables be managed?",
+          "a_en": "Yes. Grinding discs, cutting discs and similar workshop consumables can be managed in lockers or compartments according to size and package type."
+        },
+        {
+          "q_en": "Can the system track usage by project?",
+          "a_en": "A project or work order field can be added to the pickup process when project-based cost tracking is needed."
+        },
+        {
+          "q_en": "Can the cabinet manage PPE for metal workshops?",
+          "a_en": "Yes. PPE such as gloves, safety glasses, masks, face shields and protective sleeves can be managed through a PPE vending cabinet."
+        },
+        {
+          "q_en": "Can it reduce tool loss?",
+          "a_en": "Yes. Controlled access and user records help reduce missing hand tools and unrecorded material collection."
+        },
+        {
+          "q_en": "Can locker sizes be customized?",
+          "a_en": "Yes. Locker sizes and compartment layouts can be customized for large tools, tool kits or packaged consumables."
+        },
+        {
+          "q_en": "Is the system suitable for aluminum processing plants?",
+          "a_en": "Yes. It can manage cutting tools, fasteners, abrasives, measuring tools and maintenance supplies used in aluminum processing."
+        },
+        {
+          "q_en": "Can low-stock alerts be set for workshop consumables?",
+          "a_en": "Yes. Each item can have a minimum stock level and replenishment reminder."
+        },
+        {
+          "q_en": "Can usage reports be exported?",
+          "a_en": "Yes. Reports can be exported for workshop management, purchasing and cost analysis."
+        }
+      ]
+    },
+    {
+      "slug": "solutions/mold-shop-tool-management.html",
+      "sku": "IND-004",
+      "url": "/solutions/mold-shop-tool-management.html",
+      "name_en": "Mold, Injection Molding and Precision Tooling",
+      "seoTitle_en": "Smart Tool Cabinet Solution for Mold Shops, Injection Molding and Spare Parts",
+      "description_en": "Mold making, injection molding and precision tooling factories manage mold repair tools, components, cutting tools and spare parts. Smart cabinets help technicians find the right item faster, reduce missing tools and support traceable mold maintenance material usage.",
+      "features_en": [
+        "Improve mold maintenance material availability",
+        "Reduce missing repair tools and small spare parts",
+        "Support technician-level usage records",
+        "Organize mixed-size mold tools and components",
+        "Improve emergency repair response speed"
+      ],
+      "specs_en": "",
+      "seoKeywords_en": [
+        "mold shop tool management",
+        "injection molding spare parts cabinet",
+        "mold maintenance tools",
+        "smart tool cabinet",
+        "precision tooling inventory",
+        "mold repair tool cabinet"
+      ],
+      "faqs": [
+        {
+          "q_en": "What items can be managed in a mold shop?",
+          "a_en": "The system can manage mold repair tools, ejector pins, springs, screws, inserts, polishing tools, gauges, cutting tools and maintenance spare parts."
+        },
+        {
+          "q_en": "Can usage be linked to mold number?",
+          "a_en": "A mold number, machine number or work order field can be added to the pickup workflow when traceability is required."
+        },
+        {
+          "q_en": "Which cabinet is best for mold components?",
+          "a_en": "Small mold components can be managed in drawer cabinets, locker cabinets or fastener cabinets depending on size and quantity."
+        },
+        {
+          "q_en": "Can technicians collect parts during night shifts?",
+          "a_en": "Yes. Authorized technicians can collect approved items from the cabinet during different shifts while the system records each pickup."
+        },
+        {
+          "q_en": "Can the cabinet reduce missing mold tools?",
+          "a_en": "Yes. Controlled access and pickup records make tool responsibility clearer and reduce untracked borrowing."
+        },
+        {
+          "q_en": "Can emergency spare parts be stored in the cabinet?",
+          "a_en": "Yes. Critical mold spare parts can be stored in assigned compartments with low-stock reminders."
+        },
+        {
+          "q_en": "Can cutting tools for mold machining be managed?",
+          "a_en": "Yes. CNC cutting tools such as end mills, drills, taps and inserts can be managed in CNC tool vending machines."
+        },
+        {
+          "q_en": "Can drawer layouts be customized?",
+          "a_en": "Yes. Drawer and compartment layouts can be customized for gauges, small tools and precision mold components."
+        },
+        {
+          "q_en": "Can the system export reports?",
+          "a_en": "Yes. Usage and inventory reports can support maintenance review, purchasing and cost tracking."
+        },
+        {
+          "q_en": "Is it suitable for injection molding factories?",
+          "a_en": "Yes. It is suitable for injection molding plants that manage molds, repair tools, spare parts and production consumables."
+        }
+      ]
+    },
+    {
+      "slug": "solutions/electronics-manufacturing-inventory.html",
+      "sku": "IND-005",
+      "url": "/solutions/electronics-manufacturing-inventory.html",
+      "name_en": "Electronics, Semiconductor, Electrical and Optical Manufacturing",
+      "seoTitle_en": "Smart Cabinet Solution for Electronics, Semiconductor and ESD Supplies Management",
+      "description_en": "Electronics, semiconductor, electrical and optical manufacturing sites use many small tools, ESD supplies, labels, connectors and production consumables. Smart cabinets help manage high-frequency items near production lines and improve material traceability.",
+      "features_en": [
+        "Improve line-side inventory visibility",
+        "Control ESD and production consumable distribution",
+        "Reduce over-collection of small consumables",
+        "Support department and production line usage reports",
+        "Customize compartments for small tools and mixed SKUs"
+      ],
+      "specs_en": "",
+      "seoKeywords_en": [
+        "electronics manufacturing inventory",
+        "ESD supplies vending cabinet",
+        "semiconductor consumables management",
+        "production line inventory",
+        "smart locker cabinet",
+        "electrical manufacturing supplies"
+      ],
+      "faqs": [
+        {
+          "q_en": "What materials can be managed in electronics manufacturing?",
+          "a_en": "The system can manage ESD gloves, finger cots, wipes, labels, tweezers, soldering tips, connectors, terminals, cable ties and small tools."
+        },
+        {
+          "q_en": "Can ESD supplies be controlled by employee?",
+          "a_en": "Yes. PPE and ESD consumables can be issued by employee, department, line or item category."
+        },
+        {
+          "q_en": "Can pickup limits be set for consumables?",
+          "a_en": "Yes. Collection frequency and quantity limits can be set for gloves, wipes, finger cots and other high-frequency items."
+        },
+        {
+          "q_en": "Is it suitable for semiconductor production?",
+          "a_en": "Yes. Cabinet layout and workflow can be adapted for semiconductor support areas and clean production supply management."
+        },
+        {
+          "q_en": "Can it manage small tools?",
+          "a_en": "Yes. Drawer and locker cabinets can manage tweezers, screwdrivers, soldering tools, inspection tools and small fixtures."
+        },
+        {
+          "q_en": "Can inventory reports be exported by line?",
+          "a_en": "Yes. Reports can be exported by production line, department, employee or item category."
+        },
+        {
+          "q_en": "Can the cabinet manage labels and packaging consumables?",
+          "a_en": "Yes. Labels, tapes, packaging accessories and other production consumables can be managed in compartments or lockers."
+        },
+        {
+          "q_en": "Can different departments have different access?",
+          "a_en": "Yes. User permissions can be set by department, role or item type."
+        },
+        {
+          "q_en": "Can low-stock alerts be used for line-side supplies?",
+          "a_en": "Yes. Low-stock alerts help replenish high-frequency production materials before shortages affect production."
+        },
+        {
+          "q_en": "Can cabinet size be customized?",
+          "a_en": "Yes. Cabinet size, locker quantity, drawer layout and storage structure can be customized for small SKUs and mixed materials."
+        }
+      ]
+    },
+    {
+      "slug": "solutions/automotive-manufacturing-inventory.html",
+      "sku": "IND-006",
+      "url": "/solutions/automotive-manufacturing-inventory.html",
+      "name_en": "Automotive and EV Components Manufacturing",
+      "seoTitle_en": "Industrial Vending Machine Solution for Automotive and EV Components Manufacturing",
+      "description_en": "Automotive and EV components factories need stable access to tools, PPE, fasteners, spare parts and maintenance supplies across assembly lines, machining areas and maintenance departments. Smart vending cabinets help standardize material issuing and improve inventory visibility.",
+      "features_en": [
+        "Improve line-side material availability",
+        "Reduce uncontrolled pickup of PPE and consumables",
+        "Support multi-shift production material management",
+        "Track usage by employee, line and department",
+        "Provide reports for lean manufacturing and cost control"
+      ],
+      "specs_en": "",
+      "seoKeywords_en": [
+        "automotive manufacturing inventory",
+        "EV components manufacturing supplies",
+        "industrial vending machine",
+        "automotive MRO cabinet",
+        "PPE vending cabinet",
+        "fastener vending machine",
+        "production line inventory management"
+      ],
+      "faqs": [
+        {
+          "q_en": "What materials can be managed in automotive factories?",
+          "a_en": "The system can manage tools, torque tools, sockets, PPE, fasteners, spare parts, labels, cable ties and MRO supplies."
+        },
+        {
+          "q_en": "Can the system support multi-shift production?",
+          "a_en": "Yes. Authorized employees can collect approved materials at any time, while each pickup is recorded automatically."
+        },
+        {
+          "q_en": "Can it manage line-side fasteners?",
+          "a_en": "Yes. Fastener vending machines or weight-based cabinets can manage screws, nuts, bolts, washers and other high-frequency small parts."
+        },
+        {
+          "q_en": "Can PPE pickup be controlled?",
+          "a_en": "Yes. PPE pickup can be controlled by employee, department, item category and collection frequency."
+        },
+        {
+          "q_en": "Can cabinet data support lean manufacturing?",
+          "a_en": "Yes. Usage reports help analyze consumption by line, department or item category, supporting lean material control."
+        },
+        {
+          "q_en": "Can spare parts be managed for maintenance teams?",
+          "a_en": "Yes. Smart lockers can store sensors, belts, fittings, repair kits and other maintenance spare parts."
+        },
+        {
+          "q_en": "Can the system connect with ERP or MES?",
+          "a_en": "ERP, MES, SAP and other systems can be integrated according to project requirements."
+        },
+        {
+          "q_en": "Can cabinets be deployed across different workshops?",
+          "a_en": "Yes. Multiple cabinets can be installed in assembly, machining, maintenance and warehouse areas."
+        },
+        {
+          "q_en": "Can cabinet appearance be customized?",
+          "a_en": "Yes. Cabinet color, logo area, screen interface and locker layout can be customized."
+        },
+        {
+          "q_en": "Is it suitable for EV components factories?",
+          "a_en": "Yes. It is suitable for battery component, motor, electronics, assembly and machining support areas in EV supply chains."
+        }
+      ]
+    },
+    {
+      "slug": "solutions/medical-device-manufacturing-supplies.html",
+      "sku": "IND-007",
+      "url": "/solutions/medical-device-manufacturing-supplies.html",
+      "name_en": "Medical Device and Life Science Equipment Manufacturing",
+      "seoTitle_en": "Smart Cabinet Solution for Medical Device Manufacturing Supplies and PPE",
+      "description_en": "Medical device and life science equipment manufacturers need controlled access to PPE, tools, gauges, labels and production consumables. Smart cabinets help organize materials, record pickup and improve visibility for clean and regulated production environments.",
+      "features_en": [
+        "Improve controlled access to PPE and production supplies",
+        "Support traceable pickup records for internal review",
+        "Organize small tools, gauges and clean production materials",
+        "Reduce manual issuing work for admin and warehouse teams",
+        "Customize cabinet layout for clean production workflows"
+      ],
+      "specs_en": "",
+      "seoKeywords_en": [
+        "medical device manufacturing supplies",
+        "PPE vending cabinet",
+        "production consumables management",
+        "smart cabinet for medical manufacturing",
+        "clean production supplies",
+        "gauge storage cabinet"
+      ],
+      "faqs": [
+        {
+          "q_en": "What materials can be managed for medical device manufacturing?",
+          "a_en": "The system can manage gloves, masks, wipes, labels, gauges, calipers, hand tools, packaging aids, small spare parts and PPE."
+        },
+        {
+          "q_en": "Can PPE distribution be controlled?",
+          "a_en": "Yes. PPE collection can be controlled by employee, department, item category and collection frequency."
+        },
+        {
+          "q_en": "Can the cabinet manage gauges and inspection tools?",
+          "a_en": "Yes. Smart drawer cabinets can store gauges, calipers and inspection tools with checkout and return records."
+        },
+        {
+          "q_en": "Can usage records be exported?",
+          "a_en": "Yes. Pickup records, inventory changes and usage reports can be exported for internal review and inventory control."
+        },
+        {
+          "q_en": "Can the system support clean production workflows?",
+          "a_en": "Cabinet layout, access workflow and item categories can be customized for clean production support areas."
+        },
+        {
+          "q_en": "Can different departments have different permissions?",
+          "a_en": "Yes. Permissions can be set by department, employee role or item type."
+        },
+        {
+          "q_en": "Can low-stock alerts be set for production consumables?",
+          "a_en": "Yes. Minimum stock levels can be set for gloves, labels, wipes and other consumables."
+        },
+        {
+          "q_en": "Can the cabinet reduce manual supply distribution?",
+          "a_en": "Yes. Employees can collect approved items by themselves, reducing manual work for admin or warehouse teams."
+        },
+        {
+          "q_en": "Can cabinet materials or color be customized?",
+          "a_en": "Cabinet color, size, compartment layout and workflow can be customized according to project needs."
+        },
+        {
+          "q_en": "Is this suitable for life science equipment factories?",
+          "a_en": "Yes. It is suitable for factories producing laboratory equipment, medical devices and life science instruments."
+        }
+      ]
+    },
+    {
+      "slug": "solutions/materials-manufacturing-inventory.html",
+      "sku": "IND-008",
+      "url": "/solutions/materials-manufacturing-inventory.html",
+      "name_en": "New Materials, Cable and Functional Materials Manufacturing",
+      "seoTitle_en": "Smart Cabinet Solution for New Materials, Cable and Functional Materials Manufacturing",
+      "description_en": "New materials, cable and functional materials manufacturers often manage mixed production tools, testing supplies, chemical bottles, samples, PPE and maintenance parts. Smart cabinets help control access, organize materials and provide usage records across production, lab and maintenance areas.",
+      "features_en": [
+        "Manage production, lab and maintenance materials in one system",
+        "Support controlled access for chemicals and safety supplies",
+        "Improve inventory visibility across workshops and labs",
+        "Reduce manual issuing and stock-checking workload",
+        "Customize cabinet type according to material properties"
+      ],
+      "specs_en": "",
+      "seoKeywords_en": [
+        "materials manufacturing inventory",
+        "chemical storage cabinet",
+        "new materials manufacturing supplies",
+        "cable manufacturing tools",
+        "functional materials inventory",
+        "industrial vending cabinet",
+        "MRO inventory management"
+      ],
+      "faqs": [
+        {
+          "q_en": "What materials can be managed in new materials factories?",
+          "a_en": "The system can manage production tools, PPE, chemical bottles, lab samples, spare parts, labels, fittings and MRO supplies."
+        },
+        {
+          "q_en": "Can chemical bottles be stored in the cabinet?",
+          "a_en": "Yes. Chemical bottles and reagents can be managed with suitable cabinet configuration. Refrigerated or safety options should be confirmed based on material properties."
+        },
+        {
+          "q_en": "Can production and lab materials be managed together?",
+          "a_en": "Yes. Different cabinet types can be used for production workshops, laboratories, testing rooms and maintenance areas."
+        },
+        {
+          "q_en": "Can the system control access to sensitive materials?",
+          "a_en": "Yes. Access permissions can be set by employee, department, project or material category."
+        },
+        {
+          "q_en": "Can PPE and safety supplies be included?",
+          "a_en": "Yes. PPE vending cabinets can manage gloves, masks, safety glasses and other protective supplies."
+        },
+        {
+          "q_en": "Can spare parts and MRO supplies be tracked?",
+          "a_en": "Yes. Spare parts, sensors, fittings and maintenance kits can be stored in smart lockers or industrial supplies cabinets."
+        },
+        {
+          "q_en": "Can low-stock alerts be set?",
+          "a_en": "Yes. Each item can have minimum stock and warning stock settings for replenishment management."
+        },
+        {
+          "q_en": "Can the cabinet be customized for cable manufacturing?",
+          "a_en": "Yes. Locker size, storage layout and item categories can be customized for cable accessories, tools and consumables."
+        },
+        {
+          "q_en": "Can usage reports be exported?",
+          "a_en": "Yes. Reports can be exported by user, department, project or material category."
+        },
+        {
+          "q_en": "What should be confirmed for chemical storage?",
+          "a_en": "Bottle size, material type, temperature, ventilation, safety requirements and access process should be confirmed before production."
+        }
+      ]
+    }
+  ]
+}

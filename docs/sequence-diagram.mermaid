@@ -1,0 +1,52 @@
+sequenceDiagram
+    participant U as 运营(浏览器)
+    participant P as EditPage / ProductFaqBlock
+    participant A as adminApi (unified-data)
+    participant R as /api/admin/faqs
+    participant DB as Prisma/Postgres
+    participant D as ProductDetailView(前台)
+
+    Note over U,D: 1) 进入编辑页 → 加载该产品 FAQ
+    U->>P: 打开 /admin/products/edit/[id]
+    P->>A: fetchAdminFaqs(productId, 200)
+    A->>R: GET /api/admin/faqs?productId=id&pageSize=200
+    R->>DB: findMany(where:{productId, ...})
+    DB-->>R: faqs[]
+    R-->>A: {data: faqs}
+    A-->>P: faqRows[]
+    P-->>U: 渲染「产品 FAQ」区块（每行三语+分类+状态+排序）
+
+    Note over U,D: 2) 新增 FAQ → 即时保存（POST 带 productId）
+    U->>P: 点「+ 添加 FAQ」→ 填表 → 点行内「保存」
+    P->>A: createFaq({question,answer,category,status,order,productId})
+    A->>R: POST /api/admin/faqs（body 含 productId）
+    R->>DB: create(data 含 productId)
+    DB-->>R: 新 FAQ（含 id）
+    R-->>A: FAQ
+    A-->>P: 回填 id，_isNew=false
+    P-->>U: 该行标记已保存
+
+    Note over U,D: 3) 编辑已有 FAQ → 即时更新（PUT）
+    U->>P: 改某行字段 → 点行内「保存」
+    P->>A: updateFaq(id, {question,answer,category,status,order})
+    A->>R: PUT /api/admin/faqs?id=id
+    R->>DB: update(data)
+    DB-->>R: FAQ
+    R-->>A: FAQ
+    A-->>P: 更新本地行
+    P-->>U: 已更新
+
+    Note over U,D: 4) 删除 FAQ → 即时删除（DELETE，二次确认）
+    U->>P: 点行内「删除」（弹确认）
+    P->>A: deleteFaq(id)
+    A->>R: DELETE /api/admin/faqs?id=id
+    R->>DB: delete(where:{id})
+    DB-->>R: success
+    R-->>A: {success:true}
+    A-->>P: 移除本地行
+    P-->>U: 列表重绘
+
+    Note over U,D: 5) 前台详情页读取该产品 FAQ（保存即生效，零额外开发）
+    D->>DB: findMany(where:{productId,status:'active'}, orderBy:{order:'asc'})
+    DB-->>D: resolvedFaqs[]
+    D-->>U: 产品详情页展示 FAQ 区块

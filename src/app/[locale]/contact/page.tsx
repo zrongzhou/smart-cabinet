@@ -206,6 +206,43 @@ export default function ContactPage() {
               </div>
             </div>
 
+            {/* Social Media Links */}
+            {settings && (
+              <div className="mt-8 p-6 rounded-xl border" style={{ backgroundColor: 'var(--card-bg, #ffffff)', borderColor: 'var(--border-color, #e5e7eb)' }}>
+                <h3 className="font-semibold text-[var(--text-primary)] mb-4 flex items-center gap-2">
+                  <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-pink-500 to-orange-400" />
+                  {locale === 'zh' ? '社交媒体' : locale === 'ar' ? 'وسائل التواصل الاجتماعي' : 'Social Media'}
+                </h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {[
+                    { key: 'socialFacebook', icon: '📘', label: 'Facebook', url: settings.socialFacebook },
+                    { key: 'socialTwitter', icon: '🐦', label: 'Twitter / X', url: settings.socialTwitter },
+                    { key: 'socialLinkedin', icon: '💼', label: 'LinkedIn', url: settings.socialLinkedin },
+                    { key: 'socialYoutube', icon: '▶️', label: 'YouTube', url: settings.socialYoutube },
+                    { key: 'socialInstagram', icon: '📷', label: 'Instagram', url: settings.socialInstagram },
+                    { key: 'socialWeibo', icon: '📝', label: 'Weibo', url: settings.socialWeibo },
+                  ].filter(s => s.url).map((s) => (
+                    <a key={s.key} href={s.url} target="_blank" rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-3 py-2.5 rounded-lg border border-gray-100 hover:border-blue-200 hover:bg-blue-50 transition-all text-sm group"
+                    >
+                      <span className="text-lg">{s.icon}</span>
+                      <span className="text-gray-600 group-hover:text-blue-600 truncate">{s.label}</span>
+                    </a>
+                  ))}
+                  {/* WeChat 显示为文本（不是链接）*/}
+                  {settings.socialWechat && (
+                    <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg border border-green-100 bg-green-50 text-sm">
+                      <span className="text-lg">💬</span>
+                      <div>
+                        <p className="text-xs text-green-600">WeChat</p>
+                        <p className="font-medium text-green-700">{settings.socialWechat}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Map - Use iframe embedding OSM (most reliable method) */}
             <div className="mt-6 rounded-2xl overflow-hidden border relative" style={{ borderColor: 'var(--border-color, #e5e7eb)', backgroundColor: 'var(--section-alt-bg, #f0f4ff)' }}>
               {/* Interactive OSM Map via iframe - most reliable method */}

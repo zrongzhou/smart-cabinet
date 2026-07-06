@@ -16,8 +16,12 @@ export default function FeaturedProducts() {
   useEffect(() => {
     async function loadProducts() {
       try {
-        const allProducts = await fetchUnifiedProducts('active');
-        const featured = allProducts.filter(p => p.featured && p.status === 'active');
+        // Request featured + active products directly from the API (server-side
+        // filter on the `featured` + `status` fields). This guarantees the correct
+        // set is returned even if the `featured` field were ever missing/serialized
+        // differently on the client. The extra client-side guard keeps it safe.
+        const allProducts = await fetchUnifiedProducts('active', true);
+        const featured = allProducts.filter(p => p.status === 'active');
         setFeaturedProducts(featured);
       } catch (e) {
         console.error('Failed to load featured products:', e);

@@ -61,7 +61,13 @@ export default function AdminMediaPage() {
   const loadMediaList = useCallback(async (page: number = 1) => {
     try {
       setLoading(true);
-      const res = await fetch(`${API_BASE}/list?page=${page}&limit=${ITEMS_PER_PAGE}`, { credentials: 'include' });
+      // Attach the admin Bearer token (consistent with the upload & MediaPicker
+      // requests) so verifyAuth() passes. credentials:'include' alone is not
+      // enough because the list API checks the Authorization header / admin_auth cookie.
+      const token = typeof window !== 'undefined' ? localStorage.getItem('admin_token') : null;
+      const headers: Record<string, string> = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      const res = await fetch(`${API_BASE}/list?page=${page}&limit=${ITEMS_PER_PAGE}`, { credentials: 'include', headers });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setMediaItems(data.files || []);

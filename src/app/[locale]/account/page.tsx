@@ -99,17 +99,27 @@ export default function AccountPage() {
     }
   }, [isMounted]);
 
-  // Fetch products by IDs (from local data)
+  // Fetch products by IDs (from database via /api/products?ids=...)
   const fetchProductsByIds = useCallback(async (ids: string[]): Promise<Product[]> => {
+    if (!ids.length) return [];
     try {
-      // Import products data dynamically
-      const productsModule = await import('@/data/products');
-      const getAllProducts = productsModule.getAllProducts || (() => productsModule.default || []);
-      const allProducts: Product[] = typeof getAllProducts === 'function' ? getAllProducts() : (productsModule.default || []);
-      const foundProducts = ids
-        .map(id => allProducts.find((p: Product) => p.id === id || p.slug === id))
-        .filter((p): p is Product => p !== undefined);
-      return foundProducts;
+      const res = await fetch(`/api/products?ids=${encodeURIComponent(ids.join(','))}&status=all`);
+      if (!res.ok) return [];
+      const json = await res.json();
+      const list: any[] = json?.data || [];
+      return list.map((p) => ({
+        id: p.id,
+        name: p.name,
+        slug: p.slug,
+        sku: p.sku,
+        categories: (p.categories || []).map((c: any) => c.id),
+        tags: (p.tags || []).map((t: any) => t.id),
+        images: p.images || [],
+        price: p.price,
+        hidePrice: p.hidePrice,
+        status: p.status,
+        featured: p.featured,
+      }));
     } catch {
       return [];
     }

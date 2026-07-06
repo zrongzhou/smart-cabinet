@@ -603,6 +603,7 @@ export default function HeroSection() {
     ['#c084fc', '#818cf8', '#38bdf8'],
     ['#34d399', '#38bdf8', '#a78bfa'],
     ['#fb923c', '#f472b6', '#818cf8'],
+    ['#60a5fa', '#a78bfa', '#818cf8'],
   ];
 
   return (
@@ -715,12 +716,13 @@ export default function HeroSection() {
 
           {/* Stats bar */}
           <motion.div ref={statsRef} variants={fadeInUp}
-            className="flex flex-wrap justify-center gap-8 md:gap-14 max-w-2xl mx-auto pt-4"
+            className="flex flex-wrap justify-center gap-8 md:gap-14 max-w-3xl mx-auto pt-4"
           >
             {[
+              { number: '11+', labelKey: 'hero.statExperience' },
               { number: '10+', labelKey: 'hero.statModels' },
               { number: '60+', labelKey: 'hero.statCountries' },
-              { number: '500+', labelKey: 'hero.statClients' },
+              { number: '800+', labelKey: 'hero.statClients' },
             ].map((stat, i) => (
               <div key={i} className="text-center relative z-10">
                 <div
@@ -741,7 +743,7 @@ export default function HeroSection() {
                       color: statColors[i][0],
                       textShadow: `0 0 8px ${statColors[i][0]}55`,
                     }}
-                  >{['✦', '✧', '◇'][i]}</span>
+                  >{['✦', '✧', '◇', '❖'][i]}</span>
                   {statsVisible ? <CountUp end={stat.number} /> : stat.number}
                 </div>
                 <div className="text-xs font-medium opacity-40 transition-opacity duration-500 hover:opacity-70"
@@ -839,6 +841,11 @@ export default function HeroSection() {
           0%, 33%   { color: #ffffff; text-shadow: 0 0 16px rgba(251,146,60,0.4), 0 0 32px rgba(244,114,182,0.2), 0 2px 6px rgba(0,0,0,0.6); }
           34%, 66%  { color: #fff7ed; text-shadow: 0 0 16px rgba(244,114,182,0.5), 0 0 32px rgba(129,140,248,0.2), 0 2px 6px rgba(0,0,0,0.6); }
           67%, 100% { color: #fdf2f8; text-shadow: 0 0 16px rgba(129,140,248,0.5), 0 0 32px rgba(251,146,60,0.2), 0 2px 6px rgba(0,0,0,0.6); }
+        }
+        @keyframes stat-color-shift-3 {
+          0%, 33%   { color: #ffffff; text-shadow: 0 0 16px rgba(96,165,250,0.4), 0 0 32px rgba(167,139,250,0.2), 0 2px 6px rgba(0,0,0,0.6); }
+          34%, 66%  { color: #e0e7ff; text-shadow: 0 0 16px rgba(167,139,250,0.5), 0 0 32px rgba(129,140,248,0.2), 0 2px 6px rgba(0,0,0,0.6); }
+          67%, 100% { color: #f0f9ff; text-shadow: 0 0 16px rgba(56,189,248,0.5), 0 0 32px rgba(96,165,250,0.2), 0 2px 6px rgba(0,0,0,0.6); }
         }
       `}</style>
     </section>

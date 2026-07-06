@@ -47,12 +47,13 @@ export default function AdminBlogPage() {
       const categoriesData = await fetchUnifiedCategories();
       setCategories(categoriesData);
 
-      // Load tags from localStorage
-      if (typeof window !== 'undefined') {
-        const savedTags = localStorage.getItem('admin_tags');
-        if (savedTags) {
-          setTags(JSON.parse(savedTags));
-        }
+      // Load tags from the DB (tags API) — no localStorage fallback.
+      try {
+        const tagsData = await adminApi.getTags();
+        setTags(tagsData || []);
+      } catch (tagErr: any) {
+        console.warn('[blog] Failed to load tags from API:', tagErr);
+        setTags([]);
       }
     } catch (err: any) {
       setError(err.message || 'Failed to load data');

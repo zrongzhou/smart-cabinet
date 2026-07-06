@@ -13,6 +13,7 @@ export const dynamic = 'force-dynamic';
  * - search: 搜索关键词（搜索 name 字段）
  * - featured: 是否只返回精选产品 (true/false)
  * - status: 产品状态 (默认 active)
+ * - ids: 产品 ID 列表（逗号分隔，用于批量精确查询）
  * - page: 页码 (默认 1)
  * - pageSize: 每页数量 (默认 20)
  */
@@ -90,6 +91,12 @@ export async function GET(request: NextRequest) {
           },
         },
       ];
+    }
+
+    // ID 列表筛选（用于 account 页根据收藏/浏览记录批量查询，status=all 时跳过状态过滤）
+    const ids = searchParams.get('ids');
+    if (ids) {
+      where.id = { in: ids.split(',').filter(Boolean) };
     }
 
     // 获取总数

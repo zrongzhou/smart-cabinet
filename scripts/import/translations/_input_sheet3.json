@@ -1,0 +1,57 @@
+{
+  "sheet": "其他",
+  "dimension": "Others",
+  "products": [
+    {
+      "slug": "solutions/custom-industrial-vending-machine.html",
+      "sku": "OTH-001",
+      "url": "/solutions/custom-industrial-vending-machine.html",
+      "name_en": "customized",
+      "seoTitle_en": "Custom Industrial Vending Machine and Smart Cabinet Solutions",
+      "description_en": "Our Custom Industrial Vending Machine Solutions are designed for factories and businesses that need a smart cabinet system beyond standard models. We can customize cabinet size, locker quantity, drawer layout, weighing shelves, RFID tracking, refrigerated storage, heating modules and software workflow according to different materials and application scenarios.\n\nWhether you need to manage CNC tools, PPE, spare parts, fasteners, documents, office supplies, chemical bottles, food pickup or reusable assets, we can provide a flexible smart cabinet solution with controlled access, usage records, inventory tracking, low-stock alerts and system integration.",
+      "features_en": [
+        "Custom smart cabinet solutions for tools, PPE, spare parts, fasteners and MRO supplies",
+        "Cabinet size, locker quantity, drawer layout and compartment size can be customized",
+        "Supports vending, locker, drawer, weighing, RFID, refrigerated and heated cabinet modules",
+        "Suitable for special materials that standard cabinets cannot manage",
+        "Controlled access by employee card, PIN code, QR code or face recognition",
+        "Supports item pickup, return tracking, inventory records and low-stock alerts",
+        "Software workflow can be customized by employee, department, machine, project or cost center",
+        "ERP, MES, SAP, OA and warehouse management system integration can be customized",
+        "Suitable for factories, laboratories, offices, warehouses, smart buildings and special projects"
+      ],
+      "specs_en": "",
+      "seoKeywords_en": [
+        "custom industrial vending machine",
+        "custom smart cabinet",
+        "industrial vending machine solutions",
+        "custom vending cabinet",
+        "smart cabinet solutions",
+        "custom tool vending machine",
+        "custom PPE vending cabinet"
+      ],
+      "faqs": [
+        {
+          "q_en": "What types of smart cabinets can be customized?",
+          "a_en": "We can customize tool vending machines, PPE vending cabinets, smart locker cabinets, drawer cabinets, weighing cabinets, RFID cabinets, refrigerated cabinets, food pickup lockers and combined cabinet systems."
+        },
+        {
+          "q_en": "Can the cabinet size and locker layout be customized?",
+          "a_en": "Yes. Cabinet dimensions, locker size, drawer quantity, compartment layout, channel quantity and internal structure can be designed according to the material size and storage method."
+        },
+        {
+          "q_en": "Can the software workflow be customized?",
+          "a_en": "Yes. The workflow can include employee login, item pickup, return tracking, approval process, collection limits, low-stock alerts, report export and system integration."
+        },
+        {
+          "q_en": "Can the cabinet manage special materials?",
+          "a_en": "Yes. If standard cabinets are not suitable, we can design custom storage modules for special tools, large items, chemical bottles, reusable assets or materials with unique storage requirements."
+        },
+        {
+          "q_en": "Can it connect with ERP, MES or SAP?",
+          "a_en": "Yes. ERP, MES, SAP, OA, WMS and other systems can be integrated according to project requirements."
+        }
+      ]
+    }
+  ]
+}

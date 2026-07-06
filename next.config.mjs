@@ -13,6 +13,14 @@ const nextConfig = {
     return [];
   },
 
+  // Redirect old admin URLs to 404 (new admin lives at /xiaozhouBackend)
+  async redirects() {
+    return [
+      { source: '/admin/:path*', destination: '/404', permanent: false },
+      { source: '/admin', destination: '/404', permanent: false },
+    ];
+  },
+
   // Increase body size limit for file uploads
   experimental: {
     serverActions: {

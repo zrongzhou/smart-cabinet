@@ -305,6 +305,50 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           box-shadow: 0 8px 16px rgba(239, 68, 68, 0.4);
         }
 
+        /* Alias classes used across admin pages (kept in sync with admin-btn-*) */
+        .btn-primary {
+          background: linear-gradient(135deg, var(--admin-primary) 0%, var(--admin-primary-dark) 100%);
+          color: #ffffff;
+          padding: 0.75rem 1.5rem;
+          border-radius: var(--admin-radius-sm);
+          font-weight: 500;
+          font-size: 0.875rem;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+          height: 2.75rem;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+        }
+
+        .btn-primary:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 16px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-secondary {
+          background: var(--admin-surface);
+          color: var(--admin-text-primary);
+          padding: 0.75rem 1.5rem;
+          border-radius: var(--admin-radius-sm);
+          font-weight: 500;
+          font-size: 0.875rem;
+          border: 1px solid var(--admin-border);
+          transition: all 0.2s ease;
+          height: 2.75rem;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+        }
+
+        .btn-secondary:hover {
+          background: var(--admin-surface-hover);
+          border-color: var(--admin-primary);
+          color: var(--admin-primary);
+        }
+
         /* Action Button Styles - Soft Background */
         .admin-btn-action-edit {
           padding: 0.5rem;

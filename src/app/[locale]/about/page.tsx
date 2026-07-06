@@ -4,7 +4,8 @@ import { useState, useEffect, useRef } from 'react';
 import { 
   Users, Award, Globe, Factory, ShieldCheck, Cpu, Zap, Building, 
   TrendingUp, Clock, CheckCircle, Car, ChevronRight, Star,
-  PenTool, Settings, BadgeCheck, Truck, Phone, Mail, MapPin
+  PenTool, Settings, BadgeCheck, Truck, Phone, Mail, MapPin,
+  AlertTriangle, XCircle, BarChart3, Boxes, Plug, Headphones
 } from 'lucide-react';
 import { useLocale } from '@/lib/i18n';
 import { fetchUnifiedSettings, SiteSettings } from '@/data/unified-data';
@@ -21,127 +22,27 @@ interface PageData {
   updatedAt?: string;
 }
 
-// Animated counter component — enhanced with entrance animation
-function CountUp({ target, suffix = '', prefix = '', locale = 'en' }: { target: number; suffix?: string; prefix?: string; locale?: string }) {
-  const [count, setCount] = useState(0);
-  const elementRef = useRef<HTMLDivElement>(null);
-  const [hasAnimated, setHasAnimated] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
+// (V7) CountUp animation component removed — stats now render as static numbers for reliability.
 
-  useEffect(() => {
-    const element = elementRef.current;
-    if (!element || hasAnimated) return;
+// (V8) Bubble/shatter effects removed — replaced with gradient progress bar below number.
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && !hasAnimated) {
-          setIsVisible(true);
-          setTimeout(() => animateCount(), 200);
-          setHasAnimated(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.3 }
-    );
-
-    observer.observe(element);
-  
-    return () => observer.disconnect();
-  }, [hasAnimated]);
-
-  const animateCount = () => {
-    const duration = 2200;
-    let startTime: number | null = null;
-
-    const step = (timestamp: number) => {
-      if (!startTime) startTime = timestamp;
-      const progress = Math.min((timestamp - startTime) / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setCount(Math.floor(eased * target));
-
-      if (progress < 1) {
-        requestAnimationFrame(step);
-      }
-    };
-
-    requestAnimationFrame(step);
-  };
-
-  return (
-    <div ref={elementRef} className={`text-center transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-      <div className="text-5xl lg:text-[4.5rem] font-black mb-2 tracking-tighter text-gray-900" style={{ lineHeight: 1.05 }}>
-        {prefix}{count.toLocaleString(locale === 'zh' ? 'zh-Hans' : locale === 'ar' ? 'ar-SA' : 'en-US')}{suffix}
-      </div>
-    </div>
-  );
-}
-
-// ============================================================
-// v178 DYNAMIC BUBBLE SYSTEM — 随机位置 + 生长 + 破碎效果
-// ============================================================
-interface BubbleFieldProps { cardIndex: number; barColor: string; glowColor: string; textColor: string; }
-
-/** 大气泡：随机位置 + 从小变大 + 渐渐破碎消失 */
-function StatBubbleField({ cardIndex, barColor, glowColor, textColor }: BubbleFieldProps) {
-  const [bubbles, setBubbles] = useState<Array<{ id: number; x: number; y: number; size: number; color: string; delay: number; dur: number }>>([]);
-
-  useEffect(() => {
-    const colors = [barColor, glowColor, textColor];
-    const bbs = Array.from({ length: 3 + (cardIndex % 3) }, (_, i) => ({
-      id: i,
-      x: 5 + Math.random() * 90, // 随机 x% (5%-95%)
-      y: 5 + Math.random() * 90, // 随机 y% (5%-95%)
-      size: 12 + Math.random() * 20, // 12-32px
-      color: colors[i % colors.length],
-      delay: Math.random() * 3, // 0-3s 随机延迟
-      dur: 2.5 + Math.random() * 2.5, // 2.5-5s 周期
-    }));
-    setBubbles(bbs);
-  }, [cardIndex]);
-
+// ===== V6 FLOATING DECORATION ORBS =====
+function V6FloatOrbs({ colors, count = 4 }: { colors: string[]; count?: number }) {
+  const positions = [
+    { top: '10%', left: '5%', size: 200 }, { top: '18%', right: '7%', size: 240 },
+    { top: '62%', left: '10%', size: 170 }, { top: '72%', right: '12%', size: 210 },
+    { top: '42%', left: '46%', size: 150 },
+  ];
   return (
     <>
-      {bubbles.map(b => (
-        <div key={b.id} className="absolute rounded-full pointer-events-none" style={{
-          left: `${b.x}%`, top: `${b.y}%`,
-          width: 0, height: 0,
-          ['--bubble-size' as any]: `${b.size}px`,
-          background: `radial-gradient(circle at 35% 30%, rgba(255,255,255,0.95) 0%, ${b.color} 45%, transparent 72%)`,
-          boxShadow: `0 0 ${b.size * 0.8}px ${b.color}`,
-          animation: `v178-bubbleGrowBreak ${b.dur}s ease-in-out infinite`,
-          animationDelay: `${b.delay}s`,
-        }} />
-      ))}
+      {Array.from({ length: count }, (_, i) => {
+        const p = positions[i % positions.length];
+        const color = colors[i % colors.length];
+        return (
+          <div key={i} className="absolute rounded-full pointer-events-none blur-3xl opacity-[0.16]" style={{ top: p.top, left: p.left, right: p.right, width: p.size, height: p.size, background: `radial-gradient(circle, ${color}, transparent 70%)`, animation: `v6-orbFloat ${9 + (i % 4) * 1.4}s ease-in-out infinite`, animationDelay: `${i * 1.2}s` }} />
+        );
+      })}
     </>
-  );
-}
-
-/** 小气泡底部装饰 */
-function MiniBubbleField({ count = 4, barColor, glowColor, textColor }: { count?: number; barColor: string; glowColor: string; textColor: string }) {
-  const [miniBubbles, setMiniBubbles] = useState<Array<{ id: number; size: number; color: string; delay: number }>>([]);
-
-  useEffect(() => {
-    const colors = [barColor, glowColor, textColor];
-    setMiniBubbles(Array.from({ length: count }, (_, i) => ({
-      id: i,
-      size: 6 + Math.random() * 10, // 6-16px
-      color: colors[i % colors.length],
-      delay: Math.random() * 2,
-    })));
-  }, []);
-
-  return (
-    <div className="flex justify-center gap-2 mt-4 opacity-25 group-hover:opacity-50 transition-opacity duration-500">
-      {miniBubbles.map(b => (
-        <div key={b.id} className="rounded-full" style={{
-          width: `${b.size}px`, height: `${b.size}px`,
-          background: `radial-gradient(circle at 35% 30%, rgba(255,255,255,0.9) 0%, ${b.color} 50%, transparent 75%)`,
-          boxShadow: `0 0 ${b.size * 0.6}px ${b.color}`,
-          animation: `v178-miniGrowPop ${1.8 + b.delay}s ease-in-out infinite`,
-          animationDelay: `${b.delay}s`,
-        }} />
-      ))}
-    </div>
   );
 }
 
@@ -186,7 +87,7 @@ function TimelineItem({ year, titleKey, descriptionKey, isLeft, locale, t, index
   return (
     <div 
       ref={itemRef}
-      className={`flex items-center mb-12 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'} ${showLeft ? 'flex-row' : 'flex-row-reverse'}`}
+      className={`flex items-center mb-12 transition-all duration-700 opacity-100 ${isVisible ? 'translate-y-0' : 'translate-y-8'} ${showLeft ? 'flex-row' : 'flex-row-reverse'}`}
     >
       {/* Content side */}
       <div className={`w-5/12 ${showLeft ? 'text-right pr-8' : 'text-left pl-8'}`}>
@@ -221,7 +122,7 @@ function TimelineItem({ year, titleKey, descriptionKey, isLeft, locale, t, index
   );
 }
 
-// ===== 3D Book Flip Component for Core Values (v134) =====
+// ===== Core Values Flip-Book Carousel (V6 redesign) =====
 // Value item type
 interface ValueItem {
   icon: React.ElementType;
@@ -231,582 +132,80 @@ interface ValueItem {
 
 function ValuesBookFlip({ values, t, locale }: { values: ValueItem[]; t: (key: string) => string; locale: string }) {
   const [currentPage, setCurrentPage] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-
-  // === v141: Enhanced sci-fi text scramble with glitch + matrix rain ===
-  const [scrambleTitle, setScrambleTitle] = useState('');
-  const [scrambleDesc, setScrambleDesc] = useState('');
-  const [glitchActive, setGlitchActive] = useState(false);
-  const [textGlowIntensity, setTextGlowIntensity] = useState(0);
-  const scrambleRef = useRef({ frame: 0, animId: 0 });
-  // Extended charset with more tech/cyber glyphs
-  const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%&*+=<>[]{}|/\\~ΔΘΛΠΣΨΩαβγδεζηθλμξπσςφψω';
-  const BINARY = '01';
-
-  const runScramble = (targetTitle: string, targetDesc: string) => {
-    // Cancel previous
-    if (scrambleRef.current.animId) cancelAnimationFrame(scrambleRef.current.animId);
-    let frame = 0;
-    const totalFrames = 55; // ~0.92s at 60fps — longer for more dramatic effect
-    const glitchFrames = 8; // initial glitch burst
-    // Track per-character resolve state
-    const titleResolved = new Array(targetTitle.length).fill(false);
-    const descResolved = new Array(targetDesc.length).fill(false);
-
-    const tick = () => {
-      frame++;
-      const progress = frame / totalFrames;
-      const eased = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2; // ease-in-out
-
-      // Glitch activation pulse at start
-      if (frame <= glitchFrames + 5) {
-        setGlitchActive(true);
-        setTextGlowIntensity(Math.min(1, frame / 10));
-      } else if (frame > totalFrames - 8) {
-        setGlitchActive(false);
-        setTextGlowIntensity(Math.max(0, (totalFrames - frame) / 8));
-      } else {
-        setGlitchActive(frame % 20 < 3); // occasional micro-glitch
-        setTextGlowIntensity(0.3 + Math.sin(frame * 0.15) * 0.25);
-      }
-
-      // Phase 1 (frames 1-8): Pure glitch burst — all random/noise
-      // Phase 2 (frames 9-40): Progressive left-to-right resolve with occasional regression
-      // Phase 3 (frames 41-55): Final lock-in with settling shimmer
-
-      let newTitle = '';
-      for (let i = 0; i < targetTitle.length; i++) {
-        const charDelay = (i / targetTitle.length) * 0.6;
-        const charProgress = Math.min(1, Math.max(0, (eased - charDelay) * 1.6));
-
-        if (frame <= glitchFrames) {
-          // Glitch phase: pure chaos
-          newTitle += CHARS[Math.floor(Math.random() * CHARS.length)];
-        } else if (charProgress >= 0.98) {
-          // Fully resolved
-          newTitle += targetTitle[i];
-          titleResolved[i] = true;
-        } else if (charProgress > 0.3) {
-          // Resolving phase — mostly correct but with glitch regression
-          if (!titleResolved[i] && Math.random() < 0.08 && frame % 7 < 2) {
-            // Glitch regression — briefly flip back to noise
-            newTitle += Math.random() > 0.5 ? BINARY[Math.floor(Math.random() * 2)] : CHARS[Math.floor(Math.random() * CHARS.length)];
-          } else {
-            newTitle += Math.random() > (1 - charProgress) * 1.2
-              ? targetTitle[i]
-              : CHARS[Math.floor(Math.random() * CHARS.length)];
-          }
-        } else {
-          // Still scrambling — mix of chars and binary
-          newTitle += Math.random() > 0.4
-            ? CHARS[Math.floor(Math.random() * CHARS.length)]
-            : BINARY[Math.floor(Math.random() * 2)];
-        }
-      }
-
-      // Description: similar but slightly delayed, uses binary more
-      let newDesc = '';
-      for (let i = 0; i < targetDesc.length; i++) {
-        const charDelay = 0.05 + (i / targetDesc.length) * 0.45;
-        const charProgress = Math.min(1, Math.max(0, (eased - charDelay) * 1.7));
-
-        if (frame <= glitchFrames) {
-          newDesc += CHARS[Math.floor(Math.random() * CHARS.length)];
-        } else if (charProgress >= 0.97) {
-          newDesc += targetDesc[i];
-          descResolved[i] = true;
-        } else if (charProgress > 0.25) {
-          if (!descResolved[i] && Math.random() < 0.06 && frame % 9 < 2) {
-            newDesc += BINARY[Math.floor(Math.random() * 2)];
-          } else {
-            newDesc += Math.random() > (1 - charProgress) * 1.5
-              ? targetDesc[i]
-              : (Math.random() > 0.35 ? CHARS[Math.floor(Math.random() * CHARS.length)] : BINARY[Math.floor(Math.random() * 2)]);
-          }
-        } else {
-          newDesc += Math.random() > 0.3
-            ? CHARS[Math.floor(Math.random() * CHARS.length)]
-            : BINARY[Math.floor(Math.random() * 2)];
-        }
-      }
-
-      setScrambleTitle(newTitle);
-      setScrambleDesc(newDesc);
-
-      if (frame < totalFrames) {
-        scrambleRef.current.animId = requestAnimationFrame(tick);
-      } else {
-        setScrambleTitle(targetTitle);
-        setScrambleDesc(targetDesc);
-        setGlitchActive(false);
-        setTextGlowIntensity(0);
-      }
-    };
-    scrambleRef.current.animId = requestAnimationFrame(tick);
-  };
-
-  // Trigger scramble on page change
-  useEffect(() => {
-    const current = values[currentPage];
-    if (!current) return;
-    const titleText = t(current.titleKey);
-    const descText = t(current.descriptionKey);
-    // Immediate show on first render, scramble on transition
-    if (scrambleTitle === '') {
-      setScrambleTitle(titleText);
-      setScrambleDesc(descText);
-    } else {
-      runScramble(titleText, descText);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage]);
+  const [isFlipping, setIsFlipping] = useState(false);
 
   // Auto-transition every 5 seconds
   useEffect(() => {
     const timer = setInterval(() => {
-      if (!isTransitioning) {
-        setIsTransitioning(true);
-        setTimeout(() => {
-          setCurrentPage(prev => (prev + 1) % values.length);
-          setIsTransitioning(false);
-        }, 800);
-      }
+      setCurrentPage((prev) => (prev + 1) % values.length);
     }, 5000);
     return () => clearInterval(timer);
-  }, [values.length, isTransitioning]);
+  }, [values.length]);
 
-  // Premium multi-tone holographic themes — rich color palettes (v138)
-  const holoThemes = [
-    { accent: '#00e5ff', secondary: '#00b8d4', tertiary: '#18ffff', glow: 'rgba(0,229,255,0.5)', beam: 'rgba(0,229,255,0.18)', bg1: 'rgba(0,20,40,0.97)', bg2: 'rgba(2,10,30,0.95)' },
-    { accent: '#e040fb', secondary: '#aa00ff', tertiary: '#ea80fc', glow: 'rgba(224,64,251,0.5)', beam: 'rgba(224,64,251,0.18)', bg1: 'rgba(20,5,35,0.97)', bg2: 'rgba(15,2,25,0.95)' },
-    { accent: '#00e676', secondary: '#00c853', tertiary: '#69f0ae', glow: 'rgba(0,230,118,0.5)', beam: 'rgba(0,230,118,0.18)', bg1: 'rgba(0,25,15,0.97)', bg2: 'rgba(2,15,10,0.95)' },
-    { accent: '#ffab00', secondary: '#ff6d00', tertiary: '#ffd740', glow: 'rgba(255,171,0,0.45)', beam: 'rgba(255,171,0,0.15)', bg1: 'rgba(30,20,0,0.97)', bg2: 'rgba(20,12,0,0.95)' },
-    { accent: '#ff5252', secondary: '#d50000', tertiary: '#ff8a80', glow: 'rgba(255,82,82,0.45)', beam: 'rgba(255,82,82,0.15)', bg1: 'rgba(35,5,5,0.97)', bg2: 'rgba(25,2,2,0.95)' },
-  ];
+  // Trigger a brief rotateY "page turn" whenever the page changes
+  useEffect(() => {
+    setIsFlipping(true);
+    const id = setTimeout(() => setIsFlipping(false), 450);
+    return () => clearTimeout(id);
+  }, [currentPage]);
 
   const current = values[currentPage];
   const Icon = current.icon;
-  const ht = holoThemes[currentPage % holoThemes.length];
 
   return (
-    <div className="flex justify-center py-4">
-      {/* ===== PREMIUM HOLOGRAPHIC 3D DISPLAY v138 — cinematic sci-fi ===== */}
-      <div className="relative w-full max-w-[800px] mx-auto" style={{ perspective: '1400px' }}>
-        {/* Outer ambient glow — large soft halo */}
-        <div className="absolute -inset-16 rounded-full pointer-events-none" style={{
-          background: `radial-gradient(circle, ${ht.glow} 0%, ${ht.beam} 30%, transparent 70%)`,
-          animation: 'v138-ambientPulse 4s ease-in-out infinite alternate',
-          filter: 'blur(40px)',
-        }} />
-
-        {/* Bottom projector beam — wider, more dramatic */}
-        <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 w-[280px] h-[160px] opacity-50 pointer-events-none"
-          style={{
-            background: `linear-gradient(to top, ${ht.beam} 0%, ${ht.accent}15 40%, transparent 100%)`,
-            clipPath: 'polygon(35% 100%, 65% 100%, 85% 0%, 15% 0%)',
-            filter: 'blur(12px)',
-            animation: 'v138-beamPulse 3.5s ease-in-out infinite',
-          }}
-        />
-        {/* Projector base */}
-        <div className="absolute -bottom-24 left-1/2 -translate-x-1/2 w-24 h-6 rounded-full blur-lg pointer-events-none"
-          style={{ background: ht.accent, opacity: 0.4, animation: 'v138-beamPulse 3.5s ease-in-out infinite' }}
-        />
-
-        {/* Main holographic panel — premium glass-morphic (force dark to prevent theme override) */}
+    <div className="relative w-full max-w-4xl mx-auto" style={{ perspective: '1800px' }}>
+      <div
+        className="relative w-full min-h-[420px] sm:min-h-[440px] bg-white rounded-2xl shadow-2xl border border-gray-100 p-10 sm:p-14 overflow-hidden"
+        style={{
+          transformStyle: 'preserve-3d',
+          transition: 'transform 0.7s cubic-bezier(0.4, 0, 0.2, 1)',
+          transform: isFlipping ? 'rotateY(-16deg)' : 'rotateY(0deg)',
+        }}
+      >
+        {/* Book spine shadow on the left */}
         <div
-          className="relative rounded-2xl overflow-hidden"
-          style={{
-            background: `linear-gradient(135deg, #000810 0%, #0a0f1e 50%, #000810 100%) !important`,
-            border: `1.5px solid ${ht.accent} !important`,
-            boxShadow: `
-              0 0 40px ${ht.glow},
-              0 0 80px ${ht.beam},
-              0 0 120px ${ht.accent}10,
-              inset 0 1px 0 ${ht.accent}25,
-              inset 0 -1px 0 rgba(0,0,0,0.3),
-              0 30px 80px rgba(0,0,0,0.6)
-            `,
-            transformStyle: 'preserve-3d',
-            animation: 'v138-holoFloat 6s ease-in-out infinite',
-          }}
-          onMouseEnter={e => e.currentTarget.style.animationPlayState = 'paused'}
-          onMouseLeave={e => e.currentTarget.style.animationPlayState = 'running'}
+          className="absolute inset-y-0 left-0 w-10 pointer-events-none rounded-l-2xl"
+          style={{ background: 'linear-gradient(90deg, rgba(0,0,0,0.06), transparent)' }}
+        />
+        {/* Page thickness / sheen on the right edge */}
+        <div
+          className="absolute inset-y-0 right-0 w-12 pointer-events-none rounded-r-2xl"
+          style={{ background: 'linear-gradient(105deg, transparent 40%, rgba(0,0,0,0.03) 50%, rgba(0,0,0,0.08) 100%)' }}
+        />
+        {/* Subtle top blue sheen */}
+        <div
+          className="absolute inset-x-0 top-0 h-28 pointer-events-none"
+          style={{ background: 'linear-gradient(to bottom, rgba(59,130,246,0.05), transparent)' }}
+        />
+
+        {/* Page content */}
+        <div
+          className="relative z-10 text-center flex flex-col items-center justify-center min-h-[340px]"
+          style={{ backfaceVisibility: 'hidden' }}
         >
-          {/* Layer 1: Hexagonal grid pattern overlay */}
-          <div className="absolute inset-0 pointer-events-none rounded-2xl overflow-hidden" style={{ opacity: 0.06 }}>
-            <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <pattern id="hexGrid" width="30" height="51.96" patternUnits="userSpaceOnUse">
-                  <path d="M15 0 L30 8.66 L30 25.98 L15 34.64 L0 25.98 L0 8.66 Z" fill="none" stroke={ht.accent} strokeWidth="0.5" />
-                </pattern>
-              </defs>
-              <rect width="100%" height="100%" fill="url(#hexGrid)" />
-            </svg>
-          </div>
-
-          {/* Layer 2: Scan lines + moving scan beam */}
-          <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl">
-            {/* Fine horizontal scan lines */}
-            <div className="absolute inset-0" style={{
-              backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 3px)',
-            }} />
-            {/* Main scan line — thicker, brighter, with trail */}
-            <div className="absolute left-0 right-0 h-[4px]"
-              style={{
-                background: `linear-gradient(90deg, transparent 0%, ${ht.accent}60 20%, ${ht.accent} 50%, ${ht.tertiary}80 80%, transparent 100%)`,
-                boxShadow: `0 0 20px ${ht.accent}, 0 0 40px ${ht.glow}, 0 0 60px ${ht.beam}`,
-                animation: 'v138-scanLine 3.2s linear infinite',
-              }}
-            />
-            {/* Secondary faint scan line offset */}
-            <div className="absolute left-0 right-0 h-[2px]" style={{
-              background: `linear-gradient(90deg, transparent, ${ht.secondary}40, transparent)`,
-              animation: 'v138-scanLine 3.2s linear infinite reverse',
-              animationDelay: '1.6s',
-              opacity: 0.3,
-            }} />
-          </div>
-
-          {/* Layer 3: Circuit-board trace decoration */}
-          <div className="absolute inset-0 pointer-events-none rounded-2xl overflow-hidden" style={{ opacity: 0.08 }}>
-            <svg width="100%" height="100%">
-              <path d="M0,80 L120,80 L140,100 L300,100 L320,80 L500,80 L520,120 L700,120" stroke={ht.accent} strokeWidth="1" fill="none" />
-              <path d="M800,200 L600,200 L580,170 L400,170 L380,200 L200,200 L180,230 L0,230" stroke={ht.secondary} strokeWidth="0.8" fill="none" />
-              <path d="M0,350 L200,350 L220,320 L450,320 L470,350 L650,350 L670,310 L800,310" stroke={ht.tertiary} strokeWidth="0.8" fill="none" />
-              {[...Array(8)].map((_, i) => (
-                <circle key={i} cx={`${100 + i * 95}`} cy={`${80 + (i % 3) * 150}`} r="3" fill={ht.accent} opacity="0.6" />
-              ))}
-            </svg>
-          </div>
-
-          {/* Layer 4: Corner tech brackets — enhanced */}
-          {[[0,0],[0,1],[1,0],[1,1]].map(([v,h], i) => (
-            <div key={i} className="absolute pointer-events-none"
-              style={{
-                top: v ? undefined : '10px', bottom: v ? '10px' : undefined,
-                left: h ? undefined : '10px', right: h ? '10px' : undefined,
-                width: '28px', height: '28px',
-                borderTop: v ? 'none' : `2.5px solid ${ht.accent}`,
-                borderBottom: v ? `2.5px solid ${ht.accent}` : 'none',
-                borderLeft: h ? 'none' : `2.5px solid ${ht.accent}`,
-                borderRight: h ? `2.5px solid ${ht.accent}` : 'none',
-                opacity: 0.7,
-                boxShadow: `0 0 8px ${ht.glow}`,
-              }}
-            >
-              {/* Corner dot */}
-              <div className="absolute w-1.5 h-1.5 rounded-full" style={{
-                background: ht.accent,
-                top: v ? undefined : '-1px', bottom: v ? '-1px' : undefined,
-                left: h ? undefined : '-1px', right: h ? '-1px' : undefined,
-                boxShadow: `0 0 6px ${ht.accent}`,
-              }} />
-            </div>
-          ))}
-
-          {/* Layer 5: Rich particle system — 30+ particles with varying behavior */}
-          <div className="absolute inset-0 pointer-events-none rounded-2xl overflow-hidden">
-            {/* Tiny ambient dust particles */}
-            {[...Array(20)].map((_, pi) => (
-              <span key={`d-${pi}`} className="absolute rounded-full" style={{
-                width: `${1 + (pi % 2)}px`, height: `${1 + (pi % 2)}px`,
-                left: `${3 + pi * 4.9}%`, top: `${5 + (pi * 17) % 90}%`,
-                background: pi % 3 === 0 ? ht.accent : pi % 3 === 1 ? ht.secondary : ht.tertiary,
-                opacity: 0.2 + (pi % 4) * 0.15,
-                animation: `v138-dustFloat ${4 + pi * 0.3}s ease-in-out infinite`,
-                animationDelay: `${pi * 0.25}s`,
-              }} />
-            ))}
-            {/* Medium data nodes — glowing orbs */}
-            {[...Array(10)].map((_, ni) => (
-              <span key={`n-${ni}`} className="absolute rounded-full" style={{
-                width: `${3 + ni % 3}px`, height: `${3 + ni % 3}px`,
-                left: `${8 + ni * 9}%`, top: `${10 + (ni * 23) % 80}%`,
-                background: `radial-gradient(circle, ${ht.tertiary} 0%, ${ht.accent}50, transparent 70%)`,
-                boxShadow: `0 0 ${8 + ni * 2}px ${ht.glow}`,
-                opacity: 0.4 + (ni % 3) * 0.2,
-                animation: `v138-nodePulse ${2 + ni * 0.4}s ease-in-out infinite`,
-                animationDelay: `${ni * 0.4}s`,
-              }} />
-            ))}
-            {/* Large floating data fragments — rectangular chips */}
-            {[...Array(4)].map((_, fi) => (
-              <span key={`f-${fi}`} className="absolute rounded-sm pointer-events-none" style={{
-                width: `${14 + fi * 4}px`, height: '3px',
-                left: `${15 + fi * 22}%`, top: `${20 + fi * 18}%`,
-                background: `linear-gradient(90deg, ${ht.accent}40, ${ht.secondary}30, transparent)`,
-                opacity: 0.25,
-                animation: `v138-chipDrift ${6 + fi * 2}s ease-in-out infinite`,
-                animationDelay: `${fi * 1.2}s`,
-              }} />
-            ))}
-          </div>
-
-          {/* ===== v141 NEW: Layer 6 — Binary Rain (Matrix-style columns) ===== */}
-          <div className="absolute inset-0 pointer-events-none rounded-2xl overflow-hidden" style={{ opacity: 0.12 }}>
-            {[...Array(12)].map((_, ci) => {
-              const colChars = [...Array(8 + (ci % 5))].map(() =>
-                Math.random() > 0.3 ? BINARY[Math.floor(Math.random() * 2)] : ''
-              ).join('');
-              return (
-                <div key={`br-${ci}`} className="absolute text-[7px] font-mono leading-tight"
-                  style={{
-                    left: `${4 + ci * 8}%`,
-                    top: '-40px',
-                    color: ht.accent,
-                    opacity: 0.4 + (ci % 3) * 0.25,
-                    animation: `v141-binRain ${3 + ci * 0.5}s linear infinite`,
-                    animationDelay: `${ci * 0.35}s`,
-                    textShadow: `0 0 4px ${ht.glow}`,
-                  }}
-                >
-                  {colChars.split('').map((c, i) => (
-                    <div key={i}>{c || '\u00A0'}</div>
-                  ))}
-                </div>
-              );
-            })}
-          </div>
-
-          {/* ===== v141 NEW: Layer 7 — Floating hex code snippets ===== */}
-          <div className="absolute inset-0 pointer-events-none rounded-2xl overflow-hidden" style={{ opacity: 0.09 }}>
-            {[...Array(6)].map((_, hi) => {
-              const hexStr = Array.from({ length: 6 + (hi % 4) }, () =>
-                '0123456789ABCDEF'[Math.floor(Math.random() * 16)]
-              ).join('');
-              return (
-                <span key={`hx-${hi}`} className="absolute font-mono text-[8px] tracking-wider"
-                  style={{
-                    left: `${10 + hi * 15}%`,
-                    top: `${15 + (hi * 23) % 70}%`,
-                    color: ht.tertiary,
-                    opacity: 0.35 + (hi % 3) * 0.2,
-                    animation: `v138-chipDrift ${8 + hi * 1.5}s ease-in-out infinite`,
-                    animationDelay: `${hi * 0.8}s`,
-                    textShadow: `0 0 3px ${ht.accent}30`,
-                  }}
-                >
-                  {'0x' + hexStr}
-                </span>
-              );
-            })}
-          </div>
-
-          {/* ===== v141 NEW: Layer 8 — Horizontal data sweep lines ===== */}
-          <div className="absolute inset-0 pointer-events-none rounded-2xl overflow-hidden">
-            {[...Array(3)].map((_, si) => (
-              <div key={`sw-${si}`} className="absolute left-0 h-px"
-                style={{
-                  top: `${22 + si * 25}%`,
-                  width: '0%',
-                  background: `linear-gradient(90deg, transparent, ${ht.accent}${40 + si * 15}, ${ht.tertiary}60, transparent)`,
-                  boxShadow: `0 0 6px ${ht.glow}`,
-                  animation: `v141-dataSweep ${4 + si * 1.5}s ease-in-out infinite`,
-                  animationDelay: `${si * 1.2}s`,
-                }}
-              />
-            ))}
-          </div>
-
-          {/* ===== v141 NEW: Layer 9 — Radial pulse rings from center ===== */}
-          <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-            {[...Array(3)].map((_, ri) => (
-              <div key={`pr-${ri}`} className="absolute rounded-full" style={{
-                width: `${80 + ri * 60}px`,
-                height: `${80 + ri * 60}px`,
-                border: `1px solid ${ht.accent}${15 - ri * 4}`,
-                animation: `v141-pulseRing ${3 + ri * 0.7}s ease-out infinite`,
-                animationDelay: `${ri * 0.6}s`,
-              }} />
-            ))}
-          </div>
-
-          {/* Content area */}
+          {/* Icon badge */}
           <div
-            className="min-h-[400px] sm:min-h-[440px] p-8 sm:p-12 relative flex flex-col items-center text-center justify-center transition-all duration-700"
-            style={{
-              opacity: isTransitioning ? 0.25 : 1,
-              transform: isTransitioning ? 'scale(0.96) translateY(12px)' : 'scale(1) translateY(0)',
-              filter: isTransitioning ? 'blur(6px)' : 'blur(0)',
-            }}
+            className="w-20 h-20 mx-auto mb-6 rounded-2xl flex items-center justify-center text-white shadow-lg"
+            style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #6366f1 50%, #818cf8 100%)', boxShadow: '0 12px 30px rgba(59,130,246,0.30)' }}
           >
-            {/* Central holographic icon display — upgraded energy core */}
-            <div className="relative mb-7">
-              {/* Outer rotating hexagonal frame */}
-              <div className="absolute -inset-5 pointer-events-none" style={{
-                animation: 'v138-hexRotate 12s linear infinite',
-              }}>
-                <svg width="100%" height="100%" viewBox="0 0 120 120">
-                  <defs>
-                    <linearGradient id={`hexGrad${currentPage}`} x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor={ht.accent} stopOpacity="0.8" />
-                      <stop offset="50%" stopColor={ht.secondary} stopOpacity="0.4" />
-                      <stop offset="100%" stopColor={ht.tertiary} stopOpacity="0.8" />
-                    </linearGradient>
-                  </defs>
-                  <polygon points="60,2 108,32 108,88 60,118 12,88 12,32"
-                    fill="none" stroke={`url(#hexGrad${currentPage})`} strokeWidth="1.5"
-                    style={{ filter: `drop-shadow(0 0 8px ${ht.glow})` }}
-                  />
-                  {/* Inner hexagon counter-rotating */}
-                  <polygon points="60,18 96,42 96,78 60,102 24,78 24,42"
-                    fill="none" stroke={`${ht.accent}40`} strokeWidth="1"
-                    style={{ animation: 'v138-hexRotate 8s linear infinite reverse' }}
-                  />
-                </svg>
-              </div>
-
-              {/* Pulsing energy rings */}
-              {[...Array(3)].map((_, ri) => (
-                <div key={ri} className="absolute rounded-full pointer-events-none" style={{
-                  inset: `${-12 - ri * 14}px`,
-                  border: `1.5px solid ${ht.accent}${ri === 0 ? '50' : ri === 1 ? '30' : '15'}`,
-                  borderRadius: '50%',
-                  animation: `v138-ringPulse ${2.5 + ri * 0.8}s ease-in-out infinite`,
-                  animationDelay: `${ri * 0.5}s`,
-                }} />
-              ))}
-
-              {/* Core icon container — glassmorphic orb */}
-              <div className="w-26 h-26 sm:w-30 sm:h-30 rounded-full flex items-center justify-center relative"
-                style={{
-                  background: `
-                    radial-gradient(circle at 35% 30%, ${ht.glow} 0%, transparent 60%),
-                    radial-gradient(circle at 50% 50%, ${ht.accent}15 0%, ${ht.secondary}08 50%, transparent 70%),
-                    linear-gradient(135deg, ${ht.bg1}ee 0%, ${ht.bg2}dd 100%)
-                  `,
-                  border: `1.5px solid ${ht.accent}45`,
-                  boxShadow: `
-                    0 0 40px ${ht.glow},
-                    0 0 80px ${ht.beam},
-                    inset 0 0 25px ${ht.beam}
-                  `,
-                  backdropFilter: 'blur(8px)',
-                }}
-              >
-                <Icon className="w-12 h-12 sm:w-14 sm:h-14" style={{
-                  color: ht.accent,
-                  filter: `drop-shadow(0 0 12px ${ht.accent}) drop-shadow(0 0 24px ${ht.glow})`,
-                }} strokeWidth={1.2} />
-                {/* Inner rotating arc */}
-                <div className="absolute inset-0 rounded-full" style={{
-                  borderTop: `2px solid ${ht.tertiary}60`,
-                  borderRight: `2px solid transparent`,
-                  animation: 'v138-arcSpin 3s linear infinite',
-                }} />
-              </div>
-            </div>
-
-            {/* Title — v141: enhanced glowing typography with dynamic glitch + scramble */}
-            <h3 className="text-2xl sm:text-3xl font-black mb-4 leading-tight tracking-wide"
-              style={{
-                color: '#ffffff',
-                textShadow: `
-                  0 0 ${10 + textGlowIntensity * 25}px ${ht.glow},
-                  0 0 ${20 + textGlowIntensity * 50}px ${ht.beam},
-                  0 0 ${30 + textGlowIntensity * 80}px ${ht.accent}20,
-                  ${glitchActive ? '2px 0 #ff0040, -2px 0 #00ffff' : 'none'}
-                `,
-                letterSpacing: '0.02em',
-                minHeight: '2.8rem',
-                fontFamily: "'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif",
-                transform: glitchActive ? `translate(${Math.random() * 4 - 2}px, ${Math.random() * 2 - 1}px)` : 'translate(0,0)',
-                transition: 'transform 0.05s linear',
-                filter: glitchActive ? `hue-rotate(${Math.random() * 30 - 15}deg)` : 'hue-rotate(0deg)',
-              }}
-            >
-              {scrambleTitle || t(current.titleKey)}
-            </h3>
-
-            {/* Description — v141: scramble + subtle glitch glow */}
-            <p className="text-base sm:text-lg leading-relaxed max-w-lg mx-auto mb-6"
-              style={{
-                color: glitchActive ? '#ffffff' : 'rgba(210,225,255,0.85)',
-                minHeight: '4.5rem',
-                fontFamily: "'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif",
-                textShadow: glitchActive ? `0 0 15px ${ht.glow}, 0 0 30px ${ht.accent}30` : 'none',
-                opacity: glitchActive ? 0.9 : 1,
-                transition: 'color 0.1s, opacity 0.1s',
-              }}
-            >
-              {scrambleDesc || t(current.descriptionKey)}
-            </p>
-
-            {/* Animated data visualization bars */}
-            <div className="flex gap-2 mb-7 items-end" style={{ height: '24px' }}>
-              {[...Array(7)].map((_, di) => {
-                const heights = [10, 18, 14, 24, 16, 20, 12];
-                const isActive = di === currentPage % 7;
-                return (
-                  <div key={di} className="rounded-sm transition-all duration-500" style={{
-                  width: isActive ? '38px' : `${10 + di * 3}px`,
-                  height: `${heights[di]}px`,
-                  background: isActive
-                    ? `linear-gradient(to top, ${ht.accent}, ${ht.tertiary})`
-                    : `${ht.accent}18`,
-                  boxShadow: isActive ? `0 0 12px ${ht.glow}` : 'none',
-                  opacity: isActive ? 1 : 0.5,
-                  animation: !isActive ? `v138-barWave ${2 + di * 0.3}s ease-in-out infinite` : undefined,
-                  animationDelay: `${di * 0.2}s`,
-                }} />
-                );
-              })}
-            </div>
-
-            {/* Page indicators — futuristic pills */}
-            <div className="flex items-center gap-3 mt-auto pt-3">
-              {values.map((_, vi) => {
-                const isActive = vi === currentPage;
-                return (
-                  <button key={vi}
-                    onClick={() => !isTransitioning && vi !== currentPage && (setIsTransitioning(true), setCurrentPage(vi), setTimeout(() => setIsTransitioning(false), 700))}
-                    className="cursor-pointer transition-all duration-400"
-                    style={{
-                      width: isActive ? '36px' : '9px',
-                      height: '9px',
-                      borderRadius: isActive ? '9999px' : '50%',
-                      background: isActive
-                        ? `linear-gradient(90deg, ${ht.accent}, ${ht.tertiary})`
-                        : 'rgba(255,255,255,0.12)',
-                      boxShadow: isActive ? `0 0 16px ${ht.glow}, 0 0 8px ${ht.accent}60` : 'none',
-                      border: isActive ? 'none' : '1px solid rgba(255,255,255,0.08)',
-                    }}
-                    disabled={isTransitioning}
-                  />
-                );
-              })}
-            </div>
+            <Icon className="w-10 h-10" strokeWidth={1.6} />
           </div>
-        </div>
 
-        {/* Nav buttons — sleek holographic style */}
-        <button onClick={() => !isTransitioning && (setIsTransitioning(true), setCurrentPage(p => (p - 1 + values.length) % values.length), setTimeout(() => setIsTransitioning(false), 800))}
-          className={`absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[58%] w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 z-20 ${isTransitioning ? 'opacity-25' : 'opacity-75 hover:opacity-100 hover:-translate-x-3'}`}
-          disabled={isTransitioning}
-          style={{
-            background: `linear-gradient(135deg, ${ht.accent}20 0%, ${ht.secondary}12 100%)`,
-            border: `1.5px solid ${ht.accent}35`,
-            backdropFilter: 'blur(12px)',
-            color: ht.accent,
-            boxShadow: `0 0 20px ${ht.beam}, inset 0 0 12px ${ht.accent}10`,
-          }}
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
-        </button>
-        <button onClick={() => !isTransitioning && (setIsTransitioning(true), setCurrentPage(p => (p + 1) % values.length), setTimeout(() => setIsTransitioning(false), 800))}
-          className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-[58%] w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 z-20 ${isTransitioning ? 'opacity-25' : 'opacity-75 hover:opacity-100 hover:translate-x-3'}`}
-          disabled={isTransitioning}
-          style={{
-            background: `linear-gradient(135deg, ${ht.accent}20 0%, ${ht.secondary}12 100%)`,
-            border: `1.5px solid ${ht.accent}35`,
-            backdropFilter: 'blur(12px)',
-            color: ht.accent,
-            boxShadow: `0 0 20px ${ht.beam}, inset 0 0 12px ${ht.accent}10`,
-          }}
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
-        </button>
+          <h3 className="text-3xl font-bold text-gray-900 mb-4">{t(current.titleKey)}</h3>
+          <p className="text-gray-600 leading-relaxed text-lg max-w-2xl mx-auto">{t(current.descriptionKey)}</p>
+        </div>
+      </div>
+
+      {/* Page number indicator — book style */}
+      <div className="flex justify-center gap-3 mt-8">
+        {values.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setCurrentPage(i)}
+            aria-label={`Go to value ${i + 1}`}
+            className={`h-3 rounded-full transition-all duration-300 ${i === currentPage ? 'bg-blue-600 w-8' : 'bg-gray-300 hover:bg-gray-400 w-3'}`}
+          />
+        ))}
       </div>
     </div>
   );
@@ -821,70 +220,69 @@ export default function AboutPage() {
   const [pageLoading, setPageLoading] = useState(true);
 
   // Load data from API
-  // TEMP: Commented out to debug JSX parse error
-  // useEffect(() => {
-  //   async function loadData() {
-  //     try {
-  //       // Load settings
-  //       const s = await fetchUnifiedSettings();
-  //       setSettings(s);
-  //     } catch (e) {
-  //       console.error('Failed to load site settings:', e);
-  //     }
+  useEffect(() => {
+    async function loadData() {
+      try {
+        // Load settings
+        const s = await fetchUnifiedSettings();
+        setSettings(s);
+      } catch (e) {
+        console.error('Failed to load site settings:', e);
+      }
 
-  //     // Load page data from API (for dynamic content from editor)
-  //     try {
-  //       const pageRes = await fetch(`/api/pages/page_about`);
-  //       if (pageRes.ok) {
-  //         const page = await pageRes.json();
-  //         setPageData(page);
-  //         console.log('[About] Loaded page data from API:', page);
-  //       } else {
-  //         console.log('[About] Page API returned', pageRes.status, '- using i18n fallback');
+      // Load page data from API (for dynamic content from editor)
+      try {
+        const pageRes = await fetch(`/api/pages/page_about`);
+        if (pageRes.ok) {
+          const page = await pageRes.json();
+          setPageData(page);
+          console.log('[About] Loaded page data from API:', page);
+        } else {
+          console.log('[About] Page API returned', pageRes.status, '- using i18n fallback');
           
-  //         // Fallback: try to load from localStorage (editor saves there too)
-  //         if (typeof window !== 'undefined') {
-  //           const localData = localStorage.getItem('admin_page_about');
-  //           if (localData) {
-  //             try {
-  //               const parsed = JSON.parse(localData);
-  //               setPageData({ blocks: parsed });
-  //               console.log('[About] Loaded page data from localStorage fallback');
-  //             } catch (e) {
-  //               console.warn('[About] Failed to parse localStorage data');
-  //             }
-  //           }
-  //         }
-  //       }
-  //     } catch (e) {
-  //       console.log('[About] Page API not available - trying localStorage fallback');
-  //       // Fallback to localStorage
-  //       if (typeof window !== 'undefined') {
-  //         const localData = localStorage.getItem('admin_page_about');
-  //         if (localData) {
-  //           try {
-  //             const parsed = JSON.parse(localData);
-  //             setPageData({ blocks: parsed });
-  //           } catch (e) {
-  //             // Ignore
-  //           }
-  //         }
-  //       }
-  //     } finally {
-  //       setPageLoading(false);
-  //     }
-  //   }
-  //   loadData();
-  // }, []);
+          // Fallback: try to load from localStorage (editor saves there too)
+          if (typeof window !== 'undefined') {
+            const localData = localStorage.getItem('admin_page_about');
+            if (localData) {
+              try {
+                const parsed = JSON.parse(localData);
+                setPageData({ blocks: parsed });
+                console.log('[About] Loaded page data from localStorage fallback');
+              } catch (e) {
+                console.warn('[About] Failed to parse localStorage data');
+              }
+            }
+          }
+        }
+      } catch (e) {
+        console.log('[About] Page API not available - trying localStorage fallback');
+        // Fallback to localStorage
+        if (typeof window !== 'undefined') {
+          const localData = localStorage.getItem('admin_page_about');
+          if (localData) {
+            try {
+              const parsed = JSON.parse(localData);
+              setPageData({ blocks: parsed });
+            } catch (e) {
+              // Ignore
+            }
+          }
+        }
+      } finally {
+        setPageLoading(false);
+      }
+    }
+    loadData();
+  }, []);
 
-  // Core statistics data
+  // Core statistics data — V8 restored to 6 items with new data
   const stats = [
-    { number: 2015, suffix: '', prefix: '', labelKey: 'about.stat.founded', icon: Clock },
-    { number: 85, suffix: '+', prefix: '', labelKey: 'about.stat.employees', icon: Users },
-    { number: 500, suffix: '+', prefix: '', labelKey: 'about.stat.clients', icon: Award },
+    { number: 11, suffix: '+', prefix: '', labelKey: 'about.stat.founded', icon: Clock },
+    { number: 10, suffix: '+', prefix: '', labelKey: 'about.stat.models', icon: Cpu },
     { number: 60, suffix: '+', prefix: '', labelKey: 'about.stat.countries', icon: Globe },
-    { number: 5, suffix: '', prefix: '', labelKey: 'about.stat.certifications', icon: ShieldCheck },
-    { number: 10, suffix: '+', prefix: '', labelKey: 'about.stat.patents', icon: Cpu },
+    { number: 800, suffix: '+', prefix: '', labelKey: 'about.stat.clients', icon: Users },
+    { number: 5,  suffix: '',  prefix: '', labelKey: 'about.stat.certifications', icon: ShieldCheck },
+    { number: 10, suffix: '+', prefix: '', labelKey: 'about.stat.patents', icon: Award },
   ];
 
   // Timeline data
@@ -940,34 +338,116 @@ export default function AboutPage() {
     { icon: BadgeCheck, titleKey: 'about.capabilities.quality', descriptionKey: 'about.capabilities.qualityDesc' },
   ];
 
+  // Customer Pain Points data (6 items)
+  const painPointItems = [
+    { icon: AlertTriangle, titleKey: 'about.painPoints.item1.title', descKey: 'about.painPoints.item1.desc' },
+    { icon: XCircle, titleKey: 'about.painPoints.item2.title', descKey: 'about.painPoints.item2.desc' },
+    { icon: AlertTriangle, titleKey: 'about.painPoints.item3.title', descKey: 'about.painPoints.item3.desc' },
+    { icon: XCircle, titleKey: 'about.painPoints.item4.title', descKey: 'about.painPoints.item4.desc' },
+    { icon: AlertTriangle, titleKey: 'about.painPoints.item5.title', descKey: 'about.painPoints.item5.desc' },
+    { icon: XCircle, titleKey: 'about.painPoints.item6.title', descKey: 'about.painPoints.item6.desc' },
+  ];
+
+  // Our Solutions data (7 items)
+  const solutionItems = [
+    { icon: ShieldCheck, titleKey: 'about.solutions.item1.title', descKey: 'about.solutions.item1.desc' },
+    { icon: Zap, titleKey: 'about.solutions.item2.title', descKey: 'about.solutions.item2.desc' },
+    { icon: AlertTriangle, titleKey: 'about.solutions.item3.title', descKey: 'about.solutions.item3.desc' },
+    { icon: CheckCircle, titleKey: 'about.solutions.item4.title', descKey: 'about.solutions.item4.desc' },
+    { icon: BarChart3, titleKey: 'about.solutions.item5.title', descKey: 'about.solutions.item5.desc' },
+    { icon: Boxes, titleKey: 'about.solutions.item6.title', descKey: 'about.solutions.item6.desc' },
+    { icon: Plug, titleKey: 'about.solutions.item7.title', descKey: 'about.solutions.item7.desc' },
+  ];
+
+  // Our Advantages data (6 items, title + description)
+  const advantageItems = [
+    { icon: Award, titleKey: 'about.advantages.item1.title', descKey: 'about.advantages.item1.desc' },
+    { icon: BadgeCheck, titleKey: 'about.advantages.item2.title', descKey: 'about.advantages.item2.desc' },
+    { icon: Settings, titleKey: 'about.advantages.item3.title', descKey: 'about.advantages.item3.desc' },
+    { icon: Plug, titleKey: 'about.advantages.item4.title', descKey: 'about.advantages.item4.desc' },
+    { icon: Zap, titleKey: 'about.advantages.item5.title', descKey: 'about.advantages.item5.desc' },
+    { icon: Headphones, titleKey: 'about.advantages.item6.title', descKey: 'about.advantages.item6.desc' },
+  ];
+
+  // Why Choose Us data (7 items)
+  const whyChooseItems = [
+    { icon: Award, titleKey: 'about.whyChoose.item1.title', descKey: 'about.whyChoose.item1.desc' },
+    { icon: BadgeCheck, titleKey: 'about.whyChoose.item2.title', descKey: 'about.whyChoose.item2.desc' },
+    { icon: Settings, titleKey: 'about.whyChoose.item3.title', descKey: 'about.whyChoose.item3.desc' },
+    { icon: Boxes, titleKey: 'about.whyChoose.item4.title', descKey: 'about.whyChoose.item4.desc' },
+    { icon: Plug, titleKey: 'about.whyChoose.item5.title', descKey: 'about.whyChoose.item5.desc' },
+    { icon: Zap, titleKey: 'about.whyChoose.item6.title', descKey: 'about.whyChoose.item6.desc' },
+    { icon: Headphones, titleKey: 'about.whyChoose.item7.title', descKey: 'about.whyChoose.item7.desc' },
+  ];
+
+  // ===== V6 UNIFIED PER-SECTION CARD STYLE SYSTEM =====
+  // Soft, cohesive gradients per section — warm accent only for Pain Points icons,
+  // cool cyan/blue for Solutions, indigo/violet for Advantages & Why Choose.
+
+  // Pain Points (6) — soft warm gradients + top-to-bottom left accent bar
+  const painIconStyles = [
+    { grad: 'linear-gradient(135deg, #fcd34d 0%, #fb923c 100%)', glow: 'rgba(251,146,60,0.32)', bar: 'linear-gradient(to bottom, #fbbf24 0%, #fb923c 55%, #fca5a5 100%)' },
+    { grad: 'linear-gradient(135deg, #fde68a 0%, #fdba74 100%)', glow: 'rgba(251,146,60,0.28)', bar: 'linear-gradient(to bottom, #fcd34d 0%, #fdba74 55%, #fecaca 100%)' },
+    { grad: 'linear-gradient(135deg, #fed7aa 0%, #fda4af 100%)', glow: 'rgba(251,113,133,0.28)', bar: 'linear-gradient(to bottom, #fdba74 0%, #fb7185 55%, #fca5a5 100%)' },
+    { grad: 'linear-gradient(135deg, #fecaca 0%, #f9a8d4 100%)', glow: 'rgba(244,114,182,0.26)', bar: 'linear-gradient(to bottom, #fca5a5 0%, #f472b6 55%, #c4b5fd 100%)' },
+    { grad: 'linear-gradient(135deg, #fcd34d 0%, #fbbf24 100%)', glow: 'rgba(251,191,36,0.30)', bar: 'linear-gradient(to bottom, #fde68a 0%, #fbbf24 55%, #fdba74 100%)' },
+    { grad: 'linear-gradient(135deg, #fda4af 0%, #c4b5fd 100%)', glow: 'rgba(167,139,250,0.26)', bar: 'linear-gradient(to bottom, #f9a8d4 0%, #c4b5fd 55%, #a5b4fc 100%)' },
+  ];
+
+  // Solutions (7) — cyan/blue/green gradients, capsule top bars
+  const solutionBarStyles = [
+    'linear-gradient(90deg, #22d3ee, #67e8f9)',
+    'linear-gradient(90deg, #2dd4bf, #5eead4)',
+    'linear-gradient(90deg, #38bdf8, #7dd3fc)',
+    'linear-gradient(90deg, #34d399, #6ee7b7)',
+    'linear-gradient(90deg, #22d3ee, #2dd4bf)',
+    'linear-gradient(90deg, #60a5fa, #93c5fd)',
+    'linear-gradient(90deg, #2dd4bf, #22d3ee)',
+  ];
+  const solutionIconStyles = [
+    { grad: 'linear-gradient(135deg, #67e8f9 0%, #22d3ee 100%)', glow: 'rgba(34,211,238,0.30)' },
+    { grad: 'linear-gradient(135deg, #5eead4 0%, #2dd4bf 100%)', glow: 'rgba(45,212,191,0.30)' },
+    { grad: 'linear-gradient(135deg, #7dd3fc 0%, #38bdf8 100%)', glow: 'rgba(56,189,248,0.30)' },
+    { grad: 'linear-gradient(135deg, #6ee7b7 0%, #34d399 100%)', glow: 'rgba(52,211,153,0.30)' },
+    { grad: 'linear-gradient(135deg, #5eead4 0%, #22d3ee 100%)', glow: 'rgba(34,211,238,0.28)' },
+    { grad: 'linear-gradient(135deg, #93c5fd 0%, #60a5fa 100%)', glow: 'rgba(96,165,250,0.30)' },
+    { grad: 'linear-gradient(135deg, #67e8f9 0%, #2dd4bf 100%)', glow: 'rgba(45,212,191,0.28)' },
+  ];
+
+  // Advantages (6) — indigo/violet, numbered badges with gradient fill + divider
+  const advantageNumStyles = [
+    { numGrad: 'linear-gradient(135deg, #a5b4fc, #6366f1)', numBorder: 'rgba(99,102,241,0.35)' },
+    { numGrad: 'linear-gradient(135deg, #c4b5fd, #8b5cf6)', numBorder: 'rgba(139,92,246,0.35)' },
+    { numGrad: 'linear-gradient(135deg, #d8b4fe, #a855f7)', numBorder: 'rgba(168,85,247,0.35)' },
+    { numGrad: 'linear-gradient(135deg, #93c5fd, #3b82f6)', numBorder: 'rgba(59,130,246,0.35)' },
+    { numGrad: 'linear-gradient(135deg, #a5b4fc, #4f46e5)', numBorder: 'rgba(79,70,229,0.35)' },
+    { numGrad: 'linear-gradient(135deg, #c4b5fd, #7c3aed)', numBorder: 'rgba(124,58,237,0.35)' },
+  ];
+
+  // Why Choose Us (7) — violet/magenta, 2px full-width top bar fading to ends
+  const whyChooseTopAccents = [
+    'linear-gradient(90deg, transparent 0%, #8b5cf6 35%, #d946ef 65%, transparent 100%)',
+    'linear-gradient(90deg, transparent 0%, #d946ef 35%, #f472b6 65%, transparent 100%)',
+    'linear-gradient(90deg, transparent 0%, #7c3aed 35%, #8b5cf6 65%, transparent 100%)',
+    'linear-gradient(90deg, transparent 0%, #ec4899 35%, #f472b6 65%, transparent 100%)',
+    'linear-gradient(90deg, transparent 0%, #a855f7 35%, #d946ef 65%, transparent 100%)',
+    'linear-gradient(90deg, transparent 0%, #8b5cf6 35%, #a855f7 65%, transparent 100%)',
+    'linear-gradient(90deg, transparent 0%, #7c3aed 35%, #8b5cf6 65%, transparent 100%)',
+  ];
+  const whyIconStyles = [
+    { grad: 'linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%)', glow: 'rgba(139,92,246,0.30)' },
+    { grad: 'linear-gradient(135deg, #e879f9 0%, #d946ef 100%)', glow: 'rgba(217,70,239,0.30)' },
+    { grad: 'linear-gradient(135deg, #c4b5fd 0%, #7c3aed 100%)', glow: 'rgba(124,58,237,0.30)' },
+    { grad: 'linear-gradient(135deg, #f472b6 0%, #ec4899 100%)', glow: 'rgba(236,72,153,0.30)' },
+    { grad: 'linear-gradient(135deg, #d946ef 0%, #a855f7 100%)', glow: 'rgba(217,70,239,0.28)' },
+    { grad: 'linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%)', glow: 'rgba(124,58,237,0.28)' },
+    { grad: 'linear-gradient(135deg, #c4b5fd 0%, #8b5cf6 100%)', glow: 'rgba(139,92,246,0.30)' },
+  ];
+
   const contactEmail = settings?.contactEmail || 'sabina@wstoolcabinet.com';
   const contactPhone = settings?.contactPhone || '+86 156 2216 0659';
 
-  // Helper to check if a value looks like an image URL (defined before IIFE that uses it)
-  const isImageUrl = (val: any): boolean => {
-    if (typeof val !== 'string' || !val) return false;
-    if (val.startsWith('http://') || val.startsWith('https://')) return true;
-    if (val.startsWith('/') && /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(val)) return true;
-    if (val.startsWith('data:image/')) return true;
-    return false;
-  };
-
-  // Extract company image from pageData (set by editor)
-  // TEMP: Commented out IIFE to debug JSX parse error
-  // const companyImageFromEditor = (() => {
-  //   if (!pageData?.blocks) return null;
-  //   const blocks = Array.isArray(pageData.blocks) ? pageData.blocks : [];
-  //   for (const block of blocks) {
-  //     if (block.content?.imageUrl && isImageUrl(block.content.imageUrl)) {
-  //       return block.content.imageUrl;
-  //     }
-  //     if (block.images && block.images.length > 0 && block.images[0].url) {
-  //       return block.images[0].url;
-  //     }
-  //   }
-  //   return null;
-  // })();
-  const companyImageFromEditor = null; // TEMP
+  // (Legacy editor-driven company image extraction removed — V2 uses a fixed asset)
 
   return (
     <div style={{ backgroundColor: '#f0f9ff' }} suppressHydrationWarning>
@@ -991,107 +471,193 @@ export default function AboutPage() {
         </nav>
       </OceanHeader>
 
-      {/* Company Introduction with Icon Cards — Enhanced with gradient bg + bottom waves */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative overflow-hidden">
-        {/* Subtle animated background gradient */}
-        <div className="absolute inset-0 opacity-[0.04]" style={{
-          background: 'radial-gradient(ellipse at 30% 50%, #3b82f6 0%, transparent 60%), radial-gradient(ellipse at 70% 30%, #8b5cf6 0%, transparent 55%)',
+      {/* Company Introduction — V8: larger image + badge centered at section top */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative overflow-hidden bg-gradient-to-br from-blue-50/40 via-indigo-50/30 to-white">
+        {/* Subtle animated background gradient + blue overlay layer for depth */}
+        <div className="absolute inset-0 opacity-[0.5]" style={{
+          background: 'linear-gradient(135deg, rgba(59,130,246,0.06) 0%, rgba(99,102,241,0.03) 50%, rgba(139,92,246,0.06) 100%), radial-gradient(ellipse at 30% 50%, #3b82f6 0%, transparent 60%), radial-gradient(ellipse at 70% 30%, #8b5cf6 0%, transparent 55%)',
           animation: 'about-intro-bg-pulse 10s ease-in-out infinite alternate',
         }} />
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
-          {/* Company Image */}
-          <div className={`relative h-96 rounded-2xl overflow-hidden shadow-2xl ${isRTL ? 'lg:order-2' : ''}`}>
-            <Image
-              src={companyImageFromEditor || "/images/about/company-hero.svg"}
-              alt={t('company.name')}
-              fill={true}
-              className="w-full h-full object-cover"
-              loading="lazy"
-              quality={80}
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                if (target.src !== "/images/about/company-hero.svg") {
-                  target.src = "/images/about/company-hero.svg";
-                }
-              }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-blue-900/80 via-transparent to-transparent flex items-end">
-              <div className="p-8 text-white">
-                <p className="font-bold text-2xl mb-2">{t('company.name')}</p>
-                <p className="text-blue-200 text-lg">{t('company.tagline')}</p>
-              </div>
-            </div>
-          </div>
 
-          {/* Text Content with Icon Cards */}
-          <div className={isRTL ? 'lg:order-1 text-right' : ''}>
-            <h2 className="text-4xl font-bold text-gray-900 mb-6">{t('about.intro.title')}</h2>
-            <p className="text-gray-600 leading-relaxed mb-6 text-lg">
-              {t('about.intro.text1')}
-            </p>
-            <p className="text-gray-600 leading-relaxed mb-8 text-lg">
-              {t('about.intro.text2')}
-            </p>
-
-            {/* Icon Cards for Key Metrics — Enhanced with gradient colors */}
-            <div className="grid grid-cols-2 gap-4">
-              {[
-                { icon: Clock, label: '2015', sublabelKey: 'about.stat.founded', grad: 'from-blue-500 to-indigo-600', iconBg: 'bg-blue-50 ring-blue-200' },
-                { icon: Globe, label: '60+', sublabelKey: 'about.stat.countries', grad: 'from-emerald-500 to-teal-600', iconBg: 'bg-emerald-50 ring-emerald-200' },
-                { icon: Award, label: '500+', sublabelKey: 'about.stat.clients', grad: 'from-violet-500 to-purple-600', iconBg: 'bg-violet-50 ring-violet-200' },
-                { icon: Cpu, label: '10+', sublabelKey: 'about.stat.patents', grad: 'from-amber-500 to-orange-600', iconBg: 'bg-amber-50 ring-amber-200' },
-              ].map((item, index) => {
-                const Icon = item.icon;
-                return (
-                  <div key={index} className="group rounded-xl p-5 border border-gray-100/80 transition-all duration-400 hover:-translate-y-1.5 hover:shadow-xl" style={{
-                    background: 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,250,252,0.7) 100%)',
-                  }}>
-                    <div className={`w-11 h-11 mx-auto mb-3 rounded-xl ${item.iconBg} flex items-center justify-center ring-3 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300`}>
-                      <Icon className={`w-5 h-5`} style={{ color: item.grad.includes('blue') ? '#2563eb' : item.grad.includes('emerald') ? '#059669' : item.grad.includes('violet') ? '#7c3aed' : '#d97706' }} strokeWidth={1.8} />
-                    </div>
-                    <div className="text-2xl font-black text-gray-900 tracking-tight">{item.label}</div>
-                    <div className="text-xs text-gray-500 mt-0.5 font-medium">{t(item.sublabelKey)}</div>
-                    {/* Subtle top accent line */}
-                    <div className="absolute top-0 left-4 right-4 h-[2px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                      style={{ background: `linear-gradient(90deg, transparent, ${item.grad.split(' ')[0].replace('from-', '')}, transparent)` }}
-                    />
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+        {/* V8: Badge centered at section top like other sections */}
+        <div className="text-center mb-8">
+          <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 border border-blue-100">
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 inline-block mr-2" />
+            {t('about.companyIntro.badge')}
+          </span>
         </div>
 
-        {/* ===== BOTTOM WAVE ANIMATION — Ocean wave separator ===== */}
-        <div className="absolute bottom-0 left-0 right-0 h-24 overflow-hidden pointer-events-none" style={{ transform: 'translateY(95%)' }}>
-          <svg className="absolute bottom-0 w-full" viewBox="0 0 1440 100" preserveAspectRatio="none" style={{ height: '100%' }}>
-            <defs>
-              <linearGradient id="companyWaveGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="#e0f2fe" stopOpacity="0.6" />
-                <stop offset="100%" stopColor="#f0f9ff" stopOpacity="0.15" />
-              </linearGradient>
-            </defs>
-            {/* Wave layer 1 - back */}
-            <path d="M0,40 Q180,10 360,35 T720,30 T1080,40 T1440,25 L1440,100 L0,100Z"
-              fill="url(#companyWaveGrad)" opacity="0.4"
-              style={{ animation: 'v135-waveBack 9s ease-in-out infinite' }}
+        <div className="relative z-10 flex flex-col lg:flex-row gap-12 items-center">
+          {/* LEFT: company building photo — V8: larger (60%) */}
+          <div className="w-full lg:w-[60%] rounded-2xl overflow-hidden shadow-2xl border border-gray-200/50 relative group transition-all duration-700 hover:shadow-[0_25px_70px_-15px_rgba(59,130,246,0.35)] hover:-translate-y-1" style={{ minHeight: '500px' }}>
+            <Image
+              src="/images/about/company-building.jpg"
+              alt={t('company.name')}
+              width={800}
+              height={800}
+              className="w-full h-full object-cover rounded-2xl"
+              priority={true}
+              quality={92}
             />
-            {/* Wave layer 2 - mid */}
-            <path d="M0,55 Q200,30 400,55 T800,45 T1200,58 T1440,42 L1440,100 L0,100Z"
-              fill="#bae6fd" opacity="0.35"
-              style={{ animation: 'v135-waveMid 7s ease-in-out infinite reverse' }}
-            />
-            {/* Wave layer 3 - front */}
-            <path d="M0,68 Q160,52 320,70 T640,62 T960,75 T1280,60 T1440,72 L1440,100 L0,100Z"
-              fill="#e0f2fe" opacity="0.5"
-              style={{ animation: 'v135-waveFront 5.5s ease-in-out infinite' }}
-            />
-            {/* Foam line on wave crest */}
-            <path d="M0,70 Q160,54 320,72 T640,64 T960,77 T1280,62 T1440,74"
-              stroke="rgba(255,255,255,0.6)" strokeWidth="1.5" fill="none" strokeLinecap="round"
-              style={{ animation: 'v135-waveFront 5.5s ease-in-out infinite' }}
-            />
-          </svg>
+            {/* Bottom gradient info layer */}
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent p-8 pointer-events-none">
+              <p className="text-white font-bold text-2xl drop-shadow-lg">{t('company.name')}</p>
+              <p className="text-white/85 text-base drop-shadow">{t('company.tagline')}</p>
+            </div>
+          </div>
+
+          {/* RIGHT: heading + copy — V8: narrower (40%) */}
+          <div className="w-full lg:w-[40%]">
+            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">{t('about.companyIntro.title')}</h2>
+            <div className="v6-shimmer-line w-24 h-1.5 mb-8 rounded-full" style={{ background: 'linear-gradient(90deg, #3b82f6 0%, #6366f1 50%, #8b5cf6 100%)' }} />
+            <p className="text-lg text-gray-600 leading-relaxed mb-5">
+              {t('about.companyIntro.paragraph1')}
+            </p>
+            <p className="text-lg text-gray-600 leading-relaxed">
+              {t('about.companyIntro.paragraph2')}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Customer Pain Points — V6 glassmorphism diagnosis rows */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-gradient-to-b from-stone-50/60 to-white">
+        <V6FloatOrbs colors={['#fbbf24', '#fb923c', '#fca5a5']} />
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="text-center mb-16 v6-title-reveal">
+            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">{t('about.painPoints.title')}</h2>
+            <p className="text-base text-gray-500 max-w-2xl mx-auto">{t('about.painPoints.subtitle')}</p>
+            <div className="v6-shimmer-line w-24 h-1.5 mx-auto mt-4 rounded-full" style={{ background: 'linear-gradient(90deg, #fbbf24, #fb923c, #fca5a5)' }} />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {painPointItems.map((item, idx) => {
+              const Icon = item.icon;
+              const p = painIconStyles[idx % painIconStyles.length];
+              return (
+                <div key={idx} className="group relative rounded-2xl backdrop-blur-sm bg-white/80 border border-white/60 p-5 shadow-[0_4px_20px_-8px_rgba(251,146,60,0.18)] transition-all duration-300 hover:shadow-[0_18px_46px_-14px_rgba(251,146,60,0.30)] hover:-translate-y-1.5 hover:border-orange-200/70 overflow-hidden" style={{ animation: 'v6-cardEnter 0.7s cubic-bezier(0.22,1,0.36,1) backwards', animationDelay: `${idx * 0.1}s` }}>
+                  <div className="absolute start-0 top-4 bottom-4 w-[3px] rounded-full opacity-80 group-hover:opacity-100 transition-opacity duration-300" style={{ background: p.bar }} />
+                  <span className="absolute end-4 top-1/2 -translate-y-1/2 text-5xl font-black text-orange-200/0 group-hover:text-orange-200/40 transition-colors duration-300 select-none pointer-events-none">{String(idx + 1).padStart(2, '0')}</span>
+                  <div className="relative flex gap-4 ps-4">
+                    <div className="relative shrink-0">
+                      <div className="absolute -inset-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ background: `conic-gradient(from 0deg, transparent 0%, ${p.glow} 30%, transparent 60%)`, animation: 'iconRingSpin 4s linear infinite' }} />
+                      <div className="relative w-12 h-12 rounded-full flex items-center justify-center text-white shadow-[0_4px_16px_-3px_rgba(251,146,60,0.35)] group-hover:scale-105 transition-transform duration-300" style={{ background: p.grad, animation: 'v6-iconBounce 0.6s cubic-bezier(0.34,1.56,0.64,1) backwards', animationDelay: `${idx * 0.1 + 0.2}s` }}>
+                        <Icon className="w-5 h-5" strokeWidth={1.8} />
+                      </div>
+                    </div>
+                    <div className="min-w-0">
+                      <h3 className="text-base font-semibold text-gray-900 mb-1.5">{t(item.titleKey)}</h3>
+                      <p className="text-sm text-gray-500 leading-relaxed">{t(item.descKey)}</p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Our Solutions — V6 centered glass feature cards */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-gradient-to-b from-cyan-50/40 to-white">
+        <V6FloatOrbs colors={['#22d3ee', '#2dd4bf', '#38bdf8']} />
+        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, #06b6d4 1px, transparent 0)', backgroundSize: '28px 28px' }} />
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="text-center mb-16 v6-title-reveal">
+            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">{t('about.solutions.title')}</h2>
+            <p className="text-base text-gray-500 max-w-2xl mx-auto">{t('about.solutions.subtitle')}</p>
+            <div className="v6-shimmer-line w-24 h-1.5 mx-auto mt-4 rounded-full" style={{ background: 'linear-gradient(90deg, #22d3ee, #2dd4bf, #38bdf8)' }} />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {solutionItems.map((item, idx) => {
+              const Icon = item.icon;
+              const s = solutionIconStyles[idx % solutionIconStyles.length];
+              const bar = solutionBarStyles[idx % solutionBarStyles.length];
+              return (
+                <div key={idx} className={`group relative rounded-2xl backdrop-blur-sm bg-white/80 border border-white/60 p-6 shadow-[0_4px_20px_-8px_rgba(34,211,238,0.16)] transition-all duration-300 hover:shadow-[0_20px_52px_-14px_rgba(34,211,238,0.30)] hover:-translate-y-1.5 hover:border-cyan-200/70 flex flex-col items-center text-center overflow-hidden${idx === solutionItems.length - 1 ? ' lg:col-start-2' : ''}`} style={{ animation: 'v6-cardEnter 0.7s cubic-bezier(0.22,1,0.36,1) backwards', animationDelay: `${idx * 0.1}s` }}>
+                  <div className="w-16 h-1.5 rounded-full mb-5" style={{ background: bar }} />
+                  <div className="relative shrink-0">
+                    <div className="absolute -inset-1.5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ background: `conic-gradient(from 0deg, transparent 0%, ${s.glow} 30%, transparent 60%)`, animation: 'iconRingSpin 4s linear infinite' }} />
+                    <div className="relative w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-[0_8px_24px_-6px_rgba(34,211,238,0.35)] group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300" style={{ background: s.grad, animation: 'v6-iconBounce 0.6s cubic-bezier(0.34,1.56,0.64,1) backwards', animationDelay: `${idx * 0.1 + 0.2}s` }}>
+                      <Icon className="w-7 h-7" strokeWidth={1.5} />
+                    </div>
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2 mt-5">{t(item.titleKey)}</h3>
+                  <p className="text-sm text-gray-600 leading-relaxed flex-1">{t(item.descKey)}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Our Advantages — V6 compact numbered glass bars */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-gradient-to-b from-indigo-50/30 to-white">
+        <V6FloatOrbs colors={['#818cf8', '#8b5cf6', '#a855f7']} />
+        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, #6366f1 1px, transparent 0)', backgroundSize: '28px 28px' }} />
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="text-center mb-16 v6-title-reveal">
+            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">{t('about.advantages.title')}</h2>
+            <div className="v6-shimmer-line w-24 h-1.5 mx-auto mt-4 rounded-full" style={{ background: 'linear-gradient(90deg, #818cf8, #6366f1, #8b5cf6)' }} />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {advantageItems.map((item, idx) => {
+              const Icon = item.icon;
+              const numStyle = advantageNumStyles[idx % advantageNumStyles.length];
+              return (
+                <div key={idx} className="group relative rounded-2xl backdrop-blur-sm bg-white/80 border border-white/60 p-8 shadow-[0_4px_20px_-8px_rgba(99,102,241,0.16)] transition-all duration-300 hover:shadow-[0_20px_52px_-14px_rgba(99,102,241,0.30)] hover:-translate-y-1.5 hover:border-indigo-200/70 flex flex-col items-center text-center overflow-hidden min-h-[220px]" style={{ animation: 'v6-cardEnter 0.7s cubic-bezier(0.22,1,0.36,1) backwards', animationDelay: `${idx * 0.1}s` }}>
+                  {/* Top gradient accent bar */}
+                  <div className="absolute top-0 left-0 right-0 h-[3px] rounded-t-2xl opacity-70" style={{ background: 'linear-gradient(90deg, #818cf8, #6366f1)' }} />
+                  {/* Numbered circle */}
+                  <div className="relative w-14 h-14 rounded-full flex items-center justify-center text-lg font-black text-white select-none mb-5 shadow-[0_6px_18px_-4px_rgba(99,102,241,0.45)]" style={{ background: numStyle.numGrad, border: `1.5px solid ${numStyle.numBorder}` }}>
+                    {String(idx + 1).padStart(2, '0')}
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900 mb-3">{t(item.titleKey)}</h3>
+                  <div className="w-10 h-[2px] rounded-full mb-4 opacity-50" style={{ background: numStyle.numGrad }} />
+                  <p className="text-sm text-gray-500 leading-relaxed flex-1">{t(item.descKey)}</p>
+                  {/* Decorative icon */}
+                  <div className="mt-4 opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300">
+                    <Icon className="w-6 h-6" strokeWidth={1.8} style={{ color: numStyle.numBorder }} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Why Choose Us — V6 glass benefit cards */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-gradient-to-b from-violet-50/25 to-white">
+        <V6FloatOrbs colors={['#8b5cf6', '#a855f7', '#d946ef']} />
+        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, #8b5cf6 1px, transparent 0)', backgroundSize: '28px 28px' }} />
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="text-center mb-16 v6-title-reveal">
+            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">{t('about.whyChoose.title')}</h2>
+            <p className="text-base text-gray-500 max-w-2xl mx-auto">{t('about.whyChoose.subtitle')}</p>
+            <div className="v6-shimmer-line w-24 h-1.5 mx-auto mt-4 rounded-full" style={{ background: 'linear-gradient(90deg, #8b5cf6, #a855f7, #d946ef)' }} />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {whyChooseItems.map((item, idx) => {
+              const Icon = item.icon;
+              const iconStyle = whyIconStyles[idx % whyIconStyles.length];
+              const accent = whyChooseTopAccents[idx % whyChooseTopAccents.length];
+              return (
+                <div key={idx} className={`group relative rounded-2xl overflow-hidden backdrop-blur-sm bg-white/80 border border-white/60 p-6 shadow-[0_4px_20px_-8px_rgba(139,92,246,0.16)] transition-all duration-300 hover:shadow-[0_22px_56px_-14px_rgba(139,92,246,0.32)] hover:-translate-y-1.5 hover:rotate-1 hover:border-violet-200/70 flex gap-5${idx === whyChooseItems.length - 1 ? ' lg:col-start-2' : ''}`} style={{ animation: 'v6-cardEnter 0.7s cubic-bezier(0.22,1,0.36,1) backwards', animationDelay: `${idx * 0.1}s` }}>
+                  <div className="absolute start-0 top-0 w-full h-[2px]" style={{ background: accent }} />
+                  <div className="shrink-0">
+                    <div className="relative">
+                      <div className="absolute -inset-1.5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ background: `conic-gradient(from 0deg, transparent 0%, ${iconStyle.glow} 30%, transparent 60%)`, animation: 'iconRingSpin 4s linear infinite' }} />
+                      <div className="relative w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-[0_6px_20px_-4px_rgba(139,92,246,0.35)] group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300" style={{ background: iconStyle.grad, animation: 'v6-iconBounce 0.6s cubic-bezier(0.34,1.56,0.64,1) backwards', animationDelay: `${idx * 0.1 + 0.2}s` }}>
+                        <Icon className="w-6 h-6" strokeWidth={1.6} />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-base font-semibold text-gray-900 mb-2">{t(item.titleKey)}</h3>
+                    <p className="text-sm text-gray-500 leading-relaxed">{t(item.descKey)}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </section>
 
@@ -1150,9 +716,6 @@ export default function AboutPage() {
                       maskComposite: 'exclude',
                     }} />
 
-                    {/* ===== v178 DYNAMIC BUBBLES — 随机位置 + 生长 + 破碎效果 ===== */}
-                    <StatBubbleField cardIndex={index} barColor={p.barColor} glowColor={p.glowColor} textColor={p.textColor} />
-
                     <div className="relative z-10">
                       {/* Icon — premium glassmorphic container */}
                       <div className="w-[72px] h-[72px] mx-auto mb-5 relative">
@@ -1187,27 +750,67 @@ export default function AboutPage() {
                         }} />
                       </div>
 
-                      {/* Number — Animated CountUp with subtle glow */}
+                      {/* Number — static (CountUp animation removed in V7) */}
                       <div className="text-5xl lg:text-[4.25rem] font-black mb-1.5 tracking-tighter text-center relative" style={{ lineHeight: 1.05, color: '#111827' }}>
-                        <CountUp target={stat.number} suffix={stat.suffix} prefix={stat.prefix} locale={locale === 'zh' ? 'zh' : locale} />
+                        <span>{stat.prefix}{stat.number}{stat.suffix}</span>
                         {/* Number underline accent */}
                         <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-12 h-[2px] rounded-full opacity-0 group-hover:opacity-40 transition-opacity duration-500 group-hover:w-20"
                           style={{ background: `linear-gradient(90deg, ${p.barColor}, transparent)` }}
                         />
                       </div>
 
+                      {/* V8: Gradient progress bar under number (replaces bubble/shatter effect) */}
+                      <div className="mt-1 h-1 rounded-full overflow-hidden mx-auto" style={{ maxWidth: '120px', background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)' }}>
+                        <div className="h-full" style={{
+                          background: `linear-gradient(90deg, ${p.barColor}, ${p.glowColor})`,
+                          width: `${stat.number * 8 + 20}%`,
+                          transition: 'width 1.5s ease-out 0.5s',
+                        }} />
+                      </div>
+
                       {/* Label */}
-                      <p className="text-[14px] font-bold uppercase tracking-wider mt-1 text-center text-gray-600">
+                      <p className="text-[14px] font-bold uppercase tracking-wider mt-3 text-center text-gray-600">
                         {t(stat.labelKey)}
                       </p>
-
-                      {/* Bottom mini floating bubbles (v178 — dynamic) */}
-                      <MiniBubbleField count={4} barColor={p.barColor} glowColor={p.glowColor} textColor={p.textColor} />
                     </div>
                   </div>
                 </div>
               );
             })}
+          </div>
+        </div>
+      </section>
+
+      {/* Factory Photo Carousel — V7: real factory scenes grid */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-slate-50 to-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">{t('about.factoryCarousel.title')}</h2>
+            <p className="text-lg text-gray-600">{t('about.factoryCarousel.subtitle')}</p>
+          </div>
+
+          <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0">
+              {[
+                '/images/about/factory-carousel-1.jpg',
+                '/images/about/factory-carousel-2.jpg',
+                '/images/about/factory-carousel-3.jpg',
+                '/images/about/factory-carousel-4.jpg',
+                '/images/about/factory-carousel-5.jpg',
+                '/images/about/factory-carousel-6.jpg',
+              ].map((src, i) => (
+                <div key={i} className="relative aspect-[4/3] group">
+                  <Image src={src} alt={`Factory ${i + 1}`} fill className="object-cover" loading="lazy" quality={80} />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300 flex items-center justify-center">
+                    <span className="text-white opacity-0 group-hover:opacity-100 transition-opacity font-semibold text-sm tracking-wider">
+                      {locale === 'zh'
+                        ? ['智能柜生产车间', 'PUSH 发货检测区', '成品组装流水线', '多型号智能柜展示', '安装调试现场', '批量出厂质检'][i]
+                        : ['Smart Cabinet Workshop', 'PUSH Testing Area', 'Assembly Line', 'Multi-model Display', 'Installation Site', 'QC Inspection'][i]}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -1223,7 +826,7 @@ export default function AboutPage() {
           </p>
         </div>
 
-        <div className="relative">
+        <div className="relative pb-4">
           {/* Vertical line with gradient — enhanced */}
           <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-[3px] rounded-full bg-gradient-to-b from-blue-400 via-purple-400 to-emerald-400 opacity-60"
             style={{ boxShadow: '0 0 12px rgba(59,130,246,0.15)' }}
@@ -1393,16 +996,16 @@ export default function AboutPage() {
 
       {/* ===== Company Values — BOOK FLIP ANIMATION (v134) ===== */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden" style={{
-        background: 'linear-gradient(180deg, #1e293b 0%, #334155 30%, #475569 60%, #64748b 100%)',
+        background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 30%, #f0fdf4 60%, #fffbeb 100%)',
       }}>
-        {/* Ambient bookshelf pattern */}
-        <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, #fbbf24 1px, transparent 0)', backgroundSize: '24px 24px' }} />
+        {/* Ambient soft pattern */}
+        <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, #3b82f6 1px, transparent 0)', backgroundSize: '24px 24px' }} />
         <div className="max-w-5xl mx-auto relative z-10">
           <div className="text-center mb-14">
-            <h2 className="text-4xl sm:text-5xl font-bold text-white mb-4">
+            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
               {t('about.values.title')}
             </h2>
-            <p className="text-lg text-slate-300 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               {t('about.values.subtitle')}
             </p>
           </div>
@@ -1424,6 +1027,18 @@ export default function AboutPage() {
           <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-12">
             {t('about.certificationsText')}
           </p>
+
+          {/* Real certification photo wall */}
+          <div className="mb-12 rounded-2xl overflow-hidden shadow-xl border border-gray-200/60">
+            <Image
+              src="/images/about/certificates-real.jpg"
+              alt="Certifications"
+              width={1200}
+              height={500}
+              className="w-full h-auto object-cover"
+              quality={90}
+            />
+          </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6">
             {certifications.map((cert, index) => {
@@ -1519,6 +1134,77 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* Main Clients — Client Logo Wall */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white relative overflow-hidden">
+        {/* Top gradient divider */}
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 opacity-70" />
+        <div className="max-w-7xl mx-auto">
+          {/* Section Header */}
+          <div className="text-center mb-16">
+            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
+              {t('about.clients.title')}
+            </h2>
+            <p className="text-lg text-gray-500 max-w-2xl mx-auto">
+              {t('about.clients.subtitle')}
+            </p>
+            <div className="w-24 h-1.5 mx-auto mt-4 rounded-full"
+              style={{ background: 'linear-gradient(90deg, #3b82f6, #6366f1, #8b5cf6)' }}
+            />
+          </div>
+
+          {/* Logo Grid */}
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-8 items-center">
+            {[
+              { name: 'YUDO', nameZh: 'YUDO', nameEn: 'YUDO' },
+              { name: 'CNC', nameZh: 'CNC', nameEn: 'CNC' },
+              { name: 'Haier', nameZh: '海尔', nameEn: 'Haier' },
+              { name: 'JMP', nameZh: '佳友泵业', nameEn: 'JMP' },
+              { name: 'Husky', nameZh: 'Husky', nameEn: 'HUSKY INJECTION MOLDING SYSTEMS' },
+              { name: 'JianfuGear', nameZh: '建福齿轮', nameEn: 'JIANFU GEAR' },
+              { name: 'QingdaoAocida', nameZh: '青岛奥司登', nameEn: 'AOCIDA' },
+              { name: 'QYUNDA', nameZh: 'QYUNDA', nameEn: 'QYUNDA' },
+              { name: 'Daton', nameZh: '大通汽车', nameEn: 'DATON AUTOMOTIVE' },
+              { name: 'JABIL', nameZh: 'JABIL', nameEn: 'JABIL' },
+              { name: 'Motic', nameZh: 'Motic', nameEn: 'Motic' },
+              { name: 'TOYODENKI', nameZh: 'TOYODENKI', nameEn: 'TOYODENKI' },
+              { name: 'MicroGlobal', nameZh: 'Micro Global', nameEn: 'Micro Global' },
+              { name: 'WeixingShares', nameZh: '伟星股份', nameEn: 'WEIXING SHARES' },
+              { name: 'SAB', nameZh: 'SAB', nameEn: 'SAB' },
+              { name: 'DHLON', nameZh: '德汇隆', nameEn: 'DHLON' },
+              { name: 'Parkway', nameZh: 'Parkway', nameEn: 'Parkway' },
+              { name: 'ChangqingGroup', nameZh: '长青集团', nameEn: 'CHANGQING GROUP' },
+              { name: 'Andrs', nameZh: '安德斯', nameEn: 'ANDRS' },
+              { name: 'ZhangjiagangHuimin', nameZh: '张家港惠民', nameEn: 'ZHANGJIAGANG HUIMIN' },
+              { name: 'R', nameZh: '菲瑞达', nameEn: 'PHIRIDA' },
+              { name: 'KeMed', nameZh: '科医联', nameEn: 'KE MEDICAL' },
+              { name: 'Mate', nameZh: 'MATE', nameEn: 'MATE' },
+              { name: 'MLS', nameZh: 'MLS', nameEn: 'MLS' },
+              { name: 'JOMOO', nameZh: '九牧', nameEn: 'JOMOO METALS' },
+              { name: 'Phrida', nameZh: '江苏菲瑞达模具', nameEn: 'Jiangsu Phrida Mould Technology' },
+              { name: 'Midea', nameZh: '美的', nameEn: 'Midea' },
+              { name: 'CRRC', nameZh: '中国中车', nameEn: 'CRRC' },
+              { name: 'FKD', nameZh: 'FKD', nameEn: 'FKD' },
+              { name: 'LG', nameZh: 'LG', nameEn: 'LG' },
+              { name: 'Shimge', nameZh: '新界泵业', nameEn: 'SHIMGE PUMP' },
+              { name: 'GuoshengGroup', nameZh: '国盛集团', nameEn: 'GUOSHENG GROUP' },
+              { name: 'LanXun', nameZh: '蓝盾防务', nameEn: 'LANXUN DEFENSE' },
+              { name: 'LuxshareICT', nameZh: '立讯精密', nameEn: 'LUXSHARE ICT' },
+            ].map((client, idx) => (
+              <div
+                key={idx}
+                className="flex items-center justify-center p-6 rounded-xl border border-gray-100 hover:border-blue-200 hover:bg-blue-50/50 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group bg-white"
+                title={locale === 'zh' ? client.nameZh : client.nameEn}
+              >
+                {/* Since we don't have actual logo images, render styled text logos */}
+                <span className="text-lg font-bold text-gray-500 group-hover:text-blue-600 transition-colors duration-300 text-center select-none">
+                  {locale === 'zh' ? client.nameZh : client.name.toUpperCase()}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ===== CTA v264 — 明亮水晶水族馆（Crystal-Clear Aquarium） ===== */}
       <section
         className="py-24 px-4 sm:px-6 lg:px-8 text-white relative overflow-hidden"
@@ -1589,34 +1275,52 @@ export default function AboutPage() {
           }} />
         ))}
 
-        {/* 5) 游动的鱼群剪影（更快更显眼，带正弦上下浮动 + 白色高光描边） */}
+        {/* 5) 游动的鱼群剪影（更快更显眼，带正弦上下浮动 + 白色高光描边）
+             V9 FIX: use pre-mirrored paths instead of transform:scaleX(-1) to avoid CSS animation override
+             - right-facing fish: head at x=116
+             - left-facing fish: mirrored path with head at x=4 */}
         {[
-          { top: '16%', size: 130, dur: 18, delay: '0s', dir: 'right', color: 'rgba(96,165,250,0.72)' },
-          { top: '31%', size: 78, dur: 22, delay: '4s', dir: 'left', color: 'rgba(125,211,252,0.7)' },
-          { top: '47%', size: 158, dur: 24, delay: '2.5s', dir: 'right', color: 'rgba(86,170,235,0.68)' },
-          { top: '39%', size: 56, dur: 15, delay: '9s', dir: 'left', color: 'rgba(110,200,245,0.74)' },
-          { top: '58%', size: 104, dur: 20, delay: '6s', dir: 'right', color: 'rgba(94,180,240,0.7)' },
-          { top: '24%', size: 72, dur: 17, delay: '12s', dir: 'left', color: 'rgba(125,211,252,0.68)' },
-          { top: '66%', size: 92, dur: 21, delay: '15s', dir: 'right', color: 'rgba(90,160,225,0.7)' },
-        ].map((fish, i) => (
-          <div key={`fish-${i}`} className="absolute pointer-events-none" style={{
-            top: fish.top,
-            left: '0',
-            width: fish.size,
-            height: fish.size / 2,
-            animation: `ocean-fish-${fish.dir} ${fish.dur}s linear infinite`,
-            animationDelay: fish.delay,
-          }}>
-            <svg viewBox="0 0 120 60" width="100%" height="100%" style={{ transform: fish.dir === 'left' ? 'scaleX(-1)' : 'none', overflow: 'visible' }}>
-              <path
-                d="M4,30 C20,12 70,12 90,24 L116,4 L106,30 L116,56 L90,36 C70,48 20,48 4,30 Z"
-                fill={fish.color}
-                stroke="rgba(255,255,255,0.3)"
-                strokeWidth="1"
-              />
-            </svg>
-          </div>
-        ))}
+          { top: '16%', size: 130, dur: 18, delay: '0s', dir: 'right', color: 'rgba(64,190,220,0.85)', colorLight: 'rgba(150,235,245,0.95)' },
+          { top: '31%', size: 78, dur: 22, delay: '4s', dir: 'left', color: 'rgba(80,200,180,0.82)', colorLight: 'rgba(160,235,215,0.95)' },
+          { top: '47%', size: 158, dur: 24, delay: '2.5s', dir: 'right', color: 'rgba(56,189,248,0.85)', colorLight: 'rgba(150,220,250,0.95)' },
+          { top: '39%', size: 56, dur: 15, delay: '9s', dir: 'left', color: 'rgba(94,200,230,0.84)', colorLight: 'rgba(170,230,245,0.95)' },
+          { top: '58%', size: 104, dur: 20, delay: '6s', dir: 'right', color: 'rgba(72,200,200,0.82)', colorLight: 'rgba(160,235,225,0.95)' },
+          { top: '24%', size: 72, dur: 17, delay: '12s', dir: 'left', color: 'rgba(80,200,180,0.8)', colorLight: 'rgba(160,235,215,0.95)' },
+          { top: '66%', size: 92, dur: 21, delay: '15s', dir: 'right', color: 'rgba(60,190,225,0.85)', colorLight: 'rgba(150,225,245,0.95)' },
+        ].map((fish, i) => {
+          const rightPath = "M4,30 C20,12 70,12 90,24 L116,4 L106,30 L116,56 L90,36 C70,48 20,48 4,30 Z";
+          const leftPath = "M116,30 C100,48 50,48 30,36 L4,56 L14,30 L4,4 L30,24 C50,12 100,12 116,30 Z";
+          const fishPath = fish.dir === 'left' ? leftPath : rightPath;
+          return (
+            <div key={`fish-${i}`} className="absolute pointer-events-none" style={{
+              top: fish.top,
+              left: '0',
+              width: fish.size,
+              height: fish.size / 2,
+              animation: `ocean-fish-${fish.dir} ${fish.dur}s linear infinite`,
+              animationDelay: fish.delay,
+              transformOrigin: 'center center',
+            }}>
+              {/* Wrapper div for horizontal mirror (scaleX) — isolated from animation's transform */}
+              <div style={{ width: '100%', height: '100%', transform: 'scaleX(-1)' }}>
+                <svg viewBox="0 0 120 60" width="100%" height="100%" style={{ overflow: 'visible' }}>
+                  <defs>
+                    <linearGradient id={`fishGrad-${i}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor={fish.colorLight} />
+                      <stop offset="100%" stopColor={fish.color} />
+                    </linearGradient>
+                  </defs>
+                  <path
+                    d={fishPath}
+                    fill={`url(#fishGrad-${i})`}
+                    stroke="rgba(255,255,255,0.6)"
+                    strokeWidth="1.5"
+                  />
+                </svg>
+              </div>
+            </div>
+          );
+        })}
 
         {/* 6) 上升气泡（增强版：更多更亮 + 高光点） */}
         {[...Array(16)].map((_, i) => (
@@ -1741,6 +1445,35 @@ export default function AboutPage() {
       {/* ===== ALL ANIMATION KEYFRAMES (v134) ===== */}
       <style>{`
         /* ===== Premium stat card animations ===== */
+
+        @keyframes v6-cardEnter {
+          0% { opacity: 0; transform: translateY(40px) scale(0.96); }
+          100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes v6-iconBounce {
+          0% { opacity: 0; transform: scale(0) rotate(-10deg); }
+          60% { opacity: 1; transform: scale(1.15) rotate(3deg); }
+          100% { opacity: 1; transform: scale(1) rotate(0deg); }
+        }
+        @keyframes v6-titleReveal {
+          0% { opacity: 0; transform: translateY(20px); letter-spacing: 0.3em; }
+          100% { opacity: 1; transform: translateY(0); letter-spacing: normal; }
+        }
+        @keyframes v6-orbFloat {
+          0%,100% { transform: translateY(0); }
+          50% { transform: translateY(-15px); }
+        }
+        .v6-title-reveal { animation: v6-titleReveal 0.8s cubic-bezier(0.22,1,0.36,1) backwards; }
+        .v6-shimmer-line { position: relative; overflow: hidden; }
+        .v6-shimmer-line::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.85), transparent);
+          transform: translateX(-100%);
+          animation: shimmer-bar 2.6s ease-in-out infinite;
+        }
+
         @keyframes statCardEnter {
           0%{opacity:0;transform:translateY(40px) scale(0.92);filter:blur(4px)}
           60%{opacity:1;transform:translateY(-6px) scale(1.02);filter:blur(0)}
@@ -1757,23 +1490,7 @@ export default function AboutPage() {
           50%{opacity:0.28; transform:translate(-5px,8px) scale(0.9)}
           75%{opacity:0.35; transform:translate(4px,-6px) scale(1.05)}
         }
-        /* ===== v178 BUBBLE ANIMATIONS — 生长 + 破碎效果 ===== */
-        @keyframes v178-bubbleGrowBreak {
-          0%   { width: 0; height: 0; opacity: 0; transform: translate(-50%, -50%) scale(0); }
-          12%  { opacity: 0.5; }
-          35%  { width: var(--bubble-size, 24px); height: var(--bubble-size, 24px); opacity: 0.35; transform: translate(-50%, -50%) scale(1); }
-          55%  { opacity: 0.25; transform: translate(-50%, -50%) scale(1.08); }
-          72%  { width: var(--bubble-size, 24px); height: var(--bubble-size, 24px); opacity: 0.18; transform: translate(-50%, -50%) scale(1); }
-          85%  { opacity: 0.08; transform: translate(-50%, -50%) scale(1.3); }
-          100% { width: calc(var(--bubble-size, 24px) * 1.8); height: calc(var(--bubble-size, 24px) * 1.8); opacity: 0; transform: translate(-50%, -50%) scale(0.2); }
-        }
-        @keyframes v178-miniGrowPop {
-          0%   { transform:scale(0); opacity:0; }
-          30%  { transform:scale(1); opacity:0.45; }
-          60%  { transform:scale(1.25); opacity:0.3; }
-          80%  { transform:scale(0.95); opacity:0.15; }
-          100% { transform:scale(0); opacity:0; }
-        }
+        /* V8: Bubble/shatter animations removed — replaced with gradient progress bar */
         @keyframes iconRingSpin { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
         @keyframes iconPulse {
           0%{box-shadow:0 0 0 0 var(--glow, rgba(59,130,246,0.25))}

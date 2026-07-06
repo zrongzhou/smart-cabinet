@@ -1,0 +1,58 @@
+classDiagram
+    class Product {
+        +String id
+        +String slug
+        +String sku
+        +Json name
+        +String status
+        +FAQ[] faqs
+    }
+    class FAQ {
+        +String id
+        +Json question  %% {zh,en,ar}
+        +Json answer    %% {zh,en,ar}
+        +String category
+        +Int order
+        +String status  %% per-product: active/draft
+        +Boolean featured
+        +DateTime createdAt
+        +DateTime updatedAt
+        +String productId  %% 可选 FK；null=全局 FAQ
+    }
+    class FAQAdminRoute {
+        +GET(request)  %% 新增 productId 过滤
+        +POST(request) %% 新增 productId 持久化
+        +PUT(request)  %% 新增 productId 接收
+        +DELETE(request) %% 按 ?id= 删除，复用
+    }
+    class AdminApiClient {
+        +fetchAdminFaqs(productId?, pageSize)
+        +createFaq(data)
+        +updateFaq(id, data)
+        +deleteFaq(id)
+    }
+    class ProductFaqBlock {
+        -faqRows: FaqDraft[]
+        +loadFaqs(productId)
+        +addRow()
+        +saveRow(row)
+        +deleteRow(id)
+        +moveRow(id, dir)
+    }
+    class FaqDraft {
+        +String id
+        +Json question
+        +Json answer
+        +String category
+        +String status
+        +Int order
+        +Boolean _isNew
+        +Boolean _saving
+        +Boolean _deleting
+    }
+
+    Product "1" o-- "0..*" FAQ : productId 可选FK(onDelete Cascade)
+    FAQAdminRoute ..> FAQ : prisma.fAQ CRUD
+    AdminApiClient ..> FAQAdminRoute : HTTP /api/admin/faqs
+    ProductFaqBlock ..> AdminApiClient : 调用
+    ProductFaqBlock *-- FaqDraft : 维护本地 draft 列表
