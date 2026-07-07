@@ -66,8 +66,16 @@ export default function EditBlogPage() {
           },
         });
 
+        // Bug 10 fix: surface an actionable message per failure mode instead of a
+        // generic "Failed to fetch blog data" (401 = auth, 404 = not found, etc.).
+        if (blogRes.status === 401) {
+          throw new Error('登录已过期或无权访问，请重新登录 (401)');
+        }
+        if (blogRes.status === 404) {
+          throw new Error('文章不存在或已被删除 (404)');
+        }
         if (!blogRes.ok) {
-          throw new Error('Failed to fetch blog data');
+          throw new Error(`加载文章失败，服务器返回 ${blogRes.status}`);
         }
 
         const post = await blogRes.json();

@@ -107,7 +107,7 @@ export default function CompanyShowcase({ t }: CompanyShowcaseProps) {
       <div className="relative z-10 flex flex-col lg:flex-row gap-12 lg:gap-16 items-stretch">
         {/* LEFT: company building photo — fixed aspect ratio (no stretch), height bounded 350–460px */}
         <div
-          className="w-full lg:w-[45%] rounded-2xl overflow-hidden shadow-lg border border-gray-200/60 relative group transition-all duration-700 hover:shadow-[0_22px_55px_-18px_rgba(59,130,246,0.30)] hover:-translate-y-1 aspect-[4/3] lg:aspect-[3/2] max-h-[460px]"
+          className="w-full lg:w-[45%] rounded-2xl overflow-hidden shadow-lg border border-gray-200/60 relative group transition-all duration-700 hover:shadow-[0_22px_55px_-18px_rgba(59,130,246,0.30)] hover:-translate-y-1 aspect-[4/3] lg:aspect-[3/2] max-h-[380px]"
         >
           <Image
             src="/images/about/company-building.jpg"

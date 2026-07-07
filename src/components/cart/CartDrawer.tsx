@@ -114,17 +114,23 @@ export default function CartDrawer() {
                   </p>
 
                   <div className="flex items-center gap-2 mt-2">
+                    {/* Bug 4 fix: disable at the lower bound so a user cannot drive
+                        the quantity below 1; the context clamps regardless. */}
                     <button
                       onClick={() => updateQuantity(item.productId, item.quantity - 1)}
-                      className="w-7 h-7 flex items-center justify-center rounded-md border border-gray-200 text-gray-600 hover:bg-gray-50"
+                      disabled={item.quantity <= 1}
+                      className="w-7 h-7 flex items-center justify-center rounded-md border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
                       aria-label="Decrease"
                     >
                       <Minus className="w-3.5 h-3.5" />
                     </button>
                     <span className="text-sm font-medium w-6 text-center">{item.quantity}</span>
+                    {/* Bug 4 fix: disable at the upper bound (999) so a long press
+                        cannot inflate the quantity past the clamp. */}
                     <button
                       onClick={() => updateQuantity(item.productId, item.quantity + 1)}
-                      className="w-7 h-7 flex items-center justify-center rounded-md border border-gray-200 text-gray-600 hover:bg-gray-50"
+                      disabled={item.quantity >= 999}
+                      className="w-7 h-7 flex items-center justify-center rounded-md border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
                       aria-label="Increase"
                     >
                       <Plus className="w-3.5 h-3.5" />

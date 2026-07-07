@@ -74,10 +74,10 @@ export default function NotFoundView() {
     mounted && (locale === 'zh' || locale === 'ar') ? `/${locale}` : '/';
 
   return (
-    <div
-      className="flex min-h-screen w-full items-center justify-center bg-gradient-to-b from-slate-50 to-white px-4 py-16"
-      dir={isRtl ? 'rtl' : 'ltr'}
-    >
+      <div
+        className="fixed inset-0 z-[100] flex w-full items-center justify-center bg-white px-4 py-16"
+        dir={isRtl ? 'rtl' : 'ltr'}
+      >
       <div className="w-full max-w-md text-center">
         <div className="mx-auto mb-8 flex h-28 w-28 items-center justify-center rounded-3xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-xl shadow-blue-200/60">
           <SearchX className="h-12 w-12 text-white" strokeWidth={1.8} />

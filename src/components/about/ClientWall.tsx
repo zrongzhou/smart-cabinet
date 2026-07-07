@@ -88,12 +88,12 @@ export default function ClientWall({ t, locale }: ClientWallProps) {
 
       <style>{`
         .client-card {
-          filter: grayscale(100%);
-          opacity: 0.92;
+          filter: grayscale(0%);
+          opacity: 1;
           transition: filter 0.45s ease, transform 0.45s ease, box-shadow 0.45s ease, opacity 0.45s ease, border-color 0.45s ease;
         }
         .client-card:hover {
-          filter: grayscale(0%);
+          filter: saturate(1.2) brightness(1.03);
           opacity: 1;
           transform: translateY(-6px) scale(1.03);
         }

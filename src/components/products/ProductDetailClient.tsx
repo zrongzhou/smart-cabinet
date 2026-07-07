@@ -48,6 +48,9 @@ export default function ProductDetailClient({
   const [shareToast, setShareToast] = useState(false);
   const { addItem } = useCart();
   const [addedToast, setAddedToast] = useState(false);
+  // Bug 5 fix: show a toast so the user gets immediate visual feedback that the
+  // favorite was saved/removed (previously the heart toggled silently).
+  const [favToast, setFavToast] = useState(false);
 
   // Favorite (wishlist) toggle — persisted to localStorage, no server dependency.
   const FAVORITES_KEY = 'sc_favorites';
@@ -69,11 +72,15 @@ export default function ProductDetailClient({
     try {
       const raw = localStorage.getItem(FAVORITES_KEY);
       const ids: string[] = raw ? JSON.parse(raw) : [];
-      const next = ids.includes(product.id)
-        ? ids.filter((id) => id !== product.id)
-        : [...ids, product.id];
+      const willAdd = !ids.includes(product.id);
+      const next = willAdd
+        ? [...ids, product.id]
+        : ids.filter((id) => id !== product.id);
       localStorage.setItem(FAVORITES_KEY, JSON.stringify(next));
       setFavorited(next.includes(product.id));
+      // Bug 5 fix: surface a confirmation toast reflecting the new state.
+      setFavToast(true);
+      setTimeout(() => setFavToast(false), 2000);
     } catch {
       // storage unavailable — fall back to a visual-only toggle
       setFavorited((v) => !v);
@@ -361,6 +368,11 @@ export default function ProductDetailClient({
                   >
                     <Heart className={`w-4 h-4 ${favorited ? 'fill-current' : ''}`} />
                     {favoriteLabel}
+                    {favToast && (
+                      <span className="ml-1 inline-flex items-center px-2 py-0.5 bg-white/40 text-rose-700 text-xs font-medium rounded-full">
+                        {favorited ? '✓' : '✕'}
+                      </span>
+                    )}
                   </button>
                   <button
                     onClick={async () => {

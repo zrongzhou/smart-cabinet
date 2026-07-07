@@ -18,6 +18,7 @@ import {
   Users,
   ShoppingCart,
   Wrench,
+  CreditCard,
   type LucideIcon,
 } from 'lucide-react';
 import {
@@ -26,6 +27,10 @@ import {
   adminLocales,
   type AdminLocale,
 } from '@/lib/admin-i18n';
+// Bug 9 fix: wrap the admin content area so a runtime exception in any
+// sub-page (e.g. the "add product" page) shows a recoverable error panel
+// instead of white-screening the whole console.
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 export const dynamic = 'force-dynamic';
 
@@ -53,6 +58,8 @@ const NAV_ITEMS: NavItem[] = [
   { key: 'media', path: '/media', icon: ImageIcon },
   { key: 'editor', path: '/editor', icon: Edit3 },
   { key: 'settings', path: '/settings', icon: Settings },
+  // Bug 1: payment gateway configuration entry (Stripe / PayPal / WeChat / Alipay).
+  { key: 'payment', path: '/settings/payment', icon: CreditCard },
   { key: 'messages', path: '/contact-messages', icon: MessageSquare },
   { key: 'users', path: '/users', icon: Users },
   { key: 'orders', path: '/orders', icon: ShoppingCart },
@@ -703,9 +710,11 @@ export default function AdminShell({ prefix, children }: AdminShellProps) {
 
         {/* Main content area - full width, subtle gradient */}
         <main className="flex-1 w-full p-4 sm:p-6 lg:p-8 bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100">
-          <div className="admin-fade-in">
-            {children}
-          </div>
+          <ErrorBoundary name="AdminContent">
+            <div className="admin-fade-in">
+              {children}
+            </div>
+          </ErrorBoundary>
         </main>
 
         {/* Footer */}

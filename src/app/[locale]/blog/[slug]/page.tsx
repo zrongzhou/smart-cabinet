@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Calendar, User, ArrowLeft, ArrowRight, Facebook, Twitter, Linkedin } from 'lucide-react';
 import { useLocale } from '@/lib/i18n';
 import { fetchBlogBySlug, fetchBlogs, BlogPost } from '@/lib/api';
+import { notFound } from 'next/navigation';
 // Static fallback when API has no data
 import staticBlogs from '@/data/blogs';
 
@@ -288,18 +289,8 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
   }
 
   if (!blog) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-2xl text-gray-400 mb-4">
-            {locale === 'zh' ? '文章未找到' : locale === 'ar' ? 'لم يتم العثور على المقالة' : 'Blog post not found'}
-          </div>
-          <a href={`/${locale}/blog`} className="text-blue-600 hover:text-blue-700 font-medium text-sm">
-            {locale === 'zh' ? '返回博客列表' : locale === 'ar' ? 'العودة للمدونة' : 'Back to Blog'}
-          </a>
-        </div>
-      </div>
-    );
+    // Render the locale 404 page (returns HTTP 404 when resolved during render).
+    notFound();
   }
 
   const content = blog.content?.[locale as 'en' | 'zh' | 'ar'] || '';

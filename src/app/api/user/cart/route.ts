@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { verifyToken } from '@/lib/auth/jwt';
-import { CartItem, normalizeCart, mergeCartItems } from '@/lib/cart';
+import { CartItem, normalizeCart, mergeCartItems, clampCartQty } from '@/lib/cart';
 
 // 防止静态生成时连接数据库
 export const dynamic = 'force-dynamic';
@@ -62,16 +62,22 @@ export async function POST(request: NextRequest) {
       select: { cart: true },
     });
     const existing = normalizeCart(user?.cart ?? null);
-    // `replace` mode overwrites the server cart with the client-computed union,
-    // keeping the login sync idempotent so reloads cannot inflate quantities.
+    // `replace` mode overwrites the server cart with the client-computed union.
+    // Bug 4 fix: `normalizeCart` ALREADY de-duplicates by productId keeping the
+    // MAX quantity AND clamps every quantity to [1, 999], so replace mode is
+    // fully idempotent and can never double or inflate a stored quantity.
     const merged = replace ? normalizeCart(incoming) : mergeCartItems(existing, incoming);
+
+    // Defensive final clamp before persisting — guarantees the stored cart can
+    // never exceed the upper bound even if `incoming` somehow bypassed clamping.
+    const clampedMerged = merged.map((it) => ({ ...it, quantity: clampCartQty(it.quantity) }));
 
     await prisma.user.update({
       where: { id: payload.userId },
-      data: { cart: merged as unknown as Prisma.InputJsonValue },
+      data: { cart: clampedMerged as unknown as Prisma.InputJsonValue },
     });
 
-    return NextResponse.json({ cart: merged });
+    return NextResponse.json({ cart: clampedMerged });
   } catch (error) {
     console.error('Update cart error:', error);
     return NextResponse.json({ error: 'Failed to update cart' }, { status: 500 });

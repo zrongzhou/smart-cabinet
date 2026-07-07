@@ -96,7 +96,11 @@ export default function ValuesBook({ values, t, locale }: ValuesBookProps) {
 
   const turn = useCallback(
     (dir: 'next' | 'prev') => {
-      if (isFlippingRef.current || n <= 1) return;
+      if (isFlippingRef.current || n <= 1) {
+        // Debug: explain why a flip was ignored so "dead buttons" are diagnosable.
+        console.warn('[ValuesBook] turn() ignored:', isFlippingRef.current ? 'already flipping' : 'single page');
+        return;
+      }
       const c = currentRef.current;
       const nc = dir === 'next' ? (c + 1) % n : (c - 1 + n) % n;
       const np = (nc - 1 + n) % n;
@@ -111,7 +115,7 @@ export default function ValuesBook({ values, t, locale }: ValuesBookProps) {
         setPrev(np);
         isFlippingRef.current = false;
         setIsFlipping(false);
-      }, 820);
+      }, 1000);
     },
     [n]
   );
@@ -127,9 +131,9 @@ export default function ValuesBook({ values, t, locale }: ValuesBookProps) {
     [n]
   );
 
-  // Auto flip every 5 seconds
+  // Auto flip every 3.5 seconds (was 5s — too slow per feedback)
   useEffect(() => {
-    const id = window.setInterval(() => turn('next'), 5000);
+    const id = window.setInterval(() => turn('next'), 3500);
     return () => window.clearInterval(id);
   }, [turn]);
 
@@ -161,10 +165,10 @@ export default function ValuesBook({ values, t, locale }: ValuesBookProps) {
         @keyframes vbk-prev { from { transform: rotateY(180deg); } to { transform: rotateY(0deg); } }
         @keyframes vbk-next-rtl { from { transform: rotateY(0deg); } to { transform: rotateY(180deg); } }
         @keyframes vbk-prev-rtl { from { transform: rotateY(-180deg); } to { transform: rotateY(0deg); } }
-        .vbk-next { animation: vbk-next 780ms cubic-bezier(0.45, 0, 0.25, 1) both; }
-        .vbk-prev { animation: vbk-prev 780ms cubic-bezier(0.45, 0, 0.25, 1) both; }
-        .vbk-next-rtl { animation: vbk-next-rtl 780ms cubic-bezier(0.45, 0, 0.25, 1) both; }
-        .vbk-prev-rtl { animation: vbk-prev-rtl 780ms cubic-bezier(0.45, 0, 0.25, 1) both; }
+        .vbk-next { animation: vbk-next 1000ms cubic-bezier(0.45, 0, 0.25, 1) both; }
+        .vbk-prev { animation: vbk-prev 1000ms cubic-bezier(0.45, 0, 0.25, 1) both; }
+        .vbk-next-rtl { animation: vbk-next-rtl 1000ms cubic-bezier(0.45, 0, 0.25, 1) both; }
+        .vbk-prev-rtl { animation: vbk-prev-rtl 1000ms cubic-bezier(0.45, 0, 0.25, 1) both; }
       `}</style>
 
       {/* The physical book */}

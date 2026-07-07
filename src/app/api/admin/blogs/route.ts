@@ -1,11 +1,48 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient, Prisma } from '@prisma/client';
 import { verifyAuth, unauthorizedResponse, badRequestResponse, serverErrorResponse } from '@/lib/auth';
+// Bug 10 fix: static seed blogs (e.g. id '14' = cnc-tool-inventory-management-guide)
+// live only in data/blogs.ts and are never written to the DB (which uses CUID ids).
+// This import lets the admin GET resolve them by numeric id or descriptive slug.
+import staticBlogs from '@/data/blogs';
 
 // 防止静态生成时连接数据库
 export const dynamic = 'force-dynamic';
 
 const prisma = new PrismaClient();
+
+/**
+ * Bug 10 fix: resolve a static seed blog (from data/blogs.ts) by its numeric id
+ * or by its descriptive slug, and shape it exactly like the DB admin response so
+ * the edit page can pre-fill the form directly. Returns null when not found.
+ *
+ * This is required because `BlogPost.id` in the DB is a CUID, so a static-only
+ * blog such as id '14' (cnc-tool-inventory-management-guide) can never be found
+ * via a DB lookup — that mismatch is the root cause of "Failed to fetch blog data".
+ */
+function resolveStaticBlogForAdmin(idOrSlug: string): any | null {
+  const key = String(idOrSlug || '').trim().toLowerCase();
+  if (!key) return null;
+  const found = staticBlogs.find(
+    (b) => String(b.id).toLowerCase() === key || b.slug.toLowerCase() === key
+  );
+  if (!found) return null;
+  return {
+    id: found.id,
+    slug: found.slug,
+    title: found.title,
+    excerpt: found.excerpt,
+    content: found.content,
+    author: found.author || 'Admin',
+    status: 'published',
+    featured: !!found.featured,
+    image: found.image || null,
+    category: found.category || null,
+    seoKeywords: null,
+    // The edit page reads `post.tags?.map((t) => t.tagId)` — map string tags accordingly.
+    tags: (found.tags || []).map((tag: string) => ({ tagId: tag })),
+  };
+}
 
 /**
  * GET /api/admin/blogs
@@ -25,12 +62,27 @@ export async function GET(request: NextRequest) {
 
     // 如果提供了 id 参数，返回单篇博客（含完整 content）
     if (id) {
-      const blog = await prisma.blogPost.findUnique({
+      // 1) Primary lookup by DB id (CUID), excluding soft-deleted posts.
+      let blog = await prisma.blogPost.findUnique({
         where: { id },
-        include: {
-          tags: true,
-        },
+        include: { tags: true },
       });
+
+      // 2) Fallback: the caller may have passed a descriptive slug instead of an id.
+      if (!blog) {
+        blog = await prisma.blogPost.findFirst({
+          where: { slug: id, deletedAt: null },
+          include: { tags: true },
+        });
+      }
+
+      // 3) Fallback: resolve a static seed blog by numeric id or slug (Bug 10 fix).
+      if (!blog) {
+        const staticPost = resolveStaticBlogForAdmin(id);
+        if (staticPost) {
+          return NextResponse.json(staticPost);
+        }
+      }
 
       if (!blog) {
         return NextResponse.json(
@@ -51,7 +103,7 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * pageSize;
 
     // 构建 where 条件
-    const where: Prisma.BlogPostWhereInput = {};
+    const where: Prisma.BlogPostWhereInput = { deletedAt: null };
 
     // 状态筛选
     if (status) {

@@ -15,11 +15,23 @@ import {
   normalizeCart,
   mergeCartItems,
   unionCartItems,
+  migrateCorruptCart,
+  clampCartQty,
   cartCount,
   cartTotal,
 } from '@/lib/cart';
 
 const STORAGE_KEY = 'sc_cart';
+
+/** Anti-debounce guard: remembers the last serialized cart so the persist
+ *  effect can skip no-op writes (avoids redundant localStorage churn / loops). */
+function serialize(items: CartItem[]): string {
+  try {
+    return JSON.stringify(items);
+  } catch {
+    return '';
+  }
+}
 
 interface CartContextValue {
   items: CartItem[];
@@ -43,12 +55,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
   // Guard against re-merging on every token change after the first merge.
   const mergedForToken = useRef<string | null>(null);
+  // Remember the last persisted serialization to skip no-op writes.
+  const lastSerialized = useRef<string | null>(null);
 
   // 1. Load guest cart from localStorage on first mount.
+  //    Bug 4 fix: run `migrateCorruptCart` (not raw normalizeCart) so any
+  //    quantity > 1000 left by the old buggy build is reset to 1 before use.
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setItems(normalizeCart(JSON.parse(raw)));
+      if (raw) setItems(migrateCorruptCart(JSON.parse(raw)));
     } catch {
       // ignore corrupted cart
     }
@@ -56,10 +72,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
 
   // 2. Persist to localStorage whenever items change.
+  //    Bug 4 fix: only write when the serialized payload actually changed
+  //    (anti-debounce guard) to avoid redundant writes and any write loop.
   useEffect(() => {
     if (!ready) return;
+    const serialized = serialize(items);
+    if (serialized === lastSerialized.current) return;
+    lastSerialized.current = serialized;
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+      localStorage.setItem(STORAGE_KEY, serialized);
     } catch {
       // storage may be full; ignore
     }
@@ -135,12 +156,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems((prev) => prev.filter((it) => it.productId !== productId));
   };
 
+  // Bug 4 fix: clamp to [MIN, MAX] so the +/- buttons (and any caller) can never
+  // drive a quantity out of the valid 1–999 range.
   const updateQuantity = (productId: string, quantity: number) => {
     setItems((prev) =>
-      prev
-        .map((it) =>
-          it.productId === productId ? { ...it, quantity: Math.max(1, quantity) } : it
-        )
+      prev.map((it) =>
+        it.productId === productId ? { ...it, quantity: clampCartQty(quantity) } : it
+      )
     );
   };
 

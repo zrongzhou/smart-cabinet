@@ -75,16 +75,30 @@ export default function AccountPage() {
       setOrders(MOCK_ORDERS);
     }
 
-    // Load favorites from localStorage
-    const storedFavorites = localStorage.getItem('user_favorites');
-    if (storedFavorites) {
+    // Load favorites from localStorage.
+    // Bug 5 fix: the canonical key is `sc_favorites` (written by ProductDetailClient).
+    // Fall back to the old `user_favorites` key for backward-compat, and migrate it.
+    const readFavorites = (): string[] => {
       try {
-        const favoriteIds: string[] = JSON.parse(storedFavorites);
-        // Fetch product details for each favorite
-        fetchProductsByIds(favoriteIds).then(setFavorites);
+        const raw =
+          localStorage.getItem('sc_favorites') || localStorage.getItem('user_favorites');
+        if (!raw) return [];
+        const ids: string[] = JSON.parse(raw);
+        const list = Array.isArray(ids) ? ids : [];
+        // Migrate the legacy key onto the canonical key so both stay in sync.
+        if (!localStorage.getItem('sc_favorites') && list.length) {
+          localStorage.setItem('sc_favorites', JSON.stringify(list));
+          localStorage.removeItem('user_favorites');
+        }
+        return list;
       } catch {
-        setFavorites([]);
+        return [];
       }
+    };
+    const favoriteIds = readFavorites();
+    if (favoriteIds.length) {
+      // Fetch product details for each favorite
+      fetchProductsByIds(favoriteIds).then(setFavorites);
     }
 
     // Load recently viewed from localStorage
