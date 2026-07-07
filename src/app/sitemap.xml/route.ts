@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { getMergedBlogList } from '@/lib/blogs';
 
 // Force dynamic rendering (this route uses request.headers)
 export const dynamic = 'force-dynamic';
@@ -25,11 +26,13 @@ export async function GET(request: NextRequest) {
       select: { slug: true, updatedAt: true },
     });
 
-    // Fetch published blogs from DB
-    const blogs = await prisma.blogPost.findMany({
-      where: { status: 'published', deletedAt: null },
-      select: { slug: true, updatedAt: true },
-    });
+    // Fetch blogs from the merged source (DB + static) so the canonical,
+    // descriptive slugs are emitted to the sitemap.
+    const mergedBlogs = await getMergedBlogList({ publishedOnly: true, pageSize: 1000 });
+    const blogs = mergedBlogs.data.map((b) => ({
+      slug: b.slug,
+      updatedAt: new Date(b.updatedAt),
+    }));
 
     const staticPages = ['', '/about', '/products', '/solutions', '/blog', '/faq', '/contact'];
 

@@ -65,12 +65,12 @@ const CLIENTS: ClientItem[] = [
 ];
 
 const ACCENTS = [
-  { solid: '#2563eb', soft: '#eff6ff', text: '#1d4ed8' },
-  { solid: '#7c3aed', soft: '#f5f3ff', text: '#6d28d9' },
-  { solid: '#0891b2', soft: '#ecfeff', text: '#0e7490' },
-  { solid: '#db2777', soft: '#fdf2f8', text: '#be185d' },
-  { solid: '#ea580c', soft: '#fff7ed', text: '#c2410c' },
-  { solid: '#059669', soft: '#ecfdf5', text: '#047857' },
+  { solid: '#2563eb', soft: '#eff6ff', text: '#1d4ed8' }, // blue-600
+  { solid: '#4f46e5', soft: '#eef2ff', text: '#4338ca' }, // indigo-600
+  { solid: '#7c3aed', soft: '#f5f3ff', text: '#6d28d9' }, // violet-600
+  { solid: '#6366f1', soft: '#eef2ff', text: '#4f46e5' }, // indigo-500
+  { solid: '#8b5cf6', soft: '#f5f3ff', text: '#7c3aed' }, // purple-500
+  { solid: '#3b82f6', soft: '#eff6ff', text: '#2563eb' }, // blue-500
 ];
 
 interface ClientWallProps {

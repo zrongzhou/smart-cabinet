@@ -89,6 +89,24 @@ function normalizeTrilingual(value: any): { en: string; zh: string; ar: string }
   };
 }
 
+/** A slug is "descriptive" only if it looks like words, not a bare id/number. */
+export function isDescriptiveSlug(slug: unknown): boolean {
+  if (typeof slug !== 'string' || !slug) return false;
+  return /^[a-z0-9]+(?:-[a-z0-9]+)*$/i.test(slug) && /[a-z]/i.test(slug);
+}
+
+/**
+ * Fixes posts whose DB `slug` was saved as a numeric/placeholder id (e.g. "13").
+ * In that case we look the post up by its static id and reuse the canonical
+ * descriptive slug so the public URL stays clean.
+ */
+export function resolveBlogSlug(slug: unknown, id: unknown): string {
+  if (isDescriptiveSlug(slug)) return slug as string;
+  const byId = staticBlogs.find((b) => String(b.id) === String(slug));
+  if (byId) return byId.slug;
+  return typeof slug === 'string' ? slug : String(id ?? '');
+}
+
 /** Build the Prisma where clause shared by the DB read. */
 function buildDbWhere(params: MergedBlogListParams): Record<string, unknown> {
   const where: Record<string, unknown> = { deletedAt: null };
@@ -121,7 +139,7 @@ async function fetchDbPosts(
     });
     return rows.map((row: any) => ({
       id: row.id,
-      slug: row.slug,
+      slug: resolveBlogSlug(row.slug, row.id),
       title: row.title,
       excerpt: row.excerpt || undefined,
       content: row.content || undefined,
@@ -210,7 +228,7 @@ export async function getMergedBlogBySlug(slug: string): Promise<MergedBlogPost 
     if (row) {
       return {
         id: row.id,
-        slug: row.slug,
+        slug: resolveBlogSlug(row.slug, row.id),
         title: normalizeTrilingual(row.title),
         excerpt: normalizeTrilingual(row.excerpt),
         content: normalizeTrilingual(row.content),

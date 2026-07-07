@@ -55,13 +55,16 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json().catch(() => ({}));
     const incoming = normalizeCart(body?.items);
+    const replace = body?.replace === true;
 
     const user = await prisma.user.findUnique({
       where: { id: payload.userId },
       select: { cart: true },
     });
     const existing = normalizeCart(user?.cart ?? null);
-    const merged = mergeCartItems(existing, incoming);
+    // `replace` mode overwrites the server cart with the client-computed union,
+    // keeping the login sync idempotent so reloads cannot inflate quantities.
+    const merged = replace ? normalizeCart(incoming) : mergeCartItems(existing, incoming);
 
     await prisma.user.update({
       where: { id: payload.userId },

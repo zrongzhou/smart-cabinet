@@ -14,6 +14,7 @@ import {
   CartStorage,
   normalizeCart,
   mergeCartItems,
+  unionCartItems,
   cartCount,
   cartTotal,
 } from '@/lib/cart';
@@ -64,7 +65,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [items, ready]);
 
-  // 3. When the user logs in, merge the guest cart into the server cart.
+  // 3. When the user logs in, idempotently sync the guest cart with the server.
   useEffect(() => {
     if (!ready) return;
     if (!isAuthenticated || !token) {
@@ -76,21 +77,35 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     (async () => {
       try {
-        // Push guest items to the server (it merges with existing User.cart).
-        const res = await fetch('/api/user/cart', {
+        // 3a. Fetch the server cart so we can merge it with the guest cart.
+        const getRes = await fetch('/api/user/cart', {
+          method: 'GET',
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const serverCart = getRes.ok ? normalizeCart((await getRes.json()).cart) : [];
+
+        // 3b. Idempotent union (max quantity per product, never a sum) — so a
+        //     page reload while logged in cannot keep inflating quantities.
+        const unioned = unionCartItems(serverCart, items);
+
+        // 3c. Persist the union back to the server in `replace` mode.
+        const postRes = await fetch('/api/user/cart', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ items }),
+          body: JSON.stringify({ items: unioned, replace: true }),
         });
-        if (res.ok) {
-          const data = await res.json();
+        if (postRes.ok) {
+          const data = await postRes.json();
           if (Array.isArray(data.cart)) {
             setItems(normalizeCart(data.cart));
+            return;
           }
         }
+        // Fallback: adopt the locally computed union if the server call failed.
+        setItems(unioned);
       } catch {
         // Network issue — keep the local guest cart.
       }

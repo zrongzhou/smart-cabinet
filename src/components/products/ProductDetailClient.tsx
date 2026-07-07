@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Package, ArrowLeft, Share2, ChevronRight, ChevronLeft, X, Star, FileText, Ruler, MessageSquare, ShoppingCart } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Package, ArrowLeft, Share2, ChevronRight, ChevronLeft, X, Star, FileText, Ruler, MessageSquare, ShoppingCart, Heart } from 'lucide-react';
 import ReviewList from '@/components/products/ReviewList';
 import SafeImage from '@/components/ui/SafeImage';
 import { getProductHref } from '@/lib/product-url';
@@ -49,8 +49,45 @@ export default function ProductDetailClient({
   const { addItem } = useCart();
   const [addedToast, setAddedToast] = useState(false);
 
+  // Favorite (wishlist) toggle — persisted to localStorage, no server dependency.
+  const FAVORITES_KEY = 'sc_favorites';
+  const [favorited, setFavorited] = useState(false);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(FAVORITES_KEY);
+      if (raw) {
+        const ids: string[] = JSON.parse(raw);
+        if (Array.isArray(ids)) setFavorited(ids.includes(product.id));
+      }
+    } catch {
+      // ignore malformed favorites storage
+    }
+  }, [product.id]);
+
+  const toggleFavorite = () => {
+    try {
+      const raw = localStorage.getItem(FAVORITES_KEY);
+      const ids: string[] = raw ? JSON.parse(raw) : [];
+      const next = ids.includes(product.id)
+        ? ids.filter((id) => id !== product.id)
+        : [...ids, product.id];
+      localStorage.setItem(FAVORITES_KEY, JSON.stringify(next));
+      setFavorited(next.includes(product.id));
+    } catch {
+      // storage unavailable — fall back to a visual-only toggle
+      setFavorited((v) => !v);
+    }
+  };
+
   const addToCartLabel =
     locale === 'zh' ? '加入购物车' : locale === 'ar' ? 'أضف إلى السلة' : 'Add to Cart';
+
+  // Add-to-Cart is only meaningful for purchasable products (has a real price).
+  const canAddToCart = !product.hidePrice && Number(product.price) > 0;
+  const favoriteLabel =
+    labels.favorite ??
+    (locale === 'zh' ? '收藏' : locale === 'ar' ? 'مفضل' : 'Favorite');
 
   // Use pre-resolved data from server (no function props!)
   const name = product._resolvedName || '';
@@ -282,6 +319,7 @@ export default function ProductDetailClient({
 
                 {/* CTA Buttons */}
                 <div className="flex flex-wrap gap-3 mb-8">
+                  {canAddToCart && (
                   <button
                     onClick={() => {
                       addItem({
@@ -295,20 +333,35 @@ export default function ProductDetailClient({
                       setAddedToast(true);
                       setTimeout(() => setAddedToast(false), 2000);
                     }}
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-800 transition-all shadow-lg hover:-translate-y-0.5"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200/50 hover:-translate-y-0.5"
                   >
                     <ShoppingCart className="w-4 h-4" />
                     {addToCartLabel}
                     {addedToast && (
-                      <span className="ml-1 inline-flex items-center px-2 py-0.5 bg-green-500/20 text-green-100 text-xs font-medium rounded-full">✓</span>
+                      <span className="ml-1 inline-flex items-center px-2 py-0.5 bg-white/20 text-white text-xs font-medium rounded-full">✓</span>
                     )}
                   </button>
+                  )}
                   <a
                     href={`/${locale}/contact`}
                     className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200/50 hover:shadow-blue-300/50 hover:-translate-y-0.5"
                   >
                     {labels.contactUs}
                   </a>
+                  <button
+                    type="button"
+                    onClick={toggleFavorite}
+                    aria-pressed={favorited}
+                    aria-label={favoriteLabel}
+                    className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all hover:-translate-y-0.5 ${
+                      favorited
+                        ? 'bg-rose-50 text-rose-600 border border-rose-200'
+                        : 'glass-btn text-gray-700'
+                    }`}
+                  >
+                    <Heart className={`w-4 h-4 ${favorited ? 'fill-current' : ''}`} />
+                    {favoriteLabel}
+                  </button>
                   <button
                     onClick={async () => {
                       const shareData = {

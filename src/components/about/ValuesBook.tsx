@@ -77,28 +77,40 @@ export default function ValuesBook({ values, t, locale }: ValuesBookProps) {
   const [isFlipping, setIsFlipping] = useState(false);
   const [direction, setDirection] = useState<'next' | 'prev'>('next');
   const [flipKey, setFlipKey] = useState(0);
-  const flippingRef = useRef(false);
+  const isFlippingRef = useRef(false);
+  const flipTimerRef = useRef<number | null>(null);
   const currentRef = useRef(current);
 
   useEffect(() => {
     currentRef.current = current;
   }, [current]);
 
+  // Guarantee the flipping guard is always released — even if the component
+  // unmounts mid-animation — so the < > controls can never become permanently
+  // dead (the original `flippingRef` could get stuck `true` on re-render).
+  useEffect(() => {
+    return () => {
+      if (flipTimerRef.current) window.clearTimeout(flipTimerRef.current);
+    };
+  }, []);
+
   const turn = useCallback(
     (dir: 'next' | 'prev') => {
-      if (flippingRef.current || n <= 1) return;
+      if (isFlippingRef.current || n <= 1) return;
       const c = currentRef.current;
       const nc = dir === 'next' ? (c + 1) % n : (c - 1 + n) % n;
       const np = (nc - 1 + n) % n;
-      flippingRef.current = true;
+      isFlippingRef.current = true;
       setDirection(dir);
       setIsFlipping(true);
       setFlipKey((k) => k + 1);
-      window.setTimeout(() => {
+      // Restart the safety timer so rapid clicks / re-renders can't strand it.
+      if (flipTimerRef.current) window.clearTimeout(flipTimerRef.current);
+      flipTimerRef.current = window.setTimeout(() => {
         setCurrent(nc);
         setPrev(np);
+        isFlippingRef.current = false;
         setIsFlipping(false);
-        flippingRef.current = false;
       }, 820);
     },
     [n]
@@ -106,7 +118,7 @@ export default function ValuesBook({ values, t, locale }: ValuesBookProps) {
 
   const goTo = useCallback(
     (target: number) => {
-      if (flippingRef.current || n <= 1) return;
+      if (isFlippingRef.current || n <= 1) return;
       const tgt = ((target % n) + n) % n;
       if (tgt === currentRef.current) return;
       setCurrent(tgt);
