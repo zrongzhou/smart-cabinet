@@ -56,6 +56,41 @@ function pickLocalized(formVal: any, seedVal: any): any {
 }
 
 /**
+ * V8.4 fix: bug 6 — detect a Prisma "missing column" error. The `seoKeywords`
+ * column on `blog_posts` is newly introduced; environments that have not yet
+ * applied its migration would otherwise fail every blog save with a raw
+ * "Failed to update blog". We treat that as a soft condition and retry without
+ * the new field so the save still succeeds.
+ */
+function isMissingColumnError(e: unknown): boolean {
+  if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2022') {
+    return true;
+  }
+  const msg = e instanceof Error ? e.message : String(e);
+  return /seo_keywords|column .* does not exist|does not exist/i.test(msg);
+}
+
+/**
+ * V8.4 fix: bug 6 — run a blog write (create/update). If it fails because the
+ * `seoKeywords` column is missing, strip that field and retry once. This keeps
+ * the feature working both before and after the migration is applied.
+ */
+async function writeBlogResilient<T>(
+  payload: Record<string, any>,
+  run: (p: any) => Promise<T>
+): Promise<T> {
+  try {
+    return await run(payload);
+  } catch (err) {
+    if (isMissingColumnError(err) && payload && 'seoKeywords' in payload) {
+      const { seoKeywords, ...rest } = payload;
+      return await run(rest);
+    }
+    throw err;
+  }
+}
+
+/**
  * GET /api/admin/blogs
  * 获取所有博客（管理后台）
  * 支持查询参数：?id=xxx 获取单篇博客（含完整 content）
@@ -315,8 +350,15 @@ export async function PUT(request: NextRequest) {
     if (!existingBlog) {
       const staticSeed = resolveStaticBlogForAdmin(id);
       if (staticSeed) {
-        const slug = (body.slug || staticSeed.slug || '').toString();
-        const materialized = await prisma.blogPost.findFirst({ where: { slug } });
+        // V8.4 fix: bug 6 — tolerate a changed slug on re-save: also match the
+        // original seed slug, otherwise a second save would create a duplicate row.
+        const slug = (body.slug || staticSeed.slug || '').toString().trim();
+        const candidateSlugs = Array.from(
+          new Set([slug, (staticSeed.slug || '').toString().trim()].filter(Boolean))
+        );
+        const materialized = candidateSlugs.length
+          ? await prisma.blogPost.findFirst({ where: { slug: { in: candidateSlugs } } })
+          : null;
         const baseData = {
           title: pickLocalized(body.title, staticSeed.title),
           excerpt: pickLocalized(body.excerpt, staticSeed.excerpt),
@@ -326,6 +368,8 @@ export async function PUT(request: NextRequest) {
           featured: body.featured ?? staticSeed.featured ?? false,
           image: body.image || staticSeed.image || null,
           category: body.category || staticSeed.category || null,
+          // V8.4 fix: bug 6 — persist seoKeywords (string sent by the editor form).
+          seoKeywords: body.seoKeywords !== undefined ? body.seoKeywords : (staticSeed.seoKeywords ?? null),
         };
         const tagConnect =
           body.tagIds && Array.isArray(body.tagIds) && body.tagIds.length > 0
@@ -333,23 +377,24 @@ export async function PUT(request: NextRequest) {
             : {};
 
         if (materialized) {
-          const updated = await prisma.blogPost.update({
-            where: { id: materialized.id },
-            data: { ...baseData, ...tagConnect },
-            include: { tags: true },
-          });
+          // V8.4 fix: bug 6 — resilient write (retry without seoKeywords if the
+          // column migration has not been applied yet).
+          const updated = await writeBlogResilient(
+            { ...baseData, ...tagConnect },
+            (p) => prisma.blogPost.update({ where: { id: materialized.id }, data: p, include: { tags: true } })
+          );
           return NextResponse.json(updated);
         }
 
-        const created = await prisma.blogPost.create({
-          data: {
+        const created = await writeBlogResilient(
+          {
             ...baseData,
             slug,
             publishedAt: body.publishedAt ? new Date(body.publishedAt) : new Date(),
             ...tagConnect,
           },
-          include: { tags: true },
-        });
+          (p) => prisma.blogPost.create({ data: p, include: { tags: true } })
+        );
         return NextResponse.json(created, { status: 201 });
       }
       return badRequestResponse('Blog not found');
@@ -378,6 +423,8 @@ export async function PUT(request: NextRequest) {
     if (body.featured !== undefined) updateData.featured = body.featured;
     if (body.image !== undefined) updateData.image = body.image;
     if (body.category !== undefined) updateData.category = body.category;
+    // V8.4 fix: bug 6 — map seoKeywords so the blog editor can save it.
+    if (body.seoKeywords !== undefined) updateData.seoKeywords = body.seoKeywords;
 
     // 处理标签关联
     if (body.tagIds !== undefined) {
@@ -388,21 +435,24 @@ export async function PUT(request: NextRequest) {
       }
     }
 
-    const updatedBlog = await prisma.blogPost.update({
-      where: { id },
-      data: updateData,
-      include: { tags: true },
-    });
+    // V8.4 fix: bug 6 — resilient write (retry without seoKeywords if the column
+    // migration has not been applied yet), so the blog update never hard-fails.
+    const updatedBlog = await writeBlogResilient(updateData, (p) =>
+      prisma.blogPost.update({ where: { id }, data: p, include: { tags: true } })
+    );
 
     return NextResponse.json(updatedBlog);
   } catch (error) {
-    console.error('Error updating blog:', error);
+    // V8.4 fix: bug 6 — log the real cause (not just the generic message) so the
+    // failure can be diagnosed in future instead of only seeing "Failed to update blog".
+    const detail = error instanceof Error ? error.message : String(error);
+    console.error('[PUT /api/admin/blogs] Failed to update blog:', detail, error);
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === 'P2002') {
         return badRequestResponse('Slug already exists');
       }
     }
-    return serverErrorResponse('Failed to update blog');
+    return serverErrorResponse('Failed to update blog' + (detail ? `: ${detail}` : ''));
   } finally {
     await prisma.$disconnect();
   }

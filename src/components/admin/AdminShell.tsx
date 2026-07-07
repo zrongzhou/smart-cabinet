@@ -169,16 +169,9 @@ export default function AdminShell({ prefix, children }: AdminShellProps) {
 
   const t = (key: string) => adminT(key, locale);
 
-  const navLinks = NAV_ITEMS.map((item) => ({
-    ...item,
-    // V8.3 fix: bug 4 — build an ABSOLUTE href (leading slash). The previous
-    // `${prefix}${item.path}` produced a relative URL (e.g. `xiaozhouBackend/products`)
-    // that resolved against the current path, so navigating between sub-pages (or from
-    // a trailing-slash dashboard URL) yielded doubled prefixes like
-    // `/xiaozhouBackend/xiaozhouBackend/products` which 404.
-    href: `/${prefix}${item.path}`,
-    label: t(`nav.${item.key}`),
-  }));
+  // V8.4 fix: bug 7 — the horizontal text nav was removed; module navigation is
+  // now provided by the dashboard's icon-card grid (see xiaozhouBackend/page.tsx).
+  // NAV_ITEMS is retained for reference.
 
   const isRtl = locale === 'ar';
 
@@ -609,7 +602,7 @@ export default function AdminShell({ prefix, children }: AdminShellProps) {
         dir={isRtl ? 'rtl' : 'ltr'}
       >
         {/* ===== Top navigation bar (sticky) ===== */}
-        <header className="sticky top-0 z-40 h-16 bg-white/90 backdrop-blur-xl border-b border-slate-200/80 shadow-sm flex items-center justify-between px-4 sm:px-6 gap-3">
+        <header className="sticky top-0 z-40 h-14 bg-white/90 backdrop-blur-xl border-b border-slate-200/80 shadow-sm flex items-center justify-between px-4 sm:px-6 gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <Link href={`/${prefix}`} className="flex items-center gap-2 shrink-0">
               <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 via-cyan-500 to-blue-600 flex items-center justify-center shadow-md shadow-blue-500/25">
@@ -620,26 +613,7 @@ export default function AdminShell({ prefix, children }: AdminShellProps) {
               </span>
             </Link>
 
-            {/* Desktop horizontal nav links */}
-            <nav className="hidden lg:flex items-center h-16">
-              {navLinks.map((link) => {
-                const Icon = link.icon;
-                const isActive = link.href === pathname;
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={`relative flex items-center h-16 gap-2 px-3 text-sm font-medium transition-all duration-200 ${isActive ? 'text-blue-600' : 'text-slate-600 hover:text-blue-600 hover:bg-slate-50'}`}
-                  >
-                    <Icon className="w-4 h-4" />
-                    <span>{link.label}</span>
-                    {isActive && (
-                      <span className="absolute bottom-0 left-3 right-3 h-0.5 rounded-full bg-blue-500" />
-                    )}
-                  </Link>
-                );
-              })}
-            </nav>
+            {/* V8.4 fix: bug 7 — desktop horizontal nav links removed; use dashboard cards. */}
           </div>
 
           <div className="flex items-center gap-3 shrink-0">
@@ -695,23 +669,7 @@ export default function AdminShell({ prefix, children }: AdminShellProps) {
           </div>
         </header>
 
-        {/* Mobile nav - horizontal scroll */}
-        <nav className="lg:hidden flex items-center gap-1 overflow-x-auto px-3 py-2 bg-white/80 border-b border-slate-200/70">
-          {navLinks.map((link) => {
-            const Icon = link.icon;
-            const isActive = link.href === pathname;
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors duration-200 ${isActive ? 'text-blue-600 bg-blue-50' : 'text-slate-600 hover:text-blue-600 hover:bg-slate-50'}`}
-              >
-                <Icon className="w-4 h-4" />
-                <span>{link.label}</span>
-              </Link>
-            );
-          })}
-        </nav>
+        {/* V8.4 fix: bug 7 — mobile horizontal nav removed; use dashboard cards. */}
 
         {/* Main content area - full width, subtle gradient */}
         <main className="flex-1 w-full p-4 sm:p-6 lg:p-8 bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100">

@@ -380,7 +380,17 @@ export default function AddProductPage() {
 
             const groupLabel = (groupKey: string): string => {
               const parent = parentMap[groupKey];
-              if (parent) return parent.nameEn || parent.nameZh || parent.name || groupKey;
+              if (parent) {
+                // V8.4 fix: bug 5 — `parent.name` may be a trilingual object
+                // {en,zh,ar}; rendering it directly causes React #31. Prefer the
+                // string fields, then fall back to the object's localized value.
+                if (typeof parent.nameEn === 'string' && parent.nameEn) return parent.nameEn;
+                if (typeof parent.nameZh === 'string' && parent.nameZh) return parent.nameZh;
+                if (parent.name && typeof parent.name === 'object') {
+                  return parent.name.en || parent.name.zh || parent.name.ar || groupKey;
+                }
+                if (typeof parent.name === 'string') return parent.name;
+              }
               return groupKey;
             };
 
@@ -412,7 +422,9 @@ export default function AddProductPage() {
                               ? 'bg-blue-600 text-white border-blue-600'
                               : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400 hover:bg-blue-50'
                           }`}>
-                          {cleanName(cat.name?.en) || cleanName(cat.name?.zh) || cleanName(String(cat.name)) || '分类'}
+                          {/* V8.4 fix: bug 5 — `cat.name` can be a trilingual object; never
+                              pass it raw to cleanName (would render [object Object]). */}
+                          {cleanName(cat.name?.en) || cleanName(cat.name?.zh) || (typeof cat.name === 'string' ? cleanName(cat.name) : '') || '分类'}
                         </button>
                       ))}
                     </div>
@@ -437,7 +449,9 @@ export default function AddProductPage() {
                       ? 'bg-green-600 text-white border-green-600'
                       : 'bg-white text-gray-700 border-gray-300 hover:border-green-400'
                   }`}>
-                  {tag.name?.zh || tag.name?.en || tag.name || '标签'}
+                  {/* V8.4 fix: bug 5 — `tag.name` can be a trilingual object; guard the
+                      raw fallback so React never renders an object as a child. */}
+                  {tag.name?.zh || tag.name?.en || (typeof tag.name === 'string' ? tag.name : '') || '标签'}
                 </button>
               ))}
             </div>

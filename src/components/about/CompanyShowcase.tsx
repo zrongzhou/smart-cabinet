@@ -89,6 +89,16 @@ const CERT_BADGES = [
 export default function CompanyShowcase({ t }: CompanyShowcaseProps) {
   return (
     <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative overflow-hidden bg-gradient-to-br from-blue-50/40 via-indigo-50/30 to-white">
+      {/* V8.4 fix: bug 1 — keyframes for the flow lines under the company image */}
+      <style jsx global>{`
+        .about-showcase-flow path {
+          stroke-dasharray: 9 9;
+          animation: about-showcase-dash 2.4s linear infinite;
+        }
+        @keyframes about-showcase-dash {
+          to { stroke-dashoffset: -180; }
+        }
+      `}</style>
       {/* Soft animated depth layer */}
       <div className="absolute inset-0 opacity-[0.5]" style={{
         background:
@@ -105,19 +115,50 @@ export default function CompanyShowcase({ t }: CompanyShowcaseProps) {
       </div>
 
       <div className="relative z-10 flex flex-col lg:flex-row gap-12 lg:gap-16 items-stretch">
-        {/* LEFT: company building photo — fixed aspect ratio (no stretch), height bounded 350–460px */}
-        <div
-          className="w-full lg:w-[45%] rounded-2xl overflow-hidden shadow-lg border border-gray-200/60 relative group transition-all duration-700 hover:shadow-[0_22px_55px_-18px_rgba(59,130,246,0.30)] hover:-translate-y-1 aspect-[4/3] lg:aspect-[3/2] max-h-[380px]"
-        >
-          <Image
-            src="/images/about/company-building.jpg"
-            alt={t('company.name')}
-            fill
-            sizes="(max-width: 1024px) 100vw, 45vw"
-            className="object-cover rounded-2xl"
-            priority
-            quality={92}
-          />
+        {/* LEFT: company building photo + animated flow lines */}
+        <div className="w-full lg:w-[45%] flex flex-col">
+          <div
+            className="w-full rounded-2xl overflow-hidden shadow-lg border border-gray-200/60 relative group transition-all duration-700 hover:shadow-[0_22px_55px_-18px_rgba(59,130,246,0.30)] hover:-translate-y-1 aspect-[4/3] lg:aspect-[3/2] max-h-[300px]"
+          >
+            <Image
+              src="/images/about/company-building.jpg"
+              alt={t('company.name')}
+              fill
+              sizes="(max-width: 1024px) 100vw, 45vw"
+              className="object-cover rounded-2xl"
+              priority
+              quality={92}
+            />
+          </div>
+
+          {/* V8.4 fix: bug 1 — subtle animated "data flow" lines under the image.
+              Pure SVG + CSS dash animation, blue→indigo→violet gradient. RTL-safe. */}
+          <div className="mt-3 h-12 w-full overflow-hidden rounded-lg" aria-hidden="true">
+            <svg
+              viewBox="0 0 600 48"
+              preserveAspectRatio="none"
+              className="h-full w-full about-showcase-flow"
+            >
+              <defs>
+                <linearGradient id="aboutShowcaseFlowGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#3b82f6" />
+                  <stop offset="50%" stopColor="#6366f1" />
+                  <stop offset="100%" stopColor="#8b5cf6" />
+                </linearGradient>
+              </defs>
+              {[10, 24, 38].map((y, i) => (
+                <path
+                  key={i}
+                  d={`M0 ${y} C 80 ${y - 7}, 160 ${y + 7}, 240 ${y} S 400 ${y - 7}, 480 ${y} S 600 ${y + 7}, 600 ${y}`}
+                  fill="none"
+                  stroke="url(#aboutShowcaseFlowGrad)"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  style={{ opacity: 0.75 - i * 0.2 }}
+                />
+              ))}
+            </svg>
+          </div>
         </div>
 
         {/* RIGHT: heading + copy + trust strip + certification wall */}

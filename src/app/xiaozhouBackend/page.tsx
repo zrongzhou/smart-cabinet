@@ -18,6 +18,11 @@ import {
   User,
   Loader2,
   Star,
+  Edit3,
+  CreditCard,
+  Users,
+  ShoppingCart,
+  Wrench,
 } from 'lucide-react';
 
 // Force dynamic rendering (no static generation)
@@ -213,6 +218,43 @@ export default function AdminDashboardPage() {
       href: '/xiaozhouBackend/reviews',
       icon: MessageSquare,
       accent: 'indigo' as const,
+    },
+    // V8.4 fix: bug 7 — expose every console module as a dashboard card now that
+    // the top text-nav has been removed (users / services were previously unreachable).
+    {
+      title: '富文本编辑器',
+      description: '页面装修与内容编辑',
+      href: '/xiaozhouBackend/editor',
+      icon: Edit3,
+      accent: 'teal' as const,
+    },
+    {
+      title: '支付配置',
+      description: 'Stripe / PayPal / 微信 / 支付宝',
+      href: '/xiaozhouBackend/settings/payment',
+      icon: CreditCard,
+      accent: 'green' as const,
+    },
+    {
+      title: '用户管理',
+      description: '查看、启用与角色管理',
+      href: '/xiaozhouBackend/users',
+      icon: Users,
+      accent: 'indigo' as const,
+    },
+    {
+      title: '订单管理',
+      description: '查看与处理客户订单',
+      href: '/xiaozhouBackend/orders',
+      icon: ShoppingCart,
+      accent: 'orange' as const,
+    },
+    {
+      title: '服务管理',
+      description: '重启应用 / Nginx / SSL 等',
+      href: '/xiaozhouBackend/services',
+      icon: Wrench,
+      accent: 'purple' as const,
     },
   ];
 

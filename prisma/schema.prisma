@@ -98,6 +98,7 @@ model BlogPost {
   featured    Boolean  @default(false)
   image       String?
   category    String?  // 分类 slug，固定枚举
+  seoKeywords Json?     // SEO 关键词（逗号分隔字符串，由编辑器传入）
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   deletedAt   DateTime?

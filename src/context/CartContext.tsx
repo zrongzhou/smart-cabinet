@@ -134,10 +134,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
     })();
   }, [isAuthenticated, token, ready]);
 
+  // V8.4 fix: bug 3 — prevent quantity inflation from repeated "Add to Cart"
+  // clicks. If the product is already in the cart we keep the existing quantity
+  // (a no-op); only updateQuantity() is allowed to change a line's quantity.
   const addItem = (item: CartItem) => {
     setItems((prev) => {
-      const next = mergeCartItems(prev, [item]);
-      return next;
+      const exists = prev.find((it) => it.productId === item.productId);
+      if (exists) return prev;
+      return mergeCartItems(prev, [item]);
     });
     setIsOpen(true);
     // Best-effort server sync when authenticated.

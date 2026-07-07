@@ -202,16 +202,15 @@ export default function AboutPage() {
   ];
 
   // Timeline data
+  // V8.4 fix: bug 2 — restructured milestone timeline: 7 milestones, 2015 → 2026.
   const timeline = [
     { year: '2015', titleKey: 'about.timeline.2015.title', descriptionKey: 'about.timeline.2015.description', isLeft: true },
-    { year: '2016', titleKey: 'about.timeline.2016.title', descriptionKey: 'about.timeline.2016.description', isLeft: false },
-    { year: '2017', titleKey: 'about.timeline.2017.title', descriptionKey: 'about.timeline.2017.description', isLeft: true },
     { year: '2018', titleKey: 'about.timeline.2018.title', descriptionKey: 'about.timeline.2018.description', isLeft: false },
     { year: '2019', titleKey: 'about.timeline.2019.title', descriptionKey: 'about.timeline.2019.description', isLeft: true },
     { year: '2021', titleKey: 'about.timeline.2021.title', descriptionKey: 'about.timeline.2021.description', isLeft: false },
     { year: '2022', titleKey: 'about.timeline.2022.title', descriptionKey: 'about.timeline.2022.description', isLeft: true },
-    { year: '2023', titleKey: 'about.timeline.2023.title', descriptionKey: 'about.timeline.2023.description', isLeft: false },
-    { year: '2024', titleKey: 'about.timeline.2024.title', descriptionKey: 'about.timeline.2024.description', isLeft: true },
+    { year: '2024', titleKey: 'about.timeline.2024.title', descriptionKey: 'about.timeline.2024.description', isLeft: false },
+    { year: '2026 to Present', titleKey: 'about.timeline.2026.title', descriptionKey: 'about.timeline.2026.description', isLeft: true },
   ];
 
   // Values data - 5 core values
@@ -693,6 +692,10 @@ export default function AboutPage() {
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             {t('about.timeline.subtitle')}
+          </p>
+          {/* V8.4 fix: bug 2 — intro paragraph between the heading and the milestones */}
+          <p className="text-base text-gray-500 max-w-3xl mx-auto mt-5 leading-relaxed">
+            {t('about.timeline.intro')}
           </p>
         </div>
 

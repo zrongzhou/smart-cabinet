@@ -48,6 +48,10 @@ export default function CartDrawer() {
     window.location.href = `/${locale2}/checkout`;
   };
 
+  // V8.4 fix: bug 4 — never render the drawer (or its overlay) while closed, so
+  // a locale switch cannot flash a single open frame before closeCart() runs.
+  if (!isOpen) return null;
+
   return (
     <>
       {/* Overlay */}
