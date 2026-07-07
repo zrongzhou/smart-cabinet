@@ -22,11 +22,12 @@ export default function CartDrawer() {
   const [locale2] = [locale];
   const [checkingOut, setCheckingOut] = useState(false);
 
-  // V8.3 fix: bug 1 — never leave the cart drawer open across a locale switch.
-  // Switching language performs a full navigation; if the drawer were ever left
-  // open (or some path opened it) we force-close it so no white overlay (e.g. the
-  // empty-cart card with the shopping-bag icon) can appear after choosing Arabic
-  // or any other locale.
+  // V8.3 fix (final): bug 1 — ROOT CAUSE: `end-0` + `translate-x-full` fails in RTL.
+  // In LTR: end=right → translateX(+100%) = off-screen right ✓
+  // In RTL (Arabic): end=left → translateX(+100%) = visible at center ✗
+  // Fix: direction-aware hide — `-translate-x-full` in RTL (off-screen left),
+  // `translate-x-full` in LTR (off-screen right).
+  // Also keep force-close on mount/locale-change as defensive measure.
   useEffect(() => {
     closeCart();
   }, [locale, closeCart]);
@@ -61,7 +62,7 @@ export default function CartDrawer() {
       {/* Drawer */}
       <aside
         className={`fixed top-0 end-0 h-full w-full max-w-md bg-white shadow-2xl z-50 flex flex-col transition-transform duration-300 ${
-          isOpen ? 'translate-x-0' : 'translate-x-full'
+          isOpen ? 'translate-x-0' : 'rtl:-translate-x-full ltr:translate-x-full'
         }`}
         dir={locale === 'ar' ? 'rtl' : 'ltr'}
       >
