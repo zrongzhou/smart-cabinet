@@ -1,39 +1,92 @@
 import { NextRequest, NextResponse } from 'next/server';
+import jwt from 'jsonwebtoken';
 
 /**
- * 验证管理后台 API 请求的鉴权
- * 从 Authorization header 或 cookie 中读取 admin_auth token
- * 返回 boolean：true = 鉴权通过，false = 鉴权失败
+ * V8 Admin authentication.
+ *
+ * The legacy `verifyAuth` only checked whether a token *existed* (cookie value
+ * was the literal string "authenticated"), which is trivially forgeable. We now
+ * issue a **signed JWT** (role=admin) on login and verify its signature +
+ * role here. `requireAdmin` is the single gate used by every admin API route.
  */
-export async function verifyAuth(request: NextRequest): Promise<boolean> {
+
+const ADMIN_JWT_SECRET =
+  process.env.ADMIN_JWT_SECRET ||
+  process.env.JWT_SECRET ||
+  'change-me-admin-secret-v8';
+
+const ADMIN_TOKEN_TTL = '8h';
+
+export interface AdminJwtPayload {
+  sub: string;
+  username: string;
+  role: string;
+  iat?: number;
+  exp?: number;
+}
+
+/** Issue a signed admin JWT. */
+export function generateAdminToken(payload: { sub: string; username: string; role?: string }): string {
+  return jwt.sign(
+    { sub: payload.sub, username: payload.username, role: 'admin' },
+    ADMIN_JWT_SECRET,
+    { expiresIn: ADMIN_TOKEN_TTL }
+  );
+}
+
+/** Verify a signed admin JWT and confirm the admin role. Returns null if invalid. */
+export function verifyAdminToken(token: string): AdminJwtPayload | null {
   try {
-    // 从 Authorization header 读取
-    const authHeader = request.headers.get('Authorization');
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      const token = authHeader.substring(7);
-      if (token && token.length > 0) {
-        return true; // auth OK
-      }
-    }
-
-    // 从 cookie 读取
-    const cookie = request.headers.get('cookie');
-    if (cookie) {
-      const match = cookie.match(/admin_auth=([^;]+)/);
-      if (match && match[1] && match[1].length > 0) {
-        return true; // auth OK
-      }
-    }
-
-    return false; // auth failed
+    const decoded = jwt.verify(token, ADMIN_JWT_SECRET) as AdminJwtPayload;
+    if (decoded.role !== 'admin') return null;
+    return decoded;
   } catch {
-    return false; // auth failed on error
+    return null;
   }
 }
 
+/** Extract the admin token from Bearer header or the `admin_auth` cookie. */
+function extractAdminToken(request: NextRequest): string | null {
+  const authHeader = request.headers.get('Authorization');
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.substring(7).trim();
+    if (token) return token;
+  }
+  const cookie = request.headers.get('cookie');
+  if (cookie) {
+    const match = cookie.match(/admin_auth=([^;]+)/);
+    if (match && match[1]) {
+      try {
+        return decodeURIComponent(match[1]);
+      } catch {
+        return match[1];
+      }
+    }
+  }
+  return null;
+}
+
 /**
- * 返回 401 未授权响应
+ * Server-side admin guard. Reads the signed JWT from the Authorization header
+ * or the `admin_auth` cookie, verifies signature + role, and returns the
+ * payload (or null). Use this in every /api/admin/* route.
  */
+export async function requireAdmin(request: NextRequest): Promise<AdminJwtPayload | null> {
+  const token = extractAdminToken(request);
+  if (!token) return null;
+  return verifyAdminToken(token);
+}
+
+/**
+ * Backwards-compatible boolean guard. Now *actually verifies* signature + role
+ * (previously it only checked token presence). Existing admin routes that call
+ * `verifyAuth` are upgraded automatically.
+ */
+export async function verifyAuth(request: NextRequest): Promise<boolean> {
+  return (await requireAdmin(request)) !== null;
+}
+
+/** 401 Unauthorized. */
 export function unauthorizedResponse() {
   return NextResponse.json(
     { error: 'Unauthorized. Please login first.' },
@@ -41,9 +94,7 @@ export function unauthorizedResponse() {
   );
 }
 
-/**
- * 返回 404 未找到响应
- */
+/** 404 Not Found. */
 export function notFoundResponse(resource: string = 'Resource') {
   return NextResponse.json(
     { error: `${resource} not found.` },
@@ -51,9 +102,7 @@ export function notFoundResponse(resource: string = 'Resource') {
   );
 }
 
-/**
- * 返回 400 错误请求响应
- */
+/** 400 Bad Request. */
 export function badRequestResponse(message: string = 'Bad request.') {
   return NextResponse.json(
     { error: message },
@@ -61,9 +110,7 @@ export function badRequestResponse(message: string = 'Bad request.') {
   );
 }
 
-/**
- * 返回 500 服务器错误响应
- */
+/** 500 Server Error. */
 export function serverErrorResponse(message: string = 'Internal server error.') {
   return NextResponse.json(
     { error: message },

@@ -1,8 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAdmin, unauthorizedResponse } from '@/lib/auth';
 import { sendTestNotification } from '@/lib/notifications';
 
 // POST /api/admin/settings/test-wechat - Test WeChat webhook
 export async function POST(request: NextRequest) {
+  // Server-side guard: this endpoint triggers an outbound request to a
+  // caller-supplied URL, so it must be restricted to authenticated admins.
+  const admin = await requireAdmin(request);
+  if (!admin) {
+    return unauthorizedResponse();
+  }
+
   try {
     const body = await request.json();
     const { webhookUrl } = body;

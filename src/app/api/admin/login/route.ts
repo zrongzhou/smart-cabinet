@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { generateAdminToken } from '@/lib/auth';
 
 // POST /api/admin/login
 export async function POST(request: NextRequest) {
@@ -9,18 +10,24 @@ export async function POST(request: NextRequest) {
     const validPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'admin123';
 
     if (username === validUsername && password === validPassword) {
-      // Create response
-      const response = NextResponse.json({ success: true, message: 'Login successful' });
+      // Issue a signed admin JWT (role=admin) and store it in an httpOnly cookie.
+      const token = generateAdminToken({ sub: username, username });
 
-      // Set httpOnly cookie (cannot be accessed by JavaScript)
+      const response = NextResponse.json({
+        success: true,
+        message: 'Login successful',
+        token,
+        user: { username, role: 'admin' },
+      });
+
       response.cookies.set({
         name: 'admin_auth',
-        value: 'authenticated',
+        value: token,
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
         path: '/',
-        maxAge: 86400, // 24 hours
+        maxAge: 60 * 60 * 8, // 8 hours
       });
 
       return response;

@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Navbar from '@/components/layout/Navbar';
+import { CartProvider } from '@/context/CartContext';
 
 // Mock Next.js Link component
 vi.mock('next/link', () => ({
@@ -82,7 +83,7 @@ describe('Navbar Component', () => {
   });
 
   it('should render navbar with logo and company name', async () => {
-    render(<Navbar />);
+    render(<CartProvider><Navbar /></CartProvider>);
     
     await waitFor(() => {
       expect(screen.getByAltText('Qtech Tool Cabinet')).toBeInTheDocument();
@@ -91,7 +92,7 @@ describe('Navbar Component', () => {
   });
 
   it('should render navigation links', async () => {
-    render(<Navbar />);
+    render(<CartProvider><Navbar /></CartProvider>);
     
     await waitFor(() => {
       expect(screen.getByText('Home')).toBeInTheDocument();
@@ -105,7 +106,7 @@ describe('Navbar Component', () => {
   });
 
   it('should show login/register buttons when not authenticated', async () => {
-    render(<Navbar />);
+    render(<CartProvider><Navbar /></CartProvider>);
     
     await waitFor(() => {
       expect(screen.getByText('Sign In')).toBeInTheDocument();
@@ -124,7 +125,7 @@ describe('Navbar Component', () => {
       logout: vi.fn(),
     });
 
-    render(<Navbar />);
+    render(<CartProvider><Navbar /></CartProvider>);
     
     // Click user button to open menu
     const userButton = screen.getByText('T'); // Avatar shows first letter of name
@@ -137,7 +138,7 @@ describe('Navbar Component', () => {
   });
 
   it('should toggle mobile menu when hamburger button clicked', async () => {
-    render(<Navbar />);
+    render(<CartProvider><Navbar /></CartProvider>);
     
     const menuButton = screen.getByLabelText('Toggle menu');
     expect(menuButton).toBeInTheDocument();
@@ -151,7 +152,7 @@ describe('Navbar Component', () => {
   });
 
   it('should switch language when language button clicked', async () => {
-    render(<Navbar />);
+    render(<CartProvider><Navbar /></CartProvider>);
     
     // Open language menu
     const langButton = screen.getByText('EN');
@@ -177,7 +178,7 @@ describe('Navbar Component', () => {
       logo: '/images/logo.svg',
     });
 
-    render(<Navbar />);
+    render(<CartProvider><Navbar /></CartProvider>);
     
     await waitFor(() => {
       expect(screen.getByText('秋彦工具柜')).toBeInTheDocument();
@@ -185,7 +186,7 @@ describe('Navbar Component', () => {
   });
 
   it('should handle logo error gracefully', async () => {
-    render(<Navbar />);
+    render(<CartProvider><Navbar /></CartProvider>);
     
     const logo = screen.getByAltText('Qtech Tool Cabinet');
     expect(logo).toBeInTheDocument();
@@ -212,7 +213,7 @@ describe('Navbar Component', () => {
       logout: mockLogout,
     });
 
-    render(<Navbar />);
+    render(<CartProvider><Navbar /></CartProvider>);
     
     // Open user menu first by clicking avatar
     const userButton = screen.getByText('T'); // First letter of "Test"
@@ -244,7 +245,7 @@ describe('Navbar Component', () => {
       },
     });
 
-    render(<Navbar />);
+    render(<CartProvider><Navbar /></CartProvider>);
     
     // Open mobile menu to see sidebar
     const menuButton = screen.getByLabelText('Toggle menu');
@@ -259,7 +260,7 @@ describe('Navbar Component', () => {
   });
 
   it('should have proper ARIA labels for accessibility', async () => {
-    render(<Navbar />);
+    render(<CartProvider><Navbar /></CartProvider>);
     
     const menuButton = screen.getByLabelText('Toggle menu');
     expect(menuButton).toBeInTheDocument();
@@ -267,7 +268,7 @@ describe('Navbar Component', () => {
   });
 
   it('should have minimum touch target size for mobile', async () => {
-    render(<Navbar />);
+    render(<CartProvider><Navbar /></CartProvider>);
     
     const menuButton = screen.getByLabelText('Toggle menu');
     expect(menuButton).toHaveClass('min-w-[44px]');

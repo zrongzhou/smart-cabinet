@@ -1,0 +1,128 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+[1m[7m[36m RUN [39m[27m[22m [36mv2.1.9 [39m[90mD:/workbuddy/2026-06-19-13-21-39/smart-cabinet-local[39m
+
+ [31m❯[39m src/lib/jwt.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [32m✓[39m src/__tests__/example.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 4[2mms[22m[39m
+ [32m✓[39m src/components/__tests__/OceanHeader.v238.test.ts [2m([22m[2m17 tests[22m[2m)[22m[90m 10[2mms[22m[39m
+ [32m✓[39m src/lib/cart.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 9[2mms[22m[39m
+ [31m❯[39m src/lib/blogs.test.ts [2m([22m[2m10 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[90m 18[2mms[22m[39m
+[31m   [31m×[31m blogs merge layer (V8 T1 / Q5)[2m > [22mincludes the two V7 posts that were previously hidden[90m 8[2mms[22m[31m[39m
+[31m     → expected 14 to be greater than or equal to 16[39m
+[31m   [31m×[31m blogs merge layer (V8 T1 / Q5)[2m > [22mfilters by category[90m 1[2mms[22m[31m[39m
+[31m     → expected 0 to be greater than 0[39m
+ [31m❯[39m src/lib/services/commandWhitelist.test.ts [2m([22m[2m11 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[90m 13[2mms[22m[39m
+[31m   [31m×[31m commandWhitelist — security contract (V8 T5 / Q2)[2m > [22maccepts every allowed action with no params[90m 6[2mms[22m[31m[39m
+[31m     → action update-nginx-config should be allowed: expected false to be true // Object.is equality[39m
+ [32m✓[39m src/lib/payments/config.test.ts [2m([22m[2m9 tests[22m[2m)[22m[90m 17[2mms[22m[39m
+ [32m✓[39m src/__tests__/component-setup.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[90m 32[2mms[22m[39m
+ [32m✓[39m src/context/CartContext.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[90m 54[2mms[22m[39m
+ [32m✓[39m src/lib/services/nginxConfig.test.ts [2m([22m[2m6 tests[22m[2m)[22m[90m 11[2mms[22m[39m
+ [32m✓[39m src/lib/i18n-validation.test.ts [2m([22m[2m1 test[22m[2m)[22m[90m 143[2mms[22m[39m
+ [32m✓[39m src/app/api/admin/faqs/route.test.ts [2m([22m[2m12 tests[22m[2m)[22m[90m 20[2mms[22m[39m
+ [32m✓[39m src/lib/i18n.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[90m 24[2mms[22m[39m
+ [32m✓[39m src/__tests__/components/ErrorBoundary.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[90m 97[2mms[22m[39m
+ [32m✓[39m src/lib/services/runCommand.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 383[2mms[22m[39m
+ [32m✓[39m src/lib/auth.test.ts [2m([22m[2m11 tests[22m[2m)[22m[90m 36[2mms[22m[39m
+ [31m❯[39m src/__tests__/components/Footer.test.tsx [2m([22m[2m13 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 480[2mms[22m[39m
+[31m   [31m×[31m Footer Component[2m > [22mshould render animated background elements[90m 24[2mms[22m[31m[39m
+[31m     → [2mexpect([22m[31melement[31m[2m).toHaveStyle()[22m
+
+[32m- Expected[31m
+
+[32m- backgroundColor: rgb(15, 23, 42);[31m[39m
+ [32m✓[39m src/__tests__/components/ProductCard.test.tsx [2m([22m[2m20 tests[22m[2m)[22m[33m 304[2mms[22m[39m
+ [32m✓[39m src/components/xiaozhouBackend/ProductFaqBlock.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[90m 211[2mms[22m[39m
+ [32m✓[39m src/components/admin/ProductFaqBlock.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[90m 216[2mms[22m[39m
+ [32m✓[39m src/__tests__/components/Navbar.test.tsx [2m([22m[2m12 tests[22m[2m)[22m[90m 270[2mms[22m[39m
+ [32m✓[39m src/lib/payments/index.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 4[2mms[22m[39m
+ [32m✓[39m src/lib/payments/providers.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 14[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[1m[7m Failed Suites 1 [27m[22m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[31m[1m[7m FAIL [27m[22m[39m src/lib/jwt.test.ts[2m [ src/lib/jwt.test.ts ][22m
+[31m[1mError[22m: Failed to resolve import "./jwt" from "src/lib/jwt.test.ts". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mD:/workbuddy/2026-06-19-13-21-39/smart-cabinet-local/src/lib/jwt.test.ts[39m:9:7
+[33m  7  |    hashPassword,
+  8  |    comparePassword
+  9  |  } from "./jwt";
+     |          ^
+  10 |  describe("user JWT + password utils (V8 auth)", () => {
+  11 |    it("round-trips an access token", () => {[39m
+[90m [2m❯[22m TransformPluginContext._formatError node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m49258:41[22m[39m
+[90m [2m❯[22m TransformPluginContext.error node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m49253:16[22m[39m
+[90m [2m❯[22m normalizeUrl node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m64307:23[22m[39m
+[90m [2m❯[22m node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m64439:39[22m[39m
+[90m [2m❯[22m TransformPluginContext.transform node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m64366:7[22m[39m
+[90m [2m❯[22m PluginContainer.transform node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m49099:18[22m[39m
+[90m [2m❯[22m loadAndTransform node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m51978:27[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[1m[7m Failed Tests 4 [27m[22m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[31m[1m[7m FAIL [27m[22m[39m src/lib/blogs.test.ts[2m > [22mblogs merge layer (V8 T1 / Q5)[2m > [22mincludes the two V7 posts that were previously hidden
+[31m[1mAssertionError[22m: expected 14 to be greater than or equal to 16[39m
+[36m [2m❯[22m src/lib/blogs.test.ts:[2m48:19[22m[39m
+    [90m 46| [39m  [34mit[39m([32m'includes the two V7 posts that were previously hidden'[39m[33m,[39m [35masync[39m ()…
+    [90m 47| [39m    [35mconst[39m { data[33m,[39m total } [33m=[39m [35mawait[39m [34mgetMergedBlogList[39m()[33m;[39m
+    [90m 48| [39m    [34mexpect[39m(total)[33m.[39m[34mtoBeGreaterThanOrEqual[39m([34m16[39m)[33m;[39m
+    [90m   | [39m                  [31m^[39m
+    [90m 49| [39m    [35mconst[39m slugs [33m=[39m data[33m.[39m[34mmap[39m((p) [33m=>[39m p[33m.[39mslug)[33m;[39m
+    [90m 50| [39m    [35mfor[39m ([35mconst[39m s [35mof[39m [33mV7_SLUGS[39m) [34mexpect[39m(slugs)[33m.[39m[34mtoContain[39m(s)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯[22m[39m
+
+[31m[1m[7m FAIL [27m[22m[39m src/lib/blogs.test.ts[2m > [22mblogs merge layer (V8 T1 / Q5)[2m > [22mfilters by category
+[31m[1mAssertionError[22m: expected 0 to be greater than 0[39m
+[36m [2m❯[22m src/lib/blogs.test.ts:[2m89:25[22m[39m
+    [90m 87| [39m  [34mit[39m([32m'filters by category'[39m[33m,[39m [35masync[39m () [33m=>[39m {
+    [90m 88| [39m    [35mconst[39m { data } [33m=[39m [35mawait[39m [34mgetMergedBlogList[39m({ category[33m:[39m [32m'General'[39m })[33m;[39m
+    [90m 89| [39m    [34mexpect[39m(data[33m.[39mlength)[33m.[39m[34mtoBeGreaterThan[39m([34m0[39m)[33m;[39m
+    [90m   | [39m                        [31m^[39m
+    [90m 90| [39m    [34mexpect[39m(data[33m.[39m[34mevery[39m((p) [33m=>[39m (p[33m.[39mcategory [33m||[39m [32m''[39m)[33m.[39m[34mtoLowerCase[39m() [33m===[39m [32m'gen[39m…
+    [90m 91| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯[22m[39m
+
+[31m[1m[7m FAIL [27m[22m[39m src/lib/services/commandWhitelist.test.ts[2m > [22mcommandWhitelist — security contract (V8 T5 / Q2)[2m > [22maccepts every allowed action with no params
+[31m[1mAssertionError[22m: action update-nginx-config should be allowed: expected false to be true // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+[36m [2m❯[22m src/lib/services/commandWhitelist.test.ts:[2m20:79[22m[39m
+    [90m 18| [39m  [34mit[39m([32m'accepts every allowed action with no params'[39m[33m,[39m () [33m=>[39m {
+    [90m 19| [39m    [35mfor[39m ([35mconst[39m action [35mof[39m [33mALLOWED_ACTIONS[39m) {
+    [90m 20| [39m      [34mexpect[39m([34mvalidateAction[39m(action)[33m.[39mok[33m,[39m [32m`action [39m[36m${[39maction[36m}[39m[32m should be al[39m…
+    [90m   | [39m                                                                              [31m^[39m
+    [90m 21| [39m    }
+    [90m 22| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯[22m[39m
+
+[31m[1m[7m FAIL [27m[22m[39m src/__tests__/components/Footer.test.tsx[2m > [22mFooter Component[2m > [22mshould render animated background elements
+[31m[1mError[22m: [2mexpect([22m[31melement[31m[2m).toHaveStyle()[22m
+
+[32m- Expected[31m
+
+[32m- backgroundColor: rgb(15, 23, 42);[31m[39m
+[36m [2m❯[22m src/__tests__/components/Footer.test.tsx:[2m229:20[22m[39m
+    [90m227| [39m    [90m// Check for animated gradient background[39m
+    [90m228| [39m    [35mconst[39m footer [33m=[39m screen[33m.[39m[34mgetByRole[39m([32m'contentinfo'[39m)[33m;[39m
+    [90m229| [39m    [34mexpect[39m(footer)[33m.[39m[34mtoHaveStyle[39m({ backgroundColor[33m:[39m [32m'#0f172a'[39m })[33m;[39m
+    [90m   | [39m                   [31m^[39m
+    [90m230| [39m  })[33m;[39m
+    [90m231| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯[22m[39m
+
+[2m Test Files [22m [1m[31m4 failed[39m[22m[2m | [22m[1m[32m19 passed[39m[22m[90m (23)[39m
+[2m      Tests [22m [1m[31m4 failed[39m[22m[2m | [22m[1m[32m169 passed[39m[22m[90m (173)[39m
+[2m   Start at [22m 12:01:51
+[2m   Duration [22m 6.20s[2m (transform 2.49s, setup 13.78s, collect 12.10s, tests 2.37s, environment 38.18s, prepare 4.82s)[22m
+

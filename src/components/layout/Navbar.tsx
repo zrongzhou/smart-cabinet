@@ -5,6 +5,8 @@ import { Bars3Icon, XMarkIcon, ChevronDownIcon, UserIcon, ArrowRightOnRectangleI
 import { useLocale } from '@/lib/i18n';
 import { useAuth } from '@/components/AuthProvider';
 import { fetchUnifiedSettings } from '@/data/unified-data';
+import CartButton from '@/components/cart/CartButton';
+import CartDrawer from '@/components/cart/CartDrawer';
 
 // Touch target size for mobile (44x44px minimum as per WCAG/Apple guidelines)
 const TOUCH_TARGET_CLASSES = 'min-h-[44px] min-w-[44px]';
@@ -178,6 +180,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
             {/* nav-links group.                                               */}
             {/* ============================================================= */}
             <div className="hidden md:flex items-center gap-2">
+              <CartButton locale={locale} />
               {isAuthenticated && user ? (
                 /* User Menu */
                 <div className="relative">
@@ -315,6 +318,9 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
               </div>
 
               {/* Auth UI Mobile */}
+              <div className="mb-4 flex justify-center">
+                <CartButton locale={locale} />
+              </div>
               {isAuthenticated && user ? (
                 <>
                   {/* User Info */}
@@ -409,6 +415,9 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
           }}
         />
       )}
+
+      {/* Global cart drawer (opened via CartButton) */}
+      <CartDrawer />
     </>
   );
 }

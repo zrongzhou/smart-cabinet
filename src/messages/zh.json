@@ -458,5 +458,32 @@
   "about.whyChoose.item6.title": "实时库存追踪",
   "about.whyChoose.item6.desc": "每一次领用、归还和补货均可记录。系统支持库存预警、使用报表和物料消耗分析。",
   "about.whyChoose.item7.title": "可靠售后支持",
-  "about.whyChoose.item7.desc": "我们提供安装指导、软件培训、远程技术支持和售后服务，帮助客户平稳运行系统。"
+  "about.whyChoose.item7.desc": "我们提供安装指导、软件培训、远程技术支持和售后服务，帮助客户平稳运行系统。",
+
+  "about.showcase.trustTitle": "全球制造企业的信赖之选",
+  "about.showcase.metricClients": "合作工厂客户",
+  "about.showcase.metricYears": "智能制造年限",
+  "about.showcase.metricFortune": "世界 500 强伙伴",
+  "about.showcase.certsTitle": "认证与专利",
+
+  "about.values.innovation.highlight": "持续研发投入，让我们的智能柜始终领先一步。",
+  "about.values.innovation.stat": "10+ 项专利",
+  "about.values.quality.highlight": "每一台出厂前都经过 12 道严格质检。",
+  "about.values.quality.stat": "5 大体系认证",
+  "about.values.service.highlight": "从咨询到售后，提供 7×24 小时远程技术支持。",
+  "about.values.service.stat": "服务 60+ 国家",
+  "about.values.customer.highlight": "围绕客户真实需求持续迭代产品。",
+  "about.values.customer.stat": "97% 客户满意度",
+  "about.values.global.highlight": "本地化支持，让服务触达全球客户。",
+  "about.values.global.stat": "出口 60+ 国家",
+  "about.values.prev": "上一页",
+  "about.values.next": "下一页",
+  "about.values.page": "第",
+
+  "about.clients.endorsement": "已服务 800+ 制造企业，含 30+ 世界 500 强",
+  "about.client.years": "年合作",
+  "about.client.slogan1": "值得信赖的长期伙伴",
+  "about.client.slogan2": "产品质量稳定可靠",
+  "about.client.slogan3": "服务响应及时专业",
+  "about.client.slogan4": "长期合作共赢"
 }

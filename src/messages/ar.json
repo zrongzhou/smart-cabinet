@@ -458,5 +458,32 @@
   "about.whyChoose.item6.title": "تتبع المخزون في الوقت الفعلي",
   "about.whyChoose.item6.desc": "يمكن تسجيل كل استلام وإرجاع وتعبئة. يدعم النظام تنبيهات المخزون وتقارير الاستخدام وتحليل استهلاك المواد.",
   "about.whyChoose.item7.title": "دعم موثوق بعد البيع",
-  "about.whyChoose.item7.desc": "نوفر إرشادات التركيب والتدريب على البرامج والدعم الفني عن بُعد وخدمة ما بعد البيع لمساعدة العملاء على تشغيل النظام بسلاسة."
+  "about.whyChoose.item7.desc": "نوفر إرشادات التركيب والتدريب على البرامج والدعم الفني عن بُعد وخدمة ما بعد البيع لمساعدة العملاء على تشغيل النظام بسلاسة.",
+
+  "about.showcase.trustTitle": "موثوق به من قبل الشركات المصنعة في جميع أنحاء العالم",
+  "about.showcase.metricClients": "عملاء من المصانع",
+  "about.showcase.metricYears": "سنوات من التصنيع",
+  "about.showcase.metricFortune": "شركاء من فورتشن 500",
+  "about.showcase.certsTitle": "الشهادات والبراءات",
+
+  "about.values.innovation.highlight": "البحث والتطوير المستمر يبقينا في الصدارة.",
+  "about.values.innovation.stat": "10+ براءات اختراع",
+  "about.values.quality.highlight": "كل وحدة تمر بـ 12 فحص جودة صارم قبل التسليم.",
+  "about.values.quality.stat": "5 شهادات أنظمة",
+  "about.values.service.highlight": "دعم فني عن بُعد على مدار الساعة من الاستشارة إلى ما بعد البيع.",
+  "about.values.service.stat": "خدمة 60+ دولة",
+  "about.values.customer.highlight": "نطوّر منتجاتنا بناءً على احتياجات العملاء الحقيقية.",
+  "about.values.customer.stat": "97% رضا العملاء",
+  "about.values.global.highlight": "دعم محلي يصل إلى العملاء في كل مكان.",
+  "about.values.global.stat": "تصدير إلى 60+ دولة",
+  "about.values.prev": "السابق",
+  "about.values.next": "التالي",
+  "about.values.page": "صفحة",
+
+  "about.clients.endorsement": "نخدم أكثر من 800 مؤسسة تصنيع، بما في ذلك 30+ من شركات فورتشن 500",
+  "about.client.years": "سنوات من الشراكة",
+  "about.client.slogan1": "شريك موثوق على المدى الطويل",
+  "about.client.slogan2": "جودة منتج مستقرة وموثوقة",
+  "about.client.slogan3": "خدمة سريعة الاستجابة واحترافية",
+  "about.client.slogan4": "تعاون مربح للجانبين ينمو معاً"
 }

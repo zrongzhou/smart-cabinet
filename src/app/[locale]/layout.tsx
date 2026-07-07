@@ -8,6 +8,7 @@ import JsonLd from '@/components/JsonLd';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { LocaleProvider, Locale } from '@/lib/i18n';
 import { AuthProvider } from '@/components/AuthProvider';
+import { CartProvider } from '@/context/CartContext';
 import enMessages from '@/messages/en.json';
 import zhMessages from '@/messages/zh.json';
 import arMessages from '@/messages/ar.json';
@@ -53,38 +54,40 @@ export default function LocaleLayout({ children, params: { locale } }: LocaleLay
     <ErrorBoundary>
     <LocaleProvider locale={currentLocale} messages={messages}>
       <AuthProvider>
-        {/* Preconnect to external image domain for faster loading */}
-        <link rel="preconnect" href="https://www.wstoolcabinet.com" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://www.wstoolcabinet.com" />
-        <link rel="preconnect" href="https://test.wstoolcabinet.com" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://test.wstoolcabinet.com" />
-        
-        {/* JsonLd structured data */}
-        <JsonLd data={{
-          '@context': 'https://schema.org',
-          '@type': 'WebSite',
-          name: 'WS Tool Cabinet',
+        <CartProvider>
+          {/* Preconnect to external image domain for faster loading */}
+          <link rel="preconnect" href="https://www.wstoolcabinet.com" crossOrigin="anonymous" />
+          <link rel="dns-prefetch" href="https://www.wstoolcabinet.com" />
+          <link rel="preconnect" href="https://test.wstoolcabinet.com" crossOrigin="anonymous" />
+          <link rel="dns-prefetch" href="https://test.wstoolcabinet.com" />
+          
+          {/* JsonLd structured data */}
+          <JsonLd data={{
+            '@context': 'https://schema.org',
+            '@type': 'WebSite',
+            name: 'WS Tool Cabinet',
 
-          description: 'Professional smart tool cabinet and vending machine manufacturer.',
-        }} />
-        <JsonLd data={{
-          '@context': 'https://schema.org',
-          '@type': 'Organization',
-          name: 'Guangzhou Qiuyuan Technology Co., Ltd.',
-          alternateName: '广州秋彦科技有限公司 / WS Tool Cabinet',
+            description: 'Professional smart tool cabinet and vending machine manufacturer.',
+          }} />
+          <JsonLd data={{
+            '@context': 'https://schema.org',
+            '@type': 'Organization',
+            name: 'Guangzhou Qiuyuan Technology Co., Ltd.',
+            alternateName: '广州秋彦科技有限公司 / WS Tool Cabinet',
 
-          contactPoint: {
-            '@type': 'ContactPoint',
-            telephone: '+86-156-2216-0659',
-            contactType: 'sales',
-            email: 'sabina@wstoolcabinet.com',
-          },
-        }} />
+            contactPoint: {
+              '@type': 'ContactPoint',
+              telephone: '+86-156-2216-0659',
+              contactType: 'sales',
+              email: 'sabina@wstoolcabinet.com',
+            },
+          }} />
 
-        <Navbar onLocaleChange={handleLocaleChange} />
-        <main className="flex-1">{children}</main>
-        <Footer />
-        <BackToTop />
+          <Navbar onLocaleChange={handleLocaleChange} />
+          <main className="flex-1">{children}</main>
+          <Footer />
+          <BackToTop />
+        </CartProvider>
       </AuthProvider>
     </LocaleProvider>
     </ErrorBoundary>

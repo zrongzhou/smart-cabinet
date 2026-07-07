@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { 
   Users, Award, Globe, Factory, ShieldCheck, Cpu, Zap, Building, 
   TrendingUp, Clock, CheckCircle, Car, ChevronRight, Star,
@@ -11,6 +11,9 @@ import { useLocale } from '@/lib/i18n';
 import { fetchUnifiedSettings, SiteSettings } from '@/data/unified-data';
 import OceanHeader from '@/components/OceanHeader';
 import Image from 'next/image';
+import CompanyShowcase from '@/components/about/CompanyShowcase';
+import ValuesBook from '@/components/about/ValuesBook';
+import ClientWall from '@/components/about/ClientWall';
 
 // Page data type (from API or localStorage)
 interface PageData {
@@ -122,164 +125,7 @@ function TimelineItem({ year, titleKey, descriptionKey, isLeft, locale, t, index
   );
 }
 
-// ===== Core Values Flip-Book Carousel (V6 redesign) =====
-// Value item type
-interface ValueItem {
-  icon: React.ElementType;
-  titleKey: string;
-  descriptionKey: string;
-}
-
-// Inner page card used by the flip-book (both entering and exiting layers)
-function ValuesPageCard({ value, t, className = '', style }: {
-  value: ValueItem;
-  t: (key: string) => string;
-  className?: string;
-  style?: React.CSSProperties;
-}) {
-  const Icon = value.icon;
-  return (
-    <div
-      className={`relative w-full min-h-[420px] sm:min-h-[440px] bg-white rounded-2xl border border-gray-100 p-10 sm:p-14 overflow-hidden ${className}`}
-      style={style}
-    >
-      {/* Top blue sheen */}
-      <div
-        className="absolute inset-x-0 top-0 h-28 pointer-events-none"
-        style={{ background: 'linear-gradient(to bottom, rgba(59,130,246,0.05), transparent)' }}
-      />
-      {/* Page thickness / sheen on the right edge */}
-      <div
-        className="absolute inset-y-0 right-0 w-12 pointer-events-none rounded-r-2xl"
-        style={{ background: 'linear-gradient(105deg, transparent 40%, rgba(0,0,0,0.03) 50%, rgba(0,0,0,0.08) 100%)' }}
-      />
-      {/* Page content */}
-      <div className="relative z-10 text-center flex flex-col items-center justify-center min-h-[340px]">
-        {/* Icon badge */}
-        <div
-          className="w-20 h-20 mx-auto mb-6 rounded-2xl flex items-center justify-center text-white shadow-lg"
-          style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #6366f1 50%, #818cf8 100%)', boxShadow: '0 12px 30px rgba(59,130,246,0.30)' }}
-        >
-          <Icon className="w-10 h-10" strokeWidth={1.6} />
-        </div>
-
-        <h3 className="text-3xl font-bold text-gray-900 mb-4">{t(value.titleKey)}</h3>
-        <p className="text-gray-600 leading-relaxed text-lg max-w-2xl mx-auto">{t(value.descriptionKey)}</p>
-      </div>
-    </div>
-  );
-}
-
-// ===== Core Values Flip-Book Carousel (V9 redesign) =====
-// Realistic book-page turn: the old page rotates away to the right while the new
-// page rotates in from the left. Both layers use perspective scaling + shadow
-// shifts so the motion reads as a real page turning, not a simple swing.
-function ValuesBookFlip({ values, t, locale }: { values: ValueItem[]; t: (key: string) => string; locale: string }) {
-  const [currentPage, setCurrentPage] = useState(0);
-  const [prevPage, setPrevPage] = useState(0);
-  const [isFlipping, setIsFlipping] = useState(false);
-  const pageRef = useRef(0);
-
-  // Navigate to a target page (wraps around). Records the previous page so the
-  // exiting layer can show the page we are leaving.
-  const goToPage = useCallback((next: number) => {
-    const len = values.length;
-    const target = ((next % len) + len) % len;
-    if (target === pageRef.current) return;
-    setPrevPage(pageRef.current);
-    pageRef.current = target;
-    setCurrentPage(target);
-    setIsFlipping(true);
-  }, [values.length]);
-
-  // Auto-transition every 5 seconds
-  useEffect(() => {
-    const timer = setInterval(() => {
-      goToPage(pageRef.current + 1);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, [goToPage]);
-
-  // End the flip shortly after the CSS animation finishes
-  useEffect(() => {
-    if (!isFlipping) return;
-    const id = setTimeout(() => setIsFlipping(false), 700);
-    return () => clearTimeout(id);
-  }, [isFlipping]);
-
-  const current = values[currentPage];
-  const previous = values[prevPage];
-
-  return (
-    <div className="relative w-full max-w-4xl mx-auto">
-      {/* Flip keyframes (injected once per instance) */}
-      <style>{`
-        @keyframes vbf-enter {
-          from { transform: rotateY(-90deg) scale(0.96); opacity: 0; }
-          to   { transform: rotateY(0deg)   scale(1);    opacity: 1; }
-        }
-        @keyframes vbf-exit {
-          from { transform: rotateY(0deg)  scale(1);    opacity: 1; }
-          to   { transform: rotateY(90deg) scale(0.96); opacity: 0; }
-        }
-      `}</style>
-
-      <div className="relative w-full" style={{ perspective: '1500px' }}>
-        <div className="relative w-full min-h-[420px] sm:min-h-[440px]" style={{ transformStyle: 'preserve-3d' }}>
-          {/* ENTERING (new) page — front face, rotates in from the left */}
-          <ValuesPageCard
-            key={`vbf-enter-${currentPage}`}
-            value={current}
-            t={t}
-            className="absolute inset-0"
-            style={{
-              zIndex: 20,
-              backfaceVisibility: 'hidden',
-              transformOrigin: 'left center',
-              animation: 'vbf-enter 650ms cubic-bezier(0.42, 0, 0.58, 1) both',
-              boxShadow: '0 25px 50px -12px rgba(59,130,246,0.20), 0 10px 25px -5px rgba(0,0,0,0.08)',
-            }}
-          />
-
-          {/* EXITING (old) page — flips away to the right, only mounted during the flip */}
-          {isFlipping && (
-            <ValuesPageCard
-              key={`vbf-exit-${prevPage}-${currentPage}`}
-              value={previous}
-              t={t}
-              className="absolute inset-0"
-              style={{
-                zIndex: 30,
-                backfaceVisibility: 'hidden',
-                transformOrigin: 'left center',
-                animation: 'vbf-exit 650ms cubic-bezier(0.42, 0, 0.58, 1) both',
-                boxShadow: '0 25px 50px -10px rgba(0,0,0,0.22)',
-              }}
-            />
-          )}
-
-          {/* Book spine shadow on the left (static) */}
-          <div
-            className="absolute inset-y-0 left-0 w-10 pointer-events-none rounded-l-2xl z-40"
-            style={{ background: 'linear-gradient(90deg, rgba(0,0,0,0.10), transparent)' }}
-          />
-        </div>
-      </div>
-
-      {/* Page number indicator — book style */}
-      <div className="flex justify-center gap-3 mt-8">
-        {values.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => goToPage(i)}
-            aria-label={`Go to value ${i + 1}`}
-            className={`h-3 rounded-full transition-all duration-300 ${i === currentPage ? 'bg-blue-600 w-8' : 'bg-gray-300 hover:bg-gray-400 w-3'}`}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
+// ===== Core Values — rendered by <ValuesBook> (see src/components/about/ValuesBook.tsx) =====
 
 export default function AboutPage() {
   const { locale: rawLocale, t } = useLocale();
@@ -370,11 +216,11 @@ export default function AboutPage() {
 
   // Values data - 5 core values
   const values = [
-    { icon: Cpu, titleKey: 'about.values.innovation.title', descriptionKey: 'about.values.innovation.description' },
-    { icon: ShieldCheck, titleKey: 'about.values.quality.title', descriptionKey: 'about.values.quality.description' },
-    { icon: Users, titleKey: 'about.values.service.title', descriptionKey: 'about.values.service.description' },
-    { icon: Globe, titleKey: 'about.values.customer.title', descriptionKey: 'about.values.customer.description' },
-    { icon: TrendingUp, titleKey: 'about.values.global.title', descriptionKey: 'about.values.global.description' },
+    { icon: Cpu, titleKey: 'about.values.innovation.title', descriptionKey: 'about.values.innovation.description', highlightKey: 'about.values.innovation.highlight', statKey: 'about.values.innovation.stat' },
+    { icon: ShieldCheck, titleKey: 'about.values.quality.title', descriptionKey: 'about.values.quality.description', highlightKey: 'about.values.quality.highlight', statKey: 'about.values.quality.stat' },
+    { icon: Users, titleKey: 'about.values.service.title', descriptionKey: 'about.values.service.description', highlightKey: 'about.values.service.highlight', statKey: 'about.values.service.stat' },
+    { icon: Globe, titleKey: 'about.values.customer.title', descriptionKey: 'about.values.customer.description', highlightKey: 'about.values.customer.highlight', statKey: 'about.values.customer.stat' },
+    { icon: TrendingUp, titleKey: 'about.values.global.title', descriptionKey: 'about.values.global.description', highlightKey: 'about.values.global.highlight', statKey: 'about.values.global.stat' },
   ];
 
   // Certifications data
@@ -541,49 +387,8 @@ export default function AboutPage() {
         </nav>
       </OceanHeader>
 
-      {/* Company Introduction — V9: balanced 45/55 layout, full photo, no dark overlay */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative overflow-hidden bg-gradient-to-br from-blue-50/40 via-indigo-50/30 to-white">
-        {/* Subtle animated background gradient + blue overlay layer for depth */}
-        <div className="absolute inset-0 opacity-[0.5]" style={{
-          background: 'linear-gradient(135deg, rgba(59,130,246,0.06) 0%, rgba(99,102,241,0.03) 50%, rgba(139,92,246,0.06) 100%), radial-gradient(ellipse at 30% 50%, #3b82f6 0%, transparent 60%), radial-gradient(ellipse at 70% 30%, #8b5cf6 0%, transparent 55%)',
-          animation: 'about-intro-bg-pulse 10s ease-in-out infinite alternate',
-        }} />
-
-        {/* V9: Badge centered at section top like other sections */}
-        <div className="text-center mb-10">
-          <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 border border-blue-100">
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 inline-block mr-2" />
-            {t('about.companyIntro.badge')}
-          </span>
-        </div>
-
-        <div className="relative z-10 flex flex-col lg:flex-row gap-16 items-center">
-          {/* LEFT: company building photo — V9: smaller (45%), fully visible, no dark overlay */}
-          <div className="w-full lg:w-[45%] rounded-2xl overflow-hidden shadow-lg border border-gray-200/60 relative group transition-all duration-700 hover:shadow-[0_22px_55px_-18px_rgba(59,130,246,0.30)] hover:-translate-y-1" style={{ minHeight: '460px' }}>
-            <Image
-              src="/images/about/company-building.jpg"
-              alt={t('company.name')}
-              width={800}
-              height={800}
-              className="w-full h-full object-cover rounded-2xl"
-              priority={true}
-              quality={92}
-            />
-          </div>
-
-          {/* RIGHT: heading + copy — V9: wider (55%) with more breathing room */}
-          <div className="w-full lg:w-[55%] lg:pl-2">
-            <h2 className="text-5xl sm:text-6xl font-extrabold text-gray-900 mb-6 tracking-tight">{t('about.companyIntro.title')}</h2>
-            <div className="v6-shimmer-line w-24 h-1.5 mb-8 rounded-full" style={{ background: 'linear-gradient(90deg, #3b82f6 0%, #6366f1 50%, #8b5cf6 100%)' }} />
-            <p className="text-xl text-gray-600 leading-loose mb-6">
-              {t('about.companyIntro.paragraph1')}
-            </p>
-            <p className="text-xl text-gray-600 leading-loose">
-              {t('about.companyIntro.paragraph2')}
-            </p>
-          </div>
-        </div>
-      </section>
+      {/* Company Introduction — extracted to <CompanyShowcase> (V8 visual refresh) */}
+      <CompanyShowcase t={t} locale={locale} />
 
       {/* Customer Pain Points — V6 glassmorphism diagnosis rows */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-gradient-to-b from-stone-50/60 to-white">
@@ -1076,7 +881,7 @@ export default function AboutPage() {
           </div>
 
           {/* ===== 3D BOOK WITH PAGE FLIP ===== */}
-          <ValuesBookFlip values={values} t={t} locale={locale} />
+          <ValuesBook values={values} t={t} locale={locale} />
         </div>
       </section>
 
@@ -1199,76 +1004,8 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Main Clients — Client Logo Wall */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white relative overflow-hidden">
-        {/* Top gradient divider */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 opacity-70" />
-        <div className="max-w-7xl mx-auto">
-          {/* Section Header */}
-          <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
-              {t('about.clients.title')}
-            </h2>
-            <p className="text-lg text-gray-500 max-w-2xl mx-auto">
-              {t('about.clients.subtitle')}
-            </p>
-            <div className="w-24 h-1.5 mx-auto mt-4 rounded-full"
-              style={{ background: 'linear-gradient(90deg, #3b82f6, #6366f1, #8b5cf6)' }}
-            />
-          </div>
-
-          {/* Logo Grid */}
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-8 items-center">
-            {[
-              { name: 'YUDO', nameZh: 'YUDO', nameEn: 'YUDO' },
-              { name: 'CNC', nameZh: 'CNC', nameEn: 'CNC' },
-              { name: 'Haier', nameZh: '海尔', nameEn: 'Haier' },
-              { name: 'JMP', nameZh: '佳友泵业', nameEn: 'JMP' },
-              { name: 'Husky', nameZh: 'Husky', nameEn: 'HUSKY INJECTION MOLDING SYSTEMS' },
-              { name: 'JianfuGear', nameZh: '建福齿轮', nameEn: 'JIANFU GEAR' },
-              { name: 'QingdaoAocida', nameZh: '青岛奥司登', nameEn: 'AOCIDA' },
-              { name: 'QYUNDA', nameZh: 'QYUNDA', nameEn: 'QYUNDA' },
-              { name: 'Daton', nameZh: '大通汽车', nameEn: 'DATON AUTOMOTIVE' },
-              { name: 'JABIL', nameZh: 'JABIL', nameEn: 'JABIL' },
-              { name: 'Motic', nameZh: 'Motic', nameEn: 'Motic' },
-              { name: 'TOYODENKI', nameZh: 'TOYODENKI', nameEn: 'TOYODENKI' },
-              { name: 'MicroGlobal', nameZh: 'Micro Global', nameEn: 'Micro Global' },
-              { name: 'WeixingShares', nameZh: '伟星股份', nameEn: 'WEIXING SHARES' },
-              { name: 'SAB', nameZh: 'SAB', nameEn: 'SAB' },
-              { name: 'DHLON', nameZh: '德汇隆', nameEn: 'DHLON' },
-              { name: 'Parkway', nameZh: 'Parkway', nameEn: 'Parkway' },
-              { name: 'ChangqingGroup', nameZh: '长青集团', nameEn: 'CHANGQING GROUP' },
-              { name: 'Andrs', nameZh: '安德斯', nameEn: 'ANDRS' },
-              { name: 'ZhangjiagangHuimin', nameZh: '张家港惠民', nameEn: 'ZHANGJIAGANG HUIMIN' },
-              { name: 'R', nameZh: '菲瑞达', nameEn: 'PHIRIDA' },
-              { name: 'KeMed', nameZh: '科医联', nameEn: 'KE MEDICAL' },
-              { name: 'Mate', nameZh: 'MATE', nameEn: 'MATE' },
-              { name: 'MLS', nameZh: 'MLS', nameEn: 'MLS' },
-              { name: 'JOMOO', nameZh: '九牧', nameEn: 'JOMOO METALS' },
-              { name: 'Phrida', nameZh: '江苏菲瑞达模具', nameEn: 'Jiangsu Phrida Mould Technology' },
-              { name: 'Midea', nameZh: '美的', nameEn: 'Midea' },
-              { name: 'CRRC', nameZh: '中国中车', nameEn: 'CRRC' },
-              { name: 'FKD', nameZh: 'FKD', nameEn: 'FKD' },
-              { name: 'LG', nameZh: 'LG', nameEn: 'LG' },
-              { name: 'Shimge', nameZh: '新界泵业', nameEn: 'SHIMGE PUMP' },
-              { name: 'GuoshengGroup', nameZh: '国盛集团', nameEn: 'GUOSHENG GROUP' },
-              { name: 'LanXun', nameZh: '蓝盾防务', nameEn: 'LANXUN DEFENSE' },
-              { name: 'LuxshareICT', nameZh: '立讯精密', nameEn: 'LUXSHARE ICT' },
-            ].map((client, idx) => (
-              <div
-                key={idx}
-                className="flex items-center justify-center p-6 rounded-xl border border-gray-100 hover:border-blue-200 hover:bg-blue-50/50 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group bg-white"
-                title={locale === 'zh' ? client.nameZh : client.nameEn}
-              >
-                {/* Since we don't have actual logo images, render styled text logos */}
-                <span className="text-lg font-bold text-gray-500 group-hover:text-blue-600 transition-colors duration-300 text-center select-none">
-                  {locale === 'zh' ? client.nameZh : client.name.toUpperCase()}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Main Clients — extracted to <ClientWall> (V8 visual refresh) */}
+      <ClientWall t={t} locale={locale} />
 
       {/* ===== CTA v264 — 明亮水晶水族馆（Crystal-Clear Aquarium） ===== */}
       <section

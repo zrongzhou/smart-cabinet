@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { Package, ArrowLeft, Share2, ChevronRight, ChevronLeft, X, Star, FileText, Ruler, MessageSquare } from 'lucide-react';
+import { Package, ArrowLeft, Share2, ChevronRight, ChevronLeft, X, Star, FileText, Ruler, MessageSquare, ShoppingCart } from 'lucide-react';
 import ReviewList from '@/components/products/ReviewList';
 import SafeImage from '@/components/ui/SafeImage';
 import { getProductHref } from '@/lib/product-url';
+import { useCart } from '@/context/CartContext';
 
 // Safe text renderer - handles i18n objects, arrays, null, undefined
 function safeText(value: any, fallback: string = ''): string {
@@ -45,6 +46,11 @@ export default function ProductDetailClient({
   const [mainImageError, setMainImageError] = useState(false);
   const [mainImageLoading, setMainImageLoading] = useState(true);
   const [shareToast, setShareToast] = useState(false);
+  const { addItem } = useCart();
+  const [addedToast, setAddedToast] = useState(false);
+
+  const addToCartLabel =
+    locale === 'zh' ? '加入购物车' : locale === 'ar' ? 'أضف إلى السلة' : 'Add to Cart';
 
   // Use pre-resolved data from server (no function props!)
   const name = product._resolvedName || '';
@@ -276,6 +282,27 @@ export default function ProductDetailClient({
 
                 {/* CTA Buttons */}
                 <div className="flex flex-wrap gap-3 mb-8">
+                  <button
+                    onClick={() => {
+                      addItem({
+                        productId: product.id,
+                        quantity: 1,
+                        price: product.price || 0,
+                        name: product._resolvedName || product.name || name,
+                        image: product.images?.[0] || null,
+                        slug: product.slug,
+                      });
+                      setAddedToast(true);
+                      setTimeout(() => setAddedToast(false), 2000);
+                    }}
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-800 transition-all shadow-lg hover:-translate-y-0.5"
+                  >
+                    <ShoppingCart className="w-4 h-4" />
+                    {addToCartLabel}
+                    {addedToast && (
+                      <span className="ml-1 inline-flex items-center px-2 py-0.5 bg-green-500/20 text-green-100 text-xs font-medium rounded-full">✓</span>
+                    )}
+                  </button>
                   <a
                     href={`/${locale}/contact`}
                     className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200/50 hover:shadow-blue-300/50 hover:-translate-y-0.5"

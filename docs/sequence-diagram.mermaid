@@ -1,52 +1,77 @@
+%% ===== 1. 加购 -> 结算 -> 支付 -> 回调 =====
 sequenceDiagram
-    participant U as 运营(浏览器)
-    participant P as EditPage / ProductFaqBlock
-    participant A as adminApi (unified-data)
-    participant R as /api/admin/faqs
-    participant DB as Prisma/Postgres
-    participant D as ProductDetailView(前台)
+    actor U as 用户
+    participant NC as Navbar/CartContext
+    participant PDP as ProductDetailClient
+    participant CO as /checkout
+    participant API as /api/orders
+    participant PP as Payment Provider
+    participant WH as Webhook
+    participant DB as Postgres
 
-    Note over U,D: 1) 进入编辑页 → 加载该产品 FAQ
-    U->>P: 打开 /admin/products/edit/[id]
-    P->>A: fetchAdminFaqs(productId, 200)
-    A->>R: GET /api/admin/faqs?productId=id&pageSize=200
-    R->>DB: findMany(where:{productId, ...})
-    DB-->>R: faqs[]
-    R-->>A: {data: faqs}
-    A-->>P: faqRows[]
-    P-->>U: 渲染「产品 FAQ」区块（每行三语+分类+状态+排序）
+    U->>PDP: 点击「加入购物车」
+    PDP->>NC: addItem(product)
+    NC->>NC: 写 localStorage(sc_cart) / 已登录则 POST /api/user/cart
+    NC-->>U: 角标 +1
 
-    Note over U,D: 2) 新增 FAQ → 即时保存（POST 带 productId）
-    U->>P: 点「+ 添加 FAQ」→ 填表 → 点行内「保存」
-    P->>A: createFaq({question,answer,category,status,order,productId})
-    A->>R: POST /api/admin/faqs（body 含 productId）
-    R->>DB: create(data 含 productId)
-    DB-->>R: 新 FAQ（含 id）
-    R-->>A: FAQ
-    A-->>P: 回填 id，_isNew=false
-    P-->>U: 该行标记已保存
+    U->>CO: 进入结算，填收货信息+选支付方式
+    CO->>API: POST {items, shippingAddress, paymentMethod}
+    API->>DB: 建 Order(pending,unpaid) + Payment(created)
+    API->>PP: createPayment(order)
+    alt Stripe/PayPal(有密钥)
+        PP-->>API: { payUrl: 第三方 checkout url }
+    else 微信/支付宝(mock)
+        PP-->>API: { payUrl: /checkout/mock-pay?orderId=&method= }
+    end
+    API-->>CO: { order, payment: { payUrl } }
+    CO->>U: 跳转 payUrl
 
-    Note over U,D: 3) 编辑已有 FAQ → 即时更新（PUT）
-    U->>P: 改某行字段 → 点行内「保存」
-    P->>A: updateFaq(id, {question,answer,category,status,order})
-    A->>R: PUT /api/admin/faqs?id=id
-    R->>DB: update(data)
-    DB-->>R: FAQ
-    R-->>A: FAQ
-    A-->>P: 更新本地行
-    P-->>U: 已更新
+    U->>PP: 完成支付(或 mock 页确认)
+    PP->>WH: 发送 Webhook(含 orderId/transactionId)
+    WH->>WH: 验签(stripe-signature / paypal 传输签名 / mock 免验)
+    WH->>DB: Payment→paid, Order.paymentStatus=paid, paidAt, transactionId
+    WH-->>PP: 200 OK
 
-    Note over U,D: 4) 删除 FAQ → 即时删除（DELETE，二次确认）
-    U->>P: 点行内「删除」（弹确认）
-    P->>A: deleteFaq(id)
-    A->>R: DELETE /api/admin/faqs?id=id
-    R->>DB: delete(where:{id})
-    DB-->>R: success
-    R-->>A: {success:true}
-    A-->>P: 移除本地行
-    P-->>U: 列表重绘
+%% ===== 2. 后台用户管理 =====
+sequenceDiagram
+    actor A as 管理员
+    participant UI as /admin/users
+    participant API as /api/admin/users
+    participant AUTH as requireAdmin()
+    participant SVC as userAuth.ts
+    participant DB as Postgres
 
-    Note over U,D: 5) 前台详情页读取该产品 FAQ（保存即生效，零额外开发）
-    D->>DB: findMany(where:{productId,status:'active'}, orderBy:{order:'asc'})
-    DB-->>D: resolvedFaqs[]
-    D-->>U: 产品详情页展示 FAQ 区块
+    A->>UI: 打开用户列表
+    UI->>API: GET /api/admin/users?page=&search=
+    API->>AUTH: 校验 JWT + role==admin
+    AUTH-->>API: 通过
+    API->>SVC: getAllUsers()
+    SVC->>DB: 查询 users
+    DB-->>UI: 用户表格
+    A->>UI: 切换启用/停用 或 改角色
+    UI->>API: PATCH /api/admin/users/[id] {isActive|role}
+    API->>AUTH: 校验
+    API->>SVC: updateUserStatus / updateUserRole
+    SVC->>DB: UPDATE users
+    DB-->>UI: 刷新行状态
+
+%% ===== 3. 后台服务管理执行（Q2 方案 C）=====
+sequenceDiagram
+    actor A as 运维管理员
+    participant UI as /admin/services
+    participant API as /api/admin/services
+    participant AUTH as requireAdmin()
+    participant WL as commandWhitelist
+    participant RC as runCommand(execFile)
+    participant OS as 系统(pm2/nginx/certbot)
+
+    A->>UI: 点击「重启应用」/「重载 Nginx」/「更新域名配置」
+    UI->>API: POST {action, params?}
+    API->>AUTH: 校验 admin
+    API->>WL: 校验 action∈白名单 + 参数(域名/端口/邮件)正则
+    WL-->>API: 通过 / 拒绝(400)
+    API->>RC: execFile('pm2',['restart','smart-cabinet']) 等
+    RC->>OS: 执行（无 shell，参数数组）
+    OS-->>RC: stdout/stderr + exitCode
+    RC-->>API: 结果
+    API-->>UI: 成功/失败 + 日志

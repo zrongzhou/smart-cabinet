@@ -34,8 +34,9 @@ export default function AdminLoginPage() {
         if (typeof window !== 'undefined') {
           localStorage.setItem('admin_authenticated', 'true');
           localStorage.setItem('admin_user', username.trim());
-          // Also set localStorage token for authFetch() in unified-data.ts
-          localStorage.setItem('admin_token', 'authenticated-' + Date.now());
+          // Store the real signed JWT returned by the login API so admin API
+          // calls (Bearer) pass the requireAdmin() server-side guard.
+          localStorage.setItem('admin_token', data.token);
         }
         // Hard redirect to admin dashboard
         window.location.href = '/admin';

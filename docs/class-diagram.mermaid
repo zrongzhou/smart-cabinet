@@ -1,58 +1,131 @@
 classDiagram
-    class Product {
+    %% ===== 数据模型（Prisma）=====
+    class User {
         +String id
-        +String slug
-        +String sku
+        +String email
+        +String role
+        +Boolean isActive
+        +Json cart
+        +Order[] orders
+    }
+    class Order {
+        +String id
+        +String userId
+        +String status
+        +Float total
+        +Json shippingAddress
+        +String paymentMethod
+        +String paymentStatus
+        +String transactionId
+        +DateTime paidAt
+        +OrderItem[] items
+        +Payment payment
+    }
+    class OrderItem {
+        +String id
+        +String orderId
+        +String productId
+        +Int quantity
+        +Float price
         +Json name
-        +String status
-        +FAQ[] faqs
     }
-    class FAQ {
+    class Payment {
         +String id
-        +Json question  %% {zh,en,ar}
-        +Json answer    %% {zh,en,ar}
-        +String category
-        +Int order
-        +String status  %% per-product: active/draft
-        +Boolean featured
-        +DateTime createdAt
-        +DateTime updatedAt
-        +String productId  %% 可选 FK；null=全局 FAQ
-    }
-    class FAQAdminRoute {
-        +GET(request)  %% 新增 productId 过滤
-        +POST(request) %% 新增 productId 持久化
-        +PUT(request)  %% 新增 productId 接收
-        +DELETE(request) %% 按 ?id= 删除，复用
-    }
-    class AdminApiClient {
-        +fetchAdminFaqs(productId?, pageSize)
-        +createFaq(data)
-        +updateFaq(id, data)
-        +deleteFaq(id)
-    }
-    class ProductFaqBlock {
-        -faqRows: FaqDraft[]
-        +loadFaqs(productId)
-        +addRow()
-        +saveRow(row)
-        +deleteRow(id)
-        +moveRow(id, dir)
-    }
-    class FaqDraft {
-        +String id
-        +Json question
-        +Json answer
-        +String category
+        +String orderId
+        +String method
         +String status
-        +Int order
-        +Boolean _isNew
-        +Boolean _saving
-        +Boolean _deleting
+        +Float amount
+        +String currency
+        +String transactionId
+        +Json rawPayload
     }
 
-    Product "1" o-- "0..*" FAQ : productId 可选FK(onDelete Cascade)
-    FAQAdminRoute ..> FAQ : prisma.fAQ CRUD
-    AdminApiClient ..> FAQAdminRoute : HTTP /api/admin/faqs
-    ProductFaqBlock ..> AdminApiClient : 调用
-    ProductFaqBlock *-- FaqDraft : 维护本地 draft 列表
+    User "1" --> "0..*" Order : owns
+    Order "1" --> "1..*" OrderItem : contains
+    Order "1" --> "0..1" Payment : has
+
+    %% ===== 前端购物车 =====
+    class CartContext {
+        +addItem(product)
+        +removeItem(productId)
+        +updateQty(productId, n)
+        +mergeWithUserCart()
+        -state: CartItem[]
+    }
+    class CartItem {
+        +String productId
+        +Int quantity
+        +Float price
+        +Json name
+        +String image
+    }
+    CartContext "1" --> "0..*" CartItem : holds
+
+    %% ===== 支付服务层 =====
+    class PaymentProvider {
+        <<interface>>
+        +createPayment(input) CreatePaymentResult
+        +verifyWebhook(raw, sig) WebhookResult
+    }
+    class StripeProvider
+    class PayPalProvider
+    class WechatProvider
+    class AlipayProvider
+    PaymentProvider <|.. StripeProvider
+    PaymentProvider <|.. PayPalProvider
+    PaymentProvider <|.. WechatProvider
+    PaymentProvider <|.. AlipayProvider
+
+    class PaymentConfig {
+        +isMock(method) Boolean
+        +resolveCurrency(locale) String
+    }
+
+    %% ===== API 路由 =====
+    class OrdersApi {
+        +POST create(order)
+    }
+    class CartApi {
+        +GET getUserCart()
+        +POST mergeCart(items)
+    }
+    class PaymentApi {
+        +POST createSession()
+        +POST webhook()
+    }
+    class BlogMergeLib {
+        +getMergedBlogList(opts) MergedBlog[]
+        +getMergedBlogBySlug(slug) MergedBlog
+    }
+
+    %% ===== 后台服务 =====
+    class AdminUserService {
+        +listUsers()
+        +updateStatus()
+        +updateRole()
+    }
+    class AdminOrderService {
+        +listOrders(filter)
+        +updateStatus(id, status)
+    }
+    class ServiceManager {
+        +execWhitelisted(action, params)
+    }
+    class CommandWhitelist {
+        +validate(action, params) Boolean
+    }
+    class RunCommand {
+        +execFile(cmd, args[])
+    }
+    ServiceManager --> CommandWhitelist : validates
+    ServiceManager --> RunCommand : invokes
+
+    %% ===== 关系标注 =====
+    OrdersApi ..> PaymentProvider : uses
+    OrdersApi ..> Order : persists
+    CartApi ..> User : persists cart
+    PaymentApi ..> PaymentProvider : uses
+    PaymentApi ..> Payment : updates
+    BlogMergeLib ..> Order : (none)
+    AdminUserService ..> User : queries
+    AdminOrderService ..> Order : queries

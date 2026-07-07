@@ -458,5 +458,32 @@
   "about.whyChoose.item6.title": "Real-Time Inventory Tracking",
   "about.whyChoose.item6.desc": "Every pickup, return and replenishment can be recorded. The system supports stock alerts, usage reports and material consumption analysis.",
   "about.whyChoose.item7.title": "Reliable After-Sales Support",
-  "about.whyChoose.item7.desc": "We provide installation guidance, software training, remote technical support and after-sales service to help customers run the system smoothly."
+  "about.whyChoose.item7.desc": "We provide installation guidance, software training, remote technical support and after-sales service to help customers run the system smoothly.",
+
+  "about.showcase.trustTitle": "Trusted by manufacturers worldwide",
+  "about.showcase.metricClients": "Factory Clients",
+  "about.showcase.metricYears": "Years of Manufacturing",
+  "about.showcase.metricFortune": "Fortune 500 Partners",
+  "about.showcase.certsTitle": "Certifications & Patents",
+
+  "about.values.innovation.highlight": "Continuous R&D keeps our smart cabinets ahead of the curve.",
+  "about.values.innovation.stat": "10+ Patents",
+  "about.values.quality.highlight": "Every unit passes 12 strict quality inspections before delivery.",
+  "about.values.quality.stat": "5 System Certifications",
+  "about.values.service.highlight": "24/7 remote technical support from consultation to after-sales.",
+  "about.values.service.stat": "60+ Countries Served",
+  "about.values.customer.highlight": "We evolve our products around real customer needs.",
+  "about.values.customer.stat": "97% Satisfaction",
+  "about.values.global.highlight": "Localized support that reaches customers anywhere.",
+  "about.values.global.stat": "60+ Export Countries",
+  "about.values.prev": "Previous",
+  "about.values.next": "Next",
+  "about.values.page": "Page",
+
+  "about.clients.endorsement": "Serving 800+ manufacturing enterprises, including 30+ Fortune 500 companies",
+  "about.client.years": "years of partnership",
+  "about.client.slogan1": "A trustworthy long-term partner",
+  "about.client.slogan2": "Stable, reliable product quality",
+  "about.client.slogan3": "Responsive and professional service",
+  "about.client.slogan4": "Win-win cooperation that grows together"
 }

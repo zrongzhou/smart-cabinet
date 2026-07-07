@@ -202,6 +202,9 @@ model User {
   orders         Order[]     // 添加这行
   reviews        Review[]   // 添加这行
 
+  // ===== V8: 购物车（JSON，游客态走 localStorage，登录后合并至此）=====
+  cart           Json?      // [{ productId: String, quantity: Int, price: Float, name: Json, image: String? }]
+
   @@map("users")
 }
 
@@ -228,15 +231,43 @@ model Order {
   status          String   @default("pending") // pending/processing/shipped/delivered/cancelled
   total           Float
   shippingAddress Json?    // { name, address, city, country, zipCode }
+
+  // ===== V8: 支付字段 =====
+  paymentMethod   String?  // 'stripe' | 'paypal' | 'wechat' | 'alipay'
+  paymentStatus   String   @default("unpaid") // unpaid|pending|paid|failed|refunded
+  transactionId   String?
+  paidAt          DateTime?
+  adminNote       String?  // 后台履约/客服备注（V8 T4 新增）
+
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   
   user    User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   items   OrderItem[]
+  payments Payment[]  // 新增关联（一个订单可有多次支付尝试：创建/重试/退款）
   
   @@index([userId, status])
   @@index([createdAt])
   @@map("orders")
+}
+
+// ===== V8: 支付流水（Webhook 幂等、多渠道对账、退款记录）=====
+model Payment {
+  id            String   @id @default(cuid())
+  orderId       String
+  method        String   // stripe|paypal|wechat|alipay
+  status        String   @default("created") // created|pending|paid|failed
+  amount        Float
+  currency      String   @default("USD")
+  transactionId String?
+  rawPayload    Json?    // Webhook 原始负载（脱敏后存，便于对账）
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  @@unique([method, transactionId]) // Webhook 幂等：同渠道同交易号只处理一次
+  @@index([orderId])
+  @@map("payments")
 }
 
 // ==================== 订单项 ====================
