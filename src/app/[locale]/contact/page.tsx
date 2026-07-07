@@ -43,7 +43,6 @@ export default function ContactPage() {
     : [];
   const displayEmail = displayEmails[0];
   const displayPhone = displayPhones[0];
-  const displayWeChat = settings?.socialWechat || 'QiuyuanTech';
   const displayAddress = settings ? (locale === 'zh' ? (settings.addressZh || '') : locale === 'ar' ? (settings.addressAr || '') : (settings.address || '')) : '';
 
   const [formData, setFormData] = useState({
@@ -114,15 +113,8 @@ export default function ContactPage() {
       ],
       color: 'bg-orange-50 text-orange-600 border-orange-100',
     },
-    {
-      icon: MessageCircle,
-      label: locale === 'zh' ? '微信' : locale === 'ar' ? 'ويتشات' : 'WeChat',
-      lines: [
-        locale === 'zh' ? `微信: ${displayWeChat}` : `WeChat: ${displayWeChat}`,
-        locale === 'zh' ? '扫码添加客服微信' : locale === 'ar' ? 'امسح الرمز لإضافة خدمة العملاء' : 'Scan QR code to add customer service',
-      ],
-      color: 'bg-green-50 text-green-600 border-green-100',
-    },
+    // V8.3 fix: bug 2 — removed the WeChat customer-service contact block entirely
+    // (no longer showing "WeChat: QiuyuanTech" / "Scan QR code to add customer service").
     // WhatsApp entry (only show if WhatsApp numbers are configured)
     ...(displayWhatsAppNumbers.length > 0 ? [{
       icon: Phone,
@@ -228,17 +220,8 @@ export default function ContactPage() {
                       <span className="text-lg">{s.icon}</span>
                       <span className="text-gray-600 group-hover:text-blue-600 truncate">{s.label}</span>
                     </a>
-                  ))}
-                  {/* WeChat 显示为文本（不是链接）*/}
-                  {settings.socialWechat && (
-                    <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg border border-green-100 bg-green-50 text-sm">
-                      <span className="text-lg">💬</span>
-                      <div>
-                        <p className="text-xs text-green-600">WeChat</p>
-                        <p className="font-medium text-green-700">{settings.socialWechat}</p>
-                      </div>
-                    </div>
-                  )}
+                  )                  )}
+                  {/* V8.3 fix: bug 2 — removed the WeChat social-media sub-block (no render of socialWechat). */}
                 </div>
               </div>
             )}

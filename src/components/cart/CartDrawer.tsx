@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useLocale } from '@/lib/i18n';
@@ -21,6 +21,15 @@ export default function CartDrawer() {
   const { locale } = useLocale();
   const [locale2] = [locale];
   const [checkingOut, setCheckingOut] = useState(false);
+
+  // V8.3 fix: bug 1 — never leave the cart drawer open across a locale switch.
+  // Switching language performs a full navigation; if the drawer were ever left
+  // open (or some path opened it) we force-close it so no white overlay (e.g. the
+  // empty-cart card with the shopping-bag icon) can appear after choosing Arabic
+  // or any other locale.
+  useEffect(() => {
+    closeCart();
+  }, [locale, closeCart]);
 
   const labels = {
     title: locale === 'zh' ? '购物车' : locale === 'ar' ? 'عربة التسوق' : 'Your Cart',

@@ -164,7 +164,11 @@ export default function AdminShell({ prefix, children }: AdminShellProps) {
 
   const navLinks = NAV_ITEMS.map((item) => ({
     ...item,
-    href: `${prefix}${item.path}`,
+    // V8.3 fix: bug 4 — build an ABSOLUTE href (leading slash). The previous
+    // `${prefix}${item.path}` produced a relative URL that resolved against the
+    // current path, yielding doubled prefixes like
+    // `/xiaozhouBackend/xiaozhouBackend/products` which 404.
+    href: `/${prefix}${item.path}`,
     label: t(`nav.${item.key}`),
   }));
 

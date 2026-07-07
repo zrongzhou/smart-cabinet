@@ -2,6 +2,7 @@
 
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useRef,
@@ -168,8 +169,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const clear = () => setItems([]);
 
-  const openCart = () => setIsOpen(true);
-  const closeCart = () => setIsOpen(false);
+  // V8.3 fix: bug 1 — memoize these so consumers (e.g. CartDrawer's
+  // "close on locale change" effect) can depend on a stable reference and the
+  // effect does not re-run on every render (which would otherwise snap the cart
+  // shut immediately after opening).
+  const openCart = useCallback(() => setIsOpen(true), []);
+  const closeCart = useCallback(() => setIsOpen(false), []);
 
   return (
     <CartContext.Provider

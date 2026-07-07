@@ -45,6 +45,17 @@ function resolveStaticBlogForAdmin(idOrSlug: string): any | null {
 }
 
 /**
+ * V8.3 fix: bug 3 — pick a localized object from the form payload when it actually
+ * carries content, otherwise fall back to the static seed value. Avoids persisting
+ * an empty `{ en: '', zh: '', ar: '' }` object when the editor left a field blank
+ * but the seed had real content.
+ */
+function pickLocalized(formVal: any, seedVal: any): any {
+  if (formVal && (formVal.en || formVal.zh || formVal.ar)) return formVal;
+  return seedVal;
+}
+
+/**
  * GET /api/admin/blogs
  * 获取所有博客（管理后台）
  * 支持查询参数：?id=xxx 获取单篇博客（含完整 content）
@@ -63,17 +74,29 @@ export async function GET(request: NextRequest) {
     // 如果提供了 id 参数，返回单篇博客（含完整 content）
     if (id) {
       // 1) Primary lookup by DB id (CUID), excluding soft-deleted posts.
-      let blog = await prisma.blogPost.findUnique({
-        where: { id },
-        include: { tags: true },
-      });
-
-      // 2) Fallback: the caller may have passed a descriptive slug instead of an id.
-      if (!blog) {
-        blog = await prisma.blogPost.findFirst({
-          where: { slug: id, deletedAt: null },
+      //    V8.3 fix: bug 3 — guard the DB calls so a missing/unavailable database
+      //    cannot abort the request before the static-seed fallback (step 3) runs.
+      //    Without this guard a seed-only / DB-less environment would 500 and the
+      //    editor would show "Blog not found" for valid seed blogs (e.g. id '14').
+      let blog: any = null;
+      try {
+        blog = await prisma.blogPost.findUnique({
+          where: { id },
           include: { tags: true },
         });
+
+        // 2) Fallback: the caller may have passed a descriptive slug instead of an id.
+        if (!blog) {
+          blog = await prisma.blogPost.findFirst({
+            where: { slug: id, deletedAt: null },
+            include: { tags: true },
+          });
+        }
+      } catch (dbErr) {
+        // DB unreachable (seed-only / dev without a database) — fall through to the
+        // static-seed resolution so seeded blogs (e.g. id '14') still load.
+        console.error('DB blog lookup failed, falling back to static seed:', dbErr);
+        blog = null;
       }
 
       // 3) Fallback: resolve a static seed blog by numeric id or slug (Bug 10 fix).
@@ -284,7 +307,51 @@ export async function PUT(request: NextRequest) {
       where: { id },
     });
 
+    // V8.3 fix: bug 3 — static seed blogs (e.g. id '14' = cnc-tool-inventory-management-guide)
+    // live only in data/blogs.ts and have no DB record (the DB uses CUID ids). When the editor
+    // saves such a post, a plain "update" would fail with "Blog not found". Instead we
+    // materialize the seed into a real DB row so the save succeeds (upsert by slug so a
+    // second save updates the same row rather than colliding on the unique slug).
     if (!existingBlog) {
+      const staticSeed = resolveStaticBlogForAdmin(id);
+      if (staticSeed) {
+        const slug = (body.slug || staticSeed.slug || '').toString();
+        const materialized = await prisma.blogPost.findFirst({ where: { slug } });
+        const baseData = {
+          title: pickLocalized(body.title, staticSeed.title),
+          excerpt: pickLocalized(body.excerpt, staticSeed.excerpt),
+          content: pickLocalized(body.content, staticSeed.content),
+          author: body.author || staticSeed.author || '',
+          status: body.status || staticSeed.status || 'draft',
+          featured: body.featured ?? staticSeed.featured ?? false,
+          image: body.image || staticSeed.image || null,
+          category: body.category || staticSeed.category || null,
+        };
+        const tagConnect =
+          body.tagIds && Array.isArray(body.tagIds) && body.tagIds.length > 0
+            ? { tags: { connect: body.tagIds.map((tagId: string) => ({ id: tagId })) } }
+            : {};
+
+        if (materialized) {
+          const updated = await prisma.blogPost.update({
+            where: { id: materialized.id },
+            data: { ...baseData, ...tagConnect },
+            include: { tags: true },
+          });
+          return NextResponse.json(updated);
+        }
+
+        const created = await prisma.blogPost.create({
+          data: {
+            ...baseData,
+            slug,
+            publishedAt: body.publishedAt ? new Date(body.publishedAt) : new Date(),
+            ...tagConnect,
+          },
+          include: { tags: true },
+        });
+        return NextResponse.json(created, { status: 201 });
+      }
       return badRequestResponse('Blog not found');
     }
 
