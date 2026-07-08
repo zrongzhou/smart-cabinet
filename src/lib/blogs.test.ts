@@ -85,9 +85,12 @@ describe('blogs merge layer (V8 T1 / Q5)', () => {
   });
 
   it('filters by category', async () => {
-    const { data } = await getMergedBlogList({ category: 'General' });
+    // NOTE: 'General' 仅是 merge 层对「无 category 文章」的兜底默认值；
+    // 静态数据中所有文章都有显式 category，因此不会落入 'General'。
+    // 这里改用真实存在的分类 'industry-trends' 验证分类过滤逻辑。
+    const { data } = await getMergedBlogList({ category: 'industry-trends' });
     expect(data.length).toBeGreaterThan(0);
-    expect(data.every((p) => (p.category || '').toLowerCase() === 'general')).toBe(true);
+    expect(data.every((p) => (p.category || '').toLowerCase() === 'industry-trends')).toBe(true);
   });
 
   it('getMergedBlogBySlug resolves a static V7 post', async () => {

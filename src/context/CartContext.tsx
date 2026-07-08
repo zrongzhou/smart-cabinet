@@ -170,7 +170,25 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   const removeItem = (productId: string) => {
-    setItems((prev) => prev.filter((it) => it.productId !== productId));
+    setItems((prev) => {
+      const next = prev.filter((it) => it.productId !== productId);
+      // V8.7 fix: 登录态下同步服务端——删除单个商品后把剩余购物车写回（空则清空）
+      if (isAuthenticated && token) {
+        const body = next.length > 0
+          ? JSON.stringify({ items: next, replace: true })
+          : null;
+        const doSync = () =>
+          fetch('/api/user/cart', {
+            method: next.length > 0 ? 'POST' : 'DELETE',
+            headers: next.length > 0
+              ? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+              : { Authorization: `Bearer ${token}` },
+            body,
+          }).catch(() => undefined);
+        doSync();
+      }
+      return next;
+    });
   };
 
   // Bug 4 fix: clamp to [MIN, MAX] so the +/- buttons (and any caller) can never
@@ -183,7 +201,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
     );
   };
 
-  const clear = () => setItems([]);
+  const clear = () => {
+    setItems([]);
+    // V8.7 fix: 登录态下同步服务端——清空购物车必须同时清空服务端，
+    // 否则下次登录 union 会重新把历史残留商品（如 $0 残品）拉回来。
+    if (isAuthenticated && token) {
+      fetch('/api/user/cart', {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      }).catch(() => undefined);
+    }
+  };
 
   // V8.3 fix: bug 1 — memoize these so consumers (e.g. CartDrawer's
   // "close on locale change" effect) can depend on a stable reference and the

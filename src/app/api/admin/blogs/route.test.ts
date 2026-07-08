@@ -87,7 +87,10 @@ const mkReq = (url: string, init?: { method?: string; body?: unknown }): any =>
   });
 
 const SEED_ID = '14';
-const SEED_SLUG = 'cnc-tool-inventory-management-guide';
+// V8.6: 旧两篇博客 slug 已补 .html 后缀，静态种子数据中的 slug 现为
+// 'cnc-tool-inventory-management-guide.html'；route 的 resolveStaticBlogForAdmin()
+// 会正确返回该 .html slug，故此处测试常量须与其保持一致。
+const SEED_SLUG = 'cnc-tool-inventory-management-guide.html';
 
 beforeEach(() => {
   vi.clearAllMocks();

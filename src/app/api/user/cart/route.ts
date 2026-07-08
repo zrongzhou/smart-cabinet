@@ -72,10 +72,38 @@ export async function GET(request: NextRequest) {
     });
 
     const repaired = await repairCartPrices(migrateCorruptCart(user?.cart ?? null));
-    return NextResponse.json({ cart: repaired });
+    // V8.7 fix: 过滤掉彻底损坏的条目（price=0 且 productId 无效），避免登录后历史 $0 残品冒出
+    const valid = repaired.filter((it) => it && it.productId && it.price > 0);
+    return NextResponse.json({ cart: valid });
   } catch (error) {
     console.error('Get cart error:', error);
     return NextResponse.json({ error: 'Failed to get cart' }, { status: 500 });
+  }
+}
+
+/**
+ * DELETE /api/user/cart
+ * 清空当前用户的服务端购物车（User.cart 置 null）。
+ * 用于"清空购物车"后同步服务端，避免登录后又冒出历史残留商品。
+ */
+export async function DELETE(request: NextRequest) {
+  try {
+    const token = getUserToken(request);
+    if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const payload = verifyToken(token);
+    if (!payload || !payload.userId) {
+      return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+    }
+
+    await prisma.user.update({
+      where: { id: payload.userId },
+      data: { cart: Prisma.JsonNull },
+    });
+
+    return NextResponse.json({ success: true, cart: [] });
+  } catch (error) {
+    console.error('Clear cart error:', error);
+    return NextResponse.json({ error: 'Failed to clear cart' }, { status: 500 });
   }
 }
 

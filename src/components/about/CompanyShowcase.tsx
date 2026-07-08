@@ -17,7 +17,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { Users, Factory, Award, ShieldCheck, BadgeCheck, CheckCircle } from 'lucide-react';
+import { Users, Factory, Award, ShieldCheck, BadgeCheck, CheckCircle, Globe } from 'lucide-react';
 
 interface CompanyShowcaseProps {
   t: (key: string) => string;
@@ -86,22 +86,18 @@ const CERT_BADGES = [
   { name: '10+ Patents', icon: Award },
 ];
 
+/** V8.7 fix (bug 4): small factory stats shown under the photo on the left
+ *  column. Coordinates with the trust metrics / certification wall on the
+ *  right while filling the previously empty space below the image. */
+const FACTORY_HIGHLIGHTS = [
+  { value: '20,000', suffix: '㎡', labelKey: 'about.showcase.fArea', icon: Factory },
+  { value: '300', suffix: '+', labelKey: 'about.showcase.fStaff', icon: Users },
+  { value: '60', suffix: '+', labelKey: 'about.showcase.fCountries', icon: Globe },
+];
+
 export default function CompanyShowcase({ t }: CompanyShowcaseProps) {
   return (
     <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative overflow-hidden bg-gradient-to-br from-blue-50/40 via-indigo-50/30 to-white">
-      {/* V8.5 fix: bug 5 — refined, subtle breathing glow for the flow lines (no harsh dashes) */}
-      <style jsx global>{`
-        .about-showcase-flow {
-          animation: about-showcase-breathe 7s ease-in-out infinite;
-        }
-        @keyframes about-showcase-breathe {
-          0%, 100% { opacity: 0.6; }
-          50% { opacity: 0.95; }
-        }
-        .about-showcase-dot {
-          filter: drop-shadow(0 0 3px rgba(199, 210, 254, 0.9));
-        }
-      `}</style>
       {/* Soft animated depth layer */}
       <div className="absolute inset-0 opacity-[0.5]" style={{
         background:
@@ -134,63 +130,41 @@ export default function CompanyShowcase({ t }: CompanyShowcaseProps) {
             />
           </div>
 
-          {/* V8.5 fix: bug 5 — refined, subtle "data flow" lines under the image.
-              Solid (non-dashed) gradient strokes with a soft glow filter, plus a
-              few slow light points drifting along the curves. RTL-safe. */}
-          <div className="mt-3 h-12 w-full overflow-hidden rounded-lg" aria-hidden="true">
-            <svg
-              viewBox="0 0 600 48"
-              preserveAspectRatio="none"
-              className="h-full w-full about-showcase-flow"
-            >
-              <defs>
-                <linearGradient id="aboutShowcaseFlowGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#60a5fa" />
-                  <stop offset="50%" stopColor="#818cf8" />
-                  <stop offset="100%" stopColor="#a78bfa" />
-                </linearGradient>
-                <filter id="aboutShowcaseGlow" x="-20%" y="-60%" width="140%" height="220%">
-                  <feGaussianBlur stdDeviation="1.4" result="blur" />
-                  <feMerge>
-                    <feMergeNode in="blur" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-              </defs>
+          {/* V8.7 fix (bug 4): replaced the three drifting "data flow" lines
+              (which read as clutter) with a single refined accent divider, then
+              a "factory at a glance" highlight card that fills the empty space
+              under the photo and coordinates with the right column. */}
+          <div className="mt-5 flex items-center gap-3" aria-hidden="true">
+            <span className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-200 to-transparent" />
+            <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-blue-400">
+              {t('about.showcase.factoryTitle')}
+            </span>
+            <span className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-200 to-transparent" />
+          </div>
 
-              {/* Solid, gentle flowing lines — no harsh dashes, softer as they recede */}
-              {[12, 24, 36].map((y, i) => (
-                <path
-                  key={i}
-                  d={`M0 ${y} C 90 ${y - 6}, 180 ${y + 6}, 270 ${y} S 430 ${y - 6}, 510 ${y} S 600 ${y + 6}, 600 ${y}`}
-                  fill="none"
-                  stroke="url(#aboutShowcaseFlowGrad)"
-                  strokeWidth="1.6"
-                  strokeLinecap="round"
-                  filter="url(#aboutShowcaseGlow)"
-                  style={{ opacity: 0.5 - i * 0.12 }}
-                />
-              ))}
-
-              {/* Slow light points drifting along the curves for a subtle "live" feel */}
-              {[12, 24, 36].map((y, i) => (
-                <circle key={`dot-${i}`} r="1.8" fill="#c7d2fe" className="about-showcase-dot">
-                  <animateMotion
-                    dur="6s"
-                    begin={`${i * 1.2}s`}
-                    repeatCount="indefinite"
-                    path={`M0 ${y} C 90 ${y - 6}, 180 ${y + 6}, 270 ${y} S 430 ${y - 6}, 510 ${y} S 600 ${y + 6}, 600 ${y}`}
-                  />
-                  <animate
-                    attributeName="opacity"
-                    values="0;0.9;0"
-                    dur="6s"
-                    begin={`${i * 1.2}s`}
-                    repeatCount="indefinite"
-                  />
-                </circle>
-              ))}
-            </svg>
+          <div className="mt-4 rounded-2xl border border-gray-100 bg-white/70 backdrop-blur-sm p-5 shadow-sm">
+            <div className="space-y-3">
+              {FACTORY_HIGHLIGHTS.map((h) => {
+                const Icon = h.icon;
+                return (
+                  <div key={h.labelKey} className="flex items-center gap-3">
+                    <span
+                      className="flex items-center justify-center w-9 h-9 rounded-xl text-white shrink-0"
+                      style={{ background: 'linear-gradient(135deg, #3b82f6, #6366f1)' }}
+                    >
+                      <Icon className="w-4 h-4" strokeWidth={1.8} />
+                    </span>
+                    <div className="leading-tight">
+                      <div className="text-lg font-extrabold text-gray-900 tabular-nums">
+                        {h.value}
+                        {h.suffix}
+                      </div>
+                      <div className="text-[11px] font-medium text-gray-500">{t(h.labelKey)}</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
 

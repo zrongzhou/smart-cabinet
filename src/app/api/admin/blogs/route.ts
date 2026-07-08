@@ -531,6 +531,12 @@ export async function DELETE(request: NextRequest) {
       return badRequestResponse('Blog not found');
     }
 
+    // 先断开与 Tag 的多对多关联，避免外键约束导致删除失败（P2003）
+    await prisma.blogPost.update({
+      where: { id },
+      data: { tags: { set: [] } },
+    });
+
     await prisma.blogPost.delete({
       where: { id },
     });

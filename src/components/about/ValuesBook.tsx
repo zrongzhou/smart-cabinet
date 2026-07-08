@@ -80,6 +80,7 @@ export default function ValuesBook({ values, t, locale }: ValuesBookProps) {
   const isFlippingRef = useRef(false);
   const flipTimerRef = useRef<number | null>(null);
   const currentRef = useRef(current);
+  const pendingRef = useRef<{ nc: number; np: number } | null>(null);
 
   useEffect(() => {
     currentRef.current = current;
@@ -91,7 +92,25 @@ export default function ValuesBook({ values, t, locale }: ValuesBookProps) {
   useEffect(() => {
     return () => {
       if (flipTimerRef.current) window.clearTimeout(flipTimerRef.current);
+      isFlippingRef.current = false;
     };
+  }, []);
+
+  // Commit the page change and ALWAYS release the flip guard. Driven by both
+  // the leaf's `onAnimationEnd` (reliable) and a fallback timeout, so the
+  // < > controls can never be left permanently dead.
+  const finishFlip = useCallback(() => {
+    if (flipTimerRef.current) {
+      window.clearTimeout(flipTimerRef.current);
+      flipTimerRef.current = null;
+    }
+    if (pendingRef.current) {
+      setCurrent(pendingRef.current.nc);
+      setPrev(pendingRef.current.np);
+      pendingRef.current = null;
+    }
+    isFlippingRef.current = false;
+    setIsFlipping(false);
   }, []);
 
   const turn = useCallback(
@@ -105,19 +124,15 @@ export default function ValuesBook({ values, t, locale }: ValuesBookProps) {
       const nc = dir === 'next' ? (c + 1) % n : (c - 1 + n) % n;
       const np = (nc - 1 + n) % n;
       isFlippingRef.current = true;
+      pendingRef.current = { nc, np };
       setDirection(dir);
       setIsFlipping(true);
       setFlipKey((k) => k + 1);
       // Restart the safety timer so rapid clicks / re-renders can't strand it.
       if (flipTimerRef.current) window.clearTimeout(flipTimerRef.current);
-      flipTimerRef.current = window.setTimeout(() => {
-        setCurrent(nc);
-        setPrev(np);
-        isFlippingRef.current = false;
-        setIsFlipping(false);
-      }, 1000);
+      flipTimerRef.current = window.setTimeout(finishFlip, 1100);
     },
-    [n]
+    [n, finishFlip]
   );
 
   const goTo = useCallback(
@@ -196,6 +211,9 @@ export default function ValuesBook({ values, t, locale }: ValuesBookProps) {
             key={flipKey}
             className={`absolute inset-y-0 w-1/2 ${flipperSide} ${isFlipping ? animClass : ''}`}
             style={{ transformStyle: 'preserve-3d', transformOrigin: flipperOrigin, zIndex: 30 }}
+            onAnimationEnd={(e) => {
+              if (e.target === e.currentTarget) finishFlip();
+            }}
           >
             <div className="absolute inset-0" style={{ backfaceVisibility: 'hidden' }}>
               <PageFace value={faces} t={t} />

@@ -17,37 +17,44 @@ function translate(obj: any, locale: 'en' | 'zh' | 'ar'): string {
   return '';
 }
 
+// V8.7: 规格参数名三语映射。docx `specs` 的 param 为英文标识，渲染时按 locale
+// 翻译 key；value（型号/尺寸/功耗等）为通用标识符，保持原样不翻译。
+const SPEC_PARAM_I18N: Record<string, Record<string, string>> = {
+  'Model': { zh: '型号', ar: 'النموذج', en: 'Model' },
+  'Product Type': { zh: '产品类型', ar: 'نوع المنتج', en: 'Product Type' },
+  'Cabinet Configuration': { zh: '柜体配置', ar: 'تكوين الخزانة', en: 'Cabinet Configuration' },
+  'Main Cabinet Dimensions': { zh: '主柜尺寸', ar: 'أبعاد الخزانة الرئيسية', en: 'Main Cabinet Dimensions' },
+  'Locker Extension Cabinet Dimensions': { zh: '扩展柜尺寸', ar: 'أبعاد خزانة التوسيع', en: 'Locker Extension Cabinet Dimensions' },
+  'Locker Extension Capacity': { zh: '扩展柜容量', ar: 'سعة خزانة التوسيع', en: 'Locker Extension Capacity' },
+  'Locker Compartment Size': { zh: '隔间尺寸', ar: 'حجم المقصورة', en: 'Locker Compartment Size' },
+  'Dispensing Method': { zh: '发放方式', ar: 'طريقة الإصدار', en: 'Dispensing Method' },
+  'Standard Side-Push Channel Width': { zh: '标准侧推通道宽度', ar: 'عرض القناة الجانبية القياسية', en: 'Standard Side-Push Channel Width' },
+  'Channel Design': { zh: '通道设计', ar: 'تصميم القناة', en: 'Channel Design' },
+  'Power Consumption': { zh: '功耗', ar: 'استهلاك الطاقة', en: 'Power Consumption' },
+  'Access Method': { zh: '访问方式', ar: 'طريقة الوصول', en: 'Access Method' },
+  'Managed Items': { zh: '管理物品', ar: 'العناصر المدارة', en: 'Managed Items' },
+  'Cabinet': { zh: '柜体', ar: 'الخزانة', en: 'Cabinet' },
+  'Cabinet Type': { zh: '柜体类型', ar: 'نوع الخزانة', en: 'Cabinet Type' },
+  'Machine size': { zh: '整机尺寸', ar: 'حجم الآلة', en: 'Machine size' },
+  'Compartment Design': { zh: '隔间设计', ar: 'تصميم المقصورة', en: 'Compartment Design' },
+  'Network Connection': { zh: '网络连接', ar: 'اتصال الشبكة', en: 'Network Connection' },
+  'RFID Function': { zh: 'RFID功能', ar: 'وظيفة RFID', en: 'RFID Function' },
+  'Application Scenarios': { zh: '应用场景', ar: 'سيناريوهات التطبيق', en: 'Application Scenarios' },
+  'Single Compartment Size': { zh: '单隔间尺寸', ar: 'حجم المقصورة الواحدة', en: 'Single Compartment Size' },
+  'Customization': { zh: '定制选项', ar: 'خيارات التخصيص', en: 'Customization' },
+};
+
+/** Translate a spec param name to the current locale; falls back to the raw key. */
+function translateSpecParam(param: string, locale: 'en' | 'zh' | 'ar'): string {
+  const entry = SPEC_PARAM_I18N[param];
+  if (entry) return entry[locale] || entry.en || param;
+  return param;
+}
+
 // Helper to get category IDs from categories array (handles both string[] and object[])
 function getCategoryIds(categories: any[]): string[] {
   if (!categories || !Array.isArray(categories)) return [];
   return categories.map((c) => (typeof c === 'string' ? c : c.id)).filter(Boolean);
-}
-
-/**
- * V8.6: 将 Product.specs（文档规格参数表）归一为 [{ param, value }] 数组，供 <table> 渲染。
- * 兼容两种存储形态：
- *   - [{ param: string, value: string }, ...]
- *   - [[param, value], ...]（文档原始二维数组）
- * 空值 / 非数组返回 []，详情页据此决定是否渲染“暂无规格”。
- */
-function resolveSpecTable(specs: any): { param: string; value: string }[] {
-  if (!specs) return [];
-  if (!Array.isArray(specs)) return [];
-  const rows: { param: string; value: string }[] = [];
-  for (const item of specs) {
-    if (Array.isArray(item) && item.length >= 2) {
-      const param = String(item[0] ?? '').trim();
-      const value = String(item[1] ?? '').trim();
-      if (!param && !value) continue;
-      rows.push({ param, value });
-    } else if (item && typeof item === 'object' && 'param' in item) {
-      const param = String((item as any).param ?? '').trim();
-      const value = String((item as any).value ?? '').trim();
-      if (!param && !value) continue;
-      rows.push({ param, value });
-    }
-  }
-  return rows;
 }
 
 // Generate JSON-LD structured data for Product
@@ -231,10 +238,6 @@ export default async function ProductDetailView({ locale, lookupSlug, canonicalP
   const jsonLdData = generateJsonLd(product, locale);
 
   const productAny = product as any;
-  // V8.6: 文档规格参数表（结构化数组），用于详情页 <table> 渲染
-  const resolvedSpecTable = resolveSpecTable(productAny.specs);
-  const specTitle =
-    locale === 'zh' ? '产品规格参数' : locale === 'ar' ? 'مواصفات المنتج' : 'Product Specifications';
   const resolvedProduct = {
     ...productAny,
     _resolvedName: translate(productAny.name, locale),
@@ -244,6 +247,23 @@ export default async function ProductDetailView({ locale, lookupSlug, canonicalP
       _resolvedName: typeof cat === 'string' ? cat : translate(cat.name, locale),
     })),
     _resolvedSpecs: (() => {
+      // 优先使用 specs（V8.6 docx 数据源，[{param,value}] 数组）—— 这是用户文档逐产品对应的正确规格
+      if (Array.isArray(productAny.specs) && productAny.specs.length > 0) {
+        const result: Record<string, string> = {};
+        for (const row of productAny.specs) {
+          if (row && row.param) {
+            const val = typeof row.value === 'object' ? translate(row.value, locale) : String(row.value ?? '');
+            result[row.param] = val;
+          }
+        }
+        if (Object.keys(result).length > 0) {
+          // 三语 param 名映射（型号/尺寸值保持原样）
+          const mapped: Record<string, string> = {};
+          for (const [k, v] of Object.entries(result)) mapped[translateSpecParam(k, locale)] = v;
+          return mapped;
+        }
+      }
+      // fallback 到 specifications（旧字段，仅作兼容）
       if (!productAny.specifications) return null;
       if (typeof productAny.specifications === 'string') return productAny.specifications;
       if (typeof productAny.specifications === 'object' && !Array.isArray(productAny.specifications)) {
@@ -315,42 +335,6 @@ export default async function ProductDetailView({ locale, lookupSlug, canonicalP
         labels={labels}
         relatedProducts={resolvedRelatedProducts}
       />
-
-      {/* V8.6: 文档规格参数表（结构化 <table> 渲染，响应式） */}
-      {resolvedSpecTable.length > 0 && (
-        <section className="bg-gradient-to-br from-slate-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-5xl mx-auto">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
-              <div className="w-10 h-1 bg-gradient-to-r from-blue-600 to-blue-400 rounded-full" />
-              {specTitle}
-            </h2>
-            <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-gray-100 dark:border-slate-700 overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm border-collapse min-w-[420px]">
-                  <tbody>
-                    {resolvedSpecTable.map((row, index) => (
-                      <tr
-                        key={`${row.param}-${index}`}
-                        className={index % 2 === 0 ? 'bg-white dark:bg-slate-800' : 'bg-gray-50 dark:bg-slate-700/40'}
-                      >
-                        <th
-                          scope="row"
-                          className="w-2/5 sm:w-1/3 text-left align-top px-5 py-3.5 font-semibold text-gray-800 dark:text-gray-100 border-b border-gray-100 dark:border-slate-700"
-                        >
-                          {row.param}
-                        </th>
-                        <td className="px-5 py-3.5 text-gray-600 dark:text-gray-300 align-top border-b border-gray-100 dark:border-slate-700 leading-relaxed">
-                          {row.value}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* v265: 产品 FAQ 区块 */}
       <ProductFaqSection faqs={resolvedFaqs} locale={locale} />

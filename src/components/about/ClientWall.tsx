@@ -72,11 +72,17 @@ const CLIENTS: ClientItem[] = [
 
 const ACCENTS = [
   { solid: '#2563eb', soft: '#eff6ff', text: '#1d4ed8' }, // blue-600
-  { solid: '#4f46e5', soft: '#eef2ff', text: '#4338ca' }, // indigo-600
+  { solid: '#059669', soft: '#ecfdf5', text: '#047857' }, // emerald-600
+  { solid: '#d97706', soft: '#fffbeb', text: '#b45309' }, // amber-600
+  { solid: '#db2777', soft: '#fdf2f8', text: '#be185d' }, // pink-600
+  { solid: '#0891b2', soft: '#ecfeff', text: '#0e7490' }, // cyan-600
   { solid: '#7c3aed', soft: '#f5f3ff', text: '#6d28d9' }, // violet-600
-  { solid: '#6366f1', soft: '#eef2ff', text: '#4f46e5' }, // indigo-500
-  { solid: '#8b5cf6', soft: '#f5f3ff', text: '#7c3aed' }, // purple-500
-  { solid: '#3b82f6', soft: '#eff6ff', text: '#2563eb' }, // blue-500
+  { solid: '#475569', soft: '#f8fafc', text: '#334155' }, // slate-600
+  { solid: '#4338ca', soft: '#eef2ff', text: '#3730a3' }, // indigo-700
+  { solid: '#16a34a', soft: '#f0fdf4', text: '#15803d' }, // green-600
+  { solid: '#ea580c', soft: '#fff7ed', text: '#c2410c' }, // orange-600
+  { solid: '#0d9488', soft: '#f0fdfa', text: '#0f766e' }, // teal-600
+  { solid: '#4f46e5', soft: '#eef2ff', text: '#4338ca' }, // indigo-600
 ];
 
 interface ClientWallProps {

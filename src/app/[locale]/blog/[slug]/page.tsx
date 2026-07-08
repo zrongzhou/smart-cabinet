@@ -88,6 +88,31 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
     return htmlContent.slice(0, insertPos + 4) + figureHtml + htmlContent.slice(insertPos + 4);
   }
 
+  /**
+   * V8.7 fix (bug 7): split a blog post's rich-text HTML into the article body
+   * and its trailing FAQ block. Blogs embed a `<h2>FAQ</h2>` (or the localized
+   * equivalent) at the end; we render the FAQ separately so it isn't glued to
+   * the body copy. Returns the body and the FAQ HTML (heading stripped — we
+   * render our own styled heading).
+   */
+  function splitBlogFaq(html: string): { body: string; faq: string | null } {
+    const markers = ['<h2>FAQ</h2>', '<h2>常见问题</h2>', '<h2>الأسئلة الشائعة</h2>'];
+    for (const m of markers) {
+      const idx = html.indexOf(m);
+      if (idx !== -1) {
+        const faq = html.slice(idx + m.length).replace(/^\s+/, '');
+        return { body: html.slice(0, idx), faq };
+      }
+    }
+    return { body: html, faq: null };
+  }
+
+  const FAQ_HEADING: Record<string, string> = {
+    en: 'Frequently Asked Questions',
+    zh: '常见问题',
+    ar: 'الأسئلة الشائعة',
+  };
+
   // Recent Posts 图片选择 - 按 slug 匹配
   function getInlineBlogImage(post: BlogPost, index: number): string {
     const postSlug = post.slug || '';
@@ -300,6 +325,9 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
 
   const content = blog.content?.[locale as 'en' | 'zh' | 'ar'] || '';
 
+  const { body, faq } = splitBlogFaq(content);
+  const bodyHtml = injectCoverImageInContent(body, getInlineBlogDetailImage(blog));
+
   // 调试日志 (v151)
   console.log(`[v151] Detail: slug="${blog.slug}" → image="${getInlineBlogDetailImage(blog)}"`);
 
@@ -344,9 +372,47 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
 
           {/* Render content (HTML from rich text editor) — v152: 注入正文配图 */}
           <div
-            className="prose max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-blue-600 prose-img:rounded-xl"
-            dangerouslySetInnerHTML={{ __html: injectCoverImageInContent(content, getInlineBlogDetailImage(blog)) }}
+            className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-headings:scroll-mt-20 prose-p:text-gray-700 prose-p:leading-relaxed prose-a:text-blue-600 prose-a:font-medium hover:prose-a:text-blue-700 prose-img:rounded-xl prose-img:my-8 prose-li:my-1 prose-blockquote:border-blue-500 prose-blockquote:bg-blue-50/50 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:not-italic prose-strong:text-gray-900 dark:prose-invert"
+            dangerouslySetInnerHTML={{ __html: bodyHtml }}
           />
+
+          {/* V8.7 fix (bug 7): FAQ rendered in its own separated, styled block
+              so it never sits directly against the article body. */}
+          {faq && (
+            <section
+              className="mt-10 pt-8 border-t border-gray-200 dark:border-slate-700"
+              aria-label={FAQ_HEADING[locale] || FAQ_HEADING.en}
+            >
+              <h2 className="mb-5 flex items-center gap-3 text-2xl font-bold text-gray-900 dark:text-white">
+                <span className="h-1 w-10 rounded-full bg-gradient-to-r from-blue-600 to-blue-400" />
+                {FAQ_HEADING[locale] || FAQ_HEADING.en}
+              </h2>
+              <div className="blog-faq" dangerouslySetInnerHTML={{ __html: faq }} />
+            </section>
+          )}
+
+          <style jsx global>{`
+            .blog-faq p {
+              background: #f8fafc;
+              border: 1px solid #e2e8f0;
+              border-radius: 12px;
+              padding: 14px 18px;
+              margin: 0 0 12px;
+            }
+            .dark .blog-faq p {
+              background: #1e293b;
+              border-color: #334155;
+            }
+            .blog-faq p strong {
+              display: block;
+              color: #2563eb;
+              font-weight: 700;
+              margin-bottom: 4px;
+            }
+            .blog-faq p br {
+              display: none;
+            }
+          `}</style>
 
           {/* Share buttons */}
           <div className="flex items-center gap-4 mt-12 pt-8 border-t border-gray-200">
