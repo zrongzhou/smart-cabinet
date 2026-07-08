@@ -13,8 +13,8 @@ export interface BlogPost {
   };
   content: {
     en: string;
-    zh: string;
-    ar: string;
+    zh?: string;
+    ar?: string;
   };
   author: string;
   publishedAt: string;
@@ -23,6 +23,7 @@ export interface BlogPost {
   tags: string[];
   image: string;
   featured: boolean;
+  seoKeywords?: string;
 }
 
 const blogs: BlogPost[] = [
@@ -896,7 +897,7 @@ const blogs: BlogPost[] = [
       zh: '2026年工业售货机趋势：智能柜如何帮助工厂控制MRO物资',
       ar: 'اتجاهات آلة البيع الصناعية 2026: كيف تساعد الخزائن الذكية المصانع في التحكم في إمدادات الصيانة',
     },
-    slug: 'industrial-vending-machine-trends-2026',
+    slug: 'industrial-vending-machine-trends-2026.html',
     excerpt: {
       en: 'Discover how industrial vending machines and smart cabinets help factories control MRO supplies, reduce waste, and improve inventory visibility in 2026.',
       zh: '了解工业售货机和智能柜如何帮助工厂在 2026 年控制 MRO 物料、减少浪费并提升库存可视性。',
@@ -1045,6 +1046,7 @@ const blogs: BlogPost[] = [
     tags: ['industrial vending machine', 'smart material cabinet', 'MRO inventory'],
     image: '/images/blog/vending-machine-trends-2026.jpg',
     featured: true,
+    seoKeywords: 'industrial vending machine, smart cabinet, MRO, inventory management, 2026 trends, vending machine trends',
   },
   {
     id: '14',
@@ -1053,7 +1055,7 @@ const blogs: BlogPost[] = [
       zh: 'CNC刀具库存管理指南：机加工车间如何减少刀具损失和停机时间',
       ar: 'دليل إدارة مخزون أدوات CNC: كيف تقلل ورش الآلات من خسارة الأدوات وتوقفات التشغيل',
     },
-    slug: 'cnc-tool-inventory-management-guide',
+    slug: 'cnc-tool-inventory-management-guide.html',
     excerpt: {
       en: 'Learn how CNC tool vending machines and smart tool cabinets help machine shops reduce tool loss, avoid downtime, and track usage by employee and machine.',
       zh: '了解 CNC 刀具售货机和智能刀具柜如何帮助机加工车间减少刀具丢失、避免停机，并按员工和机床追踪使用情况。',
@@ -1208,6 +1210,141 @@ const blogs: BlogPost[] = [
     tags: ['CNC tool management', 'tool vending machine', 'cutting tool'],
     image: '/images/blog/cnc-tool-inventory-guide.jpg',
     featured: true,
+    seoKeywords: 'CNC tool inventory management, tool vending machine, smart tool cabinet, reduce tool loss, machine shop downtime, CNC tool tracking',
+  },
+
+  // ===== V8.6 新增：来自《4篇blog.docx》的 4 篇博客（slug 带 .html） =====
+  {
+    id: '15',
+    title: {
+      en: 'How PPE Vending Machines Improve Safety Supplies Management',
+      zh: 'PPE 售货机如何改善安全防护用品管理',
+      ar: 'How PPE Vending Machines Improve Safety Supplies Management',
+    },
+    slug: 'ppe-vending-machine-safety-supplies-management.html',
+    excerpt: {
+      en: 'Learn how PPE vending machines help companies control safety supplies, improve compliance and make replenishment predictable with smart cabinets.',
+      zh: '了解 PPE 售货机如何通过智能柜控制安全防护用品、提升合规并让补货更可预测。',
+      ar: 'Learn how PPE vending machines help companies control safety supplies, improve compliance and make replenishment predictable with smart cabinets.',
+    },
+    content: {
+      en: `
+        <p>A PPE vending machine helps companies control safety supplies at the point of use. Employees can collect approved PPE through card access, PIN code, QR code or face recognition. Each pickup is recorded by user, department and time, making PPE usage easier to track.</p>
+
+        <p>For construction and industrial environments, smart PPE cabinets can reduce waste, improve safety compliance and make replenishment more predictable. Low-stock alerts and usage reports help safety managers know which items are consumed fastest and which teams need better supply planning.</p>
+
+        <h2>FAQ</h2>
+        <p><strong>Q: Can PPE access be limited by employee or department?</strong><br/>A: Yes. Access permissions can be set by employee, department, project or work area.</p>
+        <p><strong>Q: Is it suitable for construction sites?</strong><br/>A: Yes. It is suitable for construction sites, factories, warehouses, maintenance rooms and safety supply stations.</p>
+        <p><strong>Q: Can the system generate PPE usage reports?</strong><br/>A: Yes. Pickup records, inventory reports and low-stock alerts can be exported for management.</p>
+      `,
+    },
+    author: 'Admin',
+    publishedAt: '2026-07-06',
+    category: 'industry-trends',
+    tags: ['PPE', 'Safety Supplies', 'Vending Machine'],
+    image: '/images/blog/ppe-vending-machine-safety-supplies-management.jpeg',
+    featured: true,
+    seoKeywords: 'PPE vending machine, safety supplies, smart PPE cabinet, PPE management, safety compliance',
+  },
+  {
+    id: '16',
+    title: {
+      en: 'How Cutting Tool Distributors Can Grow Sales with CNC Tool Vending Machines',
+      zh: '切削刀具分销商如何通过 CNC 刀具售货机提升销售',
+      ar: 'How Cutting Tool Distributors Can Grow Sales with CNC Tool Vending Machines',
+    },
+    slug: 'cutting-tool-distributors-tool-vending-machine.html',
+    excerpt: {
+      en: 'Discover how CNC tool vending machines create a recurring sales model for cutting tool distributors and improve customer loyalty.',
+      zh: '了解 CNC 刀具售货机如何为切削刀具分销商创造持续销售模式并提升客户忠诚度。',
+      ar: 'Discover how CNC tool vending machines create a recurring sales model for cutting tool distributors and improve customer loyalty.',
+    },
+    content: {
+      en: `
+        <p>A CNC tool vending machine creates a new sales model for tool suppliers. Distributors can place a tool vending cabinet at the customer's workshop, stock it with their own cutting tools, and settle based on actual tool consumption. This model improves customer loyalty and creates continuous tool sales instead of one-time orders.</p>
+
+        <p>Some distributors use a machine subsidy model, partial machine payment, rental model or free placement for qualified customers. The cabinet becomes a tool supply station inside the customer's factory, helping both sides reduce emergency orders, improve inventory visibility and build long-term cooperation.</p>
+
+        <h2>FAQ</h2>
+        <p><strong>Q: Can the cabinet support consignment inventory?</strong><br/>A: Yes. Tools can be stocked first, and the customer can settle periodically based on consumption records.</p>
+        <p><strong>Q: What tools are suitable for this model?</strong><br/>A: End mills, drills, taps, carbide inserts, reamers, boring tools, tool holders and common CNC consumables.</p>
+        <p><strong>Q: Why does this improve customer loyalty?</strong><br/>A: The supplier becomes part of the customer's daily production process, making repeat purchases easier and more stable.</p>
+      `,
+    },
+    author: 'Admin',
+    publishedAt: '2026-07-05',
+    category: 'technical-guide',
+    tags: ['Cutting Tools', 'Distributors', 'Tool Vending'],
+    image: '/images/blog/cutting-tool-distributors-tool-vending-machine.png',
+    featured: false,
+    seoKeywords: 'cutting tool distributors, CNC tool vending machine, tool consignment, distributor sales model, tool vending',
+  },
+  {
+    id: '17',
+    title: {
+      en: 'Key Tool Vending Machine Functions That Reduce Tool Waste in CNC Workshops',
+      zh: '减少 CNC 车间刀具浪费的关键刀具售货机功能',
+      ar: 'Key Tool Vending Machine Functions That Reduce Tool Waste in CNC Workshops',
+    },
+    slug: 'tool-vending-machine-functions-cnc-workshop.html',
+    excerpt: {
+      en: 'See how smart tool vending machines control tool issuing, support used tool return and track tool life in CNC workshops.',
+      zh: '了解智能刀具售货机如何在 CNC 车间控制刀具发放、支持旧刀回收并追踪刀具寿命。',
+      ar: 'See how smart tool vending machines control tool issuing, support used tool return and track tool life in CNC workshops.',
+    },
+    content: {
+      en: `
+        <p>A smart tool vending machine helps control tool issuing with user permissions, pickup quantity limits and workshop-level access rules. For example, one department can be allowed to collect specific inserts, while another workshop can only access drills, taps or PPE supplies.</p>
+
+        <p>The system can also support old-for-new tool exchange, used tool return, scrap tool recycling and regrinding tool collection. With tool life tracking and usage reports, factories can compare tool consumption by employee, machine, department or production line.</p>
+
+        <h2>FAQ</h2>
+        <p><strong>Q: Can it support old-for-new tool exchange?</strong><br/>A: Yes. The system can require used tool return before issuing a new tool.</p>
+        <p><strong>Q: Can different workshops access different materials?</strong><br/>A: Yes. Permissions can be configured by workshop, department, employee group or material category.</p>
+        <p><strong>Q: Can the cabinet track tool life?</strong><br/>A: Yes. Tool usage, return records and consumption data can help analyze tool life and tool cost.</p>
+      `,
+    },
+    author: 'Admin',
+    publishedAt: '2026-07-04',
+    category: 'technical-guide',
+    tags: ['CNC Workshop', 'Tool Management', 'Vending Machine'],
+    image: '/images/blog/tool-vending-machine-functions-cnc-workshop.png',
+    featured: false,
+    seoKeywords: 'tool vending machine, CNC workshop, tool management, tool tracking, tool life',
+  },
+  {
+    id: '18',
+    title: {
+      en: 'From Manual Tool Crib to Smart Factory: Why Manufacturers Need Intelligent Tool Cabinets',
+      zh: '从手动刀具柜到智能工厂：制造企业为何需要智能刀具柜',
+      ar: 'From Manual Tool Crib to Smart Factory: Why Manufacturers Need Intelligent Tool Cabinets',
+    },
+    slug: 'manual-tool-crib-to-smart-tool-cabinet.html',
+    excerpt: {
+      en: 'Understand why manufacturers move from manual tool cribs to intelligent tool cabinets as part of digital inventory management.',
+      zh: '了解制造企业为何将手动刀具柜升级为智能刀具柜，作为数字化库存管理的一部分。',
+      ar: 'Understand why manufacturers move from manual tool cribs to intelligent tool cabinets as part of digital inventory management.',
+    },
+    content: {
+      en: `
+        <p>An intelligent tool cabinet brings tool crib automation to the production site. Workers can collect cutting tools, PPE, spare parts and MRO supplies 24/7, while the system records each transaction automatically. Managers can monitor inventory, set low-stock alerts and review usage reports.</p>
+
+        <p>For factories moving toward smart manufacturing, tool vending machines are not just storage equipment. They become part of digital inventory management, helping connect people, tools, machines and production data.</p>
+
+        <h2>FAQ</h2>
+        <p><strong>Q: What can an intelligent tool cabinet manage?</strong><br/>A: CNC tools, PPE, spare parts, fasteners, gauges, consumables and MRO supplies.</p>
+        <p><strong>Q: Can smart cabinets help reduce inventory cost?</strong><br/>A: Yes. They help control pickup, reduce waste, prevent overstocking and improve replenishment planning.</p>
+        <p><strong>Q: Can the system connect with factory software?</strong><br/>A: Yes. ERP, MES, SAP and other inventory systems can be customized for integration.</p>
+      `,
+    },
+    author: 'Admin',
+    publishedAt: '2026-07-03',
+    category: 'industry-trends',
+    tags: ['Smart Cabinet', 'Tool Crib', 'Digital Inventory'],
+    image: '/images/blog/manual-tool-crib-to-smart-tool-cabinet.jpeg',
+    featured: false,
+    seoKeywords: 'smart tool cabinet, tool crib, intelligent tool cabinet, digital inventory management, smart manufacturing',
   },
 ];
 

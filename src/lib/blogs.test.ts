@@ -14,7 +14,7 @@ import { getMergedBlogList, getMergedBlogBySlug, isBase64Image } from './blogs';
 
 const prisma = prismaMod.prisma as any;
 
-const V7_SLUGS = ['industrial-vending-machine-trends-2026', 'cnc-tool-inventory-management-guide'];
+const V7_SLUGS = ['industrial-vending-machine-trends-2026.html', 'cnc-tool-inventory-management-guide.html'];
 
 function dbPost(slug: string, overrides: any = {}) {
   return {

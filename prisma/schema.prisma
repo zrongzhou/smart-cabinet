@@ -28,6 +28,7 @@ model Product {
   seoDescription   Json?    // { zh, en, ar }
   seoKeywords      Json?    // { zh, en, ar } 逗号分隔的关键词数组
   faq              Json?    // 产品级 FAQ 列表：[{ question: {zh,en,ar}, answer: {zh,en,ar} }]（V8.5）
+  specs            Json?    // 文档规格参数表：[{ param: string, value: string }]（V8.6）
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   deletedAt         DateTime? // 软删除

@@ -69,7 +69,7 @@ describe('Bug7 — blog slug resolves to canonical descriptive form', () => {
   });
 
   it('resolveBlogSlug falls back to static slug for numeric DB slug', () => {
-    expect(resolveBlogSlug('13', '13')).toBe('industrial-vending-machine-trends-2026');
-    expect(resolveBlogSlug('14', '14')).toBe('cnc-tool-inventory-management-guide');
+    expect(resolveBlogSlug('13', '13')).toBe('industrial-vending-machine-trends-2026.html');
+    expect(resolveBlogSlug('14', '14')).toBe('cnc-tool-inventory-management-guide.html');
   });
 });

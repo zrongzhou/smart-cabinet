@@ -121,8 +121,13 @@ export default function BlogPage() {
     // 新增博客 2026 (id 13, 14)
     '13': '/images/blog/vending-machine-trends-2026.jpg',
     '14': '/images/blog/cnc-tool-inventory-guide.jpg',
-    'industrial-vending-machine-trends-2026': '/images/blog/vending-machine-trends-2026.jpg',
-    'cnc-tool-inventory-management-guide': '/images/blog/cnc-tool-inventory-guide.jpg',
+    // V8.6: 旧两篇 + 新增 4 篇（slug 均带 .html）
+    'industrial-vending-machine-trends-2026.html': '/images/blog/vending-machine-trends-2026.jpg',
+    'cnc-tool-inventory-management-guide.html': '/images/blog/cnc-tool-inventory-guide.jpg',
+    'ppe-vending-machine-safety-supplies-management.html': '/images/blog/ppe-vending-machine-safety-supplies-management.jpeg',
+    'cutting-tool-distributors-tool-vending-machine.html': '/images/blog/cutting-tool-distributors-tool-vending-machine.png',
+    'tool-vending-machine-functions-cnc-workshop.html': '/images/blog/tool-vending-machine-functions-cnc-workshop.png',
+    'manual-tool-crib-to-smart-tool-cabinet.html': '/images/blog/manual-tool-crib-to-smart-tool-cabinet.jpeg',
   };
 
   // 分类颜色映射（用于 badge 颜色）

@@ -1,0 +1,2436 @@
+[
+ {
+  "docName": "Custom Industrial Vending Machine and Smart Cabinet Solutions",
+  "specs": [
+   [
+    "Model",
+    "QT-DLC60A"
+   ],
+   [
+    "Product Type",
+    "Compact CNC tool vending machine"
+   ],
+   [
+    "Overall Dimensions",
+    "1600(H) x 720(W) x 600(D) mm"
+   ],
+   [
+    "Standard Capacity",
+    "60 channels"
+   ],
+   [
+    "Channel Layout",
+    "6 layers x 10 channels"
+   ],
+   [
+    "Touch Screen",
+    "10.1-inch touch screen"
+   ],
+   [
+    "Power Consumption",
+    "65-80W"
+   ],
+   [
+    "Dispensing Method",
+    "Drop-type dispensing"
+   ],
+   [
+    "Pickup Method",
+    "Bottom pickup area"
+   ],
+   [
+    "Network Connection",
+    "Ethernet, 4G and Wi-Fi"
+   ],
+   [
+    "Side Locker Function",
+    "Left and right side lockers can be used for used tool return, scrap tool recycling, regrinding tool return and temporary storage"
+   ],
+   [
+    "System Functions",
+    "Tool issuing, tool return, mobile/PC synchronized login, real-time inventory view and Excel data export"
+   ],
+   [
+    "Managed Items",
+    "CNC inserts, end mills, drills, taps and small cutting tools"
+   ],
+   [
+    "Cabinet Structure",
+    "Transparent front door, internal tool channels and bottom pickup slot"
+   ],
+   [
+    "Installation",
+    "Indoor installation for workshop, tool room or production line"
+   ],
+   [
+    "Power Supply",
+    "AC 110V/220V optional"
+   ],
+   [
+    "Customization",
+    "Channel size, access method, cabinet color and software interface can be customized"
+   ]
+  ],
+  "appTitle": "Custom Industrial Vending Machine and Smart Cabinet Solutions",
+  "appUrl": "/solutions/custom-industrial-vending-machine.html",
+  "appSlug": "custom-industrial-vending-machine",
+  "matched": true
+ },
+ {
+  "docName": "RFID Smart Cabinet for Document Tracking, Asset Management and File Storage",
+  "specs": [
+   [
+    "Item",
+    "Specification"
+   ],
+   [
+    "Model",
+    "QT-RFID-D1"
+   ],
+   [
+    "Cabinet Type",
+    "Modular RFID Smart Locker Cabinet"
+   ],
+   [
+    "Single Compartment Size",
+    "350(W) × 350(D) × 400(H) mm"
+   ],
+   [
+    "Machine size",
+    "H1500xD500xL2500mm"
+   ],
+   [
+    "Compartment Design",
+    "Flexible modular compartments; locker size and quantity can be customized according to item size."
+   ],
+   [
+    "RFID Function RFID",
+    "RFID sensors can be installed inside each compartment for automatic item identification, tracking and return records. 。"
+   ],
+   [
+    "Power Consumption",
+    "Approx. 100W"
+   ],
+   [
+    "Access Method",
+    "Touch screen, RFID card, PIN code, face recognition or customized access methods."
+   ],
+   [
+    "Managed Items",
+    "Documents, files, tools, reusable assets, samples, spare parts, instruments and controlled materials.。"
+   ],
+   [
+    "System Functions",
+    "Real-time inventory tracking, user permission control, access records, return records and inventory reports. 。"
+   ],
+   [
+    "Network Connection",
+    "Ethernet, Wi-Fi or 4G optional"
+   ],
+   [
+    "Cabinet",
+    "Steel cabinet body with powder-coated finish"
+   ],
+   [
+    "Application Scenarios",
+    "Office archive room, factory tool room, laboratory, warehouse, asset room and document management area"
+   ],
+   [
+    "Customization",
+    "Compartment size, locker quantity, RFID configuration, cabinet color, access method and software integration can be customized. 。"
+   ]
+  ],
+  "appTitle": "RFID Smart Cabinet for Document Tracking, Asset Management and File Storage",
+  "appUrl": "/products/rfid-asset-tracking-cabinet.html",
+  "appSlug": "rfid-asset-tracking-cabinet",
+  "matched": true
+ },
+ {
+  "docName": "Automated Micro Warehouse Cabinet for Printing Wheels, Tools and Reusable Parts",
+  "specs": [
+   [
+    "Model",
+    "QT-MR08"
+   ],
+   [
+    "Product Type",
+    "Smart micro warehousing cabinet with internal robotic picking system"
+   ],
+   [
+    "Overall Dimensions",
+    "1950(H) × 1500(W) × 1200(D) mm"
+   ],
+   [
+    "Storage Capacity",
+    "Up to 1,200 printing wheels"
+   ],
+   [
+    "Managed Items",
+    "Printing wheels, coding wheels, marking wheels, reusable tools, small molds, precision parts and other non-consumable items with similar size and shape"
+   ],
+   [
+    "Storage Method",
+    "Internal high-density storage with assigned item positions"
+   ],
+   [
+    "Picking System",
+    "Built-in robotic arm for automatic item picking and return"
+   ],
+   [
+    "Return Function",
+    "Items can be returned to their original assigned storage position automatically"
+   ],
+   [
+    "Item Control Logic",
+    "One item, one position; suitable for materials that require accurate return and traceability"
+   ],
+   [
+    "Access Method",
+    "Touch screen operation, employee login, card access, PIN code or face recognition optional"
+   ],
+   [
+    "Power Consumption",
+    "Approx. 300W"
+   ],
+   [
+    "System Functions",
+    "Item issuing, item return, position management, user permission control, usage records and inventory reports"
+   ],
+   [
+    "Inventory Tracking",
+    "Real-time stock status, pickup records, return records and abnormal return reminders"
+   ],
+   [
+    "Network Connection",
+    "Ethernet, Wi-Fi or 4G optional"
+   ],
+   [
+    "Software Management",
+    "Supports cloud platform, backend management, data query, report export and inventory monitoring"
+   ],
+   [
+    "Security Design",
+    "Closed cabinet structure to prevent manual misplacement, unauthorized access and item mix-up"
+   ],
+   [
+    "Application Scenarios",
+    "Printing wheel storage, reusable tool management, precision part storage, mold accessory management and controlled asset storage"
+   ],
+   [
+    "Suitable Industries",
+    "Printing, packaging, manufacturing, precision tooling, electronics, automotive parts and smart factory workshops"
+   ],
+   [
+    "Customization",
+    "Cabinet size, storage capacity, item tray, robotic picking structure, access method and software integration can be customized"
+   ]
+  ],
+  "appTitle": "Automated Micro Warehouse Cabinet for Printing Wheels, Tools and Reusable Parts",
+  "appUrl": "/products/automated-storage-cabinet.html",
+  "appSlug": "automated-storage-cabinet",
+  "matched": true
+ },
+ {
+  "docName": "Smart Cabinet Solution for New Materials, Cable and Functional Materials Manufacturing",
+  "specs": [
+   [
+    "Model",
+    "QT-ZH02"
+   ],
+   [
+    "Product Type",
+    "Modular industrial vending cabinet for tool, MRO and material management"
+   ],
+   [
+    "Cabinet Configuration",
+    "Main cabinet with touchscreen + right-side locker extension cabinet"
+   ],
+   [
+    "Main Cabinet Dimensions",
+    "1200(W) × 900(D) × 1950(H) mm"
+   ],
+   [
+    "Locker Extension Cabinet Dimensions",
+    "1200(W) × 500(D) × 1950(H) mm"
+   ],
+   [
+    "Locker Extension Capacity",
+    "20 locker compartments, suitable for larger tools, kits, spare parts and returned items"
+   ],
+   [
+    "Locker Compartment Size",
+    "Approx. 350(W) ×400(D)X 350(H) mm per compartment; size can be customized"
+   ],
+   [
+    "Dispensing Method",
+    "Side-push dispensing system"
+   ],
+   [
+    "Standard Side-Push Channel Width",
+    "Approx. 83 mm per channel"
+   ],
+   [
+    "Channel Design",
+    "Adjustable side-push channels; channel quantity and spacing can be customized according to item size"
+   ],
+   [
+    "Power Consumption",
+    "Approx. 300W"
+   ],
+   [
+    "Access Method",
+    "Touchscreen operation, employee login, RFID card, PIN code or face recognition optional"
+   ],
+   [
+    "Managed Items",
+    "CNC tools, cutting tools, tool boxes, MRO supplies, spare parts, PPE, fixtures, gauges and reusable tools"
+   ],
+   [
+    "Extension Locker Use",
+    "Can be used for large tools, special tools, tool kits, old tool recycling, returned items or general material storage"
+   ],
+   [
+    "System Functions",
+    "Item issuing, return management, inventory tracking, permission control, usage records and report export"
+   ],
+   [
+    "Inventory Alerts",
+    "Low-stock warning and replenishment reminder supported"
+   ],
+   [
+    "Data Management",
+    "Supports pickup records, return records, inventory reports, user records and abnormal operation tracking"
+   ],
+   [
+    "Network Connection",
+    "Ethernet, Wi-Fi or 4G optional"
+   ],
+   [
+    "Software Platform",
+    "Supports cloud platform, backend management, real-time inventory monitoring and data export"
+   ],
+   [
+    "Visibility Design",
+    "Transparent front window with internal lighting for easy item identification"
+   ],
+   [
+    "Security Design",
+    "Controlled access, user permission management and locked cabinet structure to reduce unauthorized material pickup"
+   ],
+   [
+    "Application Scenarios",
+    "CNC workshop, tool room, production line, maintenance area, warehouse and smart factory material station"
+   ]
+  ],
+  "appTitle": "Smart Cabinet Solution for New Materials, Cable and Functional Materials Manufacturing",
+  "appUrl": "/solutions/materials-manufacturing-inventory.html",
+  "appSlug": "materials-manufacturing-inventory",
+  "matched": true
+ },
+ {
+  "docName": "Smart Cabinet Solution for Medical Device Manufacturing Supplies and PPE",
+  "specs": [
+   [
+    "Model",
+    "QT-ZH06"
+   ],
+   [
+    "Product Type",
+    "Modular industrial vending cabinet for CNC tool and MRO material management"
+   ],
+   [
+    "Cabinet Configuration",
+    "1 spring-type main cabinet + 3 locker extension cabinets"
+   ],
+   [
+    "Main Cabinet Dimensions",
+    "1800(H) × 1165(W) × 850(D) mm"
+   ],
+   [
+    "Main Cabinet Capacity",
+    "Up to 80 types of CNC tools"
+   ],
+   [
+    "Main Cabinet Dispensing Method",
+    "Spring dispensing system"
+   ],
+   [
+    "Extension Cabinet Quantity",
+    "3 locker extension cabinets"
+   ],
+   [
+    "Extension Cabinet Capacity",
+    "32 compartments per locker cabinet"
+   ],
+   [
+    "Total Extension Locker Capacity",
+    "96 compartments in total"
+   ],
+   [
+    "Small Compartment Size",
+    "Approx. 160(W) × 180(H) × 300(D) mm, customizable"
+   ],
+   [
+    "Large Compartment Size",
+    "Approx. 320(W) × 180(H) × 300(D) mm, customizable"
+   ],
+   [
+    "Compartment Design",
+    "Mixed small and large locker compartments for different item sizes"
+   ],
+   [
+    "Power Consumption",
+    "Approx. 200W"
+   ],
+   [
+    "Access Method",
+    "Touchscreen operation, employee login, RFID card, PIN code or face recognition optional"
+   ],
+   [
+    "Managed Items",
+    "CNC inserts, end mills, drills, taps, tool boxes, measuring tools, spare parts, PPE, MRO supplies and returned tools"
+   ],
+   [
+    "Extension Locker Use",
+    "Suitable for large tools, tool kits, returned tools, PPE, spare parts and materials that cannot be dispensed by spring channels"
+   ],
+   [
+    "System Functions",
+    "Tool issuing, locker pickup, return management, inventory tracking, permission control, usage records and report export"
+   ],
+   [
+    "Inventory Alerts",
+    "Low-stock warning and replenishment reminder supported"
+   ],
+   [
+    "Data Management",
+    "Supports pickup records, return records, inventory reports, user records and abnormal operation tracking"
+   ],
+   [
+    "Network Connection",
+    "Ethernet, Wi-Fi or 4G optional"
+   ],
+   [
+    "Software Platform",
+    "Supports cloud platform, backend management, real-time inventory monitoring and Excel report export"
+   ],
+   [
+    "Visibility Design",
+    "Transparent cabinet window and visible locker compartments for easy item identification"
+   ],
+   [
+    "Security Design",
+    "Controlled access, user permission management and locked cabinet structure to reduce unauthorized pickup"
+   ],
+   [
+    "Application Scenarios",
+    "CNC workshop, tool room, production line, maintenance area, warehouse and smart factory material station"
+   ],
+   [
+    "Customization",
+    "Main cabinet channel layout, locker quantity, compartment size, access method, software functions and system integration can be customized"
+   ]
+  ],
+  "appTitle": "Smart Cabinet Solution for Medical Device Manufacturing Supplies and PPE",
+  "appUrl": "/solutions/medical-device-manufacturing-supplies.html",
+  "appSlug": "medical-device-manufacturing-supplies",
+  "matched": true
+ },
+ {
+  "docName": "Industrial Vending Machine Solution for Automotive and EV Components Manufacturing",
+  "specs": [
+   [
+    "Model",
+    "QT-ZH002"
+   ],
+   [
+    "Product Type",
+    "Modular smart tool vending cabinet for CNC tools, MRO supplies and general material management"
+   ],
+   [
+    "Cabinet Configuration",
+    "1 drop-type main vending cabinet + 1 56-grid locker extension cabinet"
+   ],
+   [
+    "Main Cabinet Dimensions",
+    "1600(H) × 720(W) × 600(D) mm"
+   ],
+   [
+    "Main Cabinet Capacity",
+    "60 channels, 6 layers × 10 channels"
+   ],
+   [
+    "Main Cabinet Dispensing Method",
+    "Drop-type dispensing with bottom pickup"
+   ],
+   [
+    "Main Cabinet Touch Screen",
+    "10.1-inch touchscreen"
+   ],
+   [
+    "Main Cabinet Power Consumption",
+    "Approx. 65-80W"
+   ],
+   [
+    "Locker Cabinet Dimensions",
+    "1800(H) × 1035(W) × 350(D) mm"
+   ],
+   [
+    "Locker Cabinet Capacity",
+    "56 locker compartments"
+   ],
+   [
+    "Small Compartment Size",
+    "150(H) × 120(W) × 350(D) mm, used on layers 1-5"
+   ],
+   [
+    "Large Compartment Size",
+    "150(H) × 240(W) × 350(D) mm, used on layers 6-9"
+   ],
+   [
+    "Locker Opening Method",
+    "Pop-open locker door, manual item pickup"
+   ],
+   [
+    "Locker Touch Screen",
+    "Shared with the main cabinet touchscreen"
+   ],
+   [
+    "Locker Cabinet Power Consumption",
+    "Approx. 100-200W"
+   ],
+   [
+    "Operating Temperature",
+    "Room temperature / ambient storage"
+   ],
+   [
+    "Network Connection",
+    "Ethernet, 4G and Wi-Fi"
+   ],
+   [
+    "Access Method",
+    "Touchscreen operation, employee login, RFID card, PIN code or face recognition optional"
+   ],
+   [
+    "Managed Items",
+    "CNC inserts, end mills, drills, taps, tool boxes, PPE, spare parts, MRO supplies, gauges, fixtures and returned tools"
+   ],
+   [
+    "Main Cabinet Use",
+    "Suitable for small packaged tools and consumables that can be dispensed through drop channels"
+   ],
+   [
+    "Locker Cabinet Use",
+    "Suitable for larger tools, tool kits, PPE, spare parts, returned items and materials not suitable for drop dispensing"
+   ],
+   [
+    "System Functions",
+    "Tool issuing, item return, inventory tracking, user permission control, pickup records and report export"
+   ],
+   [
+    "Data Management",
+    "Supports mobile and PC login, real-time inventory viewing and Excel report export"
+   ],
+   [
+    "Inventory Alerts",
+    "Low-stock warning and replenishment reminder supported"
+   ],
+   [
+    "Security Design",
+    "Controlled access, user permission management and locked cabinet structure to reduce unauthorized pickup"
+   ],
+   [
+    "Application Scenarios",
+    "CNC workshop, tool room, production line, maintenance area, warehouse and smart factory material station"
+   ],
+   [
+    "Customization",
+    "Channel layout, locker quantity, compartment size, access method, cabinet color and software integration can be customized"
+   ]
+  ],
+  "appTitle": "Industrial Vending Machine Solution for Automotive and EV Components Manufacturing",
+  "appUrl": "/solutions/automotive-manufacturing-inventory.html",
+  "appSlug": "automotive-manufacturing-inventory",
+  "matched": true
+ },
+ {
+  "docName": "Smart Cabinet Solution for Electronics, Semiconductor and ESD Supplies Management",
+  "specs": [
+   [
+    "Model",
+    "QT-GT02"
+   ],
+   [
+    "Product Type",
+    "Modular smart locker cabinet for work order material management"
+   ],
+   [
+    "Cabinet Configuration",
+    "5-cabinet combination: 1 master cabinet with touchscreen + 4 extension locker cabinets"
+   ],
+   [
+    "System Version",
+    "Standalone offline version for higher data security"
+   ],
+   [
+    "Overall Dimensions",
+    "Approx. 4800-5200(W) × 550-650(D) × 1950(H) mm"
+   ],
+   [
+    "Single Cabinet Size",
+    "Approx. 950-1050(W) × 550-650(D) × 1950(H) mm per cabinet"
+   ],
+   [
+    "Locker Door Type",
+    "Solid metal locker doors"
+   ],
+   [
+    "Compartment Size",
+    "Approx. 220-260(W) × 250-320(H) × 450-550(D) mm per compartment"
+   ],
+   [
+    "Compartment Capacity",
+    "Customized according to work order material size and cabinet layout"
+   ],
+   [
+    "Power Consumption",
+    "Approx. 200W"
+   ],
+   [
+    "Access Method",
+    "Face recognition, touchscreen operation, barcode / QR code scanning and employee login"
+   ],
+   [
+    "Work Order Pickup Logic",
+    "One compartment stores one work order material kit; the user verifies identity and scans the work order code to open the assigned compartment"
+   ],
+   [
+    "Managed Items",
+    "Work order material kits, CNC machining parts, cutting tools, fixtures, gauges, spare parts, aviation components and controlled production materials"
+   ],
+   [
+    "Data Security",
+    "Standalone local system operation; suitable for customers requiring internal data control and restricted network access"
+   ],
+   [
+    "System Functions",
+    "Work order binding, compartment assignment, identity verification, material pickup records, return records, permission control and report export"
+   ],
+   [
+    "Inventory Tracking",
+    "Tracks material status by work order, operator, compartment number and pickup time"
+   ],
+   [
+    "Lighting Design",
+    "Internal LED lighting for easy material checking and pickup"
+   ],
+   [
+    "Security Design",
+    "Closed metal locker doors, controlled access and user-level permission management to reduce wrong pickup or unauthorized access"
+   ],
+   [
+    "Application Scenarios",
+    "State-owned enterprises, aerospace machining, aviation parts manufacturing, military-related machining, precision machining workshops and secure production lines"
+   ],
+   [
+    "Software Management",
+    "Supports local backend management, user permission setup, work order data import/export and pickup record query"
+   ],
+   [
+    "Customization",
+    "Cabinet quantity, compartment size, locker layout, access method, software workflow and offline data management can be customized"
+   ]
+  ],
+  "appTitle": "Smart Cabinet Solution for Electronics, Semiconductor and ESD Supplies Management",
+  "appUrl": "/solutions/electronics-manufacturing-inventory.html",
+  "appSlug": "electronics-manufacturing-inventory",
+  "matched": true
+ },
+ {
+  "docName": "Smart Tool Cabinet Solution for Mold Shops, Injection Molding and Spare Parts",
+  "specs": [
+   [
+    "Model",
+    "QT-ZH002"
+   ],
+   [
+    "Product Type",
+    "Modular industrial vending cabinet for CNC tools, gauges, PPE and MRO material management"
+   ],
+   [
+    "Cabinet Configuration",
+    "1 master CNC tool vending cabinet + 1 smart locker extension cabinet"
+   ],
+   [
+    "Master Cabinet Dimensions",
+    "1800(H) × 1165(W) × 850(D) mm"
+   ],
+   [
+    "Extension Cabinet Dimensions",
+    "1800(H) × 1035(W) × 350(D) mm"
+   ],
+   [
+    "Master Cabinet Capacity",
+    "80 tool channels for different CNC cutting tool types"
+   ],
+   [
+    "Extension Cabinet Capacity",
+    "56 locker compartments"
+   ],
+   [
+    "Main Dispensing Method",
+    "Drop-type dispensing with bottom pickup"
+   ],
+   [
+    "Extension Cabinet Opening Method",
+    "Pop-open locker door, manual item pickup"
+   ],
+   [
+    "Master Cabinet Touch Screen",
+    "21.5-inch industrial touchscreen"
+   ],
+   [
+    "Camera Function",
+    "Built-in camera for face recognition, user verification and operation traceability"
+   ],
+   [
+    "Small Locker Size",
+    "150(H) × 120(W) × 350(D) mm, used on layers 1-5"
+   ],
+   [
+    "Large Locker Size",
+    "150(H) × 240(W) × 350(D) mm, used on layers 6-9"
+   ],
+   [
+    "Main Cabinet Managed Items",
+    "CNC inserts, end mills, drills, taps, reamers, boring tools, tool boxes and other cutting tools"
+   ],
+   [
+    "Extension Cabinet Managed Items",
+    "Gauges, tool holders, PPE, spare parts, tool kits, returned tools and reusable assets"
+   ],
+   [
+    "Extension Cabinet Functions",
+    "Can be used as a gauge cabinet, tool holder cabinet, PPE cabinet, recycling cabinet or general storage locker"
+   ],
+   [
+    "Power Consumption",
+    "Approx. 150-300W for the master cabinet; approx. 100-200W for the extension cabinet"
+   ],
+   [
+    "Operating Temperature",
+    "Room temperature / ambient storage"
+   ],
+   [
+    "Access Method",
+    "Touchscreen operation, face recognition, employee login, RFID card or PIN code optional"
+   ],
+   [
+    "Network Connection",
+    "Ethernet, 4G and Wi-Fi"
+   ],
+   [
+    "System Functions",
+    "Tool issuing, item return, locker pickup, user permission control, inventory tracking and report export"
+   ],
+   [
+    "Data Management",
+    "Supports mobile and PC login, real-time inventory viewing, pickup records, return records and Excel report export"
+   ],
+   [
+    "Inventory Alerts",
+    "Low-stock warning and replenishment reminder supported"
+   ],
+   [
+    "Security Design",
+    "Controlled access, camera verification, locked cabinet structure and traceable pickup records to reduce unauthorized material collection"
+   ],
+   [
+    "Application Scenarios",
+    "CNC workshop, machining center, tool room, production line, maintenance area and smart factory material station"
+   ],
+   [
+    "Customization",
+    "Tool channel layout, locker size, locker quantity, access method, camera function, cabinet color and software integration can be customized"
+   ]
+  ],
+  "appTitle": "Smart Tool Cabinet Solution for Mold Shops, Injection Molding and Spare Parts",
+  "appUrl": "/solutions/mold-shop-tool-management.html",
+  "appSlug": "mold-shop-tool-management",
+  "matched": true
+ },
+ {
+  "docName": "Industrial Vending Cabinet for Metal Fabrication Tools, Fasteners and PPE",
+  "specs": [
+   [
+    "Model",
+    "QT-CGT06"
+   ],
+   [
+    "Product Type",
+    "Smart locker cabinet for PPE, abrasive wheels, grinding wheels and MRO supplies"
+   ],
+   [
+    "Cabinet Configuration",
+    "Modular locker cabinet system with touchscreen control cabinet"
+   ],
+   [
+    "Standard Locker Cabinet Dimensions",
+    "1800(H) × 1035(W) × 350(D) mm"
+   ],
+   [
+    "Control Cabinet Dimensions",
+    "1800(H) × 400(W) × 350(D) mm"
+   ],
+   [
+    "Small Compartment Size",
+    "150(H) × 120(W) × 350(D) mm"
+   ],
+   [
+    "Medium Compartment Size",
+    "150(H) × 240(W) × 350(D) mm"
+   ],
+   [
+    "Large Compartment Size",
+    "150(H) × 480(W) × 350(D) mm"
+   ],
+   [
+    "Extra-Long Compartment Size",
+    "150(H) × 960(W) × 350(D) mm"
+   ],
+   [
+    "Compartment Design",
+    "Mixed small, medium, large and extra-long compartments for different PPE and abrasive material sizes"
+   ],
+   [
+    "Locker Door Type",
+    "Transparent locker doors with sealing strips"
+   ],
+   [
+    "Moisture Control",
+    "Built-in dehumidifier for moisture-sensitive materials such as grinding wheels and abrasive discs"
+   ],
+   [
+    "Sealing Design",
+    "Each locker door can be equipped with sealing strips to reduce humidity entering the compartment"
+   ],
+   [
+    "Managed Items",
+    "PPE supplies, grinding wheels, abrasive wheels, cutting discs, sanding discs, gloves, masks, safety glasses, respirators, spare parts and MRO supplies"
+   ],
+   [
+    "Long Material Storage",
+    "Extra-long compartments are suitable for long, heavy or oversized materials"
+   ],
+   [
+    "Access Method",
+    "Touchscreen operation, employee login, RFID card, PIN code or face recognition optional"
+   ],
+   [
+    "Power Consumption",
+    "Approx. 200-300W, depending on dehumidifier configuration"
+   ],
+   [
+    "Operating Environment",
+    "Room temperature storage with humidity-control function"
+   ],
+   [
+    "System Functions",
+    "Item issuing, user permission control, pickup records, inventory tracking, low-stock alerts and report export"
+   ],
+   [
+    "Inventory Management",
+    "Tracks item pickup by user, time, compartment number and material type"
+   ],
+   [
+    "Security Design",
+    "Controlled access, locked compartments and traceable pickup records to reduce unauthorized material collection"
+   ],
+   [
+    "Lighting Design",
+    "Internal LED lighting for easy item identification and pickup"
+   ],
+   [
+    "Network Connection",
+    "Ethernet, Wi-Fi or 4G optional"
+   ],
+   [
+    "Software Platform",
+    "Supports backend management, real-time inventory monitoring, user records and Excel report export"
+   ],
+   [
+    "Application Scenarios",
+    "Factory PPE station, grinding workshop, welding area, maintenance area, warehouse, tool room and production line material station"
+   ],
+   [
+    "Customization",
+    "Cabinet size, locker quantity, compartment size, dehumidifier function, sealing strip design, access method and software integration can be customized"
+   ]
+  ],
+  "appTitle": "Industrial Vending Cabinet for Metal Fabrication Tools, Fasteners and PPE",
+  "appUrl": "/solutions/metal-fabrication-tool-management.html",
+  "appSlug": "metal-fabrication-tool-management",
+  "matched": true
+ },
+ {
+  "docName": "Industrial Vending Machine Solution for Smart Factory Inventory Management",
+  "specs": [
+   [
+    "Model",
+    "QT-SYP80-40"
+   ],
+   [
+    "Product Type",
+    "Industrial vending cabinet with adjustable side-push dispensing channels"
+   ],
+   [
+    "Cabinet Dimensions",
+    "1200(W) × 900(D) × 1950(H) mm"
+   ],
+   [
+    "Dispensing Method",
+    "Side-push dispensing system,with elevator"
+   ],
+   [
+    "Channel Design",
+    "Adjustable side-push channels for heavier tools, boxed items and MRO supplies"
+   ],
+   [
+    "Side Locker Capacity",
+    "40 compartments, each compartment size: 300(W) × 250(H) × 350(D) mm"
+   ],
+   [
+    "Side Locker Function",
+    "Customizable for used item return, storage locker, tool cabinet or other material management needs"
+   ],
+   [
+    "Suitable Item Type",
+    "Medium and heavy machining supplies that are not suitable for spring dispensing"
+   ],
+   [
+    "Managed Items",
+    "CNC tool holders, end mill holders, boring bars, drill bits, taps, reamers, collets, tool sleeves, carbide inserts, cutting tool boxes, measuring tools, gauges, spare parts and MRO supplies"
+   ],
+   [
+    "Heavy Item Storage",
+    "Suitable for heavier items such as tool holders, fixtures, clamps, bearings, pneumatic fittings and maintenance parts"
+   ],
+   [
+    "Power Consumption",
+    "Approx. 300W"
+   ],
+   [
+    "Touch Screen",
+    "Industrial touchscreen for item selection, user login and system operation"
+   ],
+   [
+    "Access Method",
+    "Touchscreen operation, employee login, RFID card, PIN code or face recognition optional"
+   ],
+   [
+    "Pickup Method",
+    "Side-push dispensing with controlled pickup area"
+   ],
+   [
+    "Inventory Management",
+    "Real-time inventory tracking, pickup records, low-stock alerts and replenishment reminders"
+   ],
+   [
+    "Data Reports",
+    "Supports usage records, inventory reports, user records and Excel report export"
+   ],
+   [
+    "Network Connection",
+    "Ethernet, Wi-Fi or 4G optional"
+   ],
+   [
+    "Software Platform",
+    "Supports backend management, cloud platform, real-time inventory monitoring and data export"
+   ],
+   [
+    "Security Design",
+    "Controlled dispensing, user permission management and locked cabinet structure to reduce unauthorized material pickup"
+   ],
+   [
+    "Application Scenarios",
+    "CNC machine shop, machining center, tool room, maintenance workshop, production line and factory MRO supply station"
+   ],
+   [
+    "Customization",
+    "Channel width, channel quantity, cabinet layout, access method, software functions and managed item categories can be customized"
+   ]
+  ],
+  "appTitle": "Industrial Vending Machine Solution for Smart Factory Inventory Management",
+  "appUrl": "/solutions/smart-factory-inventory-management.html",
+  "appSlug": "smart-factory-inventory-management",
+  "matched": true
+ },
+ {
+  "docName": "CNC Tool Vending Machine Solution for CNC Machining and Precision Parts",
+  "specs": [
+   [
+    "Model",
+    "QT-ZH008"
+   ],
+   [
+    "Product Type",
+    "Combined industrial vending cabinet system for CNC tools, tool storage and MRO material management"
+   ],
+   [
+    "Cabinet Configuration",
+    "2 master cabinets + 2 CNC tool extension cabinets"
+   ],
+   [
+    "Master Cabinet 1",
+    "CNC tool vending cabinet for cutting tool management"
+   ],
+   [
+    "Master Cabinet 2",
+    "Smart tool locker cabinet for tool, PPE, MRO and spare parts management"
+   ],
+   [
+    "Extension Cabinets",
+    "2 CNC tool extension cabinets for expanding tool storage capacity"
+   ],
+   [
+    "CNC Tool Master Cabinet Dimensions",
+    "1800(H) × 1165(W) × 850(D) mm"
+   ],
+   [
+    "CNC Tool Extension Cabinet Dimensions",
+    "1800(H) × 800(W) × 850(D) mm per cabinet"
+   ],
+   [
+    "Smart Tool Locker Cabinet Dimensions",
+    "1800(H) × 1035(W) × 350(D) mm"
+   ],
+   [
+    "Overall System Dimensions",
+    "Based on final cabinet combination and installation layout"
+   ],
+   [
+    "Net Weight",
+    "Confirmed by final cabinet configuration and loading design"
+   ],
+   [
+    "CNC Tool Master Cabinet Capacity",
+    "Up to 80 types of CNC cutting tools"
+   ],
+   [
+    "CNC Tool Extension Cabinet Capacity",
+    "Expandable tool storage capacity for additional CNC tool types"
+   ],
+   [
+    "Smart Tool Locker Capacity",
+    "56 locker compartments for tools, PPE, spare parts and MRO supplies"
+   ],
+   [
+    "Dispensing Method",
+    "Spring dispensing / drop-type dispensing for CNC tools"
+   ],
+   [
+    "Locker Pickup Method",
+    "Pop-open locker door, manual item pickup"
+   ],
+   [
+    "Touch Screen",
+    "Industrial touchscreen for item selection, user login and system operation"
+   ],
+   [
+    "Managed CNC Tools",
+    "Carbide inserts, end mills, drills, taps, reamers, boring tools, tool holders and tool boxes"
+   ],
+   [
+    "Managed Tool Locker Items",
+    "Gauges, fixtures, PPE, spare parts, hand tools, maintenance tools, MRO supplies and returned tools"
+   ],
+   [
+    "System Functions",
+    "Tool issuing, locker pickup, return management, inventory tracking, user permission control and report export"
+   ],
+   [
+    "Inventory Alerts",
+    "Low-stock warning and replenishment reminder supported"
+   ],
+   [
+    "Data Management",
+    "Supports pickup records, return records, inventory reports, user records and Excel report export"
+   ],
+   [
+    "Network Connection",
+    "Ethernet, Wi-Fi or 4G optional"
+   ],
+   [
+    "Software Platform",
+    "Supports backend management, cloud platform, real-time inventory monitoring and data analysis"
+   ],
+   [
+    "Access Method",
+    "Touchscreen operation, employee login, RFID card, PIN code or face recognition optional"
+   ],
+   [
+    "Security Design",
+    "Controlled access, locked cabinet structure and traceable pickup records to reduce unauthorized material collection"
+   ],
+   [
+    "Application Scenarios",
+    "CNC workshop, machining center, tool room, production line, maintenance area and smart factory material station"
+   ],
+   [
+    "Customization",
+    "Cabinet quantity, tool channel layout, locker size, storage capacity, access method and software integration can be customized"
+   ]
+  ],
+  "appTitle": "CNC Tool Vending Machine Solution for CNC Machining and Precision Parts",
+  "appUrl": "/solutions/cnc-machining-tool-management.html",
+  "appSlug": "cnc-machining-tool-management",
+  "matched": true
+ },
+ {
+  "docName": "Refrigerated Chemical Storage Cabinet for Lab Reagents, Liquid Bottles and Samples",
+  "specs": [
+   [
+    "Model",
+    "QT-CH01"
+   ],
+   [
+    "Product Type",
+    "Smart refrigerated storage cabinet for chemical liquids, reagents and bottled materials"
+   ],
+   [
+    "Cabinet Dimensions",
+    "1800(H) × 1170(W) × 850(D) mm"
+   ],
+   [
+    "Cabinet Structure",
+    "Integrated touchscreen control cabinet with multi-compartment refrigerated storage area"
+   ],
+   [
+    "Storage Type",
+    "Independent locker compartments for bottled liquids and controlled materials"
+   ],
+   [
+    "Cooling Function",
+    "Built-in refrigeration system for temperature-controlled liquid storage"
+   ],
+   [
+    "Temperature Control",
+    "Adjustable cooling temperature, configured according to liquid storage requirements"
+   ],
+   [
+    "Managed Items",
+    "Chemical bottles, reagent bottles, liquid samples, laboratory consumables, cleaning agents, industrial fluids and controlled bottled materials"
+   ],
+   [
+    "Locker Door Type",
+    "Transparent locker doors for easy item visibility"
+   ],
+   [
+    "Compartment Design",
+    "Multi-size locker compartments for different bottle sizes and liquid containers"
+   ],
+   [
+    "Access Method",
+    "Touchscreen operation, employee login, RFID card, PIN code or face recognition optional"
+   ],
+   [
+    "Pickup Method",
+    "User verification opens the assigned compartment for liquid bottle pickup"
+   ],
+   [
+    "Return Function",
+    "Supports bottle return records and controlled return management if required"
+   ],
+   [
+    "System Functions",
+    "Item issuing, return management, user permission control, inventory tracking, pickup records and report export"
+   ],
+   [
+    "Inventory Management",
+    "Tracks liquid bottle status by user, compartment number, pickup time and material type"
+   ],
+   [
+    "Temperature Monitoring",
+    "Supports temperature status monitoring and abnormal temperature alerts"
+   ],
+   [
+    "Security Design",
+    "Controlled access, locked compartments and traceable operation records to reduce unauthorized pickup"
+   ],
+   [
+    "Network Connection",
+    "Ethernet, Wi-Fi or 4G optional"
+   ],
+   [
+    "Software Platform",
+    "Supports backend management, real-time inventory monitoring, user records and Excel report export"
+   ],
+   [
+    "Application Scenarios",
+    "Laboratory, chemical storage room, factory liquid material station, R&D center, medical laboratory and controlled material warehouse"
+   ],
+   [
+    "Customization",
+    "Cabinet size, cooling temperature range, compartment size, locker quantity, access method and software integration can be customized"
+   ]
+  ],
+  "appTitle": "Refrigerated Chemical Storage Cabinet for Lab Reagents, Liquid Bottles and Samples",
+  "appUrl": "/applications/chemical-storage-cabinet.html",
+  "appSlug": "chemical-storage-cabinet",
+  "matched": true
+ },
+ {
+  "docName": "Smart Food Pickup Locker for Takeout, Meal Collection and Office Buildings",
+  "specs": [
+   [
+    "Model",
+    "QT-FT01"
+   ],
+   [
+    "Product Type",
+    "Smart meal collection locker / office food pickup cabinet"
+   ],
+   [
+    "Cabinet Dimensions",
+    "Confirmed by final cabinet layout"
+   ],
+   [
+    "Cabinet Configuration",
+    "Multi-compartment food pickup locker with central touchscreen control system"
+   ],
+   [
+    "Installation Location",
+    "Office building, commercial lobby, corporate canteen, shared dining area and meal pickup station"
+   ],
+   [
+    "Temperature Function",
+    "Heating and cooling functions optional"
+   ],
+   [
+    "Heating Function",
+    "Keeps hot meals warm before pickup"
+   ],
+   [
+    "Cooling Function",
+    "Keeps cold food, drinks, salads and refrigerated meals at suitable storage temperature"
+   ],
+   [
+    "Compartment Type",
+    "Mixed-size food pickup compartments for different meal box sizes"
+   ],
+   [
+    "Locker Door Type",
+    "Independent locker doors with visible front panels"
+   ],
+   [
+    "Touch Screen",
+    "Central touchscreen for order pickup, user operation and system management"
+   ],
+   [
+    "Access Method",
+    "QR code pickup, PIN code, employee login, RFID card or face recognition optional"
+   ],
+   [
+    "Pickup Method",
+    "User scans pickup code or enters verification information to open the assigned compartment"
+   ],
+   [
+    "Managed Items",
+    "Takeaway meals, lunch boxes, meal kits, beverages, cold food, fresh food, desserts and office food deliveries"
+   ],
+   [
+    "System Functions",
+    "Order binding, compartment assignment, pickup verification, pickup records, timeout reminder and report export"
+   ],
+   [
+    "Temperature Monitoring",
+    "Supports temperature status monitoring for heated or refrigerated compartments"
+   ],
+   [
+    "Data Management",
+    "Supports order records, pickup records, user records, compartment status and backend data export"
+   ],
+   [
+    "Network Connection",
+    "Ethernet, Wi-Fi or 4G optional"
+   ],
+   [
+    "Security Design",
+    "Independent locked compartments to reduce wrong pickup, food loss and unauthorized access"
+   ],
+   [
+    "Hygiene Design",
+    "Easy-to-clean cabinet surface and separated compartments for different orders"
+   ],
+   [
+    "Application Scenarios",
+    "Office building food pickup, corporate meal delivery, smart canteen, commercial building takeaway station and shared meal collection point"
+   ],
+   [
+    "Customization",
+    "Cabinet size, compartment quantity, heating function, cooling function, door color, pickup method and software integration can be customized"
+   ]
+  ],
+  "appTitle": "Smart Food Pickup Locker for Takeout, Meal Collection and Office Buildings",
+  "appUrl": "/applications/food-pickup-locker.html",
+  "appSlug": "food-pickup-locker",
+  "matched": true
+ },
+ {
+  "docName": "Office Supply Vending Machine for Stationery, IT Supplies and Workplace Consumables",
+  "specs": [
+   [
+    "Model",
+    "QT-OS01"
+   ],
+   [
+    "Product Type",
+    "Smart staff locker system / workplace employee storage cabinet"
+   ],
+   [
+    "Cabinet Configuration",
+    "3-cabinet combination: 1 master cabinet with touchscreen + 2 extension locker cabinets"
+   ],
+   [
+    "Overall Dimensions",
+    "3600(W) × 450(D) × 1900(H) mm"
+   ],
+   [
+    "Single Cabinet Dimensions",
+    "1200(W) × 450(D) × 1900(H) mm"
+   ],
+   [
+    "Locker Capacity",
+    "64 compartments in total"
+   ],
+   [
+    "Single Compartment Size",
+    "280(W) × 210(H) × 400(D) mm"
+   ],
+   [
+    "Locker Door Type",
+    "Opaque metal locker doors for employee privacy protection"
+   ],
+   [
+    "Privacy Design",
+    "Non-transparent doors help protect personal belongings, uniforms, bags and private items"
+   ],
+   [
+    "Master Cabinet",
+    "Central control cabinet with touchscreen operation and locker management system"
+   ],
+   [
+    "Extension Cabinets",
+    "2 extension locker cabinets connected to the master cabinet"
+   ],
+   [
+    "Access Method",
+    "Touchscreen operation, employee login, RFID card, PIN code or face recognition optional"
+   ],
+   [
+    "Managed Items",
+    "Employee personal belongings, uniforms, bags, shoes, tools, documents, PPE and workplace supplies"
+   ],
+   [
+    "System Functions",
+    "Locker assignment, user permission control, item storage records, pickup records and locker status monitoring"
+   ],
+   [
+    "Data Management",
+    "Supports user records, locker usage records, operation logs and backend data export"
+   ],
+   [
+    "Security Design",
+    "Independent locked compartments, user-level permission control and traceable operation records"
+   ],
+   [
+    "Network Connection",
+    "Ethernet, Wi-Fi or 4G optional"
+   ],
+   [
+    "Software Platform",
+    "Supports backend management, employee account management and locker status monitoring"
+   ],
+   [
+    "Application Scenarios",
+    "Factory changing room, office building, employee locker area, workshop entrance, staff dormitory and workplace storage area"
+   ],
+   [
+    "Customization",
+    "Cabinet quantity, locker size, compartment layout, door color, access method and software functions can be customized"
+   ]
+  ],
+  "appTitle": "Office Supply Vending Machine for Stationery, IT Supplies and Workplace Consumables",
+  "appUrl": "/applications/office-supply-vending-machine.html",
+  "appSlug": "office-supply-vending-machine",
+  "matched": true
+ },
+ {
+  "docName": "Tool Tracking System for Reusable Tools, Gauges, Fixtures and Asset Control",
+  "specs": [
+   [
+    "Model",
+    "QT-DRL02"
+   ],
+   [
+    "Product Type",
+    "Industrial smart drawer cabinet for machining supplies, gauges and reusable tools"
+   ],
+   [
+    "Cabinet Configuration",
+    "3-cabinet combination: 1 master drawer cabinet + 2 extension drawer cabinets"
+   ],
+   [
+    "Overall Dimensions",
+    "3000(W) × 500(D) × 1800(H) mm"
+   ],
+   [
+    "Single Cabinet Dimensions",
+    "1000(W) × 500(D) × 1800(H) mm"
+   ],
+   [
+    "Small Drawer Size",
+    "200(W) × 100(H) × 350(D) mm"
+   ],
+   [
+    "Large Drawer Size",
+    "300(W) × 200(H) × 350(D) mm"
+   ],
+   [
+    "Master Cabinet Capacity",
+    "30 small drawers + 12 large drawers"
+   ],
+   [
+    "Extension Cabinet Capacity",
+    "48 small drawers + 12 large drawers per extension cabinet"
+   ],
+   [
+    "Total System Capacity",
+    "126 small drawers + 36 large drawers"
+   ],
+   [
+    "Drawer Type",
+    "Multi-drawer storage with transparent viewing windows"
+   ],
+   [
+    "Drawer Window Design",
+    "Each drawer is equipped with a viewing window for quick item identification"
+   ],
+   [
+    "Lighting Design",
+    "Internal LED lighting helps users clearly see stored materials, even at night or in low-light workshops"
+   ],
+   [
+    "Master Cabinet",
+    "Main control cabinet with touchscreen operation and system management functions"
+   ],
+   [
+    "Extension Cabinets",
+    "2 extension drawer cabinets connected to the master cabinet for expanded storage capacity"
+   ],
+   [
+    "Managed Items",
+    "CNC inserts, carbide inserts, end mills, drills, taps, reamers, boring tools, collets, tool sleeves, tool holders, gauges, calipers, micrometers, plug gauges, ring gauges, thread gauges, fixtures, spare parts, screws, nuts, bolts, washers and MRO supplies"
+   ],
+   [
+    "Access Method",
+    "Touchscreen operation, employee login, RFID card, PIN code or face recognition optional"
+   ],
+   [
+    "System Functions",
+    "Item issuing, return management, drawer assignment, user permission control, inventory tracking and report export"
+   ],
+   [
+    "Network Connection",
+    "Ethernet, Wi-Fi or 4G optional"
+   ],
+   [
+    "Application Scenarios",
+    "CNC machining workshop, tool room, quality inspection room, maintenance area, production line and smart factory material station"
+   ],
+   [
+    "Customization",
+    "Cabinet size, drawer quantity, drawer size, window design, lighting, access method and software integration can be customized"
+   ]
+  ],
+  "appTitle": "Tool Tracking System for Reusable Tools, Gauges, Fixtures and Asset Control",
+  "appUrl": "/applications/tool-tracking-system.html",
+  "appSlug": "tool-tracking-system",
+  "matched": true
+ },
+ {
+  "docName": "Smart Locker System for Employee Lockers, Offices and Workplace Storage",
+  "specs": [
+   [
+    "Model",
+    "QT-EL002"
+   ],
+   [
+    "Product Type",
+    "Smart employee storage locker / personal belongings cabinet"
+   ],
+   [
+    "Cabinet Dimensions",
+    "1800(H) × 1035(W) × 350(D) mm"
+   ],
+   [
+    "Locker Capacity",
+    "56 compartments"
+   ],
+   [
+    "Small Compartment Size",
+    "150(H) × 120(W) × 350(D) mm, layers 1-5"
+   ],
+   [
+    "Large Compartment Size",
+    "150(H) × 240(W) × 350(D) mm, layers 6-9"
+   ],
+   [
+    "Locker Door Type",
+    "Opaque metal doors"
+   ],
+   [
+    "Privacy Design",
+    "Non-transparent front doors help protect employee privacy and personal belongings"
+   ],
+   [
+    "Touch Screen",
+    "Shared with the master cabinet touchscreen"
+   ],
+   [
+    "Power Consumption",
+    "Approx. 100-200W"
+   ],
+   [
+    "Operating Temperature",
+    "Room temperature / ambient storage"
+   ],
+   [
+    "Network Connection",
+    "Ethernet, 4G and Wi-Fi"
+   ],
+   [
+    "Access Method",
+    "Touchscreen operation, employee login, RFID card, PIN code or face recognition optional"
+   ],
+   [
+    "Managed Items",
+    "Employee personal belongings, uniforms, bags, shoes, documents, PPE, tools and workplace supplies"
+   ],
+   [
+    "Locker Function",
+    "Suitable for employee storage, personal item management, tool storage and workplace material storage"
+   ],
+   [
+    "Opening Method",
+    "Pop-open locker door, manual item pickup"
+   ],
+   [
+    "System Functions",
+    "Locker assignment, user permission control, item storage records, pickup records and locker status monitoring"
+   ],
+   [
+    "Data Management",
+    "Supports user records, locker usage records, operation logs and backend data export"
+   ],
+   [
+    "Security Design",
+    "Independent locked compartments, user-level permission control and traceable operation records"
+   ],
+   [
+    "Application Scenarios",
+    "Factory changing room, office building, workshop entrance, employee locker area, staff dormitory and workplace storage area"
+   ],
+   [
+    "Customization",
+    "Cabinet size, locker quantity, compartment layout, door color, access method and software functions can be customized"
+   ]
+  ],
+  "appTitle": "Smart Locker System for Employee Lockers, Offices and Workplace Storage",
+  "appUrl": "/applications/smart-locker-system.html",
+  "appSlug": "smart-locker-system",
+  "matched": true
+ },
+ {
+  "docName": "Fastener Vending Cabinet for Screws, Nuts, Bolts and MRO Consumables",
+  "specs": [
+   [
+    "Model",
+    "QT-GE38"
+   ],
+   [
+    "Product Type",
+    "Smart weighing locker extension cabinet"
+   ],
+   [
+    "Cabinet Type",
+    "Smart gravity weighing tool cabinet / weighing extension cabinet"
+   ],
+   [
+    "Cabinet Dimensions",
+    "1800(H) × 1500(W) × 500(D) mm"
+   ],
+   [
+    "Compartment Size",
+    "174(H) × 125(W) × 380(D) mm"
+   ],
+   [
+    "Locker Capacity",
+    "38 compartments"
+   ],
+   [
+    "Power Consumption",
+    "Approx. 150-300W"
+   ],
+   [
+    "Opening Method",
+    "Pop-open locker door, manual item pickup"
+   ],
+   [
+    "Pickup Method",
+    "Swipe card / employee verification to pick up items"
+   ],
+   [
+    "Network Connection",
+    "Ethernet, 4G and Wi-Fi"
+   ],
+   [
+    "Weighing Function",
+    "Built-in gravity sensing module automatically detects item quantity changes"
+   ],
+   [
+    "Counting Method",
+    "Automatic quantity calculation by weight change after item pickup or return"
+   ],
+   [
+    "Report Function",
+    "Automatically generates pickup records, inventory records and usage reports"
+   ],
+   [
+    "Managed Items",
+    "Screws, fasteners, non-standard fasteners, nuts, bolts, washers, small tools, spare parts, consumables and MRO supplies"
+   ],
+   [
+    "Suitable Item Type",
+    "Small parts and consumables that can be counted by weight"
+   ],
+   [
+    "System Functions",
+    "Item pickup, return management, quantity counting, inventory tracking, user permission control and report export"
+   ],
+   [
+    "Inventory Alerts",
+    "Low-stock warning and replenishment reminder supported"
+   ],
+   [
+    "Data Management",
+    "Supports pickup records, return records, inventory reports, user records and Excel report export"
+   ],
+   [
+    "Security Design",
+    "Independent locked compartments and traceable operation records to reduce unauthorized pickup"
+   ],
+   [
+    "Application Scenarios",
+    "CNC workshop, maintenance area, fastener storage area, tool room, production line and factory MRO supply station"
+   ],
+   [
+    "Customization",
+    "Compartment size, locker quantity, weighing module, access method, cabinet layout and software integration can be customized"
+   ]
+  ],
+  "appTitle": "Fastener Vending Cabinet for Screws, Nuts, Bolts and MRO Consumables",
+  "appUrl": "/applications/fastener-vending-machine.html",
+  "appSlug": "fastener-vending-machine",
+  "matched": true
+ },
+ {
+  "docName": "PPE Vending Machine for Industrial Safety Supplies and Employee Distribution",
+  "specs": [
+   [
+    "Model",
+    "QT-ZHG02"
+   ],
+   [
+    "Product Type",
+    "Modular smart locker cabinet for tool, gauge and MRO material management"
+   ],
+   [
+    "Cabinet Configuration",
+    "1 master smart locker cabinet + 1 high-capacity extension locker cabinet"
+   ],
+   [
+    "Master Cabinet Dimensions",
+    "1800(H) × 1035(W) × 350(D) mm"
+   ],
+   [
+    "Master Cabinet Capacity",
+    "47 compartments"
+   ],
+   [
+    "Master Small Compartment Size",
+    "150(H) × 120(W) × 350(D) mm, layers 1-5"
+   ],
+   [
+    "Master Large Compartment Size",
+    "150(H) × 240(W) × 350(D) mm, layers 6-9"
+   ],
+   [
+    "Extension Cabinet Dimensions",
+    "2100(H) × 1500(W) × 300(D) mm"
+   ],
+   [
+    "Extension Cabinet Capacity",
+    "110 compartments"
+   ],
+   [
+    "Extension Compartment Layout",
+    "10 columns × 11 rows"
+   ],
+   [
+    "Extension Compartment Size",
+    "150(H) × 150(W) × 300(D) mm"
+   ],
+   [
+    "Touch Screen",
+    "10.1-inch touchscreen on the master cabinet"
+   ],
+   [
+    "Power Consumption",
+    "Approx. 150-300W"
+   ],
+   [
+    "Operating Temperature",
+    "Room temperature / ambient storage"
+   ],
+   [
+    "Network Connection",
+    "Ethernet, 4G and Wi-Fi"
+   ],
+   [
+    "Opening Method",
+    "Pop-open locker door, manual item pickup"
+   ],
+   [
+    "Access Method",
+    "Face recognition, touchscreen operation, employee login, RFID card or PIN code optional"
+   ],
+   [
+    "Managed Items",
+    "Calipers, gauges, drills, tool holders, cutting tools, small tools, spare parts, PPE, MRO supplies and reusable assets"
+   ],
+   [
+    "Extension Cabinet Use",
+    "High-density storage for small tools, gauges, spare parts, PPE accessories and consumables"
+   ],
+   [
+    "System Functions",
+    "Item issuing, return management, locker assignment, user permission control, inventory tracking and report export"
+   ],
+   [
+    "Customization",
+    "Cabinet size, compartment quantity, locker size, access method, locker function"
+   ]
+  ],
+  "appTitle": "PPE Vending Machine for Industrial Safety Supplies and Employee Distribution",
+  "appUrl": "/applications/ppe-vending-machine.html",
+  "appSlug": "ppe-vending-machine",
+  "matched": true
+ },
+ {
+  "docName": "CNC Tool Vending Machine for Cutting Tools, Inserts, End Mills and Taps",
+  "specs": [
+   [
+    "Model",
+    "QT-DL60A"
+   ],
+   [
+    "Product Type",
+    "Drop-type smart tool vending cabinet for CNC cutting tools and consumables"
+   ],
+   [
+    "Cabinet Style",
+    "Drop-type 60-channel model"
+   ],
+   [
+    "Cabinet Dimensions",
+    "1600(H) × 720(W) × 600(D) mm"
+   ],
+   [
+    "Standard Capacity",
+    "60 channels, 6 layers × 10 channels"
+   ],
+   [
+    "Managed Item Capacity",
+    "Up to 60 item types, adjustable according to actual product size"
+   ],
+   [
+    "Touch Screen",
+    "10.1-inch touchscreen"
+   ],
+   [
+    "Power Consumption",
+    "Approx. 65-80W"
+   ],
+   [
+    "Dispensing Method",
+    "Drop-type dispensing with bottom pickup"
+   ],
+   [
+    "Pickup Method",
+    "Bottom pickup after successful user verification"
+   ],
+   [
+    "Access Method",
+    "Face recognition, card access, touchscreen operation, employee login or PIN code optional"
+   ],
+   [
+    "Side Locker Function",
+    "2 side lockers on the left and right sides; locker function can be customized"
+   ],
+   [
+    "Return Locker Function",
+    "Side lockers can be used as recycling lockers for returned tools, regrinding tools or reusable tools"
+   ],
+   [
+    "Managed Items",
+    "CNC inserts, carbide inserts, end mills, drills, taps, reamers, cutting tools, small tool boxes, tool accessories and MRO consumables"
+   ],
+   [
+    "System Functions",
+    "Tool issuing, tool return, user permission control, inventory tracking, pickup records and report export"
+   ],
+   [
+    "Data Management",
+    "Supports mobile and PC login, real-time inventory viewing and Excel report export"
+   ],
+   [
+    "Inventory Alerts",
+    "Low-stock warning and replenishment reminder supported"
+   ],
+   [
+    "Network Connection",
+    "Ethernet, 4G and Wi-Fi"
+   ],
+   [
+    "Application Scenarios",
+    "CNC workshop, machining center, tool room, production line, maintenance area and small factory tool station"
+   ],
+   [
+    "Customization",
+    "Channel layout, locker function, access method, cabinet color, managed item categories and software integration can be customized"
+   ]
+  ],
+  "appTitle": "CNC Tool Vending Machine for Cutting Tools, Inserts, End Mills and Taps",
+  "appUrl": "/applications/cnc-tool-vending-machine.html",
+  "appSlug": "cnc-tool-vending-machine",
+  "matched": true
+ },
+ {
+  "docName": "Weight-based vending cabinet for fasteners screws nuts and industrial consumables",
+  "specs": [
+   [
+    "Model",
+    "QT-G34"
+   ],
+   [
+    "Product Type",
+    "Smart gravity weighing cabinet / intelligent tool cabinet"
+   ],
+   [
+    "Cabinet Dimensions",
+    "1800(H) × 1500(W) × 500(D) mm"
+   ],
+   [
+    "Locker Capacity",
+    "34 compartments"
+   ],
+   [
+    "Compartment Size",
+    "174(H) × 125(W) × 380(D) mm"
+   ],
+   [
+    "Touch Screen",
+    "21.5-inch industrial touchscreen"
+   ],
+   [
+    "Power Consumption",
+    "Approx. 150-300W"
+   ],
+   [
+    "Opening Method",
+    "Pop-open locker door, manual item pickup"
+   ],
+   [
+    "Pickup Method",
+    "Card access / employee verification to pick up items"
+   ],
+   [
+    "Network Connection",
+    "Ethernet, 4G and Wi-Fi"
+   ],
+   [
+    "Weighing Function",
+    "Built-in gravity sensing module automatically detects item quantity changes"
+   ],
+   [
+    "Counting Method",
+    "Automatic quantity calculation by weight change after item pickup or return"
+   ],
+   [
+    "Report Function",
+    "Automatically generates pickup records, inventory records and usage reports"
+   ],
+   [
+    "Managed Items",
+    "Screws, fasteners, non-standard fasteners, nuts, bolts, washers, small tools, spare parts, consumables and MRO supplies"
+   ],
+   [
+    "Suitable Item Type",
+    "Small parts and consumables that can be counted by weight"
+   ],
+   [
+    "System Functions",
+    "Item pickup, return management, quantity counting, inventory tracking, user permission control and report export"
+   ],
+   [
+    "Inventory Alerts",
+    "Low-stock warning and replenishment reminder supported"
+   ],
+   [
+    "Data Management",
+    "Supports pickup records, return records, inventory reports, user records and Excel report export"
+   ],
+   [
+    "Security Design",
+    "Independent locked compartments and traceable operation records to reduce unauthorized pickup"
+   ],
+   [
+    "Application Scenarios",
+    "CNC workshop, maintenance area, fastener storage area, tool room, production line and factory MRO supply station"
+   ],
+   [
+    "Customization",
+    "Compartment size, locker quantity, weighing module, access method, cabinet layout and software integration can be customized"
+   ]
+  ],
+  "appTitle": "Weight-based vending cabinet for fasteners screws nuts and industrial consumables",
+  "appUrl": "/products/weight-based-vending-cabinet.html",
+  "appSlug": "weight-based-vending-cabinet",
+  "matched": true
+ },
+ {
+  "docName": "Modular Industrial Vending Machine for Tools, PPE and MRO Supplies",
+  "specs": [
+   [
+    "Model",
+    "QT-ZHM0"
+   ],
+   [
+    "System Structure",
+    "Main control cabinet + CNC tool vending cabinet + smart locker cabinets; customizable according to material management needs"
+   ],
+   [
+    "Cabinet Combination",
+    "One-to-two, one-to-three or multi-cabinet system"
+   ],
+   [
+    "Managed Items",
+    "End mills, drills, taps, carbide inserts, reamers, boring tools, tool holders, PPE, spare parts, large tools, used tools, maintenance kits and MRO supplies"
+   ],
+   [
+    "Storage Modules",
+    "CNC tool dispensing channels, auxiliary tool cabinet, smart locker compartments and side storage modules"
+   ],
+   [
+    "Access Methods",
+    "Employee card, PIN code, QR code, face recognition or customized access methods"
+   ],
+   [
+    "Management Mode",
+    "Tool issuing, item pickup, used tool return, inventory tracking and permission control"
+   ],
+   [
+    "Software Functions",
+    "User management, item management, usage records, low-stock alerts, return records, report export and inventory analysis"
+   ],
+   [
+    "System Integration",
+    "ERP, MES, SAP and other inventory systems can be customized"
+   ],
+   [
+    "Application",
+    "CNC machining workshops, tool rooms, manufacturing plants, maintenance rooms and MRO warehouses"
+   ],
+   [
+    "Customization",
+    "Cabinet quantity, locker size, storage layout, cabinet color, software workflow and managed item categories can be customized"
+   ]
+  ],
+  "appTitle": "Modular Industrial Vending Machine for Tools, PPE and MRO Supplies",
+  "appUrl": "/products/modular-industrial-vending-machine.html",
+  "appSlug": "modular-industrial-vending-machine",
+  "matched": true
+ },
+ {
+  "docName": "Smart Drawer Tool Cabinet for Measuring Tools, Gauges and Reusable Assets",
+  "specs": [
+   [
+    "Model",
+    "QT-DR6"
+   ],
+   [
+    "Product Type",
+    "Smart material cabinet / intelligent drawer cabinet"
+   ],
+   [
+    "Cabinet Style",
+    "Smart drawer cabinet"
+   ],
+   [
+    "Cabinet Dimensions",
+    "1400-1820(H) × 880(W) × 900(D) mm"
+   ],
+   [
+    "Effective Single Compartment Size",
+    "82(W) × 90(D) mm"
+   ],
+   [
+    "Total Capacity",
+    "324 compartments"
+   ],
+   [
+    "Touch Screen",
+    "15-inch touchscreen"
+   ],
+   [
+    "Power Consumption",
+    "Approx. 150-300W"
+   ],
+   [
+    "Pickup Method",
+    "Face recognition / employee verification to pick up items"
+   ],
+   [
+    "Dispensing Method",
+    "Light-guided drawer opening and manual item pickup"
+   ],
+   [
+    "Network Connection",
+    "Ethernet, 4G and Wi-Fi"
+   ],
+   [
+    "System Function",
+    "Face recognition pickup, automatic records, usage statistics and report export"
+   ],
+   [
+    "Managed Items",
+    "Calipers, gauges, measuring tools, drills, cutting tools, tool holders, precision parts, small spare parts and MRO supplies"
+   ],
+   [
+    "Suitable Item Type",
+    "Small precision tools, measuring instruments and high-value machining materials"
+   ],
+   [
+    "Drawer Design",
+    "Multi-layer drawer structure with divided storage compartments"
+   ],
+   [
+    "Lighting Design",
+    "Light-guided pickup system helps users quickly find the assigned item position"
+   ],
+   [
+    "Access Method",
+    "Face recognition, touchscreen operation, employee login, RFID card or PIN code optional"
+   ],
+   [
+    "Inventory Management",
+    "Supports item pickup records, user records, drawer position tracking and inventory reports"
+   ],
+   [
+    "Data Reports",
+    "Supports automatic statistics, pickup history, inventory reports and Excel report export"
+   ],
+   [
+    "Security Design",
+    "Controlled access, assigned drawer pickup and traceable operation records to reduce tool loss and wrong pickup"
+   ],
+   [
+    "Application Scenarios",
+    "CNC machining workshop, quality inspection room, tool room, maintenance area, production line and precision parts storage area"
+   ],
+   [
+    "Customization",
+    "Cabinet height, drawer quantity, compartment layout, access method, lighting guidance and software integration can be customized"
+   ]
+  ],
+  "appTitle": "Smart Drawer Tool Cabinet for Measuring Tools, Gauges and Reusable Assets",
+  "appUrl": "/products/smart-drawer-tool-cabinet.html",
+  "appSlug": "smart-drawer-tool-cabinet",
+  "matched": true
+ },
+ {
+  "docName": "Industrial Tool Locker Cabinet for Tools, PPE, Spare Parts and MRO Supplies",
+  "specs": [
+   [
+    "Model",
+    "QT-G110"
+   ],
+   [
+    "Product Type",
+    "Smart tool locker cabinet / industrial material storage cabinet"
+   ],
+   [
+    "Cabinet Configuration",
+    "Integrated master cabinet with touchscreen control system and 110 locker compartments"
+   ],
+   [
+    "Cabinet Dimensions",
+    "2100(H) × 1500(W) × 300(D) mm"
+   ],
+   [
+    "Locker Capacity",
+    "110 compartments"
+   ],
+   [
+    "Compartment Layout",
+    "10 columns × 11 rows"
+   ],
+   [
+    "Single Compartment Size",
+    "150(H) × 150(W) × 300(D) mm"
+   ],
+   [
+    "Touch Screen",
+    "Industrial touchscreen for item selection, user login and locker management"
+   ],
+   [
+    "Access Method",
+    "Face recognition, touchscreen operation, employee login, RFID card or PIN code optional"
+   ],
+   [
+    "Opening Method",
+    "Pop-open locker door, manual item pickup"
+   ],
+   [
+    "Locker Function",
+    "Supports tool issuing, tool return, recycling, storage and controlled pickup"
+   ],
+   [
+    "Managed Items",
+    "Calipers, gauges, drills, tool holders, cutting tools, small tools, spare parts, PPE accessories, MRO supplies, fasteners and reusable assets"
+   ],
+   [
+    "Suitable Item Type",
+    "Small tools, measuring tools, spare parts, PPE accessories and high-frequency workshop materials"
+   ],
+   [
+    "System Functions",
+    "Item issuing, return management, locker assignment, user permission control, inventory tracking and report export"
+   ],
+   [
+    "Data Management",
+    "Supports pickup records, return records, inventory reports, user records and Excel report export"
+   ],
+   [
+    "Security Design",
+    "Independent locked compartments, controlled access and traceable pickup records to reduce wrong pickup or unauthorized access"
+   ],
+   [
+    "Network Connection",
+    "Ethernet, Wi-Fi or 4G optional"
+   ],
+   [
+    "Software Platform",
+    "Supports backend management, real-time inventory monitoring, user account management and data analysis"
+   ],
+   [
+    "Application Scenarios",
+    "CNC workshop, tool room, maintenance area, production line, warehouse and smart factory material station"
+   ],
+   [
+    "Customization",
+    "Cabinet size, compartment quantity, locker size, access method, locker function and software integration can be customized"
+   ]
+  ],
+  "appTitle": "Industrial Tool Locker Cabinet for Tools, PPE, Spare Parts and MRO Supplies",
+  "appUrl": "/products/smart-tool-locker-cabinet.html",
+  "appSlug": "smart-tool-locker-cabinet",
+  "matched": true
+ },
+ {
+  "docName": "DL80F Tool Vending Auxiliary Cabinet for CNC Cutting Tool Storage Expansion",
+  "specs": [
+   [
+    "Model",
+    "QT-DL80F"
+   ],
+   [
+    "Product Type",
+    "Smart tool vending extension cabinet / auxiliary CNC tool cabinet"
+   ],
+   [
+    "Cabinet Style",
+    "Drop-type 80-channel extension cabinet"
+   ],
+   [
+    "Cabinet Dimensions",
+    "1800(H) × 800(W) × 850(D) mm"
+   ],
+   [
+    "Standard Capacity",
+    "80 channels, 8 layers × 10 channels"
+   ],
+   [
+    "Managed Item Capacity",
+    "Up to 80 item types, adjustable according to actual product size"
+   ],
+   [
+    "Touch Screen",
+    "Shared with the master cabinet touchscreen"
+   ],
+   [
+    "Power Consumption",
+    "Approx. 100-200W"
+   ],
+   [
+    "Dispensing Method",
+    "Drop-type dispensing with bottom pickup"
+   ],
+   [
+    "Pickup Method",
+    "Authorized user verification through the master cabinet, then bottom pickup"
+   ],
+   [
+    "Network Connection",
+    "Connected through the master cabinet network"
+   ],
+   [
+    "System Functions",
+    "Tool issuing, tool return, temporary storage, inventory tracking, pickup records and report export"
+   ],
+   [
+    "Data Management",
+    "Supports mobile and PC login through the master system, real-time inventory viewing and Excel report export"
+   ],
+   [
+    "Managed Items",
+    "CNC inserts, carbide inserts, end mills, drills, taps, reamers, boring tools, cutting tools, tool boxes and MRO consumables"
+   ],
+   [
+    "Application Scenarios",
+    "CNC workshop, machining center, tool room, production line, maintenance area and smart factory tool station"
+   ],
+   [
+    "Customization",
+    "Channel layout, storage capacity, managed item categories, cabinet color and software integration can be customized"
+   ]
+  ],
+  "appTitle": "DL80F Tool Vending Auxiliary Cabinet for CNC Cutting Tool Storage Expansion",
+  "appUrl": "/products/tool-vending-expansion-cabinet.html",
+  "appSlug": "tool-vending-expansion-cabinet",
+  "matched": true
+ },
+ {
+  "docName": "CNC Tool Vending Machine - Smart CNC Tool Cabinet for Tool Inventory Management",
+  "specs": [
+   [
+    "Model",
+    "QT-DL80-48"
+   ],
+   [
+    "Product Type",
+    "Smart CNC tool vending cabinet / industrial tool management cabinet"
+   ],
+   [
+    "Cabinet Style",
+    "Drop-type 80-channel cabinet with 48 side locker compartments"
+   ],
+   [
+    "Cabinet Dimensions",
+    "1800(H) × 1165(W) × 850(D) mm"
+   ],
+   [
+    "Standard Capacity",
+    "80 dispensing channels + 48 side locker compartments"
+   ],
+   [
+    "Tool Channel Layout",
+    "8 layers × 10 channels"
+   ],
+   [
+    "Side Locker Capacity",
+    "48 compartments"
+   ],
+   [
+    "Side Locker Size",
+    "159(H) × 117(W) × 300(D) mm"
+   ],
+   [
+    "Touch Screen",
+    "21.5-inch industrial touchscreen"
+   ],
+   [
+    "Power Consumption",
+    "Approx. 150-300W"
+   ],
+   [
+    "Dispensing Method",
+    "Drop-type dispensing with bottom pickup"
+   ],
+   [
+    "Pickup Method",
+    "User verification, then bottom pickup"
+   ],
+   [
+    "Access Method",
+    "Face recognition, card access, touchscreen operation, employee login or PIN code optional"
+   ],
+   [
+    "Network Connection",
+    "Ethernet, 4G and Wi-Fi"
+   ],
+   [
+    "Side Locker Function",
+    "Supports customized locker functions such as tool lending and return, used tool recycling, storage and controlled pickup"
+   ],
+   [
+    "Managed Items",
+    "CNC inserts, carbide inserts, end mills, drills, taps, reamers, boring tools, tool holders, gauges, PPE, spare parts, used tools and MRO supplies"
+   ],
+   [
+    "Managed Item Capacity",
+    "80 tool item types in the main cabinet, adjustable according to actual product size"
+   ],
+   [
+    "System Functions",
+    "Tool issuing, tool return, temporary storage, inventory tracking, user permission control and report export"
+   ],
+   [
+    "Data Management",
+    "Supports mobile and PC login, real-time inventory viewing and Excel report export"
+   ],
+   [
+    "Inventory Alerts",
+    "Low-stock warning and replenishment reminder supported"
+   ],
+   [
+    "Application Scenarios",
+    "CNC workshop, machining center, tool room, production line, maintenance area and smart factory material station"
+   ],
+   [
+    "Customization",
+    "Channel layout, locker function, access method, cabinet color, managed item categories and software integration can be customized"
+   ]
+  ],
+  "appTitle": "CNC Tool Vending Machine - Smart CNC Tool Cabinet for Tool Inventory Management",
+  "appUrl": "/products/cnc-tool-vending-machines.html",
+  "appSlug": "cnc-tool-vending-machines",
+  "matched": true
+ },
+ {
+  "docName": "Smart File Cabinet for Document Management, Archive Storage and File Tracking",
+  "specs": [
+   [
+    "Model",
+    "QT-FR02"
+   ],
+   [
+    "Product Type",
+    "Smart document locker cabinet / intelligent archive storage cabinet"
+   ],
+   [
+    "Cabinet Configuration",
+    "1 master control cabinet + 2 extension file cabinets"
+   ],
+   [
+    "Overall Dimensions",
+    "4500(W) × 500(D) × 1800(H) mm"
+   ],
+   [
+    "Single Cabinet Dimensions",
+    "1500(W) × 500(D) × 1800(H) mm"
+   ],
+   [
+    "Total Capacity",
+    "Mixed file compartments for standard and large documents"
+   ],
+   [
+    "Standard File Compartment Size",
+    "220(W) × 80(H) × 380(D) mm"
+   ],
+   [
+    "Large File Compartment Size",
+    "330(W) × 160(H) × 380(D) mm"
+   ],
+   [
+    "Net Weight",
+    "Approx. 450-550 kg"
+   ],
+   [
+    "Power Consumption",
+    "Approx. 150-300W"
+   ],
+   [
+    "Door / Drawer Type",
+    "Independent file drawer compartments with two compartment sizes"
+   ],
+   [
+    "Touch Screen",
+    "Industrial touchscreen for user operation and document management"
+   ],
+   [
+    "Access Method",
+    "Face recognition, employee card, PIN code, QR code or touchscreen login optional"
+   ],
+   [
+    "Managed Items",
+    "Documents, files, contracts, drawings, certificates, archives, confidential records, work orders and office files"
+   ],
+   [
+    "Large Compartment Use",
+    "Suitable for larger document folders, thick files, drawing sets, archive boxes and bundled documents"
+   ],
+   [
+    "Pickup Method",
+    "User verification opens the assigned file compartment for document pickup"
+   ],
+   [
+    "Return Function",
+    "Supports document return records and assigned compartment return management"
+   ],
+   [
+    "System Functions",
+    "File issuing, file return, user permission control, compartment assignment, access records and report export"
+   ],
+   [
+    "Data Management",
+    "Supports document pickup records, return records, user logs, compartment status and Excel report export"
+   ],
+   [
+    "Security Design",
+    "Independent locked compartments, permission-based access and traceable operation records for document security"
+   ],
+   [
+    "Network Connection",
+    "Ethernet, Wi-Fi or 4G optional"
+   ],
+   [
+    "Software Platform",
+    "Supports backend management, user account management, file status tracking and data export"
+   ],
+   [
+    "Application Scenarios",
+    "Office archive room, document management center, factory document room, engineering drawing room, finance office and confidential file storage area"
+   ],
+   [
+    "Customization",
+    "Cabinet quantity, compartment size, file capacity, access method, software workflow and system integration can be customized"
+   ]
+  ],
+  "appTitle": "Smart File Cabinet for Document Management, Archive Storage and File Tracking",
+  "appUrl": "/applications/smart-file-cabinet.html",
+  "appSlug": "smart-file-cabinet",
+  "matched": true
+ }
+]

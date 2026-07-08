@@ -82,7 +82,7 @@ export interface BlogPost {
   slug: string;
   title: { zh: string; en: string; ar: string };
   excerpt?: { zh: string; en: string; ar: string };
-  content?: { zh: string; en: string; ar: string }; // Optional: list API doesn't return content (too large)
+  content?: { en: string; zh?: string; ar?: string }; // Optional: list API doesn't return content (too large)
   author?: string;
   publishedAt?: string;
   status: string;

@@ -23,6 +23,33 @@ function getCategoryIds(categories: any[]): string[] {
   return categories.map((c) => (typeof c === 'string' ? c : c.id)).filter(Boolean);
 }
 
+/**
+ * V8.6: 将 Product.specs（文档规格参数表）归一为 [{ param, value }] 数组，供 <table> 渲染。
+ * 兼容两种存储形态：
+ *   - [{ param: string, value: string }, ...]
+ *   - [[param, value], ...]（文档原始二维数组）
+ * 空值 / 非数组返回 []，详情页据此决定是否渲染“暂无规格”。
+ */
+function resolveSpecTable(specs: any): { param: string; value: string }[] {
+  if (!specs) return [];
+  if (!Array.isArray(specs)) return [];
+  const rows: { param: string; value: string }[] = [];
+  for (const item of specs) {
+    if (Array.isArray(item) && item.length >= 2) {
+      const param = String(item[0] ?? '').trim();
+      const value = String(item[1] ?? '').trim();
+      if (!param && !value) continue;
+      rows.push({ param, value });
+    } else if (item && typeof item === 'object' && 'param' in item) {
+      const param = String((item as any).param ?? '').trim();
+      const value = String((item as any).value ?? '').trim();
+      if (!param && !value) continue;
+      rows.push({ param, value });
+    }
+  }
+  return rows;
+}
+
 // Generate JSON-LD structured data for Product
 function generateJsonLd(product: Product, locale: string) {
   const name = translate(product.name, locale as any);
@@ -204,6 +231,10 @@ export default async function ProductDetailView({ locale, lookupSlug, canonicalP
   const jsonLdData = generateJsonLd(product, locale);
 
   const productAny = product as any;
+  // V8.6: 文档规格参数表（结构化数组），用于详情页 <table> 渲染
+  const resolvedSpecTable = resolveSpecTable(productAny.specs);
+  const specTitle =
+    locale === 'zh' ? '产品规格参数' : locale === 'ar' ? 'مواصفات المنتج' : 'Product Specifications';
   const resolvedProduct = {
     ...productAny,
     _resolvedName: translate(productAny.name, locale),
@@ -284,6 +315,42 @@ export default async function ProductDetailView({ locale, lookupSlug, canonicalP
         labels={labels}
         relatedProducts={resolvedRelatedProducts}
       />
+
+      {/* V8.6: 文档规格参数表（结构化 <table> 渲染，响应式） */}
+      {resolvedSpecTable.length > 0 && (
+        <section className="bg-gradient-to-br from-slate-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-5xl mx-auto">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
+              <div className="w-10 h-1 bg-gradient-to-r from-blue-600 to-blue-400 rounded-full" />
+              {specTitle}
+            </h2>
+            <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-gray-100 dark:border-slate-700 overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm border-collapse min-w-[420px]">
+                  <tbody>
+                    {resolvedSpecTable.map((row, index) => (
+                      <tr
+                        key={`${row.param}-${index}`}
+                        className={index % 2 === 0 ? 'bg-white dark:bg-slate-800' : 'bg-gray-50 dark:bg-slate-700/40'}
+                      >
+                        <th
+                          scope="row"
+                          className="w-2/5 sm:w-1/3 text-left align-top px-5 py-3.5 font-semibold text-gray-800 dark:text-gray-100 border-b border-gray-100 dark:border-slate-700"
+                        >
+                          {row.param}
+                        </th>
+                        <td className="px-5 py-3.5 text-gray-600 dark:text-gray-300 align-top border-b border-gray-100 dark:border-slate-700 leading-relaxed">
+                          {row.value}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* v265: 产品 FAQ 区块 */}
       <ProductFaqSection faqs={resolvedFaqs} locale={locale} />
