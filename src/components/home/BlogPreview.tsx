@@ -3,7 +3,7 @@
 import { useLocale } from '@/lib/i18n';
 import { motion } from 'framer-motion';
 import { CalendarIcon, UserIcon, ArrowRightIcon } from '@heroicons/react/24/solid';
-import blogs from '@/data/blogs';
+import blogs, { getFeaturedBlogs } from '@/data/blogs';
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 60 },
@@ -24,8 +24,20 @@ const staggerChildren = {
   }
 };
 
+interface BlogPreviewItem {
+  slug: string;
+  title: { en: string; zh: string; ar: string };
+  excerpt?: { en: string; zh: string; ar: string };
+  publishedAt?: string;
+  author?: string;
+  image?: string;
+  tags?: string[];
+  featured?: boolean;
+}
+
 interface BlogPreviewProps {
   locale?: string;
+  blogs?: BlogPreviewItem[];
 }
 
 // Cracked Glass Card wrapper - applies the shattered glass texture
@@ -124,20 +136,29 @@ function CrackedGlassCard({ children, className = '', href }: { children: React.
   );
 }
 
-export default function BlogPreview({ locale: propLocale }: BlogPreviewProps) {
+export default function BlogPreview({ locale: propLocale, blogs: propBlogs }: BlogPreviewProps) {
   const { locale, t } = useLocale();
   const currentLocale = propLocale || locale;
 
-  // Use real blog data from blogs.ts (first 3 posts for preview)
-  const blogPosts = blogs.slice(0, 3).map(blog => ({
-    slug: blog.slug,
-    title: blog.title,
-    summary: blog.excerpt,
-    date: blog.publishedAt,
-    author: blog.author,
-    image: blog.image || '',
-    tags: blog.tags || [],
-  }));
+  // 优先使用传入的合并博客列表（含 DB 精选博客）；未传入时回退到静态数据
+  const sourceBlogs = propBlogs && propBlogs.length > 0 ? propBlogs : blogs;
+  const featuredBlogs =
+    propBlogs && propBlogs.length > 0
+      ? propBlogs.filter((b) => b.featured)
+      : getFeaturedBlogs();
+
+  // Show featured blogs (up to 3); fall back to latest if none featured
+  const blogPosts = (featuredBlogs.length > 0 ? featuredBlogs : sourceBlogs)
+    .slice(0, 3)
+    .map((blog) => ({
+      slug: blog.slug,
+      title: blog.title,
+      summary: blog.excerpt,
+      date: blog.publishedAt,
+      author: blog.author,
+      image: blog.image || '',
+      tags: blog.tags || [],
+    }));
 
   // Helper: get localized string from {en,zh,ar} object (fixes Arabic always showing English)
   const localized = (obj: Record<string, string> | undefined, fallback = ''): string => {

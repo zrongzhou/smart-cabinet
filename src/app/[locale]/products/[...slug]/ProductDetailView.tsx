@@ -225,8 +225,11 @@ export default async function ProductDetailView({ locale, lookupSlug, canonicalP
         return pCatIds.some((id) => productCatIds.includes(id));
       })
       .slice(0, 4) as any[];
-  } catch (error) {
-    console.error('Failed to load product:', error);
+  } catch (error: any) {
+    // Only log unexpected errors; silent for missing products (crawlers, stale links)
+    if (error?.code !== 'NOT_FOUND' && error?.message?.includes('NOT_FOUND') === false) {
+      console.error('Failed to load product:', error);
+    }
     notFound();
   }
 

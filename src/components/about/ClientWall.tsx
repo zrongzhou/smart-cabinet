@@ -108,6 +108,7 @@ export default function ClientWall({ t, locale }: ClientWallProps) {
           filter: saturate(1.2) brightness(1.03);
           opacity: 1;
           transform: translateY(-6px) scale(1.03);
+          box-shadow: 0 20px 40px -12px rgba(0,0,0,0.15);
         }
       `}</style>
 
@@ -134,7 +135,8 @@ export default function ClientWall({ t, locale }: ClientWallProps) {
             return (
               <div
                 key={client.key}
-                className="client-card group relative rounded-2xl border border-gray-200 bg-white p-5 text-center shadow-sm hover:shadow-xl hover:border-blue-200 cursor-default"
+                className="client-card group relative rounded-2xl border bg-white/70 backdrop-blur-md p-5 text-center shadow-sm hover:shadow-2xl cursor-default transition-all duration-500"
+                style={{ borderColor: 'rgba(255,255,255,0.6)', boxShadow: '0 4px 24px rgba(30,41,59,0.06), 0 1px 3px rgba(30,41,59,0.04), inset 0 1px 0 rgba(255,255,255,0.6)' }}
                 title={displayName(client)}
               >
                 {/* Accent top bar */}

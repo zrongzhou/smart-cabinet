@@ -522,12 +522,21 @@ export async function DELETE(request: NextRequest) {
       return badRequestResponse('Blog ID is required');
     }
 
-    // 检查博客是否存在
+    // 检查博客是否存在（DB 优先）
     const existingBlog = await prisma.blogPost.findUnique({
       where: { id },
     });
 
     if (!existingBlog) {
+      // 静态 seed 博客（data/blogs.ts）不在 DB 中。DELETE 对它们是无操作，
+      // 但必须避免返回 "Blog not found" 误导用户。GET/PUT 已有同样的兜底逻辑。
+      const staticSeed = resolveStaticBlogForAdmin(id);
+      if (staticSeed) {
+        return NextResponse.json({
+          success: true,
+          message: 'Built-in blog (not stored in DB) — nothing to delete',
+        });
+      }
       return badRequestResponse('Blog not found');
     }
 

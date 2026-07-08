@@ -8,6 +8,18 @@ import BlogPreview from '@/components/home/BlogPreview';
 import TrustBadges from '@/components/home/TrustBadges';
 import CtaSection from '@/components/home/CtaSection';
 import Image from 'next/image';
+import { getMergedBlogList } from '@/lib/blogs';
+
+type PreviewBlog = {
+  slug: string;
+  title: { en: string; zh: string; ar: string };
+  excerpt?: { en: string; zh: string; ar: string };
+  publishedAt?: string;
+  author?: string;
+  image?: string;
+  tags?: string[];
+  featured?: boolean;
+};
 
 // HeroSection 包含 canvas/星空动画，SSR 时会触发 window is not defined
 // 用 ssr: false 彻底禁用服务端渲染，仅客户端渲染
@@ -48,7 +60,26 @@ interface HomePageProps {
   };
 }
 
-export default function HomePage({ params: { locale } }: HomePageProps) {
+export default async function HomePage({ params: { locale } }: HomePageProps) {
+  // 首页博客预览改为读取合并列表（DB + 静态 seed），这样后台新建并设为精选的
+  // 博客也能出现在首页。失败时回退为空，BlogPreview 会改用静态数据兜底。
+  let blogItems: PreviewBlog[] = [];
+  try {
+    const merged = await getMergedBlogList({ publishedOnly: true, pageSize: 30 });
+    blogItems = merged.data.map((p) => ({
+      slug: p.slug,
+      title: p.title,
+      excerpt: p.excerpt || { en: '', zh: '', ar: '' },
+      publishedAt: p.publishedAt,
+      author: p.author,
+      image: p.image || '',
+      featured: p.featured,
+      tags: (p.tags || []).map((t) => t.name?.en || t.slug || t.id),
+    }));
+  } catch {
+    blogItems = [];
+  }
+
   return (
     <>
       <HeroSection />
@@ -56,7 +87,7 @@ export default function HomePage({ params: { locale } }: HomePageProps) {
       <AdvantagesSection />
       <SolutionsPreview />
       <TestimonialsSection />
-      <BlogPreview />
+      <BlogPreview blogs={blogItems} />
       <TrustBadges />
       <CtaSection />
     </>

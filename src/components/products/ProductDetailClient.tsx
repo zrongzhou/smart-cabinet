@@ -45,6 +45,17 @@ export default function ProductDetailClient({
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [mainImageError, setMainImageError] = useState(false);
   const [mainImageLoading, setMainImageLoading] = useState(true);
+  // Timeout fallback: if image takes > 6s, show error placeholder
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
+    if (mainImageLoading && !mainImageError) {
+      timer = setTimeout(() => {
+        setMainImageError(true);
+        setMainImageLoading(false);
+      }, 6000);
+    }
+    return () => { clearTimeout(timer); };
+  }, [mainImageLoading, mainImageError]);
   const [shareToast, setShareToast] = useState(false);
   const { addItem } = useCart();
   const [addedToast, setAddedToast] = useState(false);
@@ -174,7 +185,7 @@ export default function ProductDetailClient({
                     >
                       {/* 图片区第三层波纹 */}
                       <div className="ripple-wave3" />
-                      {mainImageError ? (
+                      {mainImageError || !product.images?.length || !product.images[selectedImage] ? (
                         /* Fallback when image fails to load */
                         <div className="w-full h-full flex flex-col items-center justify-center bg-gray-50">
                           <Package className="w-24 h-24 text-gray-300" />

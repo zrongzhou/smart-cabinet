@@ -122,7 +122,7 @@ export default function SolutionsPage({ params: { locale: rawLocale } }: Solutio
                   {painPoints && painPoints.length > 0 && (
                     <div className="mb-4">
                       <h4 className="text-sm font-semibold text-gray-900 mb-2">
-                        {currentLocale === 'zh' ? '痛点' : currentLocale === 'ar' ? 'نقاط الألم' : 'Pain Points'}
+                        {t('solutions.painPoints')}
                       </h4>
                       <ul className="space-y-1">
                         {painPoints.map((point: string, idx: number) => (
@@ -148,7 +148,7 @@ export default function SolutionsPage({ params: { locale: rawLocale } }: Solutio
                     className="w-full py-2 mb-4 flex items-center justify-center space-x-2 hover:underline focus:outline-none group/btn"
                     style={{ color: theme.accent }}
                   >
-                    <span>{isExpanded ? (currentLocale === 'zh' ? '收起详情' : currentLocale === 'ar' ? 'إخفاء التفاصيل' : 'Show Less') : (currentLocale === 'zh' ? '查看详情' : currentLocale === 'ar' ? 'عرض التفاصيل' : 'View Details')}</span>
+                    <span>{isExpanded ? t('solutions.showLess') : t('solutions.showMore')}</span>
                     <span className="inline-block transition-transform duration-300 group-hover/btn:translate-x-1">
                       {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                     </span>
@@ -160,7 +160,7 @@ export default function SolutionsPage({ params: { locale: rawLocale } }: Solutio
                       {/* Detailed Solution */}
                       <div>
                         <h4 className="text-sm font-semibold text-gray-900 mb-2">
-                          {currentLocale === 'zh' ? '解决方案详情' : currentLocale === 'ar' ? 'تفاصيل الحل' : 'Detailed Solution'}
+                          {t('solutions.detailedSolution')}
                         </h4>
                         {detailedSolution.map((para: string, idx: number) => (
                           <p key={idx} className="text-sm text-gray-600 mb-2 leading-relaxed">
@@ -173,7 +173,7 @@ export default function SolutionsPage({ params: { locale: rawLocale } }: Solutio
                       {benefitsDetailed && benefitsDetailed.length > 0 && (
                         <div>
                           <h4 className="text-sm font-semibold text-gray-900 mb-3">
-                            {currentLocale === 'zh' ? '核心收益' : currentLocale === 'ar' ? 'الفوائد الرئيسية' : 'Core Benefits'}
+                            {t('solutions.coreBenefits')}
                           </h4>
                           <div className="space-y-3">
                             {benefitsDetailed.map((benefit: { metric: string; description: string }, idx: number) => (

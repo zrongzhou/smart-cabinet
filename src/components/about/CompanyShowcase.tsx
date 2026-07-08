@@ -25,7 +25,7 @@ interface CompanyShowcaseProps {
 }
 
 /** A small hydration-safe count-up that only animates once it scrolls into view. */
-function Counter({ value, suffix = '', icon: Icon, label }: { value: number; suffix?: string; icon: React.ElementType; label?: string }) {
+function Counter({ value, suffix = '', icon: Icon, label, gradient = 'linear-gradient(135deg, #3b82f6, #6366f1)' }: { value: number; suffix?: string; icon: React.ElementType; label?: string; gradient?: string }) {
   const [display, setDisplay] = useState(value);
   const ref = useRef<HTMLDivElement>(null);
   const started = useRef(false);
@@ -57,7 +57,7 @@ function Counter({ value, suffix = '', icon: Icon, label }: { value: number; suf
 
   return (
     <div ref={ref} className="flex items-center gap-3 rounded-2xl bg-white/70 backdrop-blur-sm border border-blue-100/70 px-4 py-3 shadow-sm">
-      <span className="flex items-center justify-center w-10 h-10 rounded-xl text-white shrink-0" style={{ background: 'linear-gradient(135deg, #3b82f6, #6366f1)' }}>
+      <span className="flex items-center justify-center w-10 h-10 rounded-xl text-white shrink-0" style={{ background: gradient }}>>
         <Icon className="w-5 h-5" strokeWidth={1.8} />
       </span>
       <div className="leading-tight">
@@ -72,9 +72,9 @@ function Counter({ value, suffix = '', icon: Icon, label }: { value: number; suf
 }
 
 const TRUST_METRICS = [
-  { value: 800, suffix: '+', labelKey: 'about.showcase.metricClients', icon: Users },
-  { value: 15, suffix: '+', labelKey: 'about.showcase.metricYears', icon: Factory },
-  { value: 30, suffix: '+', labelKey: 'about.showcase.metricFortune', icon: Award },
+  { value: 800, suffix: '+', labelKey: 'about.showcase.metricClients', icon: Users, gradient: 'linear-gradient(135deg, #2563eb, #3b82f6)' },
+  { value: 15, suffix: '+', labelKey: 'about.showcase.metricYears', icon: Factory, gradient: 'linear-gradient(135deg, #059669, #10b981)' },
+  { value: 30, suffix: '+', labelKey: 'about.showcase.metricFortune', icon: Award, gradient: 'linear-gradient(135deg, #d97706, #f59e0b)' },
 ];
 
 const CERT_BADGES = [
@@ -90,9 +90,9 @@ const CERT_BADGES = [
  *  column. Coordinates with the trust metrics / certification wall on the
  *  right while filling the previously empty space below the image. */
 const FACTORY_HIGHLIGHTS = [
-  { value: '20,000', suffix: '㎡', labelKey: 'about.showcase.fArea', icon: Factory },
-  { value: '300', suffix: '+', labelKey: 'about.showcase.fStaff', icon: Users },
-  { value: '60', suffix: '+', labelKey: 'about.showcase.fCountries', icon: Globe },
+  { value: '20,000', suffix: '㎡', labelKey: 'about.showcase.fArea', icon: Factory, gradient: 'linear-gradient(135deg, #059669, #10b981)' },
+  { value: '300', suffix: '+', labelKey: 'about.showcase.fStaff', icon: Users, gradient: 'linear-gradient(135deg, #2563eb, #3b82f6)' },
+  { value: '60', suffix: '+', labelKey: 'about.showcase.fCountries', icon: Globe, gradient: 'linear-gradient(135deg, #d97706, #f59e0b)' },
 ];
 
 export default function CompanyShowcase({ t }: CompanyShowcaseProps) {
@@ -150,7 +150,7 @@ export default function CompanyShowcase({ t }: CompanyShowcaseProps) {
                   <div key={h.labelKey} className="flex items-center gap-3">
                     <span
                       className="flex items-center justify-center w-9 h-9 rounded-xl text-white shrink-0"
-                      style={{ background: 'linear-gradient(135deg, #3b82f6, #6366f1)' }}
+                      style={{ background: h.gradient }}
                     >
                       <Icon className="w-4 h-4" strokeWidth={1.8} />
                     </span>
@@ -187,7 +187,7 @@ export default function CompanyShowcase({ t }: CompanyShowcaseProps) {
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
             {TRUST_METRICS.map((m) => (
-              <Counter key={m.labelKey} value={m.value} suffix={m.suffix} icon={m.icon} label={t(m.labelKey)} />
+              <Counter key={m.labelKey} value={m.value} suffix={m.suffix} icon={m.icon} label={t(m.labelKey)} gradient={m.gradient} />
             ))}
           </div>
 
