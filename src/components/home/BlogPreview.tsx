@@ -274,7 +274,9 @@ export default function BlogPreview({ locale: propLocale, blogs: propBlogs }: Bl
                 <div className="flex items-center space-x-4 mb-4 text-sm text-gray-500">
                   <div className="flex items-center space-x-1.5">
                     <CalendarIcon className="w-4 h-4 text-blue-400" />
-                    <span>{new Date(post.date).toLocaleDateString(currentLocale === 'zh' ? 'zh-CN' : currentLocale === 'ar' ? 'ar-EG' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                    {post.date && (
+                      <span>{new Date(post.date).toLocaleDateString(currentLocale === 'zh' ? 'zh-CN' : currentLocale === 'ar' ? 'ar-EG' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                    )}
                   </div>
                   <div className="flex items-center space-x-1.5">
                     <UserIcon className="w-4 h-4 text-blue-400" />
