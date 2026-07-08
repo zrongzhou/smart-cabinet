@@ -1,15 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-// GET /api/products/[...slug]/reviews - Get approved reviews for a product
-// Note: slug may contain "/" (e.g. solutions/custom-industrial-vending-machine.html),
-// so the route uses a catch-all [...slug] segment and joins the segments back.
+// GET /api/reviews?slug=xxx - Get approved reviews for a product
+// Uses a query param (not a path segment) so slugs containing "/" work correctly.
 export async function GET(
-  request: NextRequest,
-  { params }: { params: { slug: string[] } }
+  request: NextRequest
 ) {
   try {
-    const productSlug = params.slug.join('/');
+    const { searchParams } = new URL(request.url);
+    const productSlug = searchParams.get('slug');
+
+    if (!productSlug) {
+      return NextResponse.json(
+        { error: 'Missing slug parameter' },
+        { status: 400 }
+      );
+    }
 
     // First, find the product by slug
     const product = await prisma.product.findUnique({
@@ -24,7 +30,6 @@ export async function GET(
     }
 
     const productId = product.id;
-    const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
     const pageSize = parseInt(searchParams.get('pageSize') || '10');
     const rating = searchParams.get('rating');
@@ -135,18 +140,23 @@ export async function GET(
   }
 }
 
-// POST /api/products/[...slug]/reviews - Submit a review
+// POST /api/reviews - Submit a review for a product
+// Accepts productId (preferred) or slug in the request body.
 export async function POST(
-  request: NextRequest,
-  { params }: { params: { slug: string[] } }
+  request: NextRequest
 ) {
   try {
-    const productSlug = params.slug.join('/');
+    const body = await request.json();
+    const { productId, slug, authorName, authorEmail, rating, title, content, images } = body;
 
-    // First, find the product by slug
-    const product = await prisma.product.findUnique({
-      where: { slug: productSlug },
-    });
+    // Resolve the product
+    let product = null;
+    if (productId) {
+      product = await prisma.product.findUnique({ where: { id: productId } });
+    }
+    if (!product && slug) {
+      product = await prisma.product.findUnique({ where: { slug } });
+    }
 
     if (!product) {
       return NextResponse.json(
@@ -155,12 +165,7 @@ export async function POST(
       );
     }
 
-    const productId = product.id;
-    const body = await request.json();
-
     // Validate required fields
-    const { authorName, authorEmail, rating, title, content, images } = body;
-
     if (!authorName || !content) {
       return NextResponse.json(
         { error: 'Author name and content are required' },
@@ -179,19 +184,16 @@ export async function POST(
     let userId: string | undefined;
     const authHeader = request.headers.get('Authorization');
     if (authHeader && authHeader.startsWith('Bearer ')) {
-      // For now, we'll extract user ID from the token
-      // In production, you should verify the token properly
       const token = authHeader.substring(7);
       if (token) {
         // TODO: Properly decode the token to get userId
-        // For now, we'll skip this since the API doesn't require auth for submitting reviews
       }
     }
 
     // Create review
     const review = await prisma.review.create({
       data: {
-        productId,
+        productId: product.id,
         userId,
         authorName,
         authorEmail: authorEmail || null,
@@ -199,7 +201,7 @@ export async function POST(
         title: title || null,
         content,
         images: images || [],
-        isVerified: false, // TODO: Check if user purchased this product
+        isVerified: false,
         isApproved: false, // Requires admin approval
       },
     });

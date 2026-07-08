@@ -106,10 +106,11 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
     setSubmitting(true);
 
     try {
-      const response = await fetch(`/api/products/${productId}/reviews`, {
+      const response = await fetch(`/api/reviews`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          productId,
           authorName,
           authorEmail: authorEmail || undefined,
           rating,

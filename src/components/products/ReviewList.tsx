@@ -152,7 +152,7 @@ const ReviewList: React.FC<ReviewListProps> = ({
       }
 
       const response = await fetch(
-        `/api/products/${productSlug}/reviews?${params.toString()}`
+        `/api/reviews?slug=${encodeURIComponent(productSlug)}&${params.toString()}`
       );
 
       if (response.ok) {
