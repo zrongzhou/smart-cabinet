@@ -62,6 +62,12 @@ const CLIENTS: ClientItem[] = [
   { key: 'GuoshengGroup', nameZh: '国盛集团', nameEn: 'GUOSHENG GROUP', industryKey: 'about.industries.aerospace', years: 8, sloganKey: 'about.client.slogan4' },
   { key: 'LanXun', nameZh: '蓝盾防务', nameEn: 'LANXUN DEFENSE', industryKey: 'about.industries.aerospace', years: 7, sloganKey: 'about.client.slogan1' },
   { key: 'LuxshareICT', nameZh: '立讯精密', nameEn: 'LUXSHARE ICT', industryKey: 'about.industries.electronics', years: 11, sloganKey: 'about.client.slogan3' },
+  { key: 'Bosch', nameZh: '博世', nameEn: 'BOSCH', industryKey: 'about.industries.automotive', years: 9, sloganKey: 'about.client.slogan2' },
+  { key: 'Foxconn', nameZh: '富士康', nameEn: 'FOXCONN', industryKey: 'about.industries.electronics', years: 8, sloganKey: 'about.client.slogan1' },
+  { key: 'Siemens', nameZh: '西门子', nameEn: 'SIEMENS', industryKey: 'about.industries.energy', years: 11, sloganKey: 'about.client.slogan4' },
+  { key: 'BYD', nameZh: '比亚迪', nameEn: 'BYD', industryKey: 'about.industries.automotive', years: 7, sloganKey: 'about.client.slogan3' },
+  { key: 'SaintGobain', nameZh: '圣戈班', nameEn: 'SAINT-GOBAIN', industryKey: 'about.industries.construction', years: 6, sloganKey: 'about.client.slogan2' },
+  { key: 'Huawei', nameZh: '华为', nameEn: 'HUAWEI', industryKey: 'about.industries.electronics', years: 10, sloganKey: 'about.client.slogan1' },
 ];
 
 const ACCENTS = [
@@ -116,7 +122,7 @@ export default function ClientWall({ t, locale }: ClientWallProps) {
         </div>
 
         {/* Card grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4 sm:gap-5">
           {CLIENTS.map((client, idx) => {
             const accent = ACCENTS[idx % ACCENTS.length];
             return (

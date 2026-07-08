@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Save, Upload, X, Plus, Trash2, Image as ImageIcon, FolderOpen, ExternalLink } from 'lucide-react';
 import { adminApi } from '@/data/unified-data';
+import ProductFaqEditor, { type FaqItem } from '@/components/product/ProductFaqEditor';
 
 export const dynamic = 'force-dynamic';
 
@@ -37,6 +38,7 @@ export default function AddProductPage() {
     specificationsZh: '',
     specificationsAr: '',
     seoKeywords: '', // Added for SEO keywords
+    faq: [] as FaqItem[], // V8.5 fix: bug 1 — product-level FAQ list
   });
 
   // Generate SEO keywords from product names
@@ -271,6 +273,8 @@ export default function AddProductPage() {
           zh: form.seoKeywords,
           ar: form.seoKeywords,
         },
+        // V8.5 fix: bug 1 — persist the product FAQ list (Json).
+        faq: form.faq,
       });
       router.push('/xiaozhouBackend/products');
     } catch (err: any) {
@@ -712,6 +716,19 @@ export default function AddProductPage() {
               重新生成关键词
             </button>
           </div>
+        </div>
+
+        {/* ===== FAQ (V8.5 fix: bug 1) ===== */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <span className="w-1 h-6 bg-rose-500 rounded-full"></span>
+            常见问题（FAQ）
+          </h2>
+          <p className="text-sm text-gray-500 mb-4">为每个产品填写常见问题，支持英文 / 中文 / 阿拉伯语三语。</p>
+          <ProductFaqEditor
+            value={form.faq}
+            onChange={(items) => handleChange('faq', items)}
+          />
         </div>
 
         {/* ===== Submit ===== */}

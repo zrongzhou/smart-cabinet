@@ -5,7 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Save, Loader2, Upload, X, Plus, Image as ImageIcon, FolderOpen, ExternalLink, PackageX } from 'lucide-react';
 import { adminApi } from '@/data/unified-data';
-import ProductFaqBlock from '@/components/xiaozhouBackend/ProductFaqBlock';
+import ProductFaqEditor, { type FaqItem } from '@/components/product/ProductFaqEditor';
 
 export const dynamic = 'force-dynamic';
 
@@ -84,6 +84,28 @@ function entityName(entity: any, fallback: string = ''): string {
   return fallback;
 }
 
+// 安全解析产品 faq 字段（Json）为 FaqItem[]，兼容以下形态：
+//   - [{ question: {en,zh,ar}, answer: {en,zh,ar} }, ...]（标准形态）
+//   - [{ question: "字符串", answer: "字符串" }, ...]（退化形态兜底）
+//   - null / 非数组 / 畸形 -> 空数组
+function normalizeFaq(raw: any): FaqItem[] {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .filter((x: any) => x && typeof x === 'object')
+    .map((x: any) => ({
+      question: {
+        en: typeof x?.question?.en === 'string' ? x.question.en : (typeof x?.question === 'string' ? x.question : ''),
+        zh: typeof x?.question?.zh === 'string' ? x.question.zh : '',
+        ar: typeof x?.question?.ar === 'string' ? x.question.ar : '',
+      },
+      answer: {
+        en: typeof x?.answer?.en === 'string' ? x.answer.en : (typeof x?.answer === 'string' ? x.answer : ''),
+        zh: typeof x?.answer?.zh === 'string' ? x.answer.zh : '',
+        ar: typeof x?.answer?.ar === 'string' ? x.answer.ar : '',
+      },
+    }));
+}
+
 export default function EditProductPage() {
   const router = useRouter();
   const params = useParams();
@@ -134,6 +156,7 @@ export default function EditProductPage() {
     specificationsZh: '',
     specificationsAr: '',
     seoKeywords: '', // Added for SEO keywords
+    faq: [] as FaqItem[], // V8.5 fix: bug 1 — product-level FAQ list
   });
 
   // Track if auto-fill has been done (to avoid re-running on subsequent edits)
@@ -338,6 +361,8 @@ export default function EditProductPage() {
             if (typeof sk === 'number') return String(sk);
             return '';
           })(),
+          // V8.5 fix: bug 1 — load the product-level FAQ list (Json).
+          faq: normalizeFaq(product.faq),
         });
         setProductFound(true);
       } catch (err: any) {
@@ -488,6 +513,8 @@ export default function EditProductPage() {
           zh: form.seoKeywords,
           ar: form.seoKeywords,
         },
+        // V8.5 fix: bug 1 — persist the product FAQ list (Json).
+        faq: form.faq,
       });
       router.push('/xiaozhouBackend/products');
     } catch (err: any) {
@@ -1051,8 +1078,18 @@ export default function EditProductPage() {
           </div>
         </div>
 
-        {/* ===== Product FAQ (per-product) ===== */}
-        <ProductFaqBlock productId={productId} />
+        {/* ===== FAQ (V8.5 fix: bug 1) — product-level Json FAQ ===== */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <span className="w-1 h-6 bg-rose-500 rounded-full"></span>
+            常见问题（FAQ）
+          </h2>
+          <p className="text-sm text-gray-500 mb-4">为每个产品填写常见问题，支持英文 / 中文 / 阿拉伯语三语。</p>
+          <ProductFaqEditor
+            value={form.faq}
+            onChange={(items) => handleChange('faq', items)}
+          />
+        </div>
 
         {/* Submit */}
         <div className="flex items-center justify-end gap-3">

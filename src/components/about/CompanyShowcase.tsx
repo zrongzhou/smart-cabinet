@@ -89,14 +89,17 @@ const CERT_BADGES = [
 export default function CompanyShowcase({ t }: CompanyShowcaseProps) {
   return (
     <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative overflow-hidden bg-gradient-to-br from-blue-50/40 via-indigo-50/30 to-white">
-      {/* V8.4 fix: bug 1 — keyframes for the flow lines under the company image */}
+      {/* V8.5 fix: bug 5 — refined, subtle breathing glow for the flow lines (no harsh dashes) */}
       <style jsx global>{`
-        .about-showcase-flow path {
-          stroke-dasharray: 9 9;
-          animation: about-showcase-dash 2.4s linear infinite;
+        .about-showcase-flow {
+          animation: about-showcase-breathe 7s ease-in-out infinite;
         }
-        @keyframes about-showcase-dash {
-          to { stroke-dashoffset: -180; }
+        @keyframes about-showcase-breathe {
+          0%, 100% { opacity: 0.6; }
+          50% { opacity: 0.95; }
+        }
+        .about-showcase-dot {
+          filter: drop-shadow(0 0 3px rgba(199, 210, 254, 0.9));
         }
       `}</style>
       {/* Soft animated depth layer */}
@@ -131,8 +134,9 @@ export default function CompanyShowcase({ t }: CompanyShowcaseProps) {
             />
           </div>
 
-          {/* V8.4 fix: bug 1 — subtle animated "data flow" lines under the image.
-              Pure SVG + CSS dash animation, blue→indigo→violet gradient. RTL-safe. */}
+          {/* V8.5 fix: bug 5 — refined, subtle "data flow" lines under the image.
+              Solid (non-dashed) gradient strokes with a soft glow filter, plus a
+              few slow light points drifting along the curves. RTL-safe. */}
           <div className="mt-3 h-12 w-full overflow-hidden rounded-lg" aria-hidden="true">
             <svg
               viewBox="0 0 600 48"
@@ -141,21 +145,50 @@ export default function CompanyShowcase({ t }: CompanyShowcaseProps) {
             >
               <defs>
                 <linearGradient id="aboutShowcaseFlowGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#3b82f6" />
-                  <stop offset="50%" stopColor="#6366f1" />
-                  <stop offset="100%" stopColor="#8b5cf6" />
+                  <stop offset="0%" stopColor="#60a5fa" />
+                  <stop offset="50%" stopColor="#818cf8" />
+                  <stop offset="100%" stopColor="#a78bfa" />
                 </linearGradient>
+                <filter id="aboutShowcaseGlow" x="-20%" y="-60%" width="140%" height="220%">
+                  <feGaussianBlur stdDeviation="1.4" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
               </defs>
-              {[10, 24, 38].map((y, i) => (
+
+              {/* Solid, gentle flowing lines — no harsh dashes, softer as they recede */}
+              {[12, 24, 36].map((y, i) => (
                 <path
                   key={i}
-                  d={`M0 ${y} C 80 ${y - 7}, 160 ${y + 7}, 240 ${y} S 400 ${y - 7}, 480 ${y} S 600 ${y + 7}, 600 ${y}`}
+                  d={`M0 ${y} C 90 ${y - 6}, 180 ${y + 6}, 270 ${y} S 430 ${y - 6}, 510 ${y} S 600 ${y + 6}, 600 ${y}`}
                   fill="none"
                   stroke="url(#aboutShowcaseFlowGrad)"
-                  strokeWidth="2"
+                  strokeWidth="1.6"
                   strokeLinecap="round"
-                  style={{ opacity: 0.75 - i * 0.2 }}
+                  filter="url(#aboutShowcaseGlow)"
+                  style={{ opacity: 0.5 - i * 0.12 }}
                 />
+              ))}
+
+              {/* Slow light points drifting along the curves for a subtle "live" feel */}
+              {[12, 24, 36].map((y, i) => (
+                <circle key={`dot-${i}`} r="1.8" fill="#c7d2fe" className="about-showcase-dot">
+                  <animateMotion
+                    dur="6s"
+                    begin={`${i * 1.2}s`}
+                    repeatCount="indefinite"
+                    path={`M0 ${y} C 90 ${y - 6}, 180 ${y + 6}, 270 ${y} S 430 ${y - 6}, 510 ${y} S 600 ${y + 6}, 600 ${y}`}
+                  />
+                  <animate
+                    attributeName="opacity"
+                    values="0;0.9;0"
+                    dur="6s"
+                    begin={`${i * 1.2}s`}
+                    repeatCount="indefinite"
+                  />
+                </circle>
               ))}
             </svg>
           </div>

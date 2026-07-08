@@ -263,7 +263,7 @@ export default function AboutPage() {
     { icon: XCircle, titleKey: 'about.painPoints.item6.title', descKey: 'about.painPoints.item6.desc' },
   ];
 
-  // Our Solutions data (7 items)
+  // Our Solutions data (8 items)
   const solutionItems = [
     { icon: ShieldCheck, titleKey: 'about.solutions.item1.title', descKey: 'about.solutions.item1.desc' },
     { icon: Zap, titleKey: 'about.solutions.item2.title', descKey: 'about.solutions.item2.desc' },
@@ -272,6 +272,7 @@ export default function AboutPage() {
     { icon: BarChart3, titleKey: 'about.solutions.item5.title', descKey: 'about.solutions.item5.desc' },
     { icon: Boxes, titleKey: 'about.solutions.item6.title', descKey: 'about.solutions.item6.desc' },
     { icon: Plug, titleKey: 'about.solutions.item7.title', descKey: 'about.solutions.item7.desc' },
+    { icon: Globe, titleKey: 'about.solutions.item8.title', descKey: 'about.solutions.item8.desc' },
   ];
 
   // Our Advantages data (6 items, title + description)
@@ -284,7 +285,7 @@ export default function AboutPage() {
     { icon: Headphones, titleKey: 'about.advantages.item6.title', descKey: 'about.advantages.item6.desc' },
   ];
 
-  // Why Choose Us data (7 items)
+  // Why Choose Us data (8 items)
   const whyChooseItems = [
     { icon: Award, titleKey: 'about.whyChoose.item1.title', descKey: 'about.whyChoose.item1.desc' },
     { icon: BadgeCheck, titleKey: 'about.whyChoose.item2.title', descKey: 'about.whyChoose.item2.desc' },
@@ -293,6 +294,7 @@ export default function AboutPage() {
     { icon: Plug, titleKey: 'about.whyChoose.item5.title', descKey: 'about.whyChoose.item5.desc' },
     { icon: Zap, titleKey: 'about.whyChoose.item6.title', descKey: 'about.whyChoose.item6.desc' },
     { icon: Headphones, titleKey: 'about.whyChoose.item7.title', descKey: 'about.whyChoose.item7.desc' },
+    { icon: Truck, titleKey: 'about.whyChoose.item8.title', descKey: 'about.whyChoose.item8.desc' },
   ];
 
   // ===== V6 UNIFIED PER-SECTION CARD STYLE SYSTEM =====
@@ -318,6 +320,7 @@ export default function AboutPage() {
     'linear-gradient(90deg, #22d3ee, #2dd4bf)',
     'linear-gradient(90deg, #60a5fa, #93c5fd)',
     'linear-gradient(90deg, #2dd4bf, #22d3ee)',
+    'linear-gradient(90deg, #34d399, #22d3ee)',
   ];
   const solutionIconStyles = [
     { grad: 'linear-gradient(135deg, #67e8f9 0%, #22d3ee 100%)', glow: 'rgba(34,211,238,0.30)' },
@@ -327,6 +330,7 @@ export default function AboutPage() {
     { grad: 'linear-gradient(135deg, #5eead4 0%, #22d3ee 100%)', glow: 'rgba(34,211,238,0.28)' },
     { grad: 'linear-gradient(135deg, #93c5fd 0%, #60a5fa 100%)', glow: 'rgba(96,165,250,0.30)' },
     { grad: 'linear-gradient(135deg, #67e8f9 0%, #2dd4bf 100%)', glow: 'rgba(45,212,191,0.28)' },
+    { grad: 'linear-gradient(135deg, #6ee7b7 0%, #22d3ee 100%)', glow: 'rgba(34,211,238,0.28)' },
   ];
 
   // Advantages (6) — indigo/violet, numbered badges with gradient fill + divider
@@ -348,6 +352,7 @@ export default function AboutPage() {
     'linear-gradient(90deg, transparent 0%, #a855f7 35%, #d946ef 65%, transparent 100%)',
     'linear-gradient(90deg, transparent 0%, #8b5cf6 35%, #a855f7 65%, transparent 100%)',
     'linear-gradient(90deg, transparent 0%, #7c3aed 35%, #8b5cf6 65%, transparent 100%)',
+    'linear-gradient(90deg, transparent 0%, #d946ef 35%, #7c3aed 65%, transparent 100%)',
   ];
   const whyIconStyles = [
     { grad: 'linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%)', glow: 'rgba(139,92,246,0.30)' },
@@ -357,6 +362,7 @@ export default function AboutPage() {
     { grad: 'linear-gradient(135deg, #d946ef 0%, #a855f7 100%)', glow: 'rgba(217,70,239,0.28)' },
     { grad: 'linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%)', glow: 'rgba(124,58,237,0.28)' },
     { grad: 'linear-gradient(135deg, #c4b5fd 0%, #8b5cf6 100%)', glow: 'rgba(139,92,246,0.30)' },
+    { grad: 'linear-gradient(135deg, #f472b6 0%, #d946ef 100%)', glow: 'rgba(217,70,239,0.28)' },
   ];
 
   const contactEmail = settings?.contactEmail || 'sabina@wstoolcabinet.com';
@@ -435,13 +441,13 @@ export default function AboutPage() {
             <p className="text-base text-gray-500 max-w-2xl mx-auto">{t('about.solutions.subtitle')}</p>
             <div className="v6-shimmer-line w-24 h-1.5 mx-auto mt-4 rounded-full" style={{ background: 'linear-gradient(90deg, #22d3ee, #2dd4bf, #38bdf8)' }} />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {solutionItems.map((item, idx) => {
               const Icon = item.icon;
               const s = solutionIconStyles[idx % solutionIconStyles.length];
               const bar = solutionBarStyles[idx % solutionBarStyles.length];
               return (
-                <div key={idx} className={`group relative rounded-2xl backdrop-blur-sm bg-white/80 border border-white/60 p-6 shadow-[0_4px_20px_-8px_rgba(34,211,238,0.16)] transition-all duration-300 hover:shadow-[0_20px_52px_-14px_rgba(34,211,238,0.30)] hover:-translate-y-1.5 hover:border-cyan-200/70 flex flex-col items-center text-center overflow-hidden${idx === solutionItems.length - 1 ? ' lg:col-start-2' : ''}`} style={{ animation: 'v6-cardEnter 0.7s cubic-bezier(0.22,1,0.36,1) backwards', animationDelay: `${idx * 0.1}s` }}>
+                <div key={idx} className="group relative rounded-2xl backdrop-blur-sm bg-white/80 border border-white/60 p-6 shadow-[0_4px_20px_-8px_rgba(34,211,238,0.16)] transition-all duration-300 hover:shadow-[0_20px_52px_-14px_rgba(34,211,238,0.30)] hover:-translate-y-1.5 hover:border-cyan-200/70 flex flex-col items-center text-center overflow-hidden" style={{ animation: 'v6-cardEnter 0.7s cubic-bezier(0.22,1,0.36,1) backwards', animationDelay: `${idx * 0.1}s` }}>
                   <div className="w-16 h-1.5 rounded-full mb-5" style={{ background: bar }} />
                   <div className="relative shrink-0">
                     <div className="absolute -inset-1.5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ background: `conic-gradient(from 0deg, transparent 0%, ${s.glow} 30%, transparent 60%)`, animation: 'iconRingSpin 4s linear infinite' }} />
@@ -503,13 +509,13 @@ export default function AboutPage() {
             <p className="text-base text-gray-500 max-w-2xl mx-auto">{t('about.whyChoose.subtitle')}</p>
             <div className="v6-shimmer-line w-24 h-1.5 mx-auto mt-4 rounded-full" style={{ background: 'linear-gradient(90deg, #8b5cf6, #a855f7, #d946ef)' }} />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {whyChooseItems.map((item, idx) => {
               const Icon = item.icon;
               const iconStyle = whyIconStyles[idx % whyIconStyles.length];
               const accent = whyChooseTopAccents[idx % whyChooseTopAccents.length];
               return (
-                <div key={idx} className={`group relative rounded-2xl overflow-hidden backdrop-blur-sm bg-white/80 border border-white/60 p-6 shadow-[0_4px_20px_-8px_rgba(139,92,246,0.16)] transition-all duration-300 hover:shadow-[0_22px_56px_-14px_rgba(139,92,246,0.32)] hover:-translate-y-1.5 hover:rotate-1 hover:border-violet-200/70 flex gap-5${idx === whyChooseItems.length - 1 ? ' lg:col-start-2' : ''}`} style={{ animation: 'v6-cardEnter 0.7s cubic-bezier(0.22,1,0.36,1) backwards', animationDelay: `${idx * 0.1}s` }}>
+                <div key={idx} className="group relative rounded-2xl overflow-hidden backdrop-blur-sm bg-white/80 border border-white/60 p-6 shadow-[0_4px_20px_-8px_rgba(139,92,246,0.16)] transition-all duration-300 hover:shadow-[0_22px_56px_-14px_rgba(139,92,246,0.32)] hover:-translate-y-1.5 hover:rotate-1 hover:border-violet-200/70 flex gap-5" style={{ animation: 'v6-cardEnter 0.7s cubic-bezier(0.22,1,0.36,1) backwards', animationDelay: `${idx * 0.1}s` }}>
                   <div className="absolute start-0 top-0 w-full h-[2px]" style={{ background: accent }} />
                   <div className="shrink-0">
                     <div className="relative">

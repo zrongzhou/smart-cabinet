@@ -635,19 +635,12 @@ export default function AdminShell({ prefix, children }: AdminShellProps) {
           </div>
 
           <div className="flex items-center gap-3 shrink-0">
-            {/* Locale switcher */}
+            {/* V8.5 fix: bug 4 — the backend console is fixed to Chinese, so the
+                language switcher is replaced by a static "中文" badge. */}
             <div className="hidden sm:flex items-center gap-1 px-1 border-l border-slate-200 mr-1">
-              {adminLocales.map((loc) => (
-                <button
-                  key={loc}
-                  type="button"
-                  onClick={() => handleLocaleChange(loc)}
-                  aria-label={`Switch language to ${loc}`}
-                  className={`px-2 py-1 text-xs font-medium rounded-md transition-colors duration-200 ${locale === loc ? 'bg-blue-100 text-blue-700' : 'text-slate-500 hover:bg-slate-100'}`}
-                >
-                  {LOCALE_LABELS[loc]}
-                </button>
-              ))}
+              <span className="px-2 py-1 text-xs font-medium rounded-md bg-blue-100 text-blue-700">
+                中文
+              </span>
             </div>
 
             {/* Right side - user dropdown */}

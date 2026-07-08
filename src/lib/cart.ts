@@ -16,14 +16,17 @@ export type CartStorage = CartItem[];
 
 /**
  * Quantity bounds. The upper bound (999) is what every cart operation clamps to,
- * so a corrupted/inflated quantity can never propagate. The "one-time migration"
- * threshold (1000) is a separate constant used to detect and reset legacy bad data.
+ * so a corrupted/inflated quantity can never propagate.
  */
 export const MIN_CART_QTY = 1;
 export const MAX_CART_QTY = 999;
-/** Legacy corrupt carts recorded quantities like 131072 (= 2^17). Anything above
- *  this is treated as corrupted and reset to 1 by `migrateCorruptCart`. */
-export const CORRUPT_QTY_THRESHOLD = 1000;
+/** A cart quantity that reaches the clamp ceiling (999) is the unmistakable
+ *  signature of the old runaway-doubling bug (1→2→4→…→512→1024→clamp 999).
+ *  The UI disables the +/- buttons as soon as a line reaches the upper bound, so
+ *  a real user can never legitimately store 999 of one item. Any quantity at or
+ *  above this threshold is therefore treated as corrupted and reset to 1, which
+ *  repairs the historical "Your Cart (999)" data from the earlier buggy build. */
+export const CORRUPT_QTY_THRESHOLD = MAX_CART_QTY;
 
 /** Clamp a raw quantity into the valid [MIN_CART_QTY, MAX_CART_QTY] range. */
 export function clampCartQty(value: unknown): number {
@@ -67,8 +70,8 @@ export function normalizeCart(raw: unknown): CartItem[] {
 
 /**
  * One-time migration for corrupted carts produced by a previous buggy build that
- * could double quantities exponentially (observed value 131072 = 2^17). Any
- * product whose stored quantity exceeds CORRUPT_QTY_THRESHOLD is reset to 1,
+ * could double quantities exponentially until they hit the clamp ceiling (999).
+ * Any product whose stored quantity reaches CORRUPT_QTY_THRESHOLD is reset to 1,
  * then the whole cart is normalized + clamped. Returns a fresh, safe CartItem[].
  */
 export function migrateCorruptCart(raw: unknown): CartItem[] {
@@ -76,8 +79,9 @@ export function migrateCorruptCart(raw: unknown): CartItem[] {
   const fixed = (raw as any[]).map((it) => {
     if (!it || typeof it !== 'object') return it;
     const qty = Math.floor(Number((it as any).quantity));
-    // Reset obviously-corrupted (doubled) quantities back to a sane baseline.
-    if (Number.isFinite(qty) && qty > CORRUPT_QTY_THRESHOLD) {
+    // Reset a quantity that hit the clamp ceiling back to a sane baseline. The
+    // UI can never push a line to 999 on its own, so reaching it means corruption.
+    if (Number.isFinite(qty) && qty >= CORRUPT_QTY_THRESHOLD) {
       return { ...(it as object), quantity: 1 };
     }
     return it;

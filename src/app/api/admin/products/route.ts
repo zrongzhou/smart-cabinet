@@ -172,6 +172,11 @@ export async function POST(request: NextRequest) {
       ...productData,
     };
 
+    // V8.5 fix: bug 1 — persist the product-level FAQ list (Json) when provided.
+    if (body.faq !== undefined) {
+      createData.faq = body.faq ?? null;
+    }
+
     // 处理分类关联
     if (body.categoryIds && Array.isArray(body.categoryIds) && body.categoryIds.length > 0) {
       createData.categories = {
@@ -300,6 +305,11 @@ export async function PUT(request: NextRequest) {
       } else {
         updateData.tags = { set: [] };
       }
+    }
+
+    // V8.5 fix: bug 1 — persist the product-level FAQ list (Json) when provided.
+    if (body.faq !== undefined) {
+      (updateData as Record<string, unknown>).faq = body.faq ?? null;
     }
 
     // 更新产品

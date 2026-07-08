@@ -425,6 +425,8 @@
   "about.solutions.item6.desc": "We provide CNC tool vending machines, smart locker cabinets, drawer cabinets, weighing cabinets, RFID cabinets, micro warehousing cabinets and customized smart material cabinets for different factory needs.",
   "about.solutions.item7.title": "System Integration Available",
   "about.solutions.item7.desc": "Our software can support ERP, MES, SAP and other factory management systems, helping customers connect material data with production and purchasing workflows.",
+  "about.solutions.item8.title": "Cloud Platform & Remote Oversight",
+  "about.solutions.item8.desc": "Our cloud dashboard lets managers monitor inventory, usage and alerts across multiple sites in real time, enabling remote management from any device.",
 
   "about.advantages.title": "Our Advantages",
   "about.advantages.item1.title": "11 Years of Smart Cabinet Manufacturing Experience",
@@ -441,7 +443,7 @@
   "about.advantages.item6.desc": "Professional installation guidance, training and remote technical support to keep your system running smoothly.",
 
   "about.whyChoose.title": "Why Choose Us",
-  "about.whyChoose.subtitle": "Seven reasons factories trust our smart cabinets",
+  "about.whyChoose.subtitle": "Eight reasons factories trust our smart cabinets",
   "about.whyChoose.item1.title": "11 Years of Industry Experience",
   "about.whyChoose.item1.desc": "We have 11 years of experience in manufacturing smart material cabinets and industrial vending machines for factories, workshops and warehouses.",
   "about.whyChoose.item2.title": "Factory Direct Price",
@@ -456,6 +458,8 @@
   "about.whyChoose.item6.desc": "Every pickup, return and replenishment can be recorded. The system supports stock alerts, usage reports and material consumption analysis.",
   "about.whyChoose.item7.title": "Reliable After-Sales Support",
   "about.whyChoose.item7.desc": "We provide installation guidance, software training, remote technical support and after-sales service to help customers run the system smoothly.",
+  "about.whyChoose.item8.title": "Fast Delivery & Global Logistics",
+  "about.whyChoose.item8.desc": "With efficient production and a mature logistics network, we deliver standard and customized cabinets to customers in 60+ countries quickly and reliably.",
 
   "about.showcase.trustTitle": "Trusted by manufacturers worldwide",
   "about.showcase.metricClients": "Factory Clients",

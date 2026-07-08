@@ -91,6 +91,33 @@ async function writeBlogResilient<T>(
 }
 
 /**
+ * V8.5 fix: bug 3 — resolve only the tag ids that actually exist as `BlogTag`
+ * records. Static-seed blogs (e.g. id '14') carry plain STRING tags such as
+ * 'cnc' / 'tools' / 'inventory' which are NOT valid `BlogTag` CUID ids. Passing
+ * them to `connect`/`set` throws Prisma error P2018 ("Expected N records to be
+ * connected, found only 0"). We filter to the ids that really exist, so the
+ * write never fails on a missing relation and only valid tags are linked.
+ */
+async function resolveValidTagIds(tagIds: unknown): Promise<string[]> {
+  if (!Array.isArray(tagIds)) return [];
+  const ids = (tagIds as unknown[])
+    .map((id) => (typeof id === 'string' ? id.trim() : ''))
+    .filter((id) => id.length > 0);
+  if (ids.length === 0) return [];
+  try {
+    const found = await prisma.tag.findMany({
+      where: { id: { in: ids } },
+      select: { id: true },
+    });
+    const valid = new Set(found.map((t) => t.id));
+    return ids.filter((id) => valid.has(id));
+  } catch {
+    // Tag table unreachable — skip tag linking rather than failing the save.
+    return [];
+  }
+}
+
+/**
  * GET /api/admin/blogs
  * 获取所有博客（管理后台）
  * 支持查询参数：?id=xxx 获取单篇博客（含完整 content）
@@ -285,10 +312,16 @@ export async function POST(request: NextRequest) {
     const createData: any = {
       ...blogData,
     };
+    // V8.5 fix: bug 3 — only connect tag ids that exist. String tags coming from
+    // a static-seed blog ('cnc', 'tools', …) are not real BlogTag ids and would
+    // otherwise throw Prisma P2018 ("Expected N records, found 0").
     if (body.tagIds && Array.isArray(body.tagIds) && body.tagIds.length > 0) {
-      createData.tags = {
-        connect: body.tagIds.map((tagId: string) => ({ id: tagId })),
-      };
+      const validTagIds = await resolveValidTagIds(body.tagIds);
+      if (validTagIds.length > 0) {
+        createData.tags = {
+          connect: validTagIds.map((id: string) => ({ id })),
+        };
+      }
     }
 
     const blog = await prisma.blogPost.create({
@@ -310,8 +343,14 @@ export async function POST(request: NextRequest) {
       if (error.code === 'P2002') {
         return badRequestResponse('Slug already exists');
       }
+      // P2018: a connect/set referenced a record (e.g. a tag) that doesn't exist.
+      // The valid-tag filter above should prevent this, but surface a friendly
+      // Chinese message instead of the raw Prisma error if it ever still occurs.
+      if (error.code === 'P2018' || /connected, found only/i.test(error.message)) {
+        return badRequestResponse('部分关联数据（如标签）不存在，已忽略无效项后请重试');
+      }
     }
-    return serverErrorResponse('Failed to create blog');
+    return serverErrorResponse('博客创建失败，请检查表单后重试');
   } finally {
     await prisma.$disconnect();
   }
@@ -371,9 +410,12 @@ export async function PUT(request: NextRequest) {
           // V8.4 fix: bug 6 — persist seoKeywords (string sent by the editor form).
           seoKeywords: body.seoKeywords !== undefined ? body.seoKeywords : (staticSeed.seoKeywords ?? null),
         };
+        // V8.5 fix: bug 3 — only connect tag ids that exist as BlogTag records.
+        // Static-seed string tags are dropped here so no P2018 is thrown.
+        const validTagIds = await resolveValidTagIds(body.tagIds);
         const tagConnect =
-          body.tagIds && Array.isArray(body.tagIds) && body.tagIds.length > 0
-            ? { tags: { connect: body.tagIds.map((tagId: string) => ({ id: tagId })) } }
+          validTagIds.length > 0
+            ? { tags: { connect: validTagIds.map((id: string) => ({ id })) } }
             : {};
 
         if (materialized) {
@@ -427,12 +469,12 @@ export async function PUT(request: NextRequest) {
     if (body.seoKeywords !== undefined) updateData.seoKeywords = body.seoKeywords;
 
     // 处理标签关联
+    // V8.5 fix: bug 3 — only `set` tag ids that actually exist. This prevents
+    // Prisma P2018 ("Expected N records to be connected, found only 0") when the
+    // form submits string tags (from a static seed) that aren't real BlogTag ids.
     if (body.tagIds !== undefined) {
-      if (Array.isArray(body.tagIds) && body.tagIds.length > 0) {
-        updateData.tags = { set: body.tagIds.map((tagId: string) => ({ id: tagId })) };
-      } else {
-        updateData.tags = { set: [] };
-      }
+      const validTagIds = await resolveValidTagIds(body.tagIds);
+      updateData.tags = { set: validTagIds.map((id: string) => ({ id })) };
     }
 
     // V8.4 fix: bug 6 — resilient write (retry without seoKeywords if the column
@@ -451,8 +493,12 @@ export async function PUT(request: NextRequest) {
       if (error.code === 'P2002') {
         return badRequestResponse('Slug already exists');
       }
+      // P2018: a connect/set referenced a record (e.g. a tag) that doesn't exist.
+      if (error.code === 'P2018' || /connected, found only/i.test(error.message)) {
+        return badRequestResponse('部分关联数据（如标签）不存在，已自动忽略无效项，请重试');
+      }
     }
-    return serverErrorResponse('Failed to update blog' + (detail ? `: ${detail}` : ''));
+    return serverErrorResponse('博客保存失败，请检查表单后重试' + (detail ? `：${detail}` : ''));
   } finally {
     await prisma.$disconnect();
   }

@@ -134,17 +134,29 @@ export function CartProvider({ children }: { children: ReactNode }) {
     })();
   }, [isAuthenticated, token, ready]);
 
-  // V8.4 fix: bug 3 — prevent quantity inflation from repeated "Add to Cart"
-  // clicks. If the product is already in the cart we keep the existing quantity
-  // (a no-op); only updateQuantity() is allowed to change a line's quantity.
+  // V8.5 fix: bug 2 — make "Add to Cart" fully idempotent and self-healing.
+  //  • If the product is already in the cart we NEVER inflate its quantity
+  //    (it stays at 1); only updateQuantity() may change a line's quantity.
+  //  • We DO repair the stored price when the incoming item carries a real one,
+  //    which fixes the historical "$0 each" symptom left by the old buggy build.
+  //  • The best-effort server sync below posts a single item; the server merges
+  //    with a UNION (max, never sum) so repeated adds can never inflate either.
   const addItem = (item: CartItem) => {
     setItems((prev) => {
       const exists = prev.find((it) => it.productId === item.productId);
-      if (exists) return prev;
-      return mergeCartItems(prev, [item]);
+      if (exists) {
+        // Already present: keep quantity at 1, but repair a missing/zero price.
+        return prev.map((it) =>
+          it.productId === item.productId
+            ? { ...it, price: item.price > 0 ? item.price : it.price }
+            : it
+        );
+      }
+      // New product: default quantity is always 1 (mergeCartItems clamps too).
+      return mergeCartItems(prev, [{ ...item, quantity: 1 }]);
     });
     setIsOpen(true);
-    // Best-effort server sync when authenticated.
+    // Best-effort server sync when authenticated (server uses union, not sum).
     if (isAuthenticated && token) {
       fetch('/api/user/cart', {
         method: 'POST',
@@ -152,7 +164,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ items: [item] }),
+        body: JSON.stringify({ items: [{ ...item, quantity: 1 }] }),
       }).catch(() => undefined);
     }
   };

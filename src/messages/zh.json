@@ -425,6 +425,8 @@
   "about.solutions.item6.desc": "我们提供 CNC 刀具售货机、智能储物柜、抽屉柜、称重柜、RFID 柜、微型仓储柜及定制化智能物料柜，满足不同工厂需求。",
   "about.solutions.item7.title": "支持系统集成",
   "about.solutions.item7.desc": "我们的软件可对接 ERP、MES、SAP 等工厂管理系统，帮助客户将物料数据与生产、采购流程打通。",
+  "about.solutions.item8.title": "云平台与远程监管",
+  "about.solutions.item8.desc": "我们的云平台仪表盘可让管理者实时查看多站点的库存、领用与预警，随时随地通过任意设备远程管理。",
 
   "about.advantages.title": "我们的优势",
   "about.advantages.item1.title": "11 年智能柜制造经验",
@@ -441,7 +443,7 @@
   "about.advantages.item6.desc": "提供安装指导、软件培训与远程技术支持，保障系统稳定运行。",
 
   "about.whyChoose.title": "为什么选择我们",
-  "about.whyChoose.subtitle": "工厂信赖我们智能柜的七大理由",
+  "about.whyChoose.subtitle": "工厂信赖我们智能柜的八大理由",
   "about.whyChoose.item1.title": "11 年行业经验",
   "about.whyChoose.item1.desc": "我们拥有 11 年制造智能物料柜和工业自动售货机的经验，服务工厂、车间和仓库。",
   "about.whyChoose.item2.title": "工厂直销价",
@@ -456,6 +458,8 @@
   "about.whyChoose.item6.desc": "每一次领用、归还和补货均可记录。系统支持库存预警、使用报表和物料消耗分析。",
   "about.whyChoose.item7.title": "可靠售后支持",
   "about.whyChoose.item7.desc": "我们提供安装指导、软件培训、远程技术支持和售后服务，帮助客户平稳运行系统。",
+  "about.whyChoose.item8.title": "快速交付与全球物流",
+  "about.whyChoose.item8.desc": "依托高效生产与成熟物流网络，我们可快速、可靠地将标准及定制柜体交付至 60 多个国家的客户。",
 
   "about.showcase.trustTitle": "全球制造企业的信赖之选",
   "about.showcase.metricClients": "合作工厂客户",
