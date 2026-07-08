@@ -1,14 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-// GET /api/products/[slug]/reviews - Get approved reviews for a product
+// GET /api/products/[...slug]/reviews - Get approved reviews for a product
+// Note: slug may contain "/" (e.g. solutions/custom-industrial-vending-machine.html),
+// so the route uses a catch-all [...slug] segment and joins the segments back.
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: { slug: string[] } }
 ) {
   try {
-    const productSlug = params.slug;
-    
+    const productSlug = params.slug.join('/');
+
     // First, find the product by slug
     const product = await prisma.product.findUnique({
       where: { slug: productSlug },
@@ -82,7 +84,7 @@ export async function GET(
       two_star: bigint;
       one_star: bigint;
     }>>`
-      SELECT 
+      SELECT
         AVG(rating) as average,
         COUNT(*) as total,
         SUM(CASE WHEN rating = 5 THEN 1 ELSE 0 END) as five_star,
@@ -133,14 +135,14 @@ export async function GET(
   }
 }
 
-// POST /api/products/[slug]/reviews - Submit a review
+// POST /api/products/[...slug]/reviews - Submit a review
 export async function POST(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: { slug: string[] } }
 ) {
   try {
-    const productSlug = params.slug;
-    
+    const productSlug = params.slug.join('/');
+
     // First, find the product by slug
     const product = await prisma.product.findUnique({
       where: { slug: productSlug },
