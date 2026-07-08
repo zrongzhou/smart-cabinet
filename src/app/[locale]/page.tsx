@@ -66,7 +66,7 @@ type PreviewBlog = {
   featured?: boolean;
 };
 
-const SITE_URL = 'https://test.wstoolcabinet.com';
+const SITE_URL = 'https://www.wstoolcabinet.com';
 
 const PAGE_META: Record<string, { title: string; description: string }> = {
   en: {

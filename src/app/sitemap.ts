@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next';
 
-const BASE_URL = 'https://test.wstoolcabinet.com';
+const BASE_URL = 'https://www.wstoolcabinet.com';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const locales = ['en', 'zh', 'ar'];

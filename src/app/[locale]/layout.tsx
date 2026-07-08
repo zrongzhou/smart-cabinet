@@ -58,19 +58,19 @@ export default function LocaleLayout({ children, params: { locale } }: LocaleLay
           {/* Preconnect to external image domain for faster loading */}
           <link rel="preconnect" href="https://www.wstoolcabinet.com" crossOrigin="anonymous" />
           <link rel="dns-prefetch" href="https://www.wstoolcabinet.com" />
-          <link rel="preconnect" href="https://test.wstoolcabinet.com" crossOrigin="anonymous" />
-          <link rel="dns-prefetch" href="https://test.wstoolcabinet.com" />
+          <link rel="preconnect" href="https://www.wstoolcabinet.com" crossOrigin="anonymous" />
+          <link rel="dns-prefetch" href="https://www.wstoolcabinet.com" />
           
           {/* JsonLd structured data — enhanced for SEO */}
           <JsonLd data={{
             '@context': 'https://schema.org',
             '@type': 'WebSite',
             name: 'WS Tool Cabinet',
-            url: 'https://test.wstoolcabinet.com',
+            url: 'https://www.wstoolcabinet.com',
             description: 'Professional smart tool cabinet and vending machine manufacturer.',
             potentialAction: {
               '@type': 'SearchAction',
-              target: 'https://test.wstoolcabinet.com/en/products?q={search_term_string}',
+              target: 'https://www.wstoolcabinet.com/en/products?q={search_term_string}',
               'query-input': 'required name=search_term_string',
             },
           }} />
@@ -79,8 +79,8 @@ export default function LocaleLayout({ children, params: { locale } }: LocaleLay
             '@type': 'Organization',
             name: 'Guangzhou Qiuyan Technology Co., Ltd.',
             alternateName: '广州秋彦科技有限公司 / WS Tool Cabinet',
-            url: 'https://test.wstoolcabinet.com',
-            logo: 'https://test.wstoolcabinet.com/images/logo.svg',
+            url: 'https://www.wstoolcabinet.com',
+            logo: 'https://www.wstoolcabinet.com/images/logo.svg',
             contactPoint: {
               '@type': 'ContactPoint',
               telephone: '+86-156-2216-0659',

@@ -95,49 +95,73 @@ const FACTORY_HIGHLIGHTS = [
   { value: '60', suffix: '+', labelKey: 'about.showcase.fCountries', icon: Globe, gradient: 'linear-gradient(135deg, #d97706, #f59e0b)' },
 ];
 
-/** ═══════ 现代东方 · 秋彦 子组件 ═══════ */
+/** ═══════ 墨韵 · 秋彦 手写签名 子组件 ═══════ */
 
-/** 四角极简 L 型几何装饰（替代回纹） */
-function ModernCorners() {
-  const corner = (pos: string, style: React.CSSProperties) => (
-    <span className={`absolute ${pos} w-3.5 h-3.5 pointer-events-none`} aria-hidden="true">
-      <span className="absolute inset-0 rounded-sm" style={style} />
-    </span>
-  );
-  const s: React.CSSProperties = { background: 'linear-gradient(135deg, transparent 45%, rgba(59,130,246,0.25) 50%, transparent 55%), linear-gradient(225deg, transparent 45%, rgba(139,92,246,0.2) 50%, transparent 55%)' };
+/** 墨迹飞白装饰点 */
+function InkSplatter({ className }: { className?: string }) {
   return (
-    <>
-      {corner('top-2 left-2', s)}
-      <span className="absolute top-2 right-2 w-3.5 h-3.5 pointer-events-none" aria-hidden="true" style={{ background: 'linear-gradient(225deg, transparent 45%, rgba(201,160,103,0.28) 50%, transparent 55%)' }} />
-      {corner('bottom-2 left-2', s)}
-      <span className="absolute bottom-2 right-2 w-3.5 h-3.5 pointer-events-none" aria-hidden="true" style={{ background: 'linear-gradient(315deg, transparent 45%, rgba(201,160,103,0.28) 50%, transparent 55%)' }} />
-    </>
+    <span className={`pointer-events-none ${className || ''}`} aria-hidden="true">
+      <span className="absolute w-[5px] h-[5px] rounded-full bg-black opacity-[0.07]" style={{ top: '4px', left: '6px' }} />
+      <span className="absolute w-[3px] h-[3px] rounded-full bg-black opacity-[0.05]" style={{ top: '12px', left: '16px' }} />
+      <span className="absolute w-[3.5px] h-[3.5px] rounded-full bg-black opacity-[0.04]" style={{ top: '18px', left: '2px' }} />
+      {/* 右侧朱红墨点 */}
+      <span className="absolute w-[4px] h-[4px] rounded-full opacity-[0.07]" style={{ top: '6px', right: '8px', background: '#C41E3A' }} />
+      <span className="absolute w-[3px] h-[3px] rounded-full opacity-[0.05]" style={{ top: '16px', right: '2px', background: '#C41E3A' }} />
+    </span>
   );
 }
 
-/** 现代圆形品牌徽标（蓝紫渐变环 + 秋彦书法字） */
-function ModernLogo() {
+/**
+ * 毛笔手写签名 — "秋彦"
+ * 用大号楷体 + 斜切变换模拟签名的流畅笔触感
+ * 配合书写动画：从左到右逐字显现
+ */
+function InkSignature() {
   return (
     <div
-      className="relative w-[46px] h-[46px] rounded-full flex items-center justify-center select-none"
+      className="relative select-none"
       style={{
-        background: 'radial-gradient(circle at 40% 35%, rgba(99,102,241,0.12) 0%, transparent 65%)',
-        border: '2px solid',
-        borderImage: 'linear-gradient(135deg, #3b82f6, #6366f1, #8b5cf6) 1',
-        animation: 'modern-logo-in 0.7s cubic-bezier(.22,.91,.27,1.02) both',
+        animation: 'ink-sign-write 0.8s cubic-bezier(.25,.46,.45,.94) both',
       }}
-      aria-hidden="true"
+      aria-label="Qiuyan Signature"
     >
+      {/* 主文字 — 毛笔楷体，略带斜度像签名 */}
       <span
-        className="text-sm font-bold leading-none tracking-wide"
-        style={{ fontFamily: "'STKaiti','KaiTi','SimSun','Noto Serif SC',serif", color: '#4338ca' }}
-      >秋彦</span>
+        className="block text-center leading-none"
+        style={{
+          fontFamily: "'STKaiti','KaiTi','SimSun','Noto Serif SC','Ma Shan Zheng','Zhi Mang Xing',cursive",
+          fontSize: '28px',
+          fontWeight: 700,
+          color: '#1a1a2e',
+          letterSpacing: '0.15em',
+          textShadow: '1px 1px 0 rgba(201,160,103,0.15), 2px 2px 4px rgba(26,26,46,0.08)',
+          transform: 'rotate(-2deg)',
+          filter: 'contrast(1.05)',
+        }}
+      >
+        秋彦
+      </span>
+
+      {/* 签名虚线下划线（像纸上签名的下划线） */}
+      <span
+        className="block mx-auto mt-1 h-px opacity-20"
+        style={{
+          width: '72%',
+          background: 'linear-gradient(90deg, transparent 10%, #1a1a2e 30%, #1a1a2e 70%, transparent 90%)',
+        }}
+      />
+
+      {/* 笔锋拖尾暗示 */}
+      <span
+        className="absolute -bottom-0.5 right-[18%] w-4 h-0.5 opacity-10 rounded-full"
+        style={{ background: '#1a1a2e', transform: 'rotate(-15deg)' }}
+      />
     </div>
   );
 }
 
-/** 单个现代数据指标卡 */
-function ModernStatCard({ item, t, delay }: {
+/** 单个数据指标卡（现代简洁风） */
+function InkStatCard({ item, t, delay }: {
   item: typeof FACTORY_HIGHLIGHTS[number];
   t: (key: string) => string;
   delay: number;
@@ -153,18 +177,16 @@ function ModernStatCard({ item, t, delay }: {
 
   return (
     <div
-      className="rounded-xl overflow-hidden bg-white/75 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-lg group"
+      className="rounded-xl overflow-hidden bg-white transition-all duration-500 hover:-translate-y-1 hover:shadow-lg group"
       style={{
         border: `1px solid ${p.ring}`,
-        boxShadow: '0 2px 12px rgba(59,130,246,0.05)',
-        animation: `modern-card-in 0.6s cubic-bezier(.25,.46,.45,.94) ${delay}ms both`,
+        boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
+        animation: `ink-card-in 0.55s cubic-bezier(.25,.46,.45,.94) ${delay}ms both`,
       }}
     >
-      {/* 主题色顶条 */}
       <div className="h-1 w-full" style={{ background: p.bar }} />
       <div className="p-4 pt-3">
-        {/* 图标 + 标签行 */}
-        <div className="flex items-center gap-2.5 mb-2.5">
+        <div className="flex items-center gap-2.5 mb-2">
           <span
             className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110"
             style={{ background: p.bg, border: `1.5px solid ${p.ring}` }}
@@ -173,7 +195,6 @@ function ModernStatCard({ item, t, delay }: {
           </span>
           <span className="text-[11px] font-medium text-gray-400 leading-tight">{t(item.labelKey)}</span>
         </div>
-        {/* 大数字 */}
         <div className="pl-[42px]">
           <span className="text-[26px] sm:text-[28px] font-bold tabular-nums tracking-tight text-gray-900">
             {item.value}
@@ -185,18 +206,18 @@ function ModernStatCard({ item, t, delay }: {
   );
 }
 
-/* ═══════ 现代融合关键帧动画 ═══════ */
-function ModernKeyframes() {
+/* ═══════ 墨韵关键帧动画 ═══════ */
+function InkKeyframes() {
   return (
     <style jsx global>{`
-      @keyframes modern-logo-in {
-        0%   { transform: scale(0.6); opacity: 0; filter: blur(4px); }
-        60%  { transform: scale(1.08); opacity: 1; }
-        80%  { transform: scale(0.97); }
-        100% { transform: scale(1); opacity: 1; filter: blur(0); }
+      @keyframes ink-sign-write {
+        0%   { clip-path: inset(0 100% 0 0); opacity: 0; }
+        40%  { clip-path: inset(0 60% 0 0); opacity: 0.7; }
+        70%  { clip-path: inset(0 10% 0 0); opacity: 1; }
+        100% { clip-path: inset(0 0% 0 0); opacity: 1; }
       }
-      @keyframes modern-card-in {
-        from { opacity: 0; transform: translateY(16px) scale(0.96); }
+      @keyframes ink-card-in {
+        from { opacity: 0; transform: translateY(14px) scale(0.97); }
         to   { opacity: 1; transform: translateY(0) scale(1); }
       }
     `}</style>
@@ -206,8 +227,8 @@ function ModernKeyframes() {
 export default function CompanyShowcase({ t }: CompanyShowcaseProps) {
   return (
     <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative overflow-hidden bg-gradient-to-br from-blue-50/40 via-indigo-50/30 to-white">
-      {/* 现代融合动画关键帧 */}
-      <ModernKeyframes />
+      {/* 墨韵动画关键帧 */}
+      <InkKeyframes />
 
       {/* Soft animated depth layer */}
       <div className="absolute inset-0 opacity-[0.5]" style={{
@@ -253,45 +274,52 @@ export default function CompanyShowcase({ t }: CompanyShowcaseProps) {
             <span className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-200 to-transparent" />
           </div>
 
-          {/* ═══ 现代东方 · 秋彦数据签名卡 ═══ */}
+          {/* ═══ 墨韵 · 秋彦手写签名数据卡 ═══ */}
           <div className="mt-4 relative rounded-2xl overflow-hidden"
             style={{
-              background: 'linear-gradient(160deg, rgba(255,255,255,0.88) 0%, rgba(248,250,255,0.82) 50%, rgba(245,243,255,0.78) 100%)',
-              border: '1px solid transparent',
-              borderImage: 'linear-gradient(135deg, rgba(59,130,246,0.2), rgba(139,92,246,0.15), rgba(201,160,103,0.25)) 1',
-              boxShadow: '0 4px 24px rgba(59,130,246,0.07), 0 1px 3px rgba(0,0,0,0.03)',
+              background: 'linear-gradient(160deg, #FDFBF7 0%, #FAF8F3 40%, #F7F4ED 100%)',
+              border: '1px solid rgba(212,197,169,0.45)',
+              boxShadow: '0 4px 20px rgba(139,69,19,0.05), 0 1px 2px rgba(0,0,0,0.02)',
             }}
           >
-            {/* 四角几何装饰 */}
-            <ModernCorners />
+            {/* 墨迹飞白装饰 */}
+            <InkSplatter className="absolute top-2.5 left-2.5 w-[28px] h-[26px]" />
+            <InkSplatter className="absolute top-2.5 right-2.5 w-[26px] h-[24px]" />
 
-            {/* ── 头部：现代品牌徽标 ── */}
+            {/* ── 头部：毛笔签名 + 品牌 ── */}
             <div className="relative z-10 pt-5 pb-3 px-5">
-              <div className="flex flex-col items-center gap-2">
-                {/* 品牌行：圆环徽标 + 分隔 + QIUYAN */}
-                <div className="flex items-center gap-3">
-                  <span className="hidden sm:block w-7 h-px bg-gradient-to-r from-transparent to-blue-300/40" />
-                  <ModernLogo />
-                  {/* 菱形分隔 */}<span className="w-1 h-1 rotate-45 bg-blue-400/30" />
-                  <span className="text-xs font-semibold tracking-[0.28em] text-blue-600" style={{ fontFamily: 'Georgia,"Times New Roman",serif' }}>QIUYAN</span>
-                  <span className="hidden sm:block w-7 h-px bg-gradient-to-l from-transparent to-blue-300/40" />
-                </div>
-                <span className="text-[9.5px] tracking-[0.32em] text-slate-400 uppercase opacity-70">Technology · Est. 2010</span>
+              <div className="flex flex-col items-center gap-1.5">
+                {/* 手写签名 */}
+                <InkSignature />
+
+                {/* QIUYAN 英文品牌名 */}
+                <span
+                  className="text-xs font-semibold tracking-[0.35em] text-[#6B5D4D] opacity-70"
+                  style={{ fontFamily: 'Georgia,"Times New Roman","Noto Serif SC",serif' }}
+                >QIUYAN</span>
+
+                <span className="text-[9.5px] tracking-[0.28em] text-[#9B8E7E] uppercase opacity-55">Technology · Est. 2010</span>
               </div>
 
-              {/* 渐变分隔线 */}
+              {/* 金线分隔 */}
               <div className="mt-3 mx-auto max-w-xs h-px" style={{
-                background: 'linear-gradient(90deg, transparent, rgba(201,160,103,0.35) 30%, #e8c88b 50%, rgba(201,160,103,0.35) 70%, transparent)',
+                background: 'linear-gradient(90deg, transparent, #C9A067 20%, #E8D5A3 50%, #C9A067 80%, transparent)',
               }} />
             </div>
 
-            {/* ── 三项现代数据指标卡 ── */}
+            {/* ── 三项数据指标卡 ── */}
             <div className="relative z-10 px-4 pb-5">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
                 {FACTORY_HIGHLIGHTS.map((h, idx) => (
-                  <ModernStatCard key={h.labelKey} item={h} t={t} delay={idx * 150} />
+                  <InkStatCard key={h.labelKey} item={h} t={t} delay={idx * 150} />
                 ))}
               </div>
+            </div>
+
+            {/* 底部墨痕暗示 */}
+            <div className="absolute bottom-1 left-0 right-0 flex justify-center gap-24 pointer-events-none px-6">
+              <div className="h-[2px] rounded-full opacity-[0.03] bg-black" style={{ width: '60px' }} />
+              <div className="h-[2px] rounded-full opacity-[0.025] bg-black" style={{ width: '80px' }} />
             </div>
           </div>
         </div>

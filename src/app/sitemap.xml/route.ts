@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 /**
  * Dynamic Sitemap Route Handler
  * Generates sitemap.xml dynamically based on the request host
- * This ensures the sitemap uses the correct domain (test.wstoolcabinet.com or www.wstoolcabinet.com)
+ * This ensures the sitemap uses the correct domain (www.wstoolcabinet.com)
  */
 export async function GET(request: NextRequest) {
   const prisma = new PrismaClient();
