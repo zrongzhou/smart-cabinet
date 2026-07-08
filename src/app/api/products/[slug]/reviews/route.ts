@@ -91,7 +91,7 @@ export async function GET(
         SUM(CASE WHEN rating = 2 THEN 1 ELSE 0 END) as two_star,
         SUM(CASE WHEN rating = 1 THEN 1 ELSE 0 END) as one_star
       FROM reviews
-      WHERE productId = ${productId} AND isApproved = true
+      WHERE "productId" = ${productId} AND "isApproved" = true
     `;
 
     const stats = ratingStats[0] || {
