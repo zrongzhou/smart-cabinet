@@ -417,14 +417,37 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
           {/* Share buttons */}
           <div className="flex items-center gap-4 mt-12 pt-8 border-t border-gray-200">
             <span className="text-sm text-gray-500">{locale === 'zh' ? '分享：' : locale === 'ar' ? 'مشاركة:' : 'Share:'}</span>
-            <button className="p-2 bg-gray-100 hover:bg-blue-100 rounded-full transition-colors">
-              <Twitter className="w-5 h-5 text-gray-600" />
+            <button
+              className="p-2 bg-gray-100 hover:bg-[#1DA1F2] hover:text-white rounded-full transition-colors"
+              onClick={() => {
+                const url = window.location.href;
+                const title = typeof blog.title === 'object' ? blog.title[locale] || blog.title.en : blog.title;
+                window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`, '_blank', 'noopener,noreferrer');
+              }}
+              aria-label={locale === 'zh' ? '分享到 Twitter' : 'Share on Twitter'}
+            >
+              <Twitter className="w-5 h-5 text-gray-600 hover:text-white" />
             </button>
-            <button className="p-2 bg-gray-100 hover:bg-blue-100 rounded-full transition-colors">
-              <Facebook className="w-5 h-5 text-gray-600" />
+            <button
+              className="p-2 bg-gray-100 hover:bg-[#1877F2] hover:text-white rounded-full transition-colors"
+              onClick={() => {
+                const url = window.location.href;
+                window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank', 'noopener,noreferrer');
+              }}
+              aria-label={locale === 'zh' ? '分享到 Facebook' : 'Share on Facebook'}
+            >
+              <Facebook className="w-5 h-5 text-gray-600 hover:text-white" />
             </button>
-            <button className="p-2 bg-gray-100 hover:bg-blue-100 rounded-full transition-colors">
-              <Linkedin className="w-5 h-5 text-gray-600" />
+            <button
+              className="p-2 bg-gray-100 hover:bg-[#0A66C2] hover:text-white rounded-full transition-colors"
+              onClick={() => {
+                const url = window.location.href;
+                const title = typeof blog.title === 'object' ? blog.title[locale] || blog.title.en : blog.title;
+                window.open(`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}`, '_blank', 'noopener,noreferrer');
+              }}
+              aria-label={locale === 'zh' ? '分享到 LinkedIn' : 'Share on LinkedIn'}
+            >
+              <Linkedin className="w-5 h-5 text-gray-600 hover:text-white" />
             </button>
           </div>
         </div>
