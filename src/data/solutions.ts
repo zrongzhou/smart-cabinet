@@ -258,7 +258,7 @@ const solutions: Solution[] = [
       en: [
         'Miniature components requiring precise inventory tracking',
         'Anti-static and humidity control requirements for sensitive electronics',
-        'Fast production节奏 with frequent material requests',
+        'Fast production rhythm with frequent material requests',
       ],
       zh: [
         '微型组件需要精确的库存追踪',

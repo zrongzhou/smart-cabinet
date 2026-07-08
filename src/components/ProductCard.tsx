@@ -2,7 +2,7 @@ import type { Product } from '@/types/product';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, Package, Heart } from 'lucide-react';
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { useLocale } from '@/lib/i18n';
 import { getProductHref } from '@/lib/product-url';
 
@@ -15,7 +15,7 @@ interface ProductCardProps {
 
 const PLACEHOLDER_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect fill='%23f1f5f9' width='400' height='300'/%3E%3Ctext x='200' y='150' text-anchor='middle' dy='.3em' fill='%2394a3b8' font-size='16'%3ENo Image%3C/text%3E%3C/svg%3E";
 
-export default function ProductCard({ product, locale, showFavoriteButton = true, priority = false }: ProductCardProps) {
+function ProductCard({ product, locale, showFavoriteButton = true, priority = false }: ProductCardProps) {
   const { t } = useLocale();
   const imageSrc = product.images?.[0] ?? PLACEHOLDER_SVG;
   const detailHref = getProductHref(product.slug, locale);
@@ -205,3 +205,5 @@ export default function ProductCard({ product, locale, showFavoriteButton = true
     </Link>
   );
 }
+
+export default memo(ProductCard);

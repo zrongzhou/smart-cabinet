@@ -45,17 +45,39 @@ export default function ProductDetailClient({
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [mainImageError, setMainImageError] = useState(false);
   const [mainImageLoading, setMainImageLoading] = useState(true);
-  // Timeout fallback: if image takes > 6s, show error placeholder
+  const [mainImageRetryCount, setMainImageRetryCount] = useState(0);
+  const [imageKey, setImageKey] = useState(0);
+
+  // Smart retry: on error, retry with exponential backoff (1s->2s->4s) before giving up
+  const handleMainImageError = () => {
+    if (mainImageRetryCount < 3) {
+      const delay = Math.pow(2, mainImageRetryCount) * 1000;
+      setMainImageRetryCount(c => c + 1);
+      setMainImageLoading(true);
+      setTimeout(() => setImageKey(k => k + 1), delay);
+    } else {
+      setMainImageError(true);
+      setMainImageLoading(false);
+    }
+  };
+
+  // Reset retry state when switching images
+  const handleSelectImage = (index: number) => {
+    setSelectedImage(index);
+    setMainImageError(false);
+    setMainImageLoading(true);
+    setMainImageRetryCount(0);
+    setImageKey(k => k + 1);
+  };
+
+  // Timeout fallback: trigger retry on first-load timeout instead of giving up
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
-    if (mainImageLoading && !mainImageError) {
-      timer = setTimeout(() => {
-        setMainImageError(true);
-        setMainImageLoading(false);
-      }, 6000);
+    if (mainImageLoading && !mainImageError && mainImageRetryCount === 0) {
+      timer = setTimeout(() => handleMainImageError(), 8000);
     }
-    return () => { clearTimeout(timer); };
-  }, [mainImageLoading, mainImageError]);
+    return () => { clearTimeout(timer) };
+  }, [mainImageLoading, mainImageError, mainImageRetryCount]);
   const [shareToast, setShareToast] = useState(false);
   const { addItem } = useCart();
   const [addedToast, setAddedToast] = useState(false);
@@ -198,12 +220,10 @@ export default function ProductDetailClient({
                             src={product.images[selectedImage] || ''}
                             alt={`${name} - Image ${selectedImage + 1}`}
                             className="w-full h-full object-contain p-4 transition-transform duration-500 group-hover:scale-110"
+                            key={imageKey}
                             loading="eager"
-                            onLoad={() => setMainImageLoading(false)}
-                            onError={() => {
-                              setMainImageError(true);
-                              setMainImageLoading(false);
-                            }}
+                            onLoad={() => { setMainImageLoading(false); setMainImageRetryCount(0); }}
+                            onError={handleMainImageError}
                           />
                           {/* Loading spinner */}
                           {mainImageLoading && (
@@ -226,9 +246,7 @@ export default function ProductDetailClient({
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            setSelectedImage((prev) => (prev === 0 ? product.images!.length - 1 : prev - 1));
-                            setMainImageError(false);
-                            setMainImageLoading(true);
+                            handleSelectImage(selectedImage === 0 ? product.images!.length - 1 : selectedImage - 1);
                           }}
                           className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 hover:bg-white rounded-full flex items-center justify-center shadow-md transition-all z-10"
                         >
@@ -237,9 +255,7 @@ export default function ProductDetailClient({
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            setSelectedImage((prev) => (prev === product.images!.length - 1 ? 0 : prev + 1));
-                            setMainImageError(false);
-                            setMainImageLoading(true);
+                            handleSelectImage(selectedImage === product.images!.length - 1 ? 0 : selectedImage + 1);
                           }}
                           className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 hover:bg-white rounded-full flex items-center justify-center shadow-md transition-all z-10"
                         >
@@ -256,9 +272,7 @@ export default function ProductDetailClient({
                         <button
                           key={index}
                           onClick={() => {
-                            setSelectedImage(index);
-                            setMainImageError(false);
-                            setMainImageLoading(true);
+                            handleSelectImage(index);
                           }}
                           className={`relative flex-shrink-0 w-16 h-16 rounded-lg border-2 overflow-hidden transition-all ${
                             selectedImage === index ? 'border-blue-500' : 'border-gray-200 hover:border-gray-300'

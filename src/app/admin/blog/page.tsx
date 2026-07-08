@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Plus, Pencil, Trash2, ArrowLeft, Star, StarOff, Search, X, Loader2, AlertCircle } from 'lucide-react';
+import { Plus, Pencil, Trash2, ArrowLeft, Star, StarOff, Search, X, Loader2, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { fetchUnifiedBlogs, fetchUnifiedCategories, adminApi, type BlogPostAPI } from '@/data/unified-data';
 
 // Force dynamic rendering (no static generation)
@@ -23,8 +23,13 @@ export default function AdminBlogPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Pagination state
+  const [blogPage, setBlogPage] = useState(1);
+  const BLOG_PER_PAGE = 10;
+
   // Debounce search
   useEffect(() => {
+    setBlogPage(1);
     const timer = setTimeout(() => setSearchDebounced(searchQuery), 300);
     return () => clearTimeout(timer);
   }, [searchQuery]);
@@ -39,15 +44,12 @@ export default function AdminBlogPage() {
       setLoading(true);
       setError(null);
 
-      // Fetch blogs from API
       const postsData = await fetchUnifiedBlogs();
       setPosts(postsData);
 
-      // Fetch categories from API
       const categoriesData = await fetchUnifiedCategories();
       setCategories(categoriesData);
 
-      // Load tags from the DB (tags API) — no localStorage fallback.
       try {
         const tagsData = await adminApi.getTags();
         setTags(tagsData || []);
@@ -68,6 +70,9 @@ export default function AdminBlogPage() {
         setSaving(true);
         await adminApi.deleteBlog(id);
         setPosts(posts.filter(p => p.id !== id));
+        if ((blogPage - 1) * BLOG_PER_PAGE >= posts.length - 1) {
+          setBlogPage(p => Math.max(1, p - 1));
+        }
       } catch (err: any) {
         setError(err.message || '删除文章失败');
       } finally {
@@ -113,6 +118,10 @@ export default function AdminBlogPage() {
     p.title.zh.toLowerCase().includes(searchDebounced.toLowerCase()) ||
     p.title.en.toLowerCase().includes(searchDebounced.toLowerCase())
   );
+
+  // Pagination
+  const totalBlogPages = Math.max(1, Math.ceil(filteredPosts.length / BLOG_PER_PAGE));
+  const paginatedPosts = filteredPosts.slice((blogPage - 1) * BLOG_PER_PAGE, blogPage * BLOG_PER_PAGE);
 
   // Get category name
   const getCategoryName = (slug?: string) => {
@@ -201,106 +210,92 @@ export default function AdminBlogPage() {
                 </button>
               )}
             </div>
+            <div className="mt-4 text-sm text-gray-500">
+              共 <span className="font-semibold text-gray-700">{filteredPosts.length}</span> 篇文章
+              {filteredPosts.length > BLOG_PER_PAGE && (
+                <span className="ml-2">（第 {blogPage} / {totalBlogPages} 页）</span>
+              )}
+            </div>
           </div>
 
-          {/* Posts List */}
-          <div className="admin-card overflow-hidden">
-            {filteredPosts.length > 0 ? (
-              <table className="admin-table w-full">
-                <thead>
-                  <tr>
-                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">封面图</th>
-                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">文章标题</th>
-                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">摘要预览</th>
-                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">分类</th>
-                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Slug</th>
-                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">状态</th>
-                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">精选</th>
-                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">更新时间</th>
-                    <th className="px-6 py-5 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">操作</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredPosts.map((post, index) => (
-                    <tr
-                      key={post.id}
-                      className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/80'} hover:bg-blue-50/50 transition-colors duration-150`}
-                    >
-                      <td className="px-6 py-5">
-                        {post.image ? (
-                          <img src={post.image} alt="" className="w-20 h-16 object-cover rounded-xl shadow-sm" />
-                        ) : (
-                          <div className="w-20 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center">
-                            <svg className="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                          </div>
-                        )}
-                      </td>
-                      <td className="px-6 py-5">
-                        <div className="font-medium text-gray-900 mb-1.5 text-base">{post.title.zh}</div>
-                        <div className="text-base text-gray-500">{post.title.en}</div>
-                        {post.tags && post.tags.length > 0 && (
-                          <div className="flex flex-wrap gap-2 mt-2">
-                            {post.tags.slice(0, 3).map(rel => {
-                              const tag = tags.find(t => t.id === rel.tagId);
-                              return tag ? (
-                                <span key={rel.tagId} className="px-3 py-1 text-sm rounded-lg" style={{ backgroundColor: tag.color + '20', color: tag.color }}>
-                                  {tag.nameZh || tag.nameEn}
-                                </span>
-                              ) : null;
-                            })}
-                            {post.tags.length > 3 && <span className="text-sm text-gray-400">+{post.tags.length - 3}</span>}
-                          </div>
-                        )}
-                      </td>
-                      <td className="px-6 py-5 max-w-sm">
-                        <p className="text-base text-gray-600 line-clamp-2 leading-relaxed">
-                          {truncateText(post.excerpt?.zh || post.content?.zh || '暂无摘要', 120)}
-                        </p>
-                      </td>
-                      <td className="px-6 py-5">
-                        <span className="px-4 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
+          {/* Posts Grid */}
+          {filteredPosts.length > 0 ? (
+            <>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {paginatedPosts.map((post) => (
+                  <div key={post.id} className="flex gap-4 p-4 border border-gray-200 rounded-2xl hover:shadow-md hover:border-blue-200 transition-all bg-white">
+                    {/* Cover */}
+                    <div className="flex-shrink-0">
+                      {post.image ? (
+                        <img src={post.image} alt="" className="w-32 h-32 object-cover rounded-xl shadow-sm" loading="lazy" decoding="async" />
+                      ) : (
+                        <div className="w-32 h-32 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center">
+                          <svg className="w-8 h-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+                    {/* Body */}
+                    <div className="flex-1 min-w-0 flex flex-col">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <div className="font-semibold text-gray-900 truncate text-base">{post.title.zh}</div>
+                          <div className="text-sm text-gray-500 truncate">{post.title.en}</div>
+                        </div>
+                        <div className="flex items-center gap-1.5 flex-shrink-0">
+                          <button
+                            onClick={() => toggleStatus(post.id)}
+                            className={post.status === 'published' ? 'admin-badge admin-badge-success cursor-pointer hover:opacity-80' : 'admin-badge admin-badge-warning cursor-pointer hover:opacity-80'}
+                          >
+                            {post.status === 'published' ? '已发布' : '草稿'}
+                          </button>
+                          <button
+                            onClick={() => toggleFeatured(post.id)}
+                            className="text-gray-400 hover:text-yellow-500 transition-colors"
+                            title={post.featured ? '取消精选' : '设为精选'}
+                          >
+                            {post.featured ? (
+                              <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
+                            ) : (
+                              <StarOff className="w-5 h-5" />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+
+                      <p className="text-sm text-gray-600 line-clamp-2 mt-2 leading-relaxed">
+                        {truncateText(post.excerpt?.zh || post.content?.zh || '暂无摘要', 120)}
+                      </p>
+
+                      <div className="flex flex-wrap items-center gap-2 mt-2">
+                        <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
                           {getCategoryName(post.category)}
                         </span>
-                      </td>
-                      <td className="px-6 py-5">
-                        <button
-                          type="button"
-                          onClick={() => navigator.clipboard?.writeText(post.slug || '')}
-                          className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-blue-600 font-mono bg-gray-50 hover:bg-blue-50 border border-gray-200 rounded-md px-2 py-1 transition-colors"
-                          title="点击复制 Slug"
-                        >
-                          <span className="max-w-[160px] truncate">{post.slug || '-'}</span>
-                          <span className="text-xs">📋</span>
-                        </button>
-                      </td>
-                      <td className="px-6 py-5">
-                        <button
-                          onClick={() => toggleStatus(post.id)}
-                          className={post.status === 'published' ? 'admin-badge admin-badge-success cursor-pointer hover:opacity-80' : 'admin-badge admin-badge-warning cursor-pointer hover:opacity-80'}
-                        >
-                          {post.status === 'published' ? '已发布' : '草稿'}
-                        </button>
-                      </td>
-                      <td className="px-6 py-5">
-                        <button
-                          onClick={() => toggleFeatured(post.id)}
-                          className="text-gray-400 hover:text-yellow-500 transition-colors"
-                          title={post.featured ? '取消精选' : '设为精选'}
-                        >
-                          {post.featured ? (
-                            <Star className="w-6 h-6 text-yellow-500 fill-yellow-500" />
-                          ) : (
-                            <StarOff className="w-6 h-6" />
-                          )}
-                        </button>
-                      </td>
-                      <td className="px-6 py-5 text-base text-gray-600" suppressHydrationWarning>
-                        {new Date(post.updatedAt).toLocaleDateString('zh-CN')}
-                      </td>
-                      <td className="px-6 py-5">
-                        <div className="flex items-center justify-end space-x-2">
+                        {post.tags && post.tags.length > 0 && post.tags.slice(0, 3).map(rel => {
+                          const tag = tags.find(t => t.id === rel.tagId);
+                          return tag ? (
+                            <span key={rel.tagId} className="px-2.5 py-1 text-xs rounded-lg" style={{ backgroundColor: tag.color + '20', color: tag.color }}>
+                              {tag.nameZh || tag.nameEn}
+                            </span>
+                          ) : null;
+                        })}
+                      </div>
+
+                      <div className="flex items-center justify-between mt-auto pt-3">
+                        <div className="flex items-center gap-2 text-xs text-gray-400">
+                          <button
+                            type="button"
+                            onClick={() => navigator.clipboard?.writeText(post.slug || '')}
+                            className="inline-flex items-center gap-1 text-gray-500 hover:text-blue-600 font-mono bg-gray-50 hover:bg-blue-50 border border-gray-200 rounded-md px-2 py-1 transition-colors"
+                            title="点击复制 Slug"
+                          >
+                            <span className="max-w-[140px] truncate">{post.slug || '-'}</span>
+                            <span>📋</span>
+                          </button>
+                          <span suppressHydrationWarning>{new Date(post.updatedAt).toLocaleDateString('zh-CN')}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
                           <Link
                             href={`/admin/blog/edit/${post.id}`}
                             className="admin-btn-action-edit"
@@ -317,20 +312,53 @@ export default function AdminBlogPage() {
                             <Trash2 className="w-5 h-5" />
                           </button>
                         </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <div className="text-center py-16 text-gray-400">
-                <svg className="w-20 h-20 mx-auto mb-6 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                <p className="text-lg">暂无文章，点击"写文章"按钮创建。</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
-            )}
-          </div>
+
+              {/* Pagination */}
+              {totalBlogPages > 1 && (
+                <div className="flex items-center justify-center gap-2 mt-8">
+                  <button
+                    onClick={() => setBlogPage(p => Math.max(1, p - 1))}
+                    disabled={blogPage === 1}
+                    className="inline-flex items-center gap-1 px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    上一页
+                  </button>
+                  {Array.from({ length: totalBlogPages }, (_, i) => i + 1).map(page => (
+                    <button
+                      key={page}
+                      onClick={() => setBlogPage(page)}
+                      className={page === blogPage
+                        ? 'px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-lg'
+                        : 'px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors'}
+                    >
+                      {page}
+                    </button>
+                  ))}
+                  <button
+                    onClick={() => setBlogPage(p => Math.min(totalBlogPages, p + 1))}
+                    disabled={blogPage === totalBlogPages}
+                    className="inline-flex items-center gap-1 px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  >
+                    下一页
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="admin-card text-center py-16 text-gray-400">
+              <svg className="w-20 h-20 mx-auto mb-6 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <p className="text-lg">暂无文章，点击"写文章"按钮创建。</p>
+            </div>
+          )}
         </>
       )}
     </div>

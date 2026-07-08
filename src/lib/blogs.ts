@@ -47,6 +47,8 @@ export interface MergedBlogListParams {
   tag?: string;
   page?: number;
   pageSize?: number;
+  /** Include static seed blogs from data/blogs.ts (default: false — DB-only) */
+  includeStatic?: boolean;
 }
 
 /** Convert a static blog entry into the normalized merged shape. */
@@ -177,34 +179,38 @@ export async function getMergedBlogList(
   const dbPosts = await fetchDbPosts(params);
   const dbSlugs = new Set(dbPosts.map((p) => p.slug));
 
-  // Static posts not already present in the DB (de-dupe by slug).
-  let staticPosts = staticBlogs
-    .map(normalizeStaticBlog)
-    .filter((p) => !dbSlugs.has(p.slug));
+  // Static posts (only if explicitly requested — default is DB-only to avoid
+  // surfacing legacy/test seed blogs that the user may have deleted from DB).
+  let staticPosts: MergedBlogPost[] = [];
+  if (params.includeStatic) {
+    staticPosts = staticBlogs
+      .map(normalizeStaticBlog)
+      .filter((p) => !dbSlugs.has(p.slug));
 
-  // Apply lightweight filters to static posts too (DB already filtered).
-  if (params.publishedOnly) {
-    staticPosts = staticPosts.filter((p) => p.status === 'published');
-  }
-  if (params.category) {
-    staticPosts = staticPosts.filter(
-      (p) => (p.category || '').toLowerCase() === params.category!.toLowerCase()
-    );
-  }
-  if (params.search) {
-    const q = params.search.toLowerCase();
-    staticPosts = staticPosts.filter(
-      (p) =>
-        p.title.en.toLowerCase().includes(q) ||
-        p.title.zh.toLowerCase().includes(q) ||
-        (p.excerpt?.en || '').toLowerCase().includes(q)
-    );
-  }
-  if (params.tag) {
-    staticPosts = staticPosts.filter((p) =>
-      p.tags.some((t) => t.id === params.tag || t.slug === params.tag)
-    );
-  }
+    // Apply lightweight filters to static posts too (DB already filtered).
+    if (params.publishedOnly) {
+      staticPosts = staticPosts.filter((p) => p.status === 'published');
+    }
+    if (params.category) {
+      staticPosts = staticPosts.filter(
+        (p) => (p.category || '').toLowerCase() === params.category!.toLowerCase()
+      );
+    }
+    if (params.search) {
+      const q = params.search.toLowerCase();
+      staticPosts = staticPosts.filter(
+        (p) =>
+          p.title.en.toLowerCase().includes(q) ||
+          p.title.zh.toLowerCase().includes(q) ||
+          (p.excerpt?.en || '').toLowerCase().includes(q)
+      );
+    }
+    if (params.tag) {
+      staticPosts = staticPosts.filter((p) =>
+        p.tags.some((t) => t.id === params.tag || t.slug === params.tag)
+      );
+    }
+  } // end includeStatic
 
   const merged = [...dbPosts, ...staticPosts].sort((a, b) => {
     const ta = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;

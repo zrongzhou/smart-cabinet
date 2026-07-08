@@ -4,7 +4,12 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Save, Plus, X } from 'lucide-react';
-import TipTapEditor from '@/components/TipTapEditor';
+import NextDynamic from 'next/dynamic';
+
+const TipTapEditor = NextDynamic(() => import('@/components/TipTapEditor'), {
+  ssr: false,
+  loading: () => <div className="p-4 text-sm text-gray-400">编辑器加载中…</div>,
+});
 import MediaPicker from '@/components/admin/MediaPicker';
 import { fetchUnifiedCategories, adminApi, type BlogPostAPI } from '@/data/unified-data';
 
