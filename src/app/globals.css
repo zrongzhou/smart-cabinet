@@ -73,9 +73,20 @@
   color: #7dd3fc;
 }
 
-/* ===== 平滑过渡动画（保留必要的） ===== */
-* {
-  transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+/* ===== Smooth transitions (targeted selectors only for performance) ===== */
+a,
+button,
+[role="button"],
+input,
+textarea,
+select,
+.card-bluewhite,
+.glass-btn,
+.glass-input,
+.glass-panel,
+.glass-card,
+.glass-surface {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow, transform, opacity;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 250ms;
 }
