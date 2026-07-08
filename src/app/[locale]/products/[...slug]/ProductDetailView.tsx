@@ -136,7 +136,17 @@ export async function buildProductMetadata(
     const enKwRaw = kwSource?.en;
     kwArr = normalizeKw(locKwRaw).length ? normalizeKw(locKwRaw) : normalizeKw(enKwRaw);
   }
-  const keywords = kwArr.length ? kwArr.join(', ') : [translate(productAny.name, locale), 'smart cabinet', 'tool cabinet'].filter(Boolean).join(', ');
+  // 关键词：从产品名提炼词元，同时保留完整产品名，并辅以主题词（杜绝型号/SKU 外露）
+  const productNameForKw = translate(productAny.name, locale);
+  const STOPWORDS = new Set(['the', 'a', 'an', 'of', 'for', 'and', 'with', 'to', 'de', 'la', 'les']);
+  const extracted = (typeof productNameForKw === 'string' ? productNameForKw : '')
+    .split(/[\s,/_\-]+/)
+    .map((w) => w.trim())
+    .filter((w) => w.length >= 2 && !STOPWORDS.has(w.toLowerCase()));
+  const keywordList = Array.from(
+    new Set([productNameForKw, ...extracted, 'smart cabinet', 'tool cabinet'].filter(Boolean)),
+  );
+  const keywords = kwArr.length ? kwArr.join(', ') : keywordList.join(', ');
 
   // Dynamically determine the base URL from the request headers
   const headersList = await headers();
