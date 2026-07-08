@@ -136,7 +136,7 @@ export async function buildProductMetadata(
     const enKwRaw = kwSource?.en;
     kwArr = normalizeKw(locKwRaw).length ? normalizeKw(locKwRaw) : normalizeKw(enKwRaw);
   }
-  const keywords = kwArr.length ? kwArr.join(', ') : undefined;
+  const keywords = kwArr.length ? kwArr.join(', ') : [translate(productAny.name, locale), 'smart cabinet', 'tool cabinet'].filter(Boolean).join(', ');
 
   // Dynamically determine the base URL from the request headers
   const headersList = await headers();

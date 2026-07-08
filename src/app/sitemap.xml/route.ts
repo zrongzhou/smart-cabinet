@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
     for (const locale of locales) {
       for (const page of staticPages) {
         const url = `${baseUrl}/${locale}${page}`;
-        const changeFreq = page === '' ? 'daily' : 'weekly';
+        const changeFreq = page === '' ? 'monthly' : 'yearly';
         const priority = page === '' ? '1.0' : page === '/products' ? '0.9' : page === '/about' ? '0.8' : '0.7';
 
         xml += '  <url>\n';
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
         xml += '  <url>\n';
         xml += `    <loc>${escapeXml(url)}</loc>\n`;
         xml += `    <lastmod>${formatDate(product.updatedAt)}</lastmod>\n`;
-        xml += '    <changefreq>weekly</changefreq>\n';
+        xml += '    <changefreq>monthly</changefreq>\n';
         xml += '    <priority>0.8</priority>\n';
         xml += '  </url>\n';
       }
@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
         xml += '  <url>\n';
         xml += `    <loc>${escapeXml(url)}</loc>\n`;
         xml += `    <lastmod>${formatDate(blog.updatedAt)}</lastmod>\n`;
-        xml += '    <changefreq>monthly</changefreq>\n';
+        xml += '    <changefreq>yearly</changefreq>\n';
         xml += '    <priority>0.6</priority>\n';
         xml += '  </url>\n';
       }
