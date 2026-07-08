@@ -14,11 +14,9 @@ function getLocalizedText(obj: { zh: string; en: string; ar?: string }, locale: 
 
 const testimonials = [
   {
-    name: '林总',
-    nameAr: 'السيد لين',
+    name: { zh: '林总', en: 'Mr. Lin', ar: 'السيد لين' },
     role: { zh: '生产总监', en: 'Production Director', ar: 'مدير الإنتاج' },
-    company: '华南某精密制造企业',
-    companyAr: 'شركة تصنيع دقيقة في جنوب الصين',
+    company: { zh: '华南某精密制造企业', en: 'A precision manufacturing enterprise in South China', ar: 'شركة تصنيع دقيقة في جنوب الصين' },
     content: {
       zh: '我们生产线上安装了20台智能柜，结果非常出色。AI分析帮助我们预测需求模式，与WMS的物联网集成简化了整个运营。我强烈推荐智能柜给任何物流公司。',
       en: 'We installed 20 Smart Cabinets across our distribution centers, and the results have been outstanding. The AI-powered analytics help us predict demand patterns, and the IoT integration with our WMS has streamlined our entire operation. I highly recommend Smart Cabinet to any logistics company.',
@@ -27,11 +25,9 @@ const testimonials = [
     rating: 5,
   },
   {
-    name: '黄工',
-    nameAr: 'المهندسة هوانغ',
+    name: { zh: '黄工', en: 'Engineer Huang', ar: 'المهندسة هوانغ' },
     role: { zh: '首席工程师', en: 'Lead Engineer', ar: 'المهندسة الرئيسية' },
-    company: '东莞某精密加工企业',
-    companyAr: 'شركة تصنيع دقيقة في دونغوان',
+    company: { zh: '东莞某精密加工企业', en: 'A precision machining enterprise in Dongguan', ar: 'شركة تصنيع دقيقة في دونغوان' },
     content: {
       zh: '这家精密加工公司通过智能柜实施，将工具搜索时间减少了75%，消除了生产延误。详细的案例研究和可衡量的结果。',
       en: 'A precision machining company reduced tool search time by 75% and eliminated production delays with smart cabinet implementation. A detailed case study with measurable results.',
@@ -40,11 +36,9 @@ const testimonials = [
     rating: 5,
   },
   {
-    name: '张经理',
-    nameAr: 'المدير زانغ',
+    name: { zh: '张经理', en: 'Manager Zhang', ar: 'المدير زانغ' },
     role: { zh: '车间主任', en: 'Workshop Manager', ar: 'مشرف الورشة' },
-    company: '某精密制造公司',
-    companyAr: 'شركة تصنيع دقيقة',
+    company: { zh: '某精密制造公司', en: 'A precision manufacturing company', ar: 'شركة تصنيع دقيقة' },
     content: {
       zh: '以前找一把刀要花10分钟，现在刷一下卡就能取刀，系统自动记录。我们的工具损耗率下降了40%，管理成本大幅降低。',
       en: 'It used to take 10 minutes to find a tool. Now I just swipe a card to get the tool, and the system automatically records it. Our tool loss rate dropped by 40%, and management costs decreased significantly.',
@@ -53,11 +47,9 @@ const testimonials = [
     rating: 5,
   },
   {
-    name: '李部长',
-    nameAr: 'المدير لي',
+    name: { zh: '李部长', en: 'Director Li', ar: 'المدير لي' },
     role: { zh: '设备负责人', en: 'Equipment Director', ar: 'مدير المعدات' },
-    company: '某航空制造企业',
-    companyAr: 'شركة تصنيع طيران',
+    company: { zh: '某航空制造企业', en: 'An aviation manufacturing enterprise', ar: 'شركة تصنيع طيران' },
     content: {
       zh: '智能柜系统彻底改变了我们的工具管理方式。从入库到出库全流程可追溯，库存准确率提升到99.5%。员工满意度也大幅提升，再也不用为找工具发愁了。',
       en: 'The smart cabinet system has completely transformed our tool management. Full traceability from check-in to checkout, inventory accuracy up to 99.5%. Employee satisfaction has also improved significantly - no more struggling to find tools.',
@@ -66,11 +58,9 @@ const testimonials = [
     rating: 5,
   },
   {
-    name: '陈经理',
-    nameAr: 'المديرة تشين',
+    name: { zh: '陈经理', en: 'Manager Chen', ar: 'المديرة تشين' },
     role: { zh: 'IT负责人', en: 'IT Manager', ar: 'مدير تقنية المعلومات' },
-    company: '华东某电子科技企业',
-    companyAr: 'شركة تكنولوجيا إلكترونية في شرق الصين',
+    company: { zh: '华东某电子科技企业', en: 'An electronics technology enterprise in East China', ar: 'شركة تكنولوجيا إلكترونية في شرق الصين' },
     content: {
       zh: '作为IT负责人，我最看重系统的稳定性和数据安全。这套智能柜运行一年多零故障，数据实时同步到我们的ERP系统，报表功能也非常强大。',
       en: 'As an IT manager, I value system stability and data security most. This smart cabinet has run for over a year with zero downtime, real-time data sync to our ERP, and powerful reporting capabilities.',
@@ -79,11 +69,9 @@ const testimonials = [
     rating: 5,
   },
   {
-    name: '王总',
-    nameAr: 'السيد وانغ',
+    name: { zh: '王总', en: 'Mr. Wang', ar: 'السيد وانغ' },
     role: { zh: '运营副总', en: 'VP of Operations', ar: 'نائب الرئيس للعمليات' },
-    company: '北方某重工集团',
-    companyAr: 'مجموعة صناعية ثقيلة في شمال الصين',
+    company: { zh: '北方某重工集团', en: 'A heavy industry group in North China', ar: 'مجموعة صناعية ثقيلة في شمال الصين' },
     content: {
       zh: '我们集团下属5个工厂都部署了智能柜，统一管理平台让我们能实时监控所有工厂的刀具使用情况。ROI在8个月内就实现了，这是近年来最成功的数字化项目之一。',
       en: 'All 5 of our group\'s factories have deployed smart cabinets. The unified management platform lets us monitor cutting tool usage across all facilities in real time. ROI was achieved within 8 months - one of our most successful digital transformation projects.',
@@ -212,16 +200,12 @@ export default function TestimonialsSection({ locale: propLocale }: Testimonials
                   className="font-bold text-lg"
                   style={{ color: '#1a202c' }}
                 >
-                  {currentLocale === 'ar' && testimonials[currentIndex].nameAr
-                    ? testimonials[currentIndex].nameAr
-                    : testimonials[currentIndex].name}
+                  {getLocalizedText(testimonials[currentIndex].name, currentLocale)}
                 </div>
                 <div className="text-sm mt-1" style={{ color: '#4a5568' }}>
                   {getLocalizedText(testimonials[currentIndex].role, currentLocale)}
-                  ，
-                  {currentLocale === 'ar' && testimonials[currentIndex].companyAr
-                    ? testimonials[currentIndex].companyAr
-                    : testimonials[currentIndex].company}
+                  {currentLocale === 'zh' ? '，' : currentLocale === 'ar' ? '، ' : ', '}
+                  {getLocalizedText(testimonials[currentIndex].company, currentLocale)}
                 </div>
               </div>
             </motion.div>
