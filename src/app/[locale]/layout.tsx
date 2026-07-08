@@ -61,26 +61,40 @@ export default function LocaleLayout({ children, params: { locale } }: LocaleLay
           <link rel="preconnect" href="https://test.wstoolcabinet.com" crossOrigin="anonymous" />
           <link rel="dns-prefetch" href="https://test.wstoolcabinet.com" />
           
-          {/* JsonLd structured data */}
+          {/* JsonLd structured data — enhanced for SEO */}
           <JsonLd data={{
             '@context': 'https://schema.org',
             '@type': 'WebSite',
             name: 'WS Tool Cabinet',
-
+            url: 'https://test.wstoolcabinet.com',
             description: 'Professional smart tool cabinet and vending machine manufacturer.',
+            potentialAction: {
+              '@type': 'SearchAction',
+              target: 'https://test.wstoolcabinet.com/en/products?q={search_term_string}',
+              'query-input': 'required name=search_term_string',
+            },
           }} />
           <JsonLd data={{
             '@context': 'https://schema.org',
             '@type': 'Organization',
-            name: 'Guangzhou Qiuyuan Technology Co., Ltd.',
+            name: 'Guangzhou Qiuyan Technology Co., Ltd.',
             alternateName: '广州秋彦科技有限公司 / WS Tool Cabinet',
-
+            url: 'https://test.wstoolcabinet.com',
+            logo: 'https://test.wstoolcabinet.com/images/logo.svg',
             contactPoint: {
               '@type': 'ContactPoint',
               telephone: '+86-156-2216-0659',
               contactType: 'sales',
               email: 'sabina@wstoolcabinet.com',
+              availableLanguage: ['English', 'Chinese', 'Arabic'],
             },
+            address: {
+              '@type': 'PostalAddress',
+              addressLocality: 'Guangzhou',
+              addressRegion: 'Guangdong',
+              addressCountry: 'CN',
+            },
+            sameAs: [],
           }} />
 
           <Navbar onLocaleChange={handleLocaleChange} />

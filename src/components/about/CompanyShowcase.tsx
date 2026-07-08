@@ -95,122 +95,108 @@ const FACTORY_HIGHLIGHTS = [
   { value: '60', suffix: '+', labelKey: 'about.showcase.fCountries', icon: Globe, gradient: 'linear-gradient(135deg, #d97706, #f59e0b)' },
 ];
 
-/** ═══════ 国风子组件 ═══════ */
+/** ═══════ 现代东方 · 秋彦 子组件 ═══════ */
 
-/** 四角回纹角花装饰 */
-function GuofengCorners() {
-  const corner = (pos: string) => (
-    <svg width="18" height="18" className={`absolute ${pos} m-1.5 opacity-40`} viewBox="0 0 18 18" fill="none" stroke="#C9A067" strokeWidth="0.8">
-      <path d="M8 2V8H2M6 4h4v4"/>
-    </svg>
+/** 四角极简 L 型几何装饰（替代回纹） */
+function ModernCorners() {
+  const corner = (pos: string, style: React.CSSProperties) => (
+    <span className={`absolute ${pos} w-3.5 h-3.5 pointer-events-none`} aria-hidden="true">
+      <span className="absolute inset-0 rounded-sm" style={style} />
+    </span>
   );
+  const s: React.CSSProperties = { background: 'linear-gradient(135deg, transparent 45%, rgba(59,130,246,0.25) 50%, transparent 55%), linear-gradient(225deg, transparent 45%, rgba(139,92,246,0.2) 50%, transparent 55%)' };
   return (
     <>
-      {corner('top-left')}
-      {/* top-right: flip H */}
-      <svg width="18" height="18" className="absolute top-1.5 right-1.5 opacity-40" viewBox="0 0 18 18" fill="none" stroke="#C9A067" strokeWidth="0.8">
-        <path d="M10 2V8H16M12 4H8v4"/>
-      </svg>
-      {/* bottom-left: flip V */}
-      <svg width="18" height="18" className="absolute bottom-1.5 left-1.5 opacity-40" viewBox="0 0 18 18" fill="none" stroke="#C9A067" strokeWidth="0.8">
-        <path d="M8 16V10H2M6 14h4v-4"/>
-      </svg>
-      {/* bottom-right: flip both */}
-      <svg width="18" height="18" className="absolute bottom-1.5 right-1.5 opacity-40" viewBox="0 0 18 18" fill="none" stroke="#C9A067" strokeWidth="0.8">
-        <path d="M10 16V10H16M12 14H8v-4"/>
-      </svg>
+      {corner('top-2 left-2', s)}
+      <span className="absolute top-2 right-2 w-3.5 h-3.5 pointer-events-none" aria-hidden="true" style={{ background: 'linear-gradient(225deg, transparent 45%, rgba(201,160,103,0.28) 50%, transparent 55%)' }} />
+      {corner('bottom-2 left-2', s)}
+      <span className="absolute bottom-2 right-2 w-3.5 h-3.5 pointer-events-none" aria-hidden="true" style={{ background: 'linear-gradient(315deg, transparent 45%, rgba(201,160,103,0.28) 50%, transparent 55%)' }} />
     </>
   );
 }
 
-/** 朱红方印 — 带盖印入场动画 */
-function SealStamp() {
+/** 现代圆形品牌徽标（蓝紫渐变环 + 秋彦书法字） */
+function ModernLogo() {
   return (
     <div
-      className="relative w-[52px] h-[52px] rounded-sm flex flex-col items-center justify-center select-none"
+      className="relative w-[46px] h-[46px] rounded-full flex items-center justify-center select-none"
       style={{
-        background: 'linear-gradient(145deg, #C41E3A 0%, #A01730 50%, #8B0000 100%)',
-        boxShadow: '0 2px 10px rgba(196,30,58,0.35), inset 0 1px 0 rgba(255,255,255,0.15)',
-        animation: 'guofeng-seal-stamp 0.6s cubic-bezier(.22,.91,.27,1.02) both',
+        background: 'radial-gradient(circle at 40% 35%, rgba(99,102,241,0.12) 0%, transparent 65%)',
+        border: '2px solid',
+        borderImage: 'linear-gradient(135deg, #3b82f6, #6366f1, #8b5cf6) 1',
+        animation: 'modern-logo-in 0.7s cubic-bezier(.22,.91,.27,1.02) both',
       }}
       aria-hidden="true"
     >
-      <span className="text-[#FEF3E2] font-bold text-base leading-none tracking-wider"
-        style={{ fontFamily: "'STKaiti','KaiTi','SimSun','Noto Serif SC',serif", textShadow: '0 1px 2px rgba(0,0,0,0.25)' }}
+      <span
+        className="text-sm font-bold leading-none tracking-wide"
+        style={{ fontFamily: "'STKaiti','KaiTi','SimSun','Noto Serif SC',serif", color: '#4338ca' }}
       >秋彦</span>
-      <span className="text-[#FEF3E2] text-[8px] mt-0.5 tracking-[0.35em] opacity-85 leading-none"
-        style={{ fontFamily: "'STKaiti','KaiTi','SimSun','Noto Serif SC',serif" }}
-      >印鉴</span>
-      {/* 印章边缘虚化 */}
-      <div className="absolute inset-0 rounded-sm border border-white/10 pointer-events-none" />
     </div>
   );
 }
 
-/** 单个国风数据卡片 */
-function GuofengStatCard({ item, t, delay }: {
+/** 单个现代数据指标卡 */
+function ModernStatCard({ item, t, delay }: {
   item: typeof FACTORY_HIGHLIGHTS[number];
   t: (key: string) => string;
   delay: number;
 }) {
   const Icon = item.icon;
-  // 从 gradient 提取主题色用于顶条和图标环
-  const themeColors: Record<string, { bar: string; bg: string; ring: string; icon: string }> = {
-    green: { bar: '#059669', bg: '#ECFDF5', ring: 'rgba(5,150,105,0.2)', icon: '#059669' },
-    blue:  { bar: '#2563eb', bg: '#EFF6FF', ring: 'rgba(37,99,235,0.2)', icon: '#2563eb' },
-    amber: { bar: '#d97706', bg: '#FFFBEB', ring: 'rgba(217,119,6,0.2)', icon: '#d97706' },
-  };
-  const key = item.gradient.includes('059669') ? 'green' : item.gradient.includes('2563eb') ? 'blue' : 'amber';
-  const c = themeColors[key];
+  const palette = [
+    { bar: 'linear-gradient(90deg,#059669,#10b981)', bg: '#ECFDF5', ring: 'rgba(5,150,105,0.15)', icon: '#059669' },
+    { bar: 'linear-gradient(90deg,#2563eb,#3b82f6)', bg: '#EFF6FF', ring: 'rgba(37,99,235,0.15)', icon: '#2563eb' },
+    { bar: 'linear-gradient(90deg,#d97706,#f59e0b)',   bg: '#FFFBEB', ring: 'rgba(217,119,6,0.15)',   icon: '#d97706' },
+  ];
+  const idx = item.gradient.includes('059669') ? 0 : item.gradient.includes('2563eb') ? 1 : 2;
+  const p = palette[idx];
 
   return (
     <div
-      className="rounded-xl overflow-hidden bg-white/90 backdrop-blur-[2px] transition-all duration-500 hover:-translate-y-0.5 hover:shadow-lg group"
+      className="rounded-xl overflow-hidden bg-white/75 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-lg group"
       style={{
-        border: '1px solid rgba(201,160,103,0.18)',
-        boxShadow: '0 2px 8px rgba(139,69,19,0.04)',
-        animation: `guofeng-card-in 0.55s cubic-bezier(.25,.46,.45,.94) ${delay}ms both`,
+        border: `1px solid ${p.ring}`,
+        boxShadow: '0 2px 12px rgba(59,130,246,0.05)',
+        animation: `modern-card-in 0.6s cubic-bezier(.25,.46,.45,.94) ${delay}ms both`,
       }}
     >
-      {/* 彩色顶条 */}
-      <div className="h-1 w-full" style={{ background: c.bar }} />
-      <div className="p-3.5 pt-3">
-        {/* 图标环 */}
-        <div className="flex items-center gap-2.5 mb-2">
+      {/* 主题色顶条 */}
+      <div className="h-1 w-full" style={{ background: p.bar }} />
+      <div className="p-4 pt-3">
+        {/* 图标 + 标签行 */}
+        <div className="flex items-center gap-2.5 mb-2.5">
           <span
             className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110"
-            style={{ background: c.bg, border: `1px solid ${c.ring}` }}
+            style={{ background: p.bg, border: `1.5px solid ${p.ring}` }}
           >
-            <Icon strokeWidth={1.8} className="w-[18px] h-[18px]" style={{ color: c.icon }} />
+            <Icon strokeWidth={1.8} className="w-[18px] h-[18px]" style={{ color: p.icon }} />
           </span>
-          <div className="text-[11px] font-medium text-gray-400 leading-tight">{t(item.labelKey)}</div>
+          <span className="text-[11px] font-medium text-gray-400 leading-tight">{t(item.labelKey)}</span>
         </div>
-        {/* 数字 + 后缀 */}
+        {/* 大数字 */}
         <div className="pl-[42px]">
-          <span className="text-2xl sm:text-[26px] font-bold tabular-nums tracking-tight"
-            style={{ color: '#1a1a2e', fontFamily: 'Georgia,"Times New Roman","Noto Serif SC",serif' }}
-          >
+          <span className="text-[26px] sm:text-[28px] font-bold tabular-nums tracking-tight text-gray-900">
             {item.value}
           </span>
-          <span className="text-base font-semibold ml-0.5 opacity-60" style={{ color: c.icon }}>{item.suffix}</span>
+          <span className="text-base font-semibold ml-0.5 opacity-60" style={{ color: p.icon }}>{item.suffix}</span>
         </div>
       </div>
     </div>
   );
 }
 
-/* ═══════ 国风关键帧动画（注入到 <head> 风格） ═══════ */
-function GuofengKeyframes() {
+/* ═══════ 现代融合关键帧动画 ═══════ */
+function ModernKeyframes() {
   return (
     <style jsx global>{`
-      @keyframes guofeng-seal-stamp {
-        0%   { transform: scale(2.2) rotate(-8deg); opacity: 0; }
-        60%  { transform: scale(0.92) rotate(2deg); opacity: 1; }
-        80%  { transform: scale(1.03) rotate(-1deg); }
-        100% { transform: scale(1) rotate(0); }
+      @keyframes modern-logo-in {
+        0%   { transform: scale(0.6); opacity: 0; filter: blur(4px); }
+        60%  { transform: scale(1.08); opacity: 1; }
+        80%  { transform: scale(0.97); }
+        100% { transform: scale(1); opacity: 1; filter: blur(0); }
       }
-      @keyframes guofeng-card-in {
-        from { opacity: 0; transform: translateY(14px) scale(0.96); }
+      @keyframes modern-card-in {
+        from { opacity: 0; transform: translateY(16px) scale(0.96); }
         to   { opacity: 1; transform: translateY(0) scale(1); }
       }
     `}</style>
@@ -220,8 +206,8 @@ function GuofengKeyframes() {
 export default function CompanyShowcase({ t }: CompanyShowcaseProps) {
   return (
     <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative overflow-hidden bg-gradient-to-br from-blue-50/40 via-indigo-50/30 to-white">
-      {/* 国风动画关键帧 */}
-      <GuofengKeyframes />
+      {/* 现代融合动画关键帧 */}
+      <ModernKeyframes />
 
       {/* Soft animated depth layer */}
       <div className="absolute inset-0 opacity-[0.5]" style={{
@@ -267,57 +253,45 @@ export default function CompanyShowcase({ t }: CompanyShowcaseProps) {
             <span className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-200 to-transparent" />
           </div>
 
-          {/* ═══ 国风 · 秋彦印鉴签名卡 ═══ */}
+          {/* ═══ 现代东方 · 秋彦数据签名卡 ═══ */}
           <div className="mt-4 relative rounded-2xl overflow-hidden"
             style={{
-              background: 'linear-gradient(160deg, #FEF9F3 0%, #FDF6ED 40%, #FAF3E8 100%)',
-              border: '1.5px solid rgba(201,160,103,0.28)',
-              boxShadow: '0 4px 24px rgba(139,69,19,0.07), inset 0 1px 0 rgba(255,255,255,0.8)',
+              background: 'linear-gradient(160deg, rgba(255,255,255,0.88) 0%, rgba(248,250,255,0.82) 50%, rgba(245,243,255,0.78) 100%)',
+              border: '1px solid transparent',
+              borderImage: 'linear-gradient(135deg, rgba(59,130,246,0.2), rgba(139,92,246,0.15), rgba(201,160,103,0.25)) 1',
+              boxShadow: '0 4px 24px rgba(59,130,246,0.07), 0 1px 3px rgba(0,0,0,0.03)',
             }}
           >
-            {/* 四角回纹装饰 */}
-            <GuofengCorners />
+            {/* 四角几何装饰 */}
+            <ModernCorners />
 
-            {/* ── 头部：印章 + 品牌 ── */}
+            {/* ── 头部：现代品牌徽标 ── */}
             <div className="relative z-10 pt-5 pb-3 px-5">
               <div className="flex flex-col items-center gap-2">
-                {/* 印章行 */}
+                {/* 品牌行：圆环徽标 + 分隔 + QIUYAN */}
                 <div className="flex items-center gap-3">
-                  {/* 左金线 */}<span className="hidden sm:block w-8 h-px bg-gradient-to-r from-transparent to-[#C9A067] opacity-50" />
-                  {/* 朱红方印 */}
-                  <SealStamp />
-                  {/* 菱形分隔 */}<span className="w-1.5 h-1.5 rotate-45 bg-[#C9A067] opacity-45" />
-                  {/* 右侧品牌名 */}
-                  <span className="text-sm font-semibold tracking-[0.25em] text-[#5C4033]" style={{ fontFamily: 'Georgia,"Times New Roman",serif' }}>QIUYAN</span>
-                  {/* 右金线 */}<span className="hidden sm:block w-8 h-px bg-gradient-to-l from-transparent to-[#C9A067] opacity-50" />
+                  <span className="hidden sm:block w-7 h-px bg-gradient-to-r from-transparent to-blue-300/40" />
+                  <ModernLogo />
+                  {/* 菱形分隔 */}<span className="w-1 h-1 rotate-45 bg-blue-400/30" />
+                  <span className="text-xs font-semibold tracking-[0.28em] text-blue-600" style={{ fontFamily: 'Georgia,"Times New Roman",serif' }}>QIUYAN</span>
+                  <span className="hidden sm:block w-7 h-px bg-gradient-to-l from-transparent to-blue-300/40" />
                 </div>
-                <span className="text-[10px] tracking-[0.35em] text-[#8B7355] uppercase opacity-60">Technology · Est. 2010</span>
+                <span className="text-[9.5px] tracking-[0.32em] text-slate-400 uppercase opacity-70">Technology · Est. 2010</span>
               </div>
 
-              {/* 金色分隔线 */}
+              {/* 渐变分隔线 */}
               <div className="mt-3 mx-auto max-w-xs h-px" style={{
-                background: 'linear-gradient(90deg, transparent, #C9A067 20%, #E8C88B 50%, #C9A067 80%, transparent)',
+                background: 'linear-gradient(90deg, transparent, rgba(201,160,103,0.35) 30%, #e8c88b 50%, rgba(201,160,103,0.35) 70%, transparent)',
               }} />
             </div>
 
-            {/* ── 三项数据横排卡片 ── */}
+            {/* ── 三项现代数据指标卡 ── */}
             <div className="relative z-10 px-4 pb-5">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
                 {FACTORY_HIGHLIGHTS.map((h, idx) => (
-                  <GuofengStatCard key={h.labelKey} item={h} t={t} delay={idx * 150} />
+                  <ModernStatCard key={h.labelKey} item={h} t={t} delay={idx * 150} />
                 ))}
               </div>
-            </div>
-
-            {/* 底部祥云暗示（CSS 实现） */}
-            <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-8 sm:gap-16 pointer-events-none pb-1 px-4">
-              {[
-                { w: '18%', ml: '2%' },
-                { w: '24%', ml: '38%' },
-                { w: '18%', ml: '74%' },
-              ].map((s, i) => (
-                <div key={i} className="h-[3px] rounded-full bg-[#D4A574] opacity-[0.1]" style={{ width: s.w, marginLeft: s.ml }} />
-              ))}
             </div>
           </div>
         </div>

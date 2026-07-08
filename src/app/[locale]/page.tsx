@@ -1,5 +1,6 @@
 import dynamic from 'next/dynamic';
 import { Suspense } from 'react';
+import { Metadata } from 'next';
 import FeaturedProducts from '@/components/home/FeaturedProducts';
 import AdvantagesSection from '@/components/home/AdvantagesSection';
 import SolutionsPreview from '@/components/home/SolutionsPreview';
@@ -53,6 +54,59 @@ const HeroSection = dynamic(
     ),
   }
 );
+
+const SITE_URL = 'https://test.wstoolcabinet.com';
+
+const PAGE_META: Record<string, { title: string; description: string }> = {
+  en: {
+    title: 'Smart Tool Cabinet & Vending Machine Manufacturer | WS Tool Cabinet',
+    description: 'Professional smart tool cabinet and vending machine manufacturer since 2010. IoT-enabled inventory management, industrial storage solutions for 60+ countries.',
+  },
+  zh: {
+    title: '智能工具柜与自动售货机制造商 | 秋彦科技 WS Tool Cabinet',
+    description: '专业智能工具柜和自动售货机制造商，始于2010年。IoT物联网库存管理、工业存储解决方案，服务全球60+国家。',
+  },
+  ar: {
+    title: 'مصنع خزانات الأدوات الذكية وآلات البيع | WS Tool Cabinet',
+    description: 'مصنع محترف لخزانات الأدوات الذكية وآليات البيع منذ 2010. إدارة مخزون IoT، حلول تخزين صناعية لأكثر من 60 دولة.',
+  },
+};
+
+export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
+  const locale = params.locale;
+  const meta = PAGE_META[locale] || PAGE_META.en;
+  return {
+    title: meta.title,
+    description: meta.description,
+    metadataBase: new URL(SITE_URL),
+    alternates: {
+      canonical: `${SITE_URL}/${locale}`,
+      languages: {
+        en: `${SITE_URL}/en`,
+        zh: `${SITE_URL}/zh`,
+        ar: `${SITE_URL}/ar`,
+      },
+    },
+    openGraph: {
+      title: meta.title,
+      description: meta.description,
+      url: `${SITE_URL}/${locale}`,
+      siteName: 'WS Tool Cabinet | Qiuyan Technology',
+      locale: locale === 'zh' ? 'zh_CN' : locale === 'ar' ? 'ar_SA' : 'en_US',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: meta.title,
+      description: meta.description,
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: { index: true, follow: true, 'max-video-preview': -1, 'max-image-preview': 'large', 'max-snippet': -1 },
+    },
+  };
+}
 
 interface HomePageProps {
   params: {
