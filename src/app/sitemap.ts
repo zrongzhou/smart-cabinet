@@ -1,50 +1,52 @@
 import { MetadataRoute } from 'next';
+import { PrismaClient } from '@/lib/prisma';
 
 const BASE_URL = 'https://www.wstoolcabinet.com';
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const locales = ['en', 'zh', 'ar'];
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const prisma = new PrismaClient();
 
-  // Static pages (mapped to each locale)
+  // ── 1. Static pages (locale-prefixed) ──────────────────────────────
+  const locales = ['en', 'zh', 'ar'] as const;
   const staticPages = [
-    '',
-    '/about',
-    '/products',
-    '/solutions',
-    '/blog',
-    '/contact',
-    '/faq',
+    { path: '', priority: 1.0, changeFreq: 'daily' as const },
+    { path: '/products', priority: 0.9, changeFreq: 'weekly' as const },
+    { path: '/solutions', priority: 0.7, changeFreq: 'weekly' as const },
+    { path: '/blog', priority: 0.7, changeFreq: 'weekly' as const },
+    { path: '/contact', priority: 0.5, changeFreq: 'monthly' as const },
+    { path: '/faq', priority: 0.5, changeFreq: 'monthly' as const },
+    { path: '/about', priority: 0.6, changeFreq: 'monthly' as const },
   ];
 
-  // Build locale-prefixed entries
   const staticEntries: MetadataRoute.Sitemap = [];
   for (const locale of locales) {
     for (const page of staticPages) {
       staticEntries.push({
-        url: `${BASE_URL}/${locale}${page}`,
+        url: `${BASE_URL}/${locale}${page.path}`,
         lastModified: new Date(),
-        changeFrequency: page === '' ? 'daily' : 'weekly',
-        priority: page === '' ? 1.0 : page === '/products' ? 0.9 : 0.7,
+        changeFrequency: page.changeFreq,
+        priority: page.priority,
       });
     }
   }
 
-  // Dynamic blog posts — we don't import prisma here to keep sitemap fast;
-  // use a fixed list or fetch at build time. For now, add known slugs.
-  const blogSlugs = [
-    'smart-tool-cabinet-2026-guide',
-    'vending-machine-inventory-management',
-    'iot-tool-storage-solutions',
-    'industrial-tool-cabinet-selection',
-    'smart-manufacturing-trends-2026',
-    'tool-cabinet-security-features',
-  ];
+  // ── 2. Dynamic blog posts (from DB) ───────────────────────────────
+  let blogPosts: { slug: string }[] = [];
+  try {
+    blogPosts = await prisma.blogPost.findMany({
+      select: { slug: true },
+      where: { status: 'published', deletedAt: null },
+    });
+  } catch (e) {
+    // If DB is unavailable at build time, skip blog entries gracefully
+    console.warn('[sitemap] Could not fetch blog posts:', e);
+  }
 
   const blogEntries: MetadataRoute.Sitemap = [];
   for (const locale of locales) {
-    for (const slug of blogSlugs) {
+    for (const post of blogPosts) {
       blogEntries.push({
-        url: `${BASE_URL}/${locale}/blog/${slug}`,
+        url: `${BASE_URL}/${locale}/blog/${post.slug}`,
         lastModified: new Date(),
         changeFrequency: 'monthly',
         priority: 0.6,
@@ -52,5 +54,30 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }
   }
 
-  return [...staticEntries, ...blogEntries];
+  // ── 3. Dynamic products (from DB) ─────────────────────────────────
+  let products: { slug: string }[] = [];
+  try {
+    products = await prisma.product.findMany({
+      select: { slug: true },
+      where: { deletedAt: null },
+    });
+  } catch (e) {
+    console.warn('[sitemap] Could not fetch products:', e);
+  }
+
+  const productEntries: MetadataRoute.Sitemap = [];
+  for (const locale of locales) {
+    for (const prod of products) {
+      productEntries.push({
+        url: `${BASE_URL}/${locale}/products/${prod.slug}`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly',
+        priority: 0.8,
+      });
+    }
+  }
+
+  await prisma.$disconnect();
+
+  return [...staticEntries, ...blogEntries, ...productEntries];
 }
