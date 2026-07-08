@@ -4,8 +4,8 @@
  * 写入 PostgreSQL/Prisma 的 Product.specs 列。
  *
  * 设计原则（最小改动 / 非破坏性）：
- *   - 只更新 Product.specs 字段，绝不触碰 name/description/translations/faq 等其它列，
- *     因此可安全重复执行，不会覆盖既有翻译或多语言内容。
+ *   - 只更新 Product.specs 与 Product.specifications 两个字段（specifications 由 specs 派生，保持单一数据源），
+ *     绝不触碰 name/description/translations/faq 等其它列，因此可安全重复执行，不会覆盖既有翻译或多语言内容。
  *   - 匹配方式：用 spec.appUrl 套用与 seed-products.ts 完全一致的 toSlug 逻辑得到 DB slug，
  *     再按 product.slug 精确匹配；若未命中，则回退按 product.name(en) === spec.appTitle 匹配。
  *
@@ -15,6 +15,8 @@
  * 用法：
  *   npx ts-node --compiler-options {"module":"CommonJS"} scripts/import/seed-product-specs.ts            # 真实写入
  *   npx ts-node --compiler-options {"module":"CommonJS"} scripts/import/seed-product-specs.ts --dry-run   # 仅解析+匹配校验，不连库
+ * 说明：每次执行会同步写 Product.specs（结构化数组）与 Product.specifications（由 specs 派生的扁平对象
+ *      {参数名: 值}），二者始终保持一致，重跑即可修复/刷新 specifications，避免旧套版数据被重新引入。
  *
  * 前置：本库由 `prisma db push` 建立（无 migrations 表）。执行本脚本前请确保已执行
  *   npx prisma db push   # 为 Product 增加 specs 列（可空，不破坏现有数据）
@@ -130,7 +132,14 @@ async function main(): Promise<void> {
 
       await prisma.product.update({
         where: { id: product.id },
-        data: { specs: p.rows as any },
+        data: {
+          specs: p.rows as any,
+          // specifications 由 specs 派生：把 [{param,value}] 转成扁平对象 {参数名: 值}，与 specs 保持一致
+          specifications: p.rows.reduce<Record<string, string>>((acc, row) => {
+            acc[row.param] = row.value;
+            return acc;
+          }, {}),
+        },
       });
       matched += 1;
       written += 1;

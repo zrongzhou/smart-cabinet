@@ -248,7 +248,7 @@ export default async function ProductDetailView({ locale, lookupSlug, canonicalP
       if (typeof productAny.specifications === 'string') return productAny.specifications;
       if (typeof productAny.specifications === 'object' && !Array.isArray(productAny.specifications)) {
         const specValue = productAny.specifications[locale] || productAny.specifications.en || '';
-        if (typeof specValue === 'string') return specValue;
+        if (typeof specValue === 'string' && specValue.trim() !== '') return specValue;
       }
       if (typeof productAny.specifications === 'object') {
         const result: Record<string, string> = {};
