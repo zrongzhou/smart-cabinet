@@ -1,11 +1,9 @@
 import { MetadataRoute } from 'next';
-import { PrismaClient } from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 
 const BASE_URL = 'https://www.wstoolcabinet.com';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const prisma = new PrismaClient();
-
   // ── 1. Static pages (locale-prefixed) ──────────────────────────────
   const locales = ['en', 'zh', 'ar'] as const;
   const staticPages = [
@@ -38,7 +36,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       where: { status: 'published', deletedAt: null },
     });
   } catch (e) {
-    // If DB is unavailable at build time, skip blog entries gracefully
     console.warn('[sitemap] Could not fetch blog posts:', e);
   }
 
@@ -76,8 +73,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       });
     }
   }
-
-  await prisma.$disconnect();
 
   return [...staticEntries, ...blogEntries, ...productEntries];
 }
