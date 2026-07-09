@@ -122,29 +122,14 @@ export async function buildProductMetadata(
   const image = productAny.images?.[0] || '';
 
   // SEO 关键词：兼容多种存储形态（{en:string[]|string, zh:..., ar:...}、纯字符串或纯数组）。
-  // 取当前 locale 的关键词，缺省时回退到 en；无论源头是 string 还是 string[] 都归一为 string[]。
-  const kwSource = productAny.seoKeywords;
-  const normalizeKw = (raw: any): string[] => {
-    if (Array.isArray(raw)) return raw.filter((x: any) => typeof x === 'string');
-    if (typeof raw === 'string') return raw.split(',').map((s: string) => s.trim()).filter(Boolean);
-    return [];
-  };
-  let kwArr: string[] = [];
-  if (typeof kwSource === 'string') {
-    kwArr = normalizeKw(kwSource);
-  } else {
-    const locKwRaw = kwSource?.[locale];
-    const enKwRaw = kwSource?.en;
-    kwArr = normalizeKw(locKwRaw).length ? normalizeKw(locKwRaw) : normalizeKw(enKwRaw);
-  }
-  // 关键词：优先用后台 seoKeywords（kwArr）；否则用两级关键词系统
+  // 关键词：强制走自动两级关键词系统（无视后台 seoKeywords，确保 ZH/AR 页显示本地化完整标题）。
   // 详情页：主 = 从【英文产品名 + URL slug】共同提炼词元，二级 = 本语言完整产品名。
   // 全站关键词以英文为主：提炼统一走英文；中文/阿语完整名仅作二级、只出现在本语言页。
   const productNameForKw = translate(productAny.name, locale);
   const productNameEn = translate(productAny.name, 'en');
   const urlSlug = (canonicalPath || '').split('/').pop() || '';
   const autoKeywords = buildDetailPageKeywords(productNameEn || '', productNameForKw || '', urlSlug);
-  const keywords = kwArr.length ? kwArr.join(', ') : autoKeywords.join(', ');
+  const keywords = autoKeywords.join(', ');
 
   // Dynamically determine the base URL from the request headers
   const headersList = await headers();
