@@ -6,6 +6,7 @@ import ProductFaqSection from './ProductFaqSection';
 import { Product } from '@/lib/api';
 import { prisma } from '@/lib/prisma';
 import { jsonLdFAQ } from '@/lib/seo';
+import { buildDetailPageKeywords } from '@/lib/seo-keywords';
 
 // Helper function to translate i18n objects
 function translate(obj: any, locale: 'en' | 'zh' | 'ar'): string {
@@ -136,17 +137,14 @@ export async function buildProductMetadata(
     const enKwRaw = kwSource?.en;
     kwArr = normalizeKw(locKwRaw).length ? normalizeKw(locKwRaw) : normalizeKw(enKwRaw);
   }
-  // 关键词：从产品名提炼词元，同时保留完整产品名，并辅以主题词（杜绝型号/SKU 外露）
+  // 关键词：优先用后台 seoKeywords（kwArr）；否则用两级关键词系统
+  // 详情页：主 = 从【英文产品名 + URL slug】共同提炼词元，二级 = 本语言完整产品名。
+  // 全站关键词以英文为主：提炼统一走英文；中文/阿语完整名仅作二级、只出现在本语言页。
   const productNameForKw = translate(productAny.name, locale);
-  const STOPWORDS = new Set(['the', 'a', 'an', 'of', 'for', 'and', 'with', 'to', 'de', 'la', 'les']);
-  const extracted = (typeof productNameForKw === 'string' ? productNameForKw : '')
-    .split(/[\s,/_\-]+/)
-    .map((w) => w.trim())
-    .filter((w) => w.length >= 2 && !STOPWORDS.has(w.toLowerCase()));
-  const keywordList = Array.from(
-    new Set([productNameForKw, ...extracted, 'smart cabinet', 'tool cabinet'].filter(Boolean)),
-  );
-  const keywords = kwArr.length ? kwArr.join(', ') : keywordList.join(', ');
+  const productNameEn = translate(productAny.name, 'en');
+  const urlSlug = (canonicalPath || '').split('/').pop() || '';
+  const autoKeywords = buildDetailPageKeywords(productNameEn || '', productNameForKw || '', urlSlug);
+  const keywords = kwArr.length ? kwArr.join(', ') : autoKeywords.join(', ');
 
   // Dynamically determine the base URL from the request headers
   const headersList = await headers();

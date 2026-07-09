@@ -1,0 +1,488 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { Calendar, User, ArrowLeft, ArrowRight, Facebook, Twitter, Linkedin } from 'lucide-react';
+import { useLocale } from '@/lib/i18n';
+import { fetchBlogBySlug, fetchBlogs, BlogPost } from '@/lib/api';
+import { notFound } from 'next/navigation';
+// Static fallback when API has no data
+import staticBlogs from '@/data/blogs';
+
+interface BlogDetailClientProps {
+  slug: string;
+}
+
+export default function BlogDetailClient({ slug }: BlogDetailClientProps) {
+  const { locale } = useLocale();
+  const [blog, setBlog] = useState<BlogPost | null>(null);
+  const [recentBlogs, setRecentBlogs] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // === v151 图片方案：按 slug 精确匹配 ===
+  const BLOG_IMAGE_FALLBACKS = [
+    '/images/blog/industry-trends.jpg',
+    '/images/blog/case-study.jpg',
+    '/images/blog/technical-guide.jpg',
+    '/images/blog/best-practice.jpg',
+    '/images/blog/use-case.jpg',
+    '/images/blog/customer-story.jpg',
+    '/images/blog/smart-cabinet-warehouse.jpg',
+    '/images/blog/roi-cost-analysis.jpg',
+    '/images/blog/rfid-tool-tracking.jpg',
+    '/images/blog/iot-mes-integration.jpg',
+    '/images/blog/cnc-machining-roi.jpg',
+    '/images/blog/aerospace-fod-prevention.jpg',
+    '/images/blog/ai-industry-4-0.jpg',
+    '/images/blog/digital-transformation.jpg',
+    '/images/blog/future-smart-factory.jpg',
+    '/images/blog/ppe-safety-equipment.jpg',
+    '/images/blog/buying-guide-smart-cabinet.jpg',
+    '/images/blog/general.jpg',
+  ];
+
+  const SLUG_TO_IMAGE: Record<string, string> = {
+    // API 返回数字 ID slug
+    '1': '/images/blog/ai-industry-4-0.jpg',
+    '2': '/images/blog/cnc-machining-roi.jpg',
+    '3': '/images/blog/rfid-tool-tracking.jpg',
+    '4': '/images/blog/smart-cabinet-warehouse.jpg',
+    '5': '/images/blog/ppe-safety-equipment.jpg',
+    '6': '/images/blog/digital-transformation.jpg',
+    '7': '/images/blog/roi-cost-analysis.jpg',
+    '8': '/images/blog/iot-mes-integration.jpg',
+    '9': '/images/blog/buying-guide-smart-cabinet.jpg',
+    '10': '/images/blog/aerospace-fod-prevention.jpg',
+    '11': '/images/blog/best-practice.jpg',
+    '12': '/images/blog/future-smart-factory.jpg',
+    // 文字 slug 兼容
+    'future-of-intelligent-tool-storage': '/images/blog/ai-industry-4-0.jpg',
+    'smart-cabinets-reduce-cnc-downtime': '/images/blog/cnc-machining-roi.jpg',
+    'complete-guide-rfid-tool-management': '/images/blog/rfid-tool-tracking.jpg',
+    '5-ways-smart-cabinets-improve-inventory-accuracy': '/images/blog/smart-cabinet-warehouse.jpg',
+    'ppe-vending-compliance-made-easy': '/images/blog/ppe-safety-equipment.jpg',
+    'from-manual-to-smart-manufacturing-transformation': '/images/blog/digital-transformation.jpg',
+    'smart-cabinet-roi-calculator-guide': '/images/blog/roi-cost-analysis.jpg',
+    'iot-integration-smart-cabinets-factory-network': '/images/blog/iot-mes-integration.jpg',
+    'top-10-features-smart-tool-cabinets-buying-guide': '/images/blog/buying-guide-smart-cabinet.jpg',
+    'aerospace-manufacturers-smart-tool-management-benefits': '/images/blog/aerospace-fod-prevention.jpg',
+    'future-of-smart-warehousing-beyond-tool-cabinets': '/images/blog/future-smart-factory.jpg',
+    // 新增博客 2026
+    '13': '/images/blog/vending-machine-trends-2026.jpg',
+    '14': '/images/blog/cnc-tool-inventory-guide.jpg',
+    // V8.6: 旧两篇 + 新增 4 篇（slug 均带 .html）
+    'industrial-vending-machine-trends-2026.html': '/images/blog/vending-machine-trends-2026.jpg',
+    'cnc-tool-inventory-management-guide.html': '/images/blog/cnc-tool-inventory-guide.jpg',
+    'ppe-vending-machine-safety-supplies-management.html': '/images/blog/ppe-vending-machine-safety-supplies-management.jpeg',
+    'cutting-tool-distributors-tool-vending-machine.html': '/images/blog/cutting-tool-distributors-tool-vending-machine.png',
+    'tool-vending-machine-functions-cnc-workshop.html': '/images/blog/tool-vending-machine-functions-cnc-workshop.png',
+    'manual-tool-crib-to-smart-tool-cabinet.html': '/images/blog/manual-tool-crib-to-smart-tool-cabinet.jpeg',
+  };
+
+  /** v152b: 只在正文开头插入封面图（避免重复图片） */
+  function injectCoverImageInContent(htmlContent: string, coverImage: string): string {
+    if (!coverImage) return htmlContent;
+    const figureHtml = `<figure class="my-8 rounded-2xl overflow-hidden shadow-lg"><img src="${coverImage}" alt="Cover image" class="w-full h-auto object-cover" style="max-height:400px" /></figure>`;
+    // 在第一个 </p> 后插入（即第一段结束后）
+    const insertPos = htmlContent.indexOf('</p>');
+    if (insertPos === -1) return figureHtml + htmlContent; // 没有段落标签，直接前置
+    return htmlContent.slice(0, insertPos + 4) + figureHtml + htmlContent.slice(insertPos + 4);
+  }
+
+  /**
+   * V8.7 fix (bug 7): split a blog post's rich-text HTML into the article body
+   * and its trailing FAQ block. Blogs embed a `<h2>FAQ</h2>` (or the localized
+   * equivalent) at the end; we render the FAQ separately so it isn't glued to
+   * the body copy. Returns the body and the FAQ HTML (heading stripped — we
+   * render our own styled heading).
+   */
+  function splitBlogFaq(html: string): { body: string; faq: string | null } {
+    const markers = ['<h2>FAQ</h2>', '<h2>常见问题</h2>', '<h2>الأسئلة الشائعة</h2>'];
+    for (const m of markers) {
+      const idx = html.indexOf(m);
+      if (idx !== -1) {
+        const faq = html.slice(idx + m.length).replace(/^\s+/, '');
+        return { body: html.slice(0, idx), faq };
+      }
+    }
+    return { body: html, faq: null };
+  }
+
+  const FAQ_HEADING: Record<string, string> = {
+    en: 'Frequently Asked Questions',
+    zh: '常见问题',
+    ar: 'الأسئلة الشائعة',
+  };
+
+  // Recent Posts 图片选择 - 按 slug 匹配
+  function getInlineBlogImage(post: BlogPost, index: number): string {
+    const postSlug = post.slug || '';
+    if (SLUG_TO_IMAGE[postSlug]) return SLUG_TO_IMAGE[postSlug];
+    if (post.image && post.image.startsWith('/images/') && !post.image.endsWith('.svg')) return post.image;
+    return BLOG_IMAGE_FALLBACKS[index % BLOG_IMAGE_FALLBACKS.length];
+  }
+
+  // 详情页图片选择 - 按 slug 匹配
+  function getInlineBlogDetailImage(post: BlogPost): string {
+    const postSlug = post.slug || '';
+    if (SLUG_TO_IMAGE[postSlug]) return SLUG_TO_IMAGE[postSlug];
+    if (post.image && post.image.startsWith('/images/') && !post.image.endsWith('.svg')) return post.image;
+    // fallback
+    let hash = 0;
+    for (let i = 0; i < postSlug.length; i++) hash = ((hash << 5) - hash) + postSlug.charCodeAt(i);
+    return BLOG_IMAGE_FALLBACKS[Math.abs(hash) % BLOG_IMAGE_FALLBACKS.length];
+  }
+
+  // Load blog and recent blogs from API
+  useEffect(() => {
+    let cancelled = false;
+    async function loadData() {
+      try {
+        const [blogRes, blogsRes] = await Promise.all([
+          fetchBlogBySlug(slug),
+          fetchBlogs({ published: true, pageSize: 50 }),
+        ]);
+        if (cancelled) return;
+
+        // If API returned a blog, use it; otherwise fall back to static blogs.ts
+        if (blogRes) {
+          setBlog(blogRes);
+        } else {
+          // Fallback: find matching slug in static blog data
+          const staticBlog = staticBlogs.find(b => b.slug === slug);
+          if (staticBlog) {
+            const excerptObj = typeof staticBlog.excerpt === 'string'
+              ? { zh: staticBlog.excerpt, en: staticBlog.excerpt, ar: staticBlog.excerpt }
+              : (staticBlog.excerpt || { zh: '', en: '', ar: '' });
+            const contentObj = typeof staticBlog.content === 'string'
+              ? { zh: staticBlog.content, en: staticBlog.content, ar: staticBlog.content }
+              : (staticBlog.content || { zh: '', en: '', ar: '' });
+            setBlog({
+              id: staticBlog.id || staticBlog.slug,
+              slug: staticBlog.slug,
+              title: staticBlog.title,
+              excerpt: excerptObj,
+              content: contentObj,
+              author: staticBlog.author,
+              publishedAt: staticBlog.publishedAt,
+              image: staticBlog.image,
+              featured: staticBlog.featured || false,
+              tags: (staticBlog.tags || []).map(t => ({ id: t, slug: t.toLowerCase().replace(/\s+/g, '-'), name: { zh: t, en: t, ar: t } })),
+              status: 'published',
+              createdAt: staticBlog.publishedAt || new Date().toISOString(),
+              updatedAt: staticBlog.publishedAt || new Date().toISOString(),
+            });
+          }
+        }
+
+        // Get recent blogs (exclude current) - from API or static fallback
+        if (blogsRes?.data) {
+          setRecentBlogs(
+            blogsRes.data
+              .filter((b: BlogPost) => b.slug !== slug)
+              .slice(0, 3)
+          );
+        } else if (!blogRes) {
+          // Fallback recent blogs from static data
+          setRecentBlogs(
+            staticBlogs
+              .filter(b => b.slug !== slug)
+              .slice(0, 3)
+              .map(b => {
+                const eObj = b.excerpt || { zh: '', en: '', ar: '' };
+                const cObj = b.content || { zh: '', en: '', ar: '' };
+                return {
+                  id: b.id || b.slug,
+                  slug: b.slug,
+                  title: b.title,
+                  excerpt: eObj,
+                  content: cObj,
+                  author: b.author,
+                  publishedAt: b.publishedAt,
+                  image: b.image,
+                  featured: b.featured || false,
+                  tags: (b.tags || []).map(t => ({ id: t, slug: t.toLowerCase().replace(/\s+/g, '-'), name: { zh: t, en: t, ar: t } })),
+                  status: 'published',
+                  createdAt: b.publishedAt || new Date().toISOString(),
+                  updatedAt: b.publishedAt || new Date().toISOString(),
+                };
+              })
+          );
+        }
+      } catch (e) {
+        console.error('Failed to load blog:', e);
+        // On error, also try static fallback
+        if (!cancelled) {
+          const staticBlog = staticBlogs.find(b => b.slug === slug);
+          if (staticBlog) {
+            setBlog({
+              id: staticBlog.id || staticBlog.slug,
+              slug: staticBlog.slug,
+              title: staticBlog.title,
+              excerpt: staticBlog.excerpt || { zh: '', en: '', ar: '' },
+              content: staticBlog.content || { zh: '', en: '', ar: '' },
+              author: staticBlog.author,
+              publishedAt: staticBlog.publishedAt,
+              image: staticBlog.image,
+              featured: staticBlog.featured || false,
+              tags: (staticBlog.tags || []).map(t => ({ id: t, slug: t.toLowerCase().replace(/\s+/g, '-'), name: { zh: t, en: t, ar: t } })),
+              status: 'published',
+              createdAt: staticBlog.publishedAt || new Date().toISOString(),
+              updatedAt: staticBlog.publishedAt || new Date().toISOString(),
+            });
+          }
+          // Static recent blogs fallback on error
+          setRecentBlogs(
+            staticBlogs.filter(b => b.slug !== slug).slice(0,3).map(b => {
+              const eObj = b.excerpt || { zh: '', en: '', ar: '' };
+              const cObj = b.content || { zh: '', en: '', ar: '' };
+              return {
+                id: b.id || b.slug,
+                slug: b.slug,
+                title: b.title,
+                excerpt: eObj,
+                content: cObj,
+                author: b.author,
+                publishedAt: b.publishedAt,
+                image: b.image,
+                featured: false,
+                tags: (b.tags || []).map(t => ({ id: t, slug: t.toLowerCase().replace(/\s+/g, '-'), name: { zh: t, en: t, ar: t } })),
+                status: 'published',
+                createdAt: b.publishedAt || new Date().toISOString(),
+                updatedAt: b.publishedAt || new Date().toISOString(),
+              };
+            })
+          );
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+    loadData();
+    return () => { cancelled = true; };
+  }, [slug]);
+
+  function formatDate(dateString: string, locale: string = 'en'): string {
+    const date = new Date(dateString);
+    if (locale === 'zh') {
+      return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+    }
+    if (locale === 'ar') {
+      return date.toLocaleDateString('ar-SA', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+    }
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        {/* Header Skeleton */}
+        <section className="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white py-12 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-5xl mx-auto">
+            <div className="h-4 bg-blue-800/50 rounded w-24 mb-4 animate-pulse"></div>
+            <div className="h-10 bg-blue-800/50 rounded w-96 mb-3 animate-pulse"></div>
+            <div className="h-5 bg-blue-800/50 rounded w-64 animate-pulse"></div>
+          </div>
+        </section>
+        {/* Content Skeleton */}
+        <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="bg-white rounded-2xl shadow-md p-8 md:p-12 space-y-4">
+            <div className="h-64 bg-gray-200 rounded-xl animate-pulse"></div>
+            <div className="h-4 bg-gray-200 rounded w-full animate-pulse"></div>
+            <div className="h-4 bg-gray-200 rounded w-5/6 animate-pulse"></div>
+            <div className="h-4 bg-gray-200 rounded w-4/6 animate-pulse"></div>
+            <div className="h-4 bg-gray-200 rounded w-full animate-pulse"></div>
+            <div className="h-32 bg-gray-200 rounded animate-pulse"></div>
+          </div>
+        </section>
+      </div>
+    );
+  }
+
+  if (!blog) {
+    // Render the locale 404 page (returns HTTP 404 when resolved during render).
+    notFound();
+  }
+
+  const content = blog.content?.[locale as 'en' | 'zh' | 'ar'] || '';
+
+  const { body, faq } = splitBlogFaq(content);
+  const bodyHtml = injectCoverImageInContent(body, getInlineBlogDetailImage(blog));
+
+  // 调试日志 (v151)
+  console.log(`[v151] Detail: slug="${blog.slug}" → image="${getInlineBlogDetailImage(blog)}"`);
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 dark:from-slate-900 dark:to-slate-800">
+      {/* Page Header with background image — v151: 移除 bg-gradient-to-br 避免覆盖背景图 */}
+      <section
+        className="relative text-white py-20 px-4 sm:px-6 lg:px-8 overflow-hidden"
+        style={{
+          backgroundImage: `url(${getInlineBlogDetailImage(blog)})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundColor: '#1e3a5f', // fallback 背景色（图片加载前显示）
+        }}
+      >
+        {/* Gradient overlay — 降低不透明度，让背景图可见 */}
+        <div className="absolute inset-0 bg-gradient-to-b from-blue-900/60 via-blue-900/40 to-blue-900/70" />
+        <div className="relative z-10 max-w-5xl mx-auto">
+          <a href={`/${locale}/blog`} className="inline-flex items-center gap-2 text-blue-200 hover:text-white transition-colors mb-6 group">
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+            {locale === 'zh' ? '返回博客' : locale === 'ar' ? 'العودة للمدونة' : 'Back to Blog'}
+          </a>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 leading-tight">
+            {locale === 'zh' ? blog.title.zh : locale === 'ar' ? blog.title.ar : blog.title.en}
+          </h1>
+          <div className="flex flex-wrap items-center gap-6 text-sm text-blue-200">
+            <span className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-full">
+              <Calendar className="w-4 h-4" />
+              {formatDate(blog.publishedAt || blog.createdAt, locale)}
+            </span>
+            <span className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-full">
+              <User className="w-4 h-4" />
+              {blog.author || 'Admin'}
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {/* Blog Content */}
+      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl p-8 md:p-12 border border-gray-100 dark:border-slate-700">
+
+          {/* Render content (HTML from rich text editor) — v152: 注入正文配图 */}
+          <div
+            className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-headings:scroll-mt-20 prose-p:text-gray-700 prose-p:leading-relaxed prose-a:text-blue-600 prose-a:font-medium hover:prose-a:text-blue-700 prose-img:rounded-xl prose-img:my-8 prose-li:my-1 prose-blockquote:border-blue-500 prose-blockquote:bg-blue-50/50 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:not-italic prose-strong:text-gray-900 dark:prose-invert"
+            dangerouslySetInnerHTML={{ __html: bodyHtml }}
+          />
+
+          {/* V8.7 fix (bug 7): FAQ rendered in its own separated, styled block
+              so it never sits directly against the article body. */}
+          {faq && (
+            <section
+              className="mt-10 pt-8 border-t border-gray-200 dark:border-slate-700"
+              aria-label={FAQ_HEADING[locale] || FAQ_HEADING.en}
+            >
+              <h2 className="mb-5 flex items-center gap-3 text-2xl font-bold text-gray-900 dark:text-white">
+                <span className="h-1 w-10 rounded-full bg-gradient-to-r from-blue-600 to-blue-400" />
+                {FAQ_HEADING[locale] || FAQ_HEADING.en}
+              </h2>
+              <div className="blog-faq" dangerouslySetInnerHTML={{ __html: faq }} />
+            </section>
+          )}
+
+          <style jsx global>{`
+            .blog-faq p {
+              background: #f8fafc;
+              border: 1px solid #e2e8f0;
+              border-radius: 12px;
+              padding: 14px 18px;
+              margin: 0 0 12px;
+            }
+            .dark .blog-faq p {
+              background: #1e293b;
+              border-color: #334155;
+            }
+            .blog-faq p strong {
+              display: block;
+              color: #2563eb;
+              font-weight: 700;
+              margin-bottom: 4px;
+            }
+            .blog-faq p br {
+              display: none;
+            }
+          `}</style>
+
+          {/* Share buttons */}
+          <div className="flex items-center gap-4 mt-12 pt-8 border-t border-gray-200">
+            <span className="text-sm text-gray-500">{locale === 'zh' ? '分享：' : locale === 'ar' ? 'مشاركة:' : 'Share:'}</span>
+            <button
+              className="p-2 bg-gray-100 hover:bg-[#1DA1F2] hover:text-white rounded-full transition-colors"
+              onClick={() => {
+                const url = window.location.href;
+                const title = typeof blog.title === 'object' ? blog.title[locale] || blog.title.en : blog.title;
+                window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`, '_blank', 'noopener,noreferrer');
+              }}
+              aria-label={locale === 'zh' ? '分享到 Twitter' : 'Share on Twitter'}
+            >
+              <Twitter className="w-5 h-5 text-gray-600 hover:text-white" />
+            </button>
+            <button
+              className="p-2 bg-gray-100 hover:bg-[#1877F2] hover:text-white rounded-full transition-colors"
+              onClick={() => {
+                const url = window.location.href;
+                window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank', 'noopener,noreferrer');
+              }}
+              aria-label={locale === 'zh' ? '分享到 Facebook' : 'Share on Facebook'}
+            >
+              <Facebook className="w-5 h-5 text-gray-600 hover:text-white" />
+            </button>
+            <button
+              className="p-2 bg-gray-100 hover:bg-[#0A66C2] hover:text-white rounded-full transition-colors"
+              onClick={() => {
+                const url = window.location.href;
+                const title = typeof blog.title === 'object' ? blog.title[locale] || blog.title.en : blog.title;
+                window.open(`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}`, '_blank', 'noopener,noreferrer');
+              }}
+              aria-label={locale === 'zh' ? '分享到 LinkedIn' : 'Share on LinkedIn'}
+            >
+              <Linkedin className="w-5 h-5 text-gray-600 hover:text-white" />
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Recent Posts */}
+      {recentBlogs.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 flex items-center gap-3">
+            <div className="w-10 h-1 bg-gradient-to-r from-blue-600 to-blue-400 rounded-full"></div>
+            {locale === 'zh' ? '最新文章' : locale === 'ar' ? 'أحدث المقالات' : 'Recent Posts'}
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {recentBlogs.map((post, idx) => {
+              const postImage = getInlineBlogImage(post, idx);
+              return (
+                <a
+                  key={post.id}
+                  href={`/${locale}/blog/${post.slug}`}
+                  className="group bg-white dark:bg-slate-800 rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-1 border border-gray-100 dark:border-slate-700"
+                >
+                  {/* v148 使用背景图方式 */}
+                  <div
+                    className="relative h-48 overflow-hidden"
+                    style={{
+                      backgroundImage: `url(${postImage})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                    }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                      {locale === 'zh' ? post.title.zh : locale === 'ar' ? post.title.ar : post.title.en}
+                    </h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
+                      <Calendar className="w-3.5 h-3.5" />
+                      {formatDate(post.publishedAt || post.createdAt, locale)}
+                    </p>
+                  </div>
+                </a>
+              );
+            })}
+          </div>
+        </section>
+      )}
+    </div>
+  );
+}

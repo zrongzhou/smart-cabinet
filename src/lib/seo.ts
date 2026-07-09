@@ -92,6 +92,7 @@ interface PageSEOOptions {
   section?: string;
   tags?: string[];
   noindex?: boolean;
+  keywords?: string[];
 }
 
 /**
@@ -124,7 +125,7 @@ export function generatePageMetadata(options: PageSEOOptions): Metadata {
   return {
     title: fullTitle,
     description: fullDescription,
-    keywords: SITE_CONFIG.keywords.join(', '),
+    keywords: options.keywords && options.keywords.length ? options.keywords.join(', ') : SITE_CONFIG.keywords.join(', '),
     ...(noindex && { robots: { index: false, follow: true } }),
     openGraph: {
       title: fullTitle,
@@ -441,7 +442,7 @@ export function generateI18nMetadata(locale: string, options: PageSEOOptions): M
   };
 
   // Add product-title-based keywords if tags provided
-  let keywords = SITE_CONFIG.keywords.join(', ');
+  let keywords = options.keywords && options.keywords.length ? options.keywords.join(', ') : SITE_CONFIG.keywords.join(', ');
   if (options.tags && options.tags.length > 0) {
     keywords += ', ' + options.tags.join(', ');
   }

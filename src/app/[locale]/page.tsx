@@ -6,6 +6,7 @@ import AdvantagesSection from '@/components/home/AdvantagesSection';
 import SolutionsPreview from '@/components/home/SolutionsPreview';
 import Image from 'next/image';
 import { getMergedBlogList } from '@/lib/blogs';
+import { buildStaticPageKeywords } from '@/lib/seo-keywords';
 
 // HeroSection: canvas 星空动画 (ssr:false — 已有)
 const HeroSection = dynamic(
@@ -86,9 +87,12 @@ const PAGE_META: Record<string, { title: string; description: string }> = {
 export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
   const locale = params.locale;
   const meta = PAGE_META[locale] || PAGE_META.en;
+  // 全站关键词以英文为主：主词从英文标题提炼，二级用本语言标题核心（仅本语言页出现）
+  const keywords = buildStaticPageKeywords(PAGE_META.en.title, meta.title).join(', ');
   return {
     title: meta.title,
     description: meta.description,
+    keywords,
     metadataBase: new URL(SITE_URL),
     alternates: {
       canonical: `${SITE_URL}/${locale}`,
