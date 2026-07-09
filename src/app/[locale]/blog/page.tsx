@@ -1,438 +1,60 @@
-'use client';
+import { Metadata } from 'next';
+import { prisma } from '@/lib/prisma';
+import { getBaseUrl } from '@/lib/seo';
+import { buildListPageKeywords, buildHreflang } from '@/lib/seo-keywords';
+import { BlogListClient } from './BlogListClient';
 
-import { useState, useEffect } from 'react';
-import { Calendar, User, ArrowRight, FileText, Newspaper, Lightbulb, TrendingUp, Shield, Award } from 'lucide-react';
-import { useLocale } from '@/lib/i18n';
-import { fetchBlogs, BlogPost } from '@/lib/api';
-import OceanHeader from '@/components/OceanHeader';
-
-// Map blog category to Lucide icon + i18n label
-function getBlogIcon(category: string) {
-  const iconMap: Record<string, any> = {
-    'Industry Trends': TrendingUp,
-    'Case Study': FileText,
-    'Technical Guide': Lightbulb,
-    'Best Practice': Award,
-    'Use Case': Shield,
-    'Customer Story': Newspaper,
-  };
-  return iconMap[category] || FileText;
+interface PageProps {
+  params: { locale: string };
 }
 
-// Category solid color map for badges
-const categoryColorMap: Record<string, string> = {
-  'Industry Trends': '#667eea',
-  'Case Study': '#11998e',
-  'Technical Guide': '#F2994A',
-  'Best Practice': '#4facfe',
-  'Use Case': '#43e97b',
-  'Customer Story': '#fa709a',
-  'General': '#a18cd1',
-};
-
-// Translate blog category name
-function getCategoryLabel(category: string, locale: string): string {
-  const catLabels: Record<string, Record<string, string>> = {
-    'Industry Trends': { en: 'Industry Trends', zh: '行业趋势', ar: 'اتجاهات الصناعة' },
-    'Case Study': { en: 'Case Study', zh: '案例研究', ar: 'دراسة حالة' },
-    'Technical Guide': { en: 'Technical Guide', zh: '技术指南', ar: 'دليل تقني' },
-    'Best Practice': { en: 'Best Practice', zh: '最佳实践', ar: 'أفضل الممارسات' },
-    'Use Case': { en: 'Use Case', zh: '应用场景', ar: 'حالة الاستخدام' },
-    'Customer Story': { en: 'Customer Story', zh: '客户故事', ar: 'قصة العميل' },
-    'General': { en: 'General', zh: '综合', ar: 'عام' },
-  };
-  return (catLabels[category] || catLabels['General'])[locale] || category;
-}
-
-function formatDate(dateString: string, locale: string = 'en'): string {
-  const date = new Date(dateString);
-  if (locale === 'zh') {
-    return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
-  }
-  if (locale === 'ar') {
-    const arMonths = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
-      'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
-    return `${date.getDate()} ${arMonths[date.getMonth()]} ${date.getFullYear()}`;
-  }
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const locale = (params.locale || 'en') as 'en' | 'zh' | 'ar';
+  // 从数据库取近期已发布博客标题，关键词随 DB 新增博客自动更新
+  const blogs = await prisma.blogPost.findMany({
+    where: { status: 'published', deletedAt: null },
+    select: { title: true },
+    orderBy: { publishedAt: 'desc' },
+    take: 50,
   });
+  // 主关键词从【英文标题】提炼（全站英文为主）；二级用本语言完整标题（仅本语言页出现）
+  const englishNames = blogs
+    .map((b: any) => (b.title?.en || '') as string)
+    .filter(Boolean);
+  const displayNames = blogs
+    .map((b: any) => (b.title?.[locale] || b.title?.en || '') as string)
+    .filter(Boolean);
+  const keywords = buildListPageKeywords(englishNames, displayNames).join(', ');
+  // hreflang：三语言互指（canonical + languages）
+  const { canonical, languages } = buildHreflang(getBaseUrl(), locale, '/blog');
+  return {
+    title: `Blog | WS Tool Cabinet`,
+    description:
+      'Insights on smart tool cabinets, RFID inventory management, tool vending machines, CNC downtime reduction and intelligent storage trends from WS Tool Cabinet.',
+    keywords,
+    alternates: { canonical, languages },
+  };
 }
 
-export default function BlogPage() {
-  const { locale } = useLocale();
-  const PAGE_SIZE = 9;
-  const [blogs, setBlogs] = useState<BlogPost[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [total, setTotal] = useState(0);
-
-  // === v151 图片方案：按 slug 精确匹配主题图片，确保图文相关 ===
-  const BLOG_IMAGE_FALLBACKS = [
-    '/images/blog/industry-trends.jpg',
-    '/images/blog/case-study.jpg',
-    '/images/blog/technical-guide.jpg',
-    '/images/blog/best-practice.jpg',
-    '/images/blog/use-case.jpg',
-    '/images/blog/customer-story.jpg',
-    '/images/blog/smart-cabinet-warehouse.jpg',
-    '/images/blog/roi-cost-analysis.jpg',
-    '/images/blog/rfid-tool-tracking.jpg',
-    '/images/blog/iot-mes-integration.jpg',
-    '/images/blog/cnc-machining-roi.jpg',
-    '/images/blog/aerospace-fod-prevention.jpg',
-    '/images/blog/ai-industry-4-0.jpg',
-    '/images/blog/digital-transformation.jpg',
-    '/images/blog/future-smart-factory.jpg',
-    '/images/blog/ppe-safety-equipment.jpg',
-    '/images/blog/buying-guide-smart-cabinet.jpg',
-    '/images/blog/general.jpg',
-  ];
-
-  // 按 slug（API 返回的是数字 ID）精确匹配：每篇博客显示与其主题相关的真实照片
-  const SLUG_TO_IMAGE: Record<string, string> = {
-    // API 返回的 slug 是数字 ID，按文章主题匹配图片
-    '1': '/images/blog/ai-industry-4-0.jpg',           // The Future of Intelligent Tool Storage
-    '2': '/images/blog/cnc-machining-roi.jpg',          // How Smart Cabinets Reduce CNC Downtime
-    '3': '/images/blog/rfid-tool-tracking.jpg',         // Complete Guide to RFID Tool Management
-    '4': '/images/blog/smart-cabinet-warehouse.jpg',     // 5 Ways Smart Cabinets Improve Inventory Accuracy
-    '5': '/images/blog/ppe-safety-equipment.jpg',        // PPE Vending: Compliance Made Easy
-    '6': '/images/blog/digital-transformation.jpg',      // From Manual to Smart Manufacturing
-    '7': '/images/blog/roi-cost-analysis.jpg',           // Smart Cabinet ROI Calculator
-    '8': '/images/blog/iot-mes-integration.jpg',        // IoT Integration: Connecting Smart Cabinets
-    '9': '/images/blog/buying-guide-smart-cabinet.jpg', // Top 10 Features When Buying
-    '10': '/images/blog/aerospace-fod-prevention.jpg',   // Aerospace Manufacturers Smart Tool Mgmt
-    '11': '/images/blog/best-practice.jpg',              // Smart Cabinet Security Best Practices
-    '12': '/images/blog/future-smart-factory.jpg',      // Future of Smart Warehousing Beyond Tool Cabinets
-    // 文字 slug 兼容（静态数据源时使用）
-    'future-of-intelligent-tool-storage': '/images/blog/ai-industry-4-0.jpg',
-    'smart-cabinets-reduce-cnc-downtime': '/images/blog/cnc-machining-roi.jpg',
-    'complete-guide-rfid-tool-management': '/images/blog/rfid-tool-tracking.jpg',
-    '5-ways-smart-cabinets-improve-inventory-accuracy': '/images/blog/smart-cabinet-warehouse.jpg',
-    'ppe-vending-compliance-made-easy': '/images/blog/ppe-safety-equipment.jpg',
-    'from-manual-to-smart-manufacturing-transformation': '/images/blog/digital-transformation.jpg',
-    'smart-cabinet-roi-calculator-guide': '/images/blog/roi-cost-analysis.jpg',
-    'iot-integration-smart-cabinets-factory-network': '/images/blog/iot-mes-integration.jpg',
-    'top-10-features-smart-tool-cabinets-buying-guide': '/images/blog/buying-guide-smart-cabinet.jpg',
-    'aerospace-manufacturers-smart-tool-management-benefits': '/images/blog/aerospace-fod-prevention.jpg',
-    'future-of-smart-warehousing-beyond-tool-cabinets': '/images/blog/future-smart-factory.jpg',
-    // 新增博客 2026 (id 13, 14)
-    '13': '/images/blog/vending-machine-trends-2026.jpg',
-    '14': '/images/blog/cnc-tool-inventory-guide.jpg',
-    // V8.6: 旧两篇 + 新增 4 篇（slug 均带 .html）
-    'industrial-vending-machine-trends-2026.html': '/images/blog/vending-machine-trends-2026.jpg',
-    'cnc-tool-inventory-management-guide.html': '/images/blog/cnc-tool-inventory-guide.jpg',
-    'ppe-vending-machine-safety-supplies-management.html': '/images/blog/ppe-vending-machine-safety-supplies-management.jpeg',
-    'cutting-tool-distributors-tool-vending-machine.html': '/images/blog/cutting-tool-distributors-tool-vending-machine.png',
-    'tool-vending-machine-functions-cnc-workshop.html': '/images/blog/tool-vending-machine-functions-cnc-workshop.png',
-    'manual-tool-crib-to-smart-tool-cabinet.html': '/images/blog/manual-tool-crib-to-smart-tool-cabinet.jpeg',
-  };
-
-  // 分类颜色映射（用于 badge 颜色）
-  const CATEGORY_COLOR_MAP: Record<string, string> = {
-    'industry-trends': '#667eea',
-    'case-study': '#11998e',
-    'technical-guide': '#F2994A',
-    'best-practice': '#4facfe',
-    'use-case': '#43e97b',
-    'customer-story': '#fa709a',
-    'general': '#a18cd1',
-  };
-
-  // 分类图标映射
-  function getBlogIconByCategory(categoryLower: string) {
-    const iconMap: Record<string, any> = {
-      'industry-trends': TrendingUp,
-      'case-study': FileText,
-      'technical-guide': Lightbulb,
-      'best-practice': Award,
-      'use-case': Shield,
-      'customer-story': Newspaper,
-    };
-    return iconMap[categoryLower] || FileText;
-  }
-
-  // Initialise the current page from the ?page= query param (client-only)
-  useEffect(() => {
-    const urlPage = parseInt(new URLSearchParams(window.location.search).get('page') || '1', 10);
-    if (!isNaN(urlPage) && urlPage > 0) setPage(urlPage);
-  }, []);
-
-  // Load the current page of blogs from the API (server-side pagination)
-  useEffect(() => {
-    let cancelled = false;
-    async function loadData() {
-      try {
-        const data = await fetchBlogs({ published: true, pageSize: PAGE_SIZE, page });
-        if (cancelled) return;
-        setBlogs(data.data || data || []);
-        setTotal(data.total || (data.data ? data.data.length : 0));
-      } catch (e) {
-        console.error('Failed to load blogs:', e);
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-    loadData();
-    return () => { cancelled = true; };
-  }, [page]);
-
-  const content = {
-    en: {
-      title: 'Blog & News',
-      subtitle: 'Stay updated with the latest trends and insights in smart storage technology',
-      readMore: 'Read More',
-      empty: 'No blog posts found.',
-    },
-    zh: {
-      title: '博客与新闻',
-      subtitle: '了解智能存储技术的最新趋势和洞察',
-      readMore: '阅读更多',
-      empty: '未找到博客文章。',
-    },
-    ar: {
-      title: 'المدونة والأخبار',
-      subtitle: 'ابق على اطلاع بأحدث الاتجاهات والرؤى في تقنية التخزين الذكي',
-      readMore: 'اقرأ المزيد',
-      empty: 'لم يتم العثور على مقالات المدونة.',
-    },
-  };
-
-  const t = content[locale as keyof typeof content] || content.en;
-
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-
-  const goToPage = (target: number) => {
-    const next = Math.min(Math.max(1, target), totalPages);
-    if (next === page) return;
-    setPage(next);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    const base = window.location.pathname;
-    window.history.replaceState(null, '', next === 1 ? base : `${base}?page=${next}`);
-  };
-
-  // Build page-number buttons with an ellipsis when there are many pages
-  const renderPageNumbers = () => {
-    const pages: (number | '...')[] = [];
-    if (totalPages <= 7) {
-      for (let i = 1; i <= totalPages; i++) pages.push(i);
-    } else {
-      pages.push(1);
-      const showLeftEllipsis = page > 4;
-      const showRightEllipsis = page < totalPages - 3;
-      if (!showLeftEllipsis) {
-        for (let i = 2; i <= Math.min(5, totalPages - 1); i++) pages.push(i);
-        if (showRightEllipsis) pages.push('...');
-      } else if (!showRightEllipsis) {
-        pages.push('...');
-        for (let i = totalPages - 4; i <= totalPages - 1; i++) pages.push(i);
-      } else {
-        pages.push('...');
-        for (let i = page - 1; i <= page + 1; i++) pages.push(i);
-        pages.push('...');
-      }
-      pages.push(totalPages);
-    }
-    return pages.map((p, idx) =>
-      p === '...' ? (
-        <span key={`ellipsis-${idx}`} className="px-3 py-2 text-gray-400 select-none">…</span>
-      ) : (
-        <button
-          key={p}
-          onClick={() => goToPage(p)}
-          aria-label={`Go to page ${p}`}
-          className={`w-10 h-10 rounded-full text-sm font-medium transition-colors ${p === page ? 'bg-blue-600 text-white shadow-md' : 'border border-gray-200 text-gray-600 hover:bg-gray-100'}`}
-        >
-          {p}
-        </button>
-      )
-    );
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
-        {/* Page Header Skeleton */}
-        <section className="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white py-16 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-5xl mx-auto text-center">
-            <div className="h-10 bg-blue-800/50 rounded-lg w-64 mx-auto mb-4 animate-pulse"></div>
-            <div className="h-6 bg-blue-800/30 rounded-lg w-96 mx-auto animate-pulse"></div>
-          </div>
-        </section>
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[1, 2, 3, 4, 5, 6].map(i => (
-              <div key={i} className="bg-white dark:bg-slate-800 rounded-2xl shadow-md overflow-hidden">
-                <div className="h-56 bg-gray-100 dark:bg-slate-700 animate-pulse" />
-                <div className="p-5 space-y-3">
-                  <div className="h-4 bg-gray-100 dark:bg-slate-700 rounded w-20 animate-pulse" />
-                  <div className="h-6 bg-gray-100 dark:bg-slate-700 rounded w-full animate-pulse" />
-                  <div className="h-4 bg-gray-100 dark:bg-slate-700 rounded w-3/4 animate-pulse" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      </div>
-    );
-  }
-
+export default function Page({ params }: PageProps) {
+  const locale = (params.locale || 'en') as 'en' | 'zh' | 'ar';
+  const displayTitle = `Blog | WS Tool Cabinet`;
+  const { canonical } = buildHreflang(getBaseUrl(), locale, '/blog');
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
-      {/* Page Header — Ocean Theme */}
-      <OceanHeader
-        title={t.title}
-        subtitle={t.subtitle}
-        icon={<Newspaper className="w-8 h-8 text-blue-300" />}
+    <>
+      {/* CollectionPage JSON-LD for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'CollectionPage',
+            name: displayTitle,
+            url: canonical,
+          }),
+        }}
       />
-
-      {/* Blog Grid */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <style dangerouslySetInnerHTML={{ __html: `
-          @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-          .blog-card {
-            animation: fadeInUp 0.6s ease-out forwards;
-            opacity: 0;
-          }
-        `}} />
-        {blogs.length === 0 ? (
-          <div className="text-center py-20">
-            <FileText className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-            <p className="text-2xl text-gray-400 dark:text-gray-500">
-              {t.empty}
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {blogs.map((post, index) => {
-              const isPriority = index < 3;
-              const detailHref = `/${locale}/blog/${post.slug}`;
-              // === Direct i18n access (v138): API guarantees {en,zh,ar} objects ===
-              const title = (typeof post.title === 'object' && post.title !== null)
-                ? (post.title[locale] || post.title.en || '')
-                : String(post.title || '');
-              const excerpt = (typeof post.excerpt === 'object' && post.excerpt !== null)
-                ? (post.excerpt[locale] || post.excerpt.en || '')
-                : String(post.excerpt || '');
-
-              // === v151 图片匹配：按 slug 精确匹配 → 排除 SVG → fallback 轮换 ===
-              let cardImage: string;
-              const postSlug = post.slug || '';
-              // 1. 优先按 slug 匹配主题相关图片
-              if (SLUG_TO_IMAGE[postSlug]) {
-                cardImage = SLUG_TO_IMAGE[postSlug];
-              } else if (post.image && post.image.startsWith('/images/') && !post.image.endsWith('.svg')) {
-                // 2. API 返回的有效非 SVG 图片
-                cardImage = post.image;
-              } else {
-                // 3. fallback：索引轮换
-                cardImage = BLOG_IMAGE_FALLBACKS[index % BLOG_IMAGE_FALLBACKS.length];
-              }
-              console.log(`[v151] card ${index}: slug="${postSlug}" → image="${cardImage}"`);
-
-              // 分类显示
-              const postCategory = (post.category || 'general').toLowerCase().trim();
-              const categoryLabelMap: Record<string, { en: string; zh: string; ar: string }> = {
-                'industry-trends': { en: 'Industry Trends', zh: '行业趋势', ar: 'اتجاهات الصناعة' },
-                'case-study': { en: 'Case Study', zh: '案例研究', ar: 'دراسة حالة' },
-                'technical-guide': { en: 'Technical Guide', zh: '技术指南', ar: 'دليل تقني' },
-                'best-practice': { en: 'Best Practice', zh: '最佳实践', ar: 'أفضل الممارسات' },
-                'use-case': { en: 'Use Case', zh: '应用场景', ar: 'حالة الاستخدام' },
-                'customer-story': { en: 'Customer Story', zh: '客户故事', ar: 'قصة العميل' },
-                'general': { en: 'General', zh: '综合', ar: 'عام' },
-              };
-              const categoryLabel = categoryLabelMap[postCategory] || categoryLabelMap['general'];
-              const categoryDisplay = categoryLabel[locale as 'en' | 'zh' | 'ar'] || categoryLabel.en;
-              const categoryColor = CATEGORY_COLOR_MAP[postCategory] || CATEGORY_COLOR_MAP['general'];
-              const BlogIcon = getBlogIconByCategory(postCategory);
-
-              return (
-                <a key={post.id} href={detailHref}
-                  className="group bg-white dark:bg-slate-800 rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-2 border border-gray-100 dark:border-slate-700 block blog-card"
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  {/* Blog Image — v148 使用背景图方式（更可靠） */}
-                  <div
-                    className="relative h-56 overflow-hidden bg-gray-100 dark:bg-slate-700"
-                    style={{
-                      backgroundImage: `url(${cardImage})`,
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center',
-                    }}
-                  >
-                    {/* Gradient overlay for text readability */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
-                    {/* Category badge overlay on image */}
-                    <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
-                      <span
-                        className="inline-flex items-center gap-1 px-2.5 py-0.5 text-white text-xs font-semibold rounded-full backdrop-blur-sm"
-                        style={{ backgroundColor: `${categoryColor}cc` }}
-                      >
-                        <BlogIcon className="w-3 h-3" />
-                        {categoryDisplay}
-                      </span>
-                      {/* Read More hover button */}
-                      <div className="opacity-0 group-hover:opacity-100 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-gray-800 dark:text-white px-3 py-1.5 rounded-full flex items-center gap-1 text-xs font-medium shadow-lg transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
-                        <ArrowRight className="w-3.5 h-3.5" />
-                        {t.readMore}
-                      </div>
-                    </div>
-                  </div>
-                  {/* Blog Info */}
-                  <div className="p-5 flex flex-col h-full">
-                    <div className="flex items-center gap-2 mb-3">
-                      <span
-                        className="inline-flex items-center gap-1 px-2.5 py-0.5 text-white text-xs font-semibold rounded-full"
-                        style={{ backgroundColor: categoryColor }}
-                      >
-                        <BlogIcon className="w-3 h-3" />
-                        {categoryDisplay}
-                      </span>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
-                        {formatDate(post.publishedAt || post.createdAt || new Date().toISOString(), locale)}
-                      </span>
-                    </div>
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 line-clamp-2 group-hover:text-blue-600 leading-snug">{title}</h3>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-3 flex-1">
-                      {excerpt || ''}
-                    </p>
-                    <span className="inline-flex items-center text-blue-600 dark:text-blue-400 font-semibold text-sm mt-auto">
-                      {t.readMore}
-                      <svg className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-                    </span>
-                  </div>
-                </a>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Pagination control */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-2 mt-12 flex-wrap">
-            <button
-              onClick={() => goToPage(page - 1)}
-              disabled={page === 1}
-              className="px-4 py-2 rounded-full text-sm font-medium border border-gray-200 text-gray-600 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-            >
-              {locale === 'zh' ? '上一页' : locale === 'ar' ? 'السابق' : 'Previous'}
-            </button>
-            {renderPageNumbers()}
-            <button
-              onClick={() => goToPage(page + 1)}
-              disabled={page === totalPages}
-              className="px-4 py-2 rounded-full text-sm font-medium border border-gray-200 text-gray-600 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-            >
-              {locale === 'zh' ? '下一页' : locale === 'ar' ? 'التالي' : 'Next'}
-            </button>
-          </div>
-        )}
-      </section>
-    </div>
+      <BlogListClient />
+    </>
   );
 }

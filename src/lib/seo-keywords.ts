@@ -196,3 +196,25 @@ export function buildStaticPageKeywords(
     ((displayTitle || '').split(/\s*\|\s*/)[0] || '').trim() || (displayTitle || '');
   return dedupe([...primary, displayCore].filter(Boolean)).slice(0, max);
 }
+
+/**
+ * 生成 canonical + 三语言 hreflang 互指。
+ * rest 为去掉 locale 前缀后的路径，如 "/products"、"solutions/custom-industrial-vending-machine.html"、"blog/future-of-intelligent-tool-storage"。
+ * 返回绝对 URL（baseUrl 为空时退化为相对路径）。
+ */
+export function buildHreflang(
+  baseUrl: string,
+  locale: 'en' | 'zh' | 'ar',
+  rest: string,
+): { canonical: string; languages: Record<string, string> } {
+  const base = (baseUrl || '').replace(/\/+$/, '');
+  const clean = rest.startsWith('/') ? rest : `/${rest}`;
+  return {
+    canonical: `${base}/${locale}${clean}`,
+    languages: {
+      en: `${base}/en${clean}`,
+      zh: `${base}/zh${clean}`,
+      ar: `${base}/ar${clean}`,
+    },
+  };
+}

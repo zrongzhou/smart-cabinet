@@ -6,7 +6,7 @@ import ProductFaqSection from './ProductFaqSection';
 import { Product } from '@/lib/api';
 import { prisma } from '@/lib/prisma';
 import { jsonLdFAQ } from '@/lib/seo';
-import { buildDetailPageKeywords } from '@/lib/seo-keywords';
+import { buildDetailPageKeywords, buildHreflang } from '@/lib/seo-keywords';
 
 // Helper function to translate i18n objects
 function translate(obj: any, locale: 'en' | 'zh' | 'ar'): string {
@@ -140,10 +140,14 @@ export async function buildProductMetadata(
   // Construct absolute URL for og:image
   const ogImageUrl = image ? (image.startsWith('http') ? image : `${baseUrl}${image.startsWith('/') ? '' : '/'}${image}`) : '';
 
+  // hreflang：三语言互指（canonical + languages），路径已含 /products/、/applications/、/solutions/ 前缀
+  const { canonical, languages } = buildHreflang(baseUrl, locale, `/${canonicalPath}`);
+
   return {
     title,
     description,
     keywords,
+    alternates: { canonical, languages },
     openGraph: {
       title,
       description,
