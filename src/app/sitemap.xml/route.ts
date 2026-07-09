@@ -12,7 +12,8 @@ export const dynamic = 'force-dynamic';
  */
 export async function GET(request: NextRequest) {
   const prisma = new PrismaClient();
-  const locales = ['en', 'zh', 'ar'];
+  // 仅生成英文 URL（用户要求：sitemap 只保留英文版）
+  const locales = ['en'];
 
   try {
     // Get the host from the request headers

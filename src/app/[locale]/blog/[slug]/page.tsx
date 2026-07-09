@@ -16,7 +16,9 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale, slug } = await params;
   const loc = (locale || 'en') as 'en' | 'zh' | 'ar';
-  const blog = staticBlogs.find((b) => b.slug === slug);
+  // URL 可能带 .html 后缀（如从外链进入），数据 slug 不带，需兼容
+  const cleanSlug = (slug || '').replace(/\.html$/i, '');
+  const blog = staticBlogs.find((b) => b.slug === cleanSlug);
   if (!blog) return {};
   const titleObj: any = blog.title || {};
   const title = titleObj[loc] || titleObj.en || '';
