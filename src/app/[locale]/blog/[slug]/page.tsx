@@ -20,24 +20,25 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale, slug } = await params;
   const loc = (locale || 'en') as 'en' | 'zh' | 'ar';
-  // URL 可能带 .html 后缀（如从外链进入），数据 slug 不带，需兼容
-  const rawSlug = (slug || '').replace(/\.html$/i, '');
+  // 保留真实 URL 段（可能带 .html，如外链进入）；rawSlug 仅用于提炼词元与兜底匹配
+  const fullSlug = (slug || '').trim();
+  const rawSlug = fullSlug.replace(/\.html$/i, '');
 
-  // 优先查数据库（新增博客只在 DB）
-  const blog = await prisma.blogPost.findUnique({
-    where: { slug: rawSlug },
+  // 优先查数据库（新增博客只在 DB）。DB slug 格式不统一，兼容带/不带 .html
+  const blog = await prisma.blogPost.findFirst({
+    where: { slug: { in: [fullSlug, rawSlug] } },
     select: { title: true, excerpt: true },
   });
 
   // DB 无记录时回退到静态兜底数据
-  const fallback = !blog ? staticBlogs.find((b) => b.slug === rawSlug) : undefined;
+  const fallback = !blog ? staticBlogs.find((b) => b.slug === fullSlug || b.slug === rawSlug) : undefined;
   const titleObj: any = (blog?.title as any) || (fallback?.title as any) || {};
   const excerptObj: any = (blog?.excerpt as any) || (fallback?.excerpt as any) || {};
 
   const enTitle = (titleObj.en || rawSlug) as string;
   const displayTitle = (titleObj[loc] || enTitle) as string;
   const keywords = buildDetailPageKeywords(enTitle, displayTitle, rawSlug);
-  const { canonical, languages } = buildHreflang(getBaseUrl(), loc, `blog/${rawSlug}`);
+  const { canonical, languages } = buildHreflang(getBaseUrl(), loc, `blog/${fullSlug}`);
 
   const description =
     typeof excerptObj === 'string'

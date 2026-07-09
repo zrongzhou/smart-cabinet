@@ -16,7 +16,7 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const locale = (params.locale || 'en') as 'en' | 'zh' | 'ar';
   // 全站关键词以英文为主：主词从英文标题提炼，二级用本语言标题核心（仅本语言页出现）
-  const en = `FAQ | WS Tool Cabinet`;
+  const en = `FAQ WS Tool Cabinet`;
   const display = `${PAGE_TITLE[locale]} | WS Tool Cabinet`;
   const keywords = buildStaticPageKeywords(en, display).join(', ');
   const { canonical, languages } = buildHreflang(getBaseUrl(), locale, '/faq');
