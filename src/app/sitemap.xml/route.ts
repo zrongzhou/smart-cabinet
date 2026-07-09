@@ -41,12 +41,18 @@ export async function GET(request: NextRequest) {
     let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
     xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
 
+    // 去重：即便 DB 与静态种子的博客 slug 重叠、或产品 slug 撞静态页，也不出现重复 <loc>
+    const seen = new Set<string>();
+
     // Static pages for each locale
     for (const locale of locales) {
       for (const page of staticPages) {
         const url = `${baseUrl}/${locale}${page}`;
         const changeFreq = page === '' ? 'monthly' : 'yearly';
         const priority = page === '' ? '1.0' : page === '/products' ? '0.9' : page === '/about' ? '0.8' : '0.7';
+
+        if (seen.has(url)) continue;
+        seen.add(url);
 
         xml += '  <url>\n';
         xml += `    <loc>${escapeXml(url)}</loc>\n`;
@@ -61,6 +67,10 @@ export async function GET(request: NextRequest) {
         // 公开路径即 slug 本身；否则落在 /products/ 下（柜体）。
         const publicPath = product.slug.includes('/') ? product.slug : `products/${product.slug}`;
         const url = `${baseUrl}/${locale}/${publicPath}`;
+
+        if (seen.has(url)) continue;
+        seen.add(url);
+
         xml += '  <url>\n';
         xml += `    <loc>${escapeXml(url)}</loc>\n`;
         xml += `    <lastmod>${formatDate(product.updatedAt)}</lastmod>\n`;
@@ -72,6 +82,10 @@ export async function GET(request: NextRequest) {
       // Blog pages for each locale
       for (const blog of blogs) {
         const url = `${baseUrl}/${locale}/blog/${blog.slug}`;
+
+        if (seen.has(url)) continue;
+        seen.add(url);
+
         xml += '  <url>\n';
         xml += `    <loc>${escapeXml(url)}</loc>\n`;
         xml += `    <lastmod>${formatDate(blog.updatedAt)}</lastmod>\n`;

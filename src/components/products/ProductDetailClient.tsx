@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Package, ArrowLeft, Share2, ChevronRight, ChevronLeft, X, Star, FileText, Ruler, MessageSquare, ShoppingCart, Heart } from 'lucide-react';
+import Image from 'next/image';
 import ReviewList from '@/components/products/ReviewList';
 import SafeImage from '@/components/ui/SafeImage';
 import { getProductHref } from '@/lib/product-url';
@@ -215,16 +216,20 @@ export default function ProductDetailClient({
                         </div>
                       ) : (
                         <>
-                          {/* Use regular img tag for better external URL handling */}
-                          <img
-                            src={product.images[selectedImage] || ''}
-                            alt={`${name} - Image ${selectedImage + 1}`}
-                            className="w-full h-full object-contain p-4 transition-transform duration-500 group-hover:scale-110"
-                            key={imageKey}
-                            loading="eager"
-                            onLoad={() => { setMainImageLoading(false); setMainImageRetryCount(0); }}
-                            onError={handleMainImageError}
-                          />
+                          {/* 主图改用 next/image：自动出 WebP/AVIF、fill+sizes 预留空间防 CLS、alt 用产品展示标题 */}
+                          <div className="absolute inset-0 p-4">
+                            <Image
+                              src={product.images[selectedImage] || ''}
+                              alt={`${name} - Image ${selectedImage + 1}`}
+                              fill
+                              sizes="(max-width: 1024px) 100vw, 50vw"
+                              className="object-contain transition-transform duration-500 group-hover:scale-110"
+                              key={imageKey}
+                              loading="eager"
+                              onLoad={() => { setMainImageLoading(false); setMainImageRetryCount(0); }}
+                              onError={handleMainImageError}
+                            />
+                          </div>
                           {/* Loading spinner */}
                           {mainImageLoading && (
                             <div className="absolute inset-0 flex items-center justify-center bg-gray-50">
