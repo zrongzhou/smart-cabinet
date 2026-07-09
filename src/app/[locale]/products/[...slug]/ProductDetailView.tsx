@@ -5,7 +5,7 @@ import ProductDetailClient from '@/components/products/ProductDetailClient';
 import ProductFaqSection from './ProductFaqSection';
 import { Product } from '@/lib/api';
 import { prisma } from '@/lib/prisma';
-import { jsonLdFAQ } from '@/lib/seo';
+import { jsonLdFAQ, jsonLdBreadcrumb, getBaseUrl } from '@/lib/seo';
 import { buildDetailPageKeywords, buildHreflang } from '@/lib/seo-keywords';
 
 // Helper function to translate i18n objects
@@ -63,12 +63,22 @@ function generateJsonLd(product: Product, locale: string) {
   const name = translate(product.name, locale as any);
   const description = translate(product.description, locale as any);
 
+  // 将相对图片路径转为绝对 URL，便于爬虫解析（与 buildProductMetadata 的 ogImageUrl 处理一致）
+  const baseUrl = getBaseUrl();
+  const images: string[] = Array.isArray(product.images)
+    ? (product.images as string[]).map((image) =>
+        image && image.startsWith('http')
+          ? image
+          : `${baseUrl}${image?.startsWith('/') ? '' : '/'}${image || ''}`,
+      )
+    : [];
+
   const jsonLd: any = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name,
     description,
-    image: product.images || [],
+    image: images,
     brand: {
       '@type': 'Brand',
       name: 'WSToolCabinet',
@@ -170,7 +180,6 @@ export async function buildProductMetadata(
  * 按 lookupSlug 查库，预解析 i18n 字段，渲染 JSON-LD / ProductDetailClient / ProductFaqSection。
  */
 export default async function ProductDetailView({ locale, lookupSlug, canonicalPath }: ProductDetailViewProps) {
-  void canonicalPath; // canonicalPath 仅用于 generateMetadata；此处便于统一签名
   let product: Product | null = null;
   let relatedProducts: Product[] = [];
   let resolvedFaqs: { question: string; answer: string; category: string }[] = [];
@@ -314,10 +323,24 @@ export default async function ProductDetailView({ locale, lookupSlug, canonicalP
     clickImageToZoom: locale === 'zh' ? '点击图片放大' : locale === 'ar' ? 'انقر لتكبير الصورة' : 'Click image to zoom',
   };
 
+  // 面包屑结构化数据所需信息
+  const baseUrl = getBaseUrl();
+  const displayTitle = translate(product.name, locale);
+  const canonicalUrl = `${baseUrl}/${locale}/${canonicalPath}`;
+
   return (
     <>
       {/* JSON-LD structured data for SEO */}
       <JsonLd data={jsonLdData} />
+
+      {/* BreadcrumbList 结构化数据（JSON-LD） */}
+      <JsonLd
+        data={jsonLdBreadcrumb([
+          { name: 'Home', url: `${baseUrl}/en` },
+          { name: 'Products', url: `${baseUrl}/en/products` },
+          { name: displayTitle, url: canonicalUrl },
+        ])}
+      />
 
       {/* v265: FAQ JSON-LD (FAQPage schema) */}
       {resolvedFaqs.length > 0 && (

@@ -46,15 +46,20 @@ export function middleware(request: NextRequest) {
       response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
       response.headers.set('Pragma', 'no-cache');
       response.headers.set('Expires', '0');
+      // 传递当前 pathname 给根布局，用于服务端渲染 <html lang/dir>
+      response.headers.set('x-pathname', request.nextUrl.pathname);
       return response;
     }
-    return;
+    // 将当前 pathname 通过请求头传给根布局，使其可按 locale 渲染 <html lang/dir>
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set('x-pathname', request.nextUrl.pathname);
+    return NextResponse.next({ request: { headers: requestHeaders } });
   }
 
-  // 重定向到对应语言的路径
+  // 重定向到对应语言的路径（显式 308 永久重定向）
   const locale = getLocale(request);
   request.nextUrl.pathname = `/${locale}${pathname}`;
-  return NextResponse.redirect(request.nextUrl);
+  return NextResponse.redirect(request.nextUrl, 308);
 }
 
 export const config = {

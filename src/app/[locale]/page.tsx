@@ -71,16 +71,16 @@ const SITE_URL = 'https://www.wstoolcabinet.com';
 
 const PAGE_META: Record<string, { title: string; description: string }> = {
   en: {
-    title: 'Smart Tool Cabinet & Vending Machine Manufacturer | WS Tool Cabinet',
-    description: 'Professional smart tool cabinet and vending machine manufacturer since 2010. IoT-enabled inventory management, industrial storage solutions for 60+ countries.',
+    title: 'Smart Tool Cabinets & Industrial Vending Machines | Qtech',
+    description: 'Qtech provides smart tool cabinets, CNC tool vending machines, PPE vending cabinets and RFID inventory systems for factories and machine shops.',
   },
   zh: {
-    title: '智能工具柜与自动售货机制造商 | 秋彦科技 WS Tool Cabinet',
-    description: '专业智能工具柜和自动售货机制造商，始于2010年。IoT物联网库存管理、工业存储解决方案，服务全球60+国家。',
+    title: '智能工具柜与工业自动售货机 | Qtech',
+    description: 'Qtech 为工厂与机加工车间提供智能工具柜、CNC 刀具自动售货机、PPE 自动售货柜与 RFID 库存管理系统。',
   },
   ar: {
-    title: 'مصنع خزانات الأدوات الذكية وآلات البيع | WS Tool Cabinet',
-    description: 'مصنع محترف لخزانات الأدوات الذكية وآليات البيع منذ 2010. إدارة مخزون IoT، حلول تخزين صناعية لأكثر من 60 دولة.',
+    title: 'خزانات الأدوات الذكية وآلات البيع الصناعية | Qtech',
+    description: 'توفر Qtech خزانات أدوات ذكية، وآلات بيع أدوات CNC، وخزائن بيع PPE، وأنظمة جرد RFID للمصانع وورش الآلات.',
   },
 };
 
@@ -98,8 +98,9 @@ export async function generateMetadata({ params }: { params: { locale: string } 
       canonical: `${SITE_URL}/${locale}`,
       languages: {
         en: `${SITE_URL}/en`,
-        zh: `${SITE_URL}/zh`,
+        'zh-CN': `${SITE_URL}/zh`,
         ar: `${SITE_URL}/ar`,
+        'x-default': `${SITE_URL}/en`,
       },
     },
     openGraph: {

@@ -213,8 +213,10 @@ export function buildHreflang(
     canonical: `${base}/${locale}${clean}`,
     languages: {
       en: `${base}/en${clean}`,
-      zh: `${base}/zh${clean}`,
+      'zh-CN': `${base}/zh${clean}`,
       ar: `${base}/ar${clean}`,
+      // x-default 指向英文版，确保无匹配语言时回退到英文
+      'x-default': `${base}/en${clean}`,
     },
   };
 }

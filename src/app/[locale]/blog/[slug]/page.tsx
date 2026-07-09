@@ -1,9 +1,10 @@
 import { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
-import { getBaseUrl } from '@/lib/seo';
+import { getBaseUrl, jsonLdArticle } from '@/lib/seo';
 import { buildDetailPageKeywords, buildHreflang } from '@/lib/seo-keywords';
 import staticBlogs from '@/data/blogs';
 import BlogDetailClient from './BlogDetailClient';
+import JsonLd from '@/components/JsonLd';
 
 interface PageProps {
   params: Promise<{ locale: string; slug: string }>;
@@ -27,7 +28,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   // 优先查数据库（新增博客只在 DB）。DB slug 格式不统一，兼容带/不带 .html
   const blog = await prisma.blogPost.findFirst({
     where: { slug: { in: [fullSlug, rawSlug] } },
-    select: { title: true, excerpt: true },
+    select: { title: true, excerpt: true, publishedAt: true, image: true },
   });
 
   // DB 无记录时回退到静态兜底数据
@@ -46,7 +47,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       : (excerptObj?.[loc] || excerptObj?.en || '');
 
   return {
-    title: displayTitle,
+    title: `${enTitle} | Qtech`,
     description,
     keywords: keywords.join(', '),
     alternates: { canonical, languages },
@@ -54,6 +55,48 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function Page({ params }: PageProps) {
-  const { slug } = await params;
-  return <BlogDetailClient slug={slug} />;
+  const { locale, slug } = await params;
+  const loc = (locale || 'en') as 'en' | 'zh' | 'ar';
+  // 保留真实 URL 段（可能带 .html，如外链进入）
+  const fullSlug = (slug || '').trim();
+  const rawSlug = fullSlug.replace(/\.html$/i, '');
+
+  // 与 generateMetadata 一致的查询，用于构造 Article 结构化数据
+  const blog = await prisma.blogPost.findFirst({
+    where: { slug: { in: [fullSlug, rawSlug] } },
+    select: { title: true, excerpt: true, publishedAt: true, image: true },
+  });
+  const fallback = !blog ? staticBlogs.find((b) => b.slug === fullSlug || b.slug === rawSlug) : undefined;
+  const titleObj: any = (blog?.title as any) || (fallback?.title as any) || {};
+  const excerptObj: any = (blog?.excerpt as any) || (fallback?.excerpt as any) || {};
+  const enTitle = (titleObj.en || rawSlug) as string;
+  const displayTitle = (titleObj[loc] || enTitle) as string;
+  const description =
+    typeof excerptObj === 'string'
+      ? excerptObj
+      : (excerptObj?.[loc] || excerptObj?.en || '');
+
+  const baseUrl = getBaseUrl();
+  const blogImage = (blog?.image as string | null) || (fallback?.image as string | undefined) || '';
+  // 若无封面则用站点默认 logo 兜底
+  const imageForJsonLd = blogImage || `${baseUrl}/images/logo.png`;
+  const datePublished = blog?.publishedAt
+    ? new Date(blog.publishedAt).toISOString()
+    : new Date().toISOString();
+
+  const articleJsonLd = jsonLdArticle({
+    title: displayTitle,
+    description,
+    image: imageForJsonLd,
+    slug: fullSlug,
+    datePublished,
+  });
+
+  return (
+    <>
+      {/* Article 结构化数据（JSON-LD） */}
+      <JsonLd data={articleJsonLd} />
+      <BlogDetailClient slug={slug} />
+    </>
+  );
 }
