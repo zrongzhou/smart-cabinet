@@ -7,6 +7,7 @@ import { Product } from '@/lib/api';
 import { prisma } from '@/lib/prisma';
 import { jsonLdFAQ, jsonLdBreadcrumb, getBaseUrl } from '@/lib/seo';
 import { buildDetailPageKeywords, buildHreflang } from '@/lib/seo-keywords';
+import { productMeta } from '@/lib/seo-page-meta';
 
 // Helper function to translate i18n objects
 function translate(obj: any, locale: 'en' | 'zh' | 'ar'): string {
@@ -128,7 +129,11 @@ export async function buildProductMetadata(
 ): Promise<Metadata> {
   const productAny = product as any;
   const title = productAny.seoTitle?.[locale] || translate(productAny.name, locale) || 'Product';
-  const description = productAny.seoDescription?.[locale] || translate(productAny.description, locale) || '';
+  // V8.10: 优先级 —— 后台 seoDescription → xlsx 策划的 productMeta（按真实 slug 匹配）→ DB description → 产品名
+  const slugKey = productAny.slug || canonicalPath;
+  const metaDesc = (productMeta[slugKey] && (productMeta[slugKey][locale] || productMeta[slugKey].en)) || '';
+  const description =
+    productAny.seoDescription?.[locale] || metaDesc || translate(productAny.description, locale) || translate(productAny.name, locale) || '';
   const image = productAny.images?.[0] || '';
 
   // SEO 关键词：兼容多种存储形态（{en:string[]|string, zh:..., ar:...}、纯字符串或纯数组）。

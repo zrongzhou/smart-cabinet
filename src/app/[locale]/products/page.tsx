@@ -11,7 +11,7 @@ interface PageProps {
 const PAGE_META: Record<string, { title: string; description: string }> = {
   en: {
     title: 'Smart Tool Cabinet & Industrial Vending Machine Products | Qtech',
-    description: 'Compare CNC tool vending machines, smart drawer cabinets, RFID asset cabinets and PPE vending solutions for factory inventory control.',
+    description: 'Explore CNC tool vending machines, smart tool cabinets, PPE lockers, weighing cabinets and industrial vending systems for factory inventory control.',
   },
   zh: {
     title: '智能工具柜与工业自动售货机产品 | Qtech',
@@ -46,11 +46,26 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default function Page({ params }: PageProps) {
+export default async function Page({ params }: PageProps) {
   const locale = (params.locale || 'en') as 'en' | 'zh' | 'ar';
   const meta = PAGE_META[locale] || PAGE_META.en;
   const displayTitle = meta.title;
   const { canonical } = buildHreflang(getBaseUrl(), locale, '/products');
+
+  // V8.10: 服务端直接拉取产品与分类，作为 props 传给 ProductsClient，
+  // 让产品卡片 / 链接出现在 SSR HTML（修复 client-swallow-SSR）。
+  const [products, categories] = await Promise.all([
+    prisma.product.findMany({
+      where: { status: 'active', deletedAt: null },
+      include: { categories: true, tags: true },
+      orderBy: { order: 'asc' },
+    }),
+    prisma.category.findMany({
+      where: { status: 'active', deletedAt: null },
+      orderBy: { order: 'asc' },
+    }),
+  ]);
+
   return (
     <>
       {/* CollectionPage JSON-LD for SEO */}
@@ -65,7 +80,10 @@ export default function Page({ params }: PageProps) {
           }),
         }}
       />
-      <ProductsClient />
+      <ProductsClient
+        initialProducts={products as any}
+        initialCategories={categories as any}
+      />
     </>
   );
 }

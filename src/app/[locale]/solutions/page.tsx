@@ -11,7 +11,7 @@ interface PageProps {
 const PAGE_META: Record<string, { title: string; description: string }> = {
   en: {
     title: 'Industrial Inventory Management Solutions | Qtech Tool Cabinet',
-    description: 'Explore smart cabinet solutions for CNC machining, automotive, electronics, medical device, mold shops and MRO inventory management.',
+    description: 'Smart storage solutions for CNC tools, PPE, fasteners, documents and MRO supplies. Improve inventory control across workshops and factories.',
   },
   zh: {
     title: '工业库存管理解决方案 | Qtech 智能工具柜',

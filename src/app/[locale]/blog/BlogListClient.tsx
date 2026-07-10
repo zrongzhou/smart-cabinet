@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Calendar, User, ArrowRight, FileText, Newspaper, Lightbulb, TrendingUp, Shield, Award } from 'lucide-react';
 import { useLocale } from '@/lib/i18n';
 import { fetchBlogs, BlogPost } from '@/lib/api';
@@ -61,13 +61,16 @@ function formatDate(dateString: string, locale: string = 'en'): string {
   });
 }
 
-export function BlogListClient() {
+export function BlogListClient({ initialBlogs = [], initialTotal = 0 }: { initialBlogs?: BlogPost[]; initialTotal?: number }) {
   const { locale } = useLocale();
   const PAGE_SIZE = 9;
-  const [blogs, setBlogs] = useState<BlogPost[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [blogs, setBlogs] = useState<BlogPost[]>(initialBlogs);
+  const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
-  const [total, setTotal] = useState(0);
+  const [total, setTotal] = useState(initialTotal);
+  // Skip the initial fetch on mount when the server already provided page-1 blogs,
+  // so the SSR HTML is preserved (fix client-swallow-SSR) for the first page.
+  const didInit = useRef(false);
 
   // === v151 图片方案：按 slug 精确匹配主题图片，确保图文相关 ===
   const BLOG_IMAGE_FALLBACKS = [
@@ -160,8 +163,14 @@ export function BlogListClient() {
     if (!isNaN(urlPage) && urlPage > 0) setPage(urlPage);
   }, []);
 
-  // Load the current page of blogs from the API (server-side pagination)
+  // Load the current page of blogs from the API (client-side pagination).
+  // The first page is already rendered by the server; only re-fetch when the
+  // user navigates to a different page (e.g. via ?page=2).
   useEffect(() => {
+    if (!didInit.current) {
+      didInit.current = true;
+      if (initialBlogs.length > 0) return;
+    }
     let cancelled = false;
     async function loadData() {
       try {
@@ -250,34 +259,6 @@ export function BlogListClient() {
       )
     );
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
-        {/* Page Header Skeleton */}
-        <section className="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white py-16 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-5xl mx-auto text-center">
-            <div className="h-10 bg-blue-800/50 rounded-lg w-64 mx-auto mb-4 animate-pulse"></div>
-            <div className="h-6 bg-blue-800/30 rounded-lg w-96 mx-auto animate-pulse"></div>
-          </div>
-        </section>
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[1, 2, 3, 4, 5, 6].map(i => (
-              <div key={i} className="bg-white dark:bg-slate-800 rounded-2xl shadow-md overflow-hidden">
-                <div className="h-56 bg-gray-100 dark:bg-slate-700 animate-pulse" />
-                <div className="p-5 space-y-3">
-                  <div className="h-4 bg-gray-100 dark:bg-slate-700 rounded w-20 animate-pulse" />
-                  <div className="h-6 bg-gray-100 dark:bg-slate-700 rounded w-full animate-pulse" />
-                  <div className="h-4 bg-gray-100 dark:bg-slate-700 rounded w-3/4 animate-pulse" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-slate-900">

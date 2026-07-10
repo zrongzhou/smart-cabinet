@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { prisma } from '@/lib/prisma';
 import { getBaseUrl } from '@/lib/seo';
 import { buildStaticPageKeywords, buildHreflang } from '@/lib/seo-keywords';
 import { FaqClient } from './FaqClient';
@@ -6,7 +7,7 @@ import { FaqClient } from './FaqClient';
 const PAGE_META: Record<string, { title: string; description: string }> = {
   en: {
     title: 'FAQ | Qtech Tool Cabinet',
-    description: 'Frequently asked questions about Qtech smart storage, tool vending machines, RFID tool tracking, customization and after-sales support.',
+    description: 'Find answers about CNC tool vending machines, smart lockers, PPE cabinets, software integration, customization, delivery and after-sales support.',
   },
   zh: {
     title: '常见问题 | Qtech 智能工具柜',
@@ -37,6 +38,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default function Page({ params }: PageProps) {
-  return <FaqClient />;
+export default async function Page({ params }: PageProps) {
+  // V8.10: 服务端拉取 FAQ，作为 props 传给 FaqClient，确保 FAQ 内容出现在 SSR HTML。
+  const faqs = await prisma.fAQ.findMany({
+    where: { status: 'active' },
+    orderBy: { order: 'asc' },
+  });
+  return <FaqClient initialFaqs={faqs as any} />;
 }

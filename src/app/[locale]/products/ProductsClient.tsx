@@ -6,7 +6,6 @@ import { Package, LayoutGrid, Search, ChevronLeft, ChevronRight, ExternalLink } 
 import { useLocale } from '@/lib/i18n';
 import { getProductHref } from '@/lib/product-url';
 import { Product, Category } from '@/lib/api';
-import { getBaseUrl } from '@/data/unified-data';
 import OceanHeader from '@/components/OceanHeader';
 
 // ===========================================================
@@ -57,12 +56,20 @@ function categoryNameForSort(
 
 const PRODUCTS_PER_PAGE = 6;
 
-export default function ProductsClient() {
+export default function ProductsClient({
+  initialProducts = [],
+  initialCategories = [],
+}: {
+  initialProducts?: Product[];
+  initialCategories?: Category[];
+}) {
   const { locale, t } = useLocale();
   const [activeCategorySlug, setActiveCategorySlug] = useState<string>('all');
-  const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
+  // V8.10: 产品与分类内容由服务端 SSR 透传（initialProducts/initialCategories），
+  // 不再客户端拉取，确保产品卡片与链接出现在 SSR HTML 中（修复 client-swallow-SSR）。
+  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [categories, setCategories] = useState<Category[]>(initialCategories);
+  const [loading, setLoading] = useState(false);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -73,54 +80,23 @@ export default function ProductsClient() {
   // Ref to the products grid section — used to scroll into view on mobile when a filter is applied
   const productsGridRef = useRef<HTMLElement | null>(null);
 
-
-
-  // Load products and categories from API
+  // 从 URL 读取 ?category=<slug> 预选 L2 子分类（导航点击 L2 带入）。
+  // 仅匹配「子分类(L2, 含 parentId 或 parent)」，直接设 activeCategorySlug。
+  // 该预选发生在客户端挂载后，SSR 阶段仍渲染「全部」，避免 hydration 不一致。
   useEffect(() => {
-    let cancelled = false;
-    async function loadData() {
-      try {
-        const baseUrl = getBaseUrl();
-        const [productsRes, categoriesRes] = await Promise.all([
-          fetch(`${baseUrl}/api/products?status=active&pageSize=100`),
-          fetch(`${baseUrl}/api/categories`),
-        ]);
-        if (cancelled) return;
-        if (productsRes.ok) {
-          const data = await productsRes.json();
-          setProducts(data.data || data || []);
-        }
-        if (categoriesRes.ok) {
-          const data = await categoriesRes.json();
-          const cats = data || [];
-          setCategories(cats);
-
-          // 从 URL 读取 ?category=<slug> 预选 L2 子分类（导航点击 L2 带入）。
-          // 用 window.location.search 而非 useSearchParams，避免触发 Suspense 边界要求。
-          // 仅匹配「子分类(L2, 含 parentId 或 parent)」，直接设 activeCategorySlug。
-          try {
-            const params = new URLSearchParams(window.location.search);
-            const catSlug = params.get('category');
-            if (catSlug) {
-              const l2 = cats.find(
-                (c: any) => c.slug === catSlug && (c.parentId || c.parent)
-              );
-              if (l2) {
-                setActiveCategorySlug(l2.slug);
-              }
-            }
-          } catch {
-            /* 忽略 URL 解析异常，保持默认（全部）展示 */
-          }
-        }
-      } catch (e) {
-        console.error('Failed to load products/categories:', e);
-      } finally {
-        if (!cancelled) setLoading(false);
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const catSlug = params.get('category');
+      if (catSlug && initialCategories.length > 0) {
+        const l2 = initialCategories.find(
+          (c: any) => c.slug === catSlug && (c.parentId || (c as any).parent)
+        );
+        if (l2) setActiveCategorySlug(l2.slug);
       }
+    } catch {
+      /* 忽略 URL 解析异常，保持默认（全部）展示 */
     }
-    loadData();
-    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Reset page when filters change

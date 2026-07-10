@@ -35,7 +35,32 @@ export async function GET(request: NextRequest) {
       updatedAt: new Date(b.updatedAt),
     }));
 
-    const staticPages = ['', '/about', '/products', '/solutions', '/blog', '/faq', '/contact'];
+    // 核心静态页 + 23 个新增落地页（managed-items ×10、industries ×10、standalone ×3）。
+    // sitemap 仍仅生成英文 URL（用户要求：sitemap 只保留英文版）。
+    const staticPages = [
+      '', '/about', '/products', '/solutions', '/blog', '/faq', '/contact',
+      '/custom-smart-cabinet', '/factory-display', '/shipping-delivery',
+      '/managed-items/cnc-tool-management',
+      '/managed-items/ppe-safety-supplies',
+      '/managed-items/fasteners-consumables',
+      '/managed-items/documents-archives',
+      '/managed-items/employee-personal-storage',
+      '/managed-items/reusable-tools-assets',
+      '/managed-items/office-supplies',
+      '/managed-items/food-pickup-meal-collection',
+      '/managed-items/chemical-liquid-management',
+      '/managed-items/grinding-wheels-abrasive-discs',
+      '/industries/cnc-machining-precision-parts',
+      '/industries/general-manufacturing-smart-factory',
+      '/industries/metal-fabrication-aluminum-processing',
+      '/industries/mold-injection-molding-tooling',
+      '/industries/electronics-semiconductor-manufacturing',
+      '/industries/automotive-ev-components',
+      '/industries/medical-device-life-science-equipment',
+      '/industries/new-materials-cable-functional-materials',
+      '/industries/aerospace-machining-tool-management',
+      '/industries/construction-ppe-management',
+    ];
 
     // Build XML
     let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
@@ -49,7 +74,20 @@ export async function GET(request: NextRequest) {
       for (const page of staticPages) {
         const url = `${baseUrl}/${locale}${page}`;
         const changeFreq = page === '' ? 'monthly' : 'yearly';
-        const priority = page === '' ? '1.0' : page === '/products' ? '0.9' : page === '/about' ? '0.8' : '0.7';
+        const priority =
+          page === ''
+            ? '1.0'
+            : page === '/products'
+              ? '0.9'
+              : page === '/about'
+                ? '0.8'
+                : page.startsWith('/managed-items') ||
+                    page.startsWith('/industries') ||
+                    page === '/custom-smart-cabinet' ||
+                    page === '/factory-display' ||
+                    page === '/shipping-delivery'
+                  ? '0.6'
+                  : '0.7';
 
         if (seen.has(url)) continue;
         seen.add(url);

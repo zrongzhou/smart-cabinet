@@ -72,7 +72,7 @@ const SITE_URL = 'https://www.wstoolcabinet.com';
 const PAGE_META: Record<string, { title: string; description: string }> = {
   en: {
     title: 'Smart Tool Cabinets & Industrial Vending Machines | Qtech',
-    description: 'Qtech provides smart tool cabinets, CNC tool vending machines, PPE vending cabinets and RFID inventory systems for factories and machine shops.',
+    description: 'Smart cabinet manufacturer for CNC tool vending machines, PPE cabinets and MRO inventory management. Control access, track usage and reduce waste.',
   },
   zh: {
     title: '智能工具柜与工业自动售货机 | Qtech',

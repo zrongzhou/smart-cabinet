@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { ChevronDown, ChevronUp, HelpCircle, Search, MessageCircle, ArrowRight } from 'lucide-react';
 import { useLocale } from '@/lib/i18n';
-import { fetchFAQs, FAQ } from '@/lib/api';
+import { FAQ } from '@/lib/api';
 import OceanHeader from '@/components/OceanHeader';
 
 // FAQ card color themes (cycling)
@@ -15,26 +15,13 @@ const faqCardThemes = [
   { accent: '#06b6d4', bgGrad: 'linear-gradient(135deg, #ecfeff 0%, #cffafe 100%)', shadowColor: 'rgba(6,182,212,0.2)', borderGlow: '#06b6d4' },
 ];
 
-export function FaqClient() {
+export function FaqClient({ initialFaqs = [] }: { initialFaqs?: FAQ[] }) {
   const { locale: rawLocale } = useLocale();
   const locale = rawLocale || 'en';
-  const [faqs, setFaqs] = useState<FAQ[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  // Load FAQs from API
-  useEffect(() => {
-    async function loadFAQs() {
-      try {
-        const data = await fetchFAQs({ status: 'active' });
-        setFaqs(data);
-      } catch (error) {
-        console.error('Failed to load FAQs:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadFAQs();
-  }, []);
+  // V8.10: FAQ 由服务端 SSR 透传（initialFaqs），不再客户端拉取，
+  // 确保问答内容出现在 SSR HTML 中（修复 client-swallow-SSR）。
+  const [faqs, setFaqs] = useState<FAQ[]>(initialFaqs);
+  const [loading, setLoading] = useState(false);
 
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');

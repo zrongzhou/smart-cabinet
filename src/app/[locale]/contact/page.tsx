@@ -6,7 +6,7 @@ import { ContactClient } from './ContactClient';
 const PAGE_META: Record<string, { title: string; description: string }> = {
   en: {
     title: 'Contact Qtech Tool Cabinet | Request a Smart Cabinet Quote',
-    description: 'Contact Qtech for CNC tool vending machines, PPE vending cabinets, RFID smart cabinets and custom industrial inventory solutions.',
+    description: 'Contact us for CNC tool vending machines, smart lockers, PPE cabinets and MRO inventory management solutions customized for your factory.',
   },
   zh: {
     title: '联系 Qtech 智能工具柜 | 获取智能柜报价',
