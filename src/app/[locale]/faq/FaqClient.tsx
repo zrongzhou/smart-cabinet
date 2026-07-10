@@ -74,6 +74,8 @@ export function FaqClient({ initialFaqs = [] }: { initialFaqs?: FAQ[] }) {
     tracking: { zh: '追踪追溯', en: 'Tracking', ar: 'التتبع' },
     reporting: { zh: '报表导出', en: 'Reporting', ar: 'التقارير' },
     integration: { zh: '系统集成', en: 'Integration', ar: 'التكامل' },
+    // 兼容 DB 中 product（单数）与 products（复数）两种写法，避免原始英文值泄漏为 UI 文本
+    product: { zh: '产品相关', en: 'Products', ar: 'المنتجات' },
     products: { zh: '产品相关', en: 'Products', ar: 'المنتجات' },
     customization: { zh: '定制开发', en: 'Customization', ar: 'التخصيص' },
     applications: { zh: '应用场景', en: 'Applications', ar: 'التطبيقات' },
@@ -83,7 +85,8 @@ export function FaqClient({ initialFaqs = [] }: { initialFaqs?: FAQ[] }) {
   };
 
   // Dynamically build categories from actual FAQ data
-  const allCategoryIds = [...new Set(faqs.map(f => f.category))];
+  // 归一化：trim + 转小写，避免 DB 中 "product"/"Product"/" product " 等大小写/空白导致映射失败而泄漏原始英文
+  const allCategoryIds = [...new Set(faqs.map(f => (f.category || '').trim().toLowerCase()).filter(Boolean))];
   const categories = [
     { id: 'all', label: categoryLabels.all[locale] || categoryLabels.all.en },
     ...allCategoryIds.map(catId => ({
@@ -97,7 +100,7 @@ export function FaqClient({ initialFaqs = [] }: { initialFaqs?: FAQ[] }) {
     const matchesSearch = !searchQuery ||
       (locale === 'zh' ? faq.question.zh : locale === 'ar' ? faq.question.ar : faq.question.en)
         .toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = activeCategory === 'all' || faq.category === activeCategory;
+    const matchesCategory = activeCategory === 'all' || (faq.category || '').trim().toLowerCase() === activeCategory;
     return matchesSearch && matchesCategory;
   });
 

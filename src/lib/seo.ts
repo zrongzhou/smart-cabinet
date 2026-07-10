@@ -21,6 +21,12 @@ import { getProductPublicPath } from './product-url';
  * Falls back to relative URL (empty string) for client components
  */
 export function getBaseUrl(): string {
+  // 优先使用环境变量中配置的标准域名，确保所有 canonical/hreflang/og 链接一致，
+  // 避免通过服务器 IP 访问时 canonical 指向 IP 而与首页硬编码域名混用。
+  const canonicalBase = process.env.NEXT_PUBLIC_BASE_URL || process.env.SITE_URL;
+  if (canonicalBase) {
+    return canonicalBase.replace(/\/+$/, '');
+  }
   try {
     const headersList = headers();
     const host = headersList.get('host');
