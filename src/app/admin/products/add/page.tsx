@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Save, Upload, X, Plus, Trash2, Image as ImageIcon, FolderOpen, ExternalLink } from 'lucide-react';
 import { adminApi } from '@/data/unified-data';
+import { normalizeSlug } from '@/lib/slug';
+import ProductSpecsBlock from '@/components/admin/ProductSpecsBlock';
 
 export const dynamic = 'force-dynamic';
 
@@ -36,6 +38,8 @@ export default function AddProductPage() {
     specificationsEn: '',
     specificationsZh: '',
     specificationsAr: '',
+    // Canonical specs field (V8.6, [{param, value}]) — what the frontend detail page renders.
+    specs: [] as { param: string; value: string }[],
     seoKeywords: '', // Added for SEO keywords
   });
 
@@ -92,9 +96,10 @@ export default function AddProductPage() {
     }
   }, [form.nameEn]);
 
-  // Check slug uniqueness and generate unique slug
+  // Check slug uniqueness and generate unique slug (P0: normalize first so the
+  // stored slug always matches the link slug built by getProductHref).
   const generateUniqueSlug = async (baseSlug: string): Promise<string> => {
-    let slug = baseSlug;
+    let slug = normalizeSlug(baseSlug);
     let counter = 1;
     
     while (true) {
@@ -239,7 +244,7 @@ export default function AddProductPage() {
     }
     setSaving(true);
     try {
-      // Check slug uniqueness
+      // Check slug uniqueness (P0: form.slug is normalized inside generateUniqueSlug)
       const uniqueSlug = await generateUniqueSlug(form.slug);
       
       await adminApi.createProduct({
@@ -260,11 +265,9 @@ export default function AddProductPage() {
         featured: form.featured,
         hidePrice: form.hidePrice,
         order: form.order,
-        specifications: {
-          en: form.specificationsEn,
-          zh: form.specificationsZh,
-          ar: form.specificationsAr,
-        },
+        // Canonical specs (V8.6) — the field the frontend detail page renders.
+        // Legacy `specifications` is intentionally no longer written (deprecated).
+        specs: form.specs.filter(s => s.param.trim() !== ''),
         // SEO 关键词：存为三语对象，使 buildProductMetadata 能渲染到 <meta keywords>
         seoKeywords: {
           en: form.seoKeywords,
@@ -627,47 +630,11 @@ export default function AddProductPage() {
           </div>
         </div>
 
-        {/* ===== Specifications ===== */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <span className="w-1 h-6 bg-amber-500 rounded-full"></span>
-            规格参数 (Specifications)
-          </h2>
-          <p className="text-sm text-gray-500 mb-3">产品技术参数，支持三语言（可用 HTML 表格）</p>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Specifications (EN)</label>
-              <textarea
-                value={form.specificationsEn}
-                onChange={e => handleChange('specificationsEn', e.target.value)}
-                rows={5}
-                placeholder={"Dimensions: 800x600x450mm\nCapacity: 80 tool types\nPower: AC 220V 50Hz\nWeight: 180kg"}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">规格参数 (中文)</label>
-              <textarea
-                value={form.specificationsZh}
-                onChange={e => handleChange('specificationsZh', e.target.value)}
-                rows={5}
-                placeholder={"尺寸：800x600x450mm\n容量：80种刀具类型\n电源：AC 220V 50Hz\n重量：180kg"}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">المواصفات (AR)</label>
-              <textarea
-                value={form.specificationsAr}
-                onChange={e => handleChange('specificationsAr', e.target.value)}
-                rows={5}
-                placeholder={"الأبعاد: 800×600×450 مم\nالسعة: 80 نوع من الأدوات\nالطاقة: AC 220V 50Hz\nالوزن: 180 كجم"}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
-                dir="rtl"
-              />
-            </div>
-          </div>
-        </div>
+        {/* ===== Specifications (canonical specs field) ===== */}
+        <ProductSpecsBlock
+          value={form.specs}
+          onChange={(next) => handleChange('specs', next)}
+        />
 
         {/* ===== SEO Keywords ===== */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">

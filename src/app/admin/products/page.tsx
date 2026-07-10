@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { Plus, Pencil, Trash2, Loader2, Search, Filter, ChevronLeft, ChevronRight, X, Package } from 'lucide-react';
+import { Plus, Pencil, Trash2, Loader2, Search, Filter, ChevronLeft, ChevronRight, X, Package, ArrowLeft } from 'lucide-react';
 import { fetchUnifiedCategories } from '@/data/unified-data';
 
 export const dynamic = 'force-dynamic';
@@ -320,7 +320,16 @@ export default function AdminProductsPage() {
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-8 py-6">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">产品管理</h1>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/admin"
+              className="text-gray-500 hover:text-gray-700 transition-colors"
+              title="返回后台首页"
+            >
+              <ArrowLeft className="w-6 h-6" />
+            </Link>
+            <h1 className="text-3xl font-bold text-gray-900">产品管理</h1>
+          </div>
           <div className="flex items-center gap-4">
             {selectedIds.size > 0 && (
               <span className="text-base text-gray-600 font-medium">

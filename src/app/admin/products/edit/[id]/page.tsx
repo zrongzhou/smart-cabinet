@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { ArrowLeft, Save, Loader2, Upload, X, Plus, Image as ImageIcon, FolderOpen, ExternalLink, PackageX } from 'lucide-react';
 import { adminApi } from '@/data/unified-data';
 import ProductFaqBlock from '@/components/admin/ProductFaqBlock';
+import ProductSpecsBlock from '@/components/admin/ProductSpecsBlock';
+import { normalizeSlug } from '@/lib/slug';
 
 export const dynamic = 'force-dynamic';
 
@@ -63,6 +65,36 @@ function mlFieldLines(raw: any): string {
     if (Array.isArray(first)) return first.filter((x: any) => x != null).map((x: any) => String(x)).join('\n');
   }
   return '';
+}
+
+/**
+ * Best-effort migration of the legacy `specifications` field ({en,zh,ar} freeform
+ * text) into the canonical `specs` shape ([{param, value}]). Used on edit load so
+ * old products keep their parameters after we stop writing `specifications`.
+ * Each non-empty line is split on the first ":" / "：" into param + value.
+ */
+function migrateSpecificationsToSpecs(specifications: any): { param: string; value: string }[] {
+  if (!specifications) return [];
+  const text =
+    (typeof specifications === 'string' && specifications) ||
+    (specifications && typeof specifications === 'object' && (specifications.en || specifications.zh || specifications.ar)) ||
+    '';
+  if (typeof text !== 'string' || !text.trim()) return [];
+  const rows: { param: string; value: string }[] = [];
+  for (const rawLine of text.split('\n')) {
+    const line = rawLine.trim();
+    if (!line) continue;
+    const sep = line.includes('：') ? '：' : line.includes(':') ? ':' : null;
+    if (!sep) {
+      rows.push({ param: line, value: '' });
+      continue;
+    }
+    const idx = line.indexOf(sep);
+    const param = line.slice(0, idx).trim();
+    const value = line.slice(idx + sep.length).trim();
+    if (param) rows.push({ param, value });
+  }
+  return rows;
 }
 
 // 安全读取实体（分类/标签等）的展示名，避免把 trilingual 对象直接作为 React 子元素渲染，
@@ -133,6 +165,8 @@ export default function EditProductPage() {
     specificationsEn: '',
     specificationsZh: '',
     specificationsAr: '',
+    // Canonical specs field (V8.6, [{param, value}]) — what the frontend detail page renders.
+    specs: [] as { param: string; value: string }[],
     seoKeywords: '', // Added for SEO keywords
   });
 
@@ -164,9 +198,10 @@ export default function EditProductPage() {
     return Array.from(keywords).join(', ');
   };
 
-  // Check slug uniqueness and generate unique slug (excluding current product)
+  // Check slug uniqueness and generate unique slug (excluding current product).
+  // P0: normalize the base slug first so the stored slug matches the link slug.
   const generateUniqueSlug = async (baseSlug: string): Promise<string> => {
-    let slug = baseSlug;
+    let slug = normalizeSlug(baseSlug);
     let counter = 1;
     
     while (true) {
@@ -320,6 +355,17 @@ export default function EditProductPage() {
           specificationsEn: mlFieldToStr(product.specifications, 'en'),
           specificationsZh: mlFieldToStr(product.specifications, 'zh'),
           specificationsAr: mlFieldToStr(product.specifications, 'ar'),
+          // Canonical specs: prefer product.specs (the field the frontend renders).
+          // If empty but the legacy `specifications` has data, migrate it so old
+          // products keep their parameters after `specifications` is deprecated.
+          specs: Array.isArray(product.specs) && product.specs.length > 0
+            ? product.specs
+                .filter((row: any) => row && (row.param || row.value))
+                .map((row: any) => ({
+                  param: typeof row.param === 'string' ? row.param : String(row.param ?? ''),
+                  value: typeof row.value === 'string' ? row.value : (row.value ? String(row.value) : ''),
+                }))
+            : migrateSpecificationsToSpecs(product.specifications),
           images: Array.isArray(product.images) ? product.images.filter((x: any) => typeof x === 'string') : [],
           slug: product.slug != null ? String(product.slug) : '',
           status: typeof product.status === 'string' ? product.status : 'active',
@@ -455,7 +501,7 @@ export default function EditProductPage() {
     }
     setSaving(true);
     try {
-      // Check slug uniqueness
+      // Check slug uniqueness (P0: form.slug is normalized inside generateUniqueSlug)
       const slug = form.slug || form.nameEn.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || 'product-' + Date.now();
       const uniqueSlug = await generateUniqueSlug(slug);
       
@@ -472,11 +518,9 @@ export default function EditProductPage() {
           zh: form.featuresZh.split('\n').filter(l => l.trim()),
           ar: form.featuresAr.split('\n').filter(l => l.trim()),
         },
-        specifications: {
-          en: form.specificationsEn,
-          zh: form.specificationsZh,
-          ar: form.specificationsAr,
-        },
+        // Canonical specs (V8.6) — the field the frontend detail page renders.
+        // Legacy `specifications` is intentionally no longer written (deprecated).
+        specs: form.specs.filter(s => s.param.trim() !== ''),
         images: form.images,
         status: form.status,
         featured: form.featured,
@@ -975,44 +1019,11 @@ export default function EditProductPage() {
           </div>
         </div>
 
-        {/* Specifications - 参数配置 */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">参数配置 (Specifications)</h2>
-          <p className="text-sm text-gray-500 mb-3">产品技术参数，支持三语言（可用 HTML 表格）</p>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Specifications (EN)</label>
-              <textarea
-                value={form.specificationsEn}
-                onChange={e => handleChange('specificationsEn', e.target.value)}
-                rows={5}
-                placeholder={"Dimensions: 800x600x450mm\nCapacity: 80 tool types\nPower: AC 220V 50Hz\nWeight: 180kg"}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">参数配置 (中文)</label>
-              <textarea
-                value={form.specificationsZh}
-                onChange={e => handleChange('specificationsZh', e.target.value)}
-                rows={5}
-                placeholder={"尺寸：800x600x450mm\n容量：80种刀具类型\n电源：AC 220V 50Hz\n重量：180kg"}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">المواصفات (AR)</label>
-              <textarea
-                value={form.specificationsAr}
-                onChange={e => handleChange('specificationsAr', e.target.value)}
-                rows={5}
-                placeholder={"الأبعاد: 800×600×450 مم\nالسعة: 80 نوع من الأدوات\nالطاقة: AC 220V 50Hz\nالوزن: 180 كجم"}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
-                dir="rtl"
-              />
-            </div>
-          </div>
-        </div>
+        {/* Specifications - canonical specs field (V8.6, [{param, value}]) */}
+        <ProductSpecsBlock
+          value={form.specs}
+          onChange={(next) => handleChange('specs', next)}
+        />
 
         {/* ===== SEO Keywords ===== */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">

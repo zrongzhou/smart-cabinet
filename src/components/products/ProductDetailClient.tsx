@@ -531,7 +531,10 @@ export default function ProductDetailClient({
 
               {/* Specifications Tab */}
               {activeTab === 'specifications' && product._resolvedSpecs && (() => {
-                // Check if specs is a string (pre-resolved i18n HTML)
+                // Normalize specs into a key-value object so BOTH the
+                // [{param, value}] array shape and the plain key-value object
+                // shape render through the same <table> branch (P2 fix).
+                let specsObj: Record<string, any> | null = null;
                 if (typeof product._resolvedSpecs === 'string') {
                   if (!product._resolvedSpecs.trim()) return null;
                   return (
@@ -542,7 +545,18 @@ export default function ProductDetailClient({
                       />
                     </div>
                   );
+                } else if (Array.isArray(product._resolvedSpecs)) {
+                  // Array form [{param, value}] -> key-value object (dedup by param).
+                  specsObj = {};
+                  for (const row of product._resolvedSpecs) {
+                    if (row && row.param) specsObj[row.param] = row.value ?? '';
+                  }
+                } else {
+                  specsObj = product._resolvedSpecs as Record<string, any>;
                 }
+
+                if (!specsObj || Object.keys(specsObj).length === 0) return null;
+
                 // Key-value format specs
                 return (
                   <div className="prose prose-sm max-w-none">
@@ -550,7 +564,7 @@ export default function ProductDetailClient({
                       <div className="overflow-x-auto">
                         <table className="w-full text-sm min-w-[400px]">
                           <tbody>
-                            {Object.entries(product._resolvedSpecs).map(([key, value]: [string, any], index: number) => (
+                            {Object.entries(specsObj).map(([key, value]: [string, any], index: number) => (
                               <tr key={key} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                                 <td className="px-4 py-3 font-medium text-gray-900 min-w-[120px] border-r border-gray-200">
                                   {safeText(key)}

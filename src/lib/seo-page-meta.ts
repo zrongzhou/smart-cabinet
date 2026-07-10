@@ -47,6 +47,34 @@ export function pickTrilingual(value: Trilingual | undefined, locale: string | u
   return value[loc] || value.en || '';
 }
 
+/**
+ * Pick a localized meta *description*, falling back gracefully when the curated
+ * translation is missing (the Meta Description Plan spreadsheet is English-only,
+ * so zh/ar entries are intentionally empty).
+ *
+ * Fallback order (N2 fix):
+ *   1. the explicit zh/ar translation if present,
+ *   2. a localized page title (so a zh/ar page at least shows its own title
+ *      rather than raw English marketing copy),
+ *   3. the English description.
+ *
+ * We deliberately do NOT fabricate marketing copy for missing locales — callers
+ * should list such pages for a human translator (see N2 audit).
+ */
+export function pickTrilingualDescription(
+  value: Trilingual | undefined,
+  locale: string | undefined | null,
+  fallbackTitle?: string,
+): string {
+  if (!value) return fallbackTitle || '';
+  const loc = normalizeLocale(locale);
+  if (value[loc]) return value[loc];
+  if (loc !== 'en' && fallbackTitle && fallbackTitle.trim() && fallbackTitle.trim() !== (value.en || '').trim()) {
+    return fallbackTitle.trim();
+  }
+  return value.en || fallbackTitle || '';
+}
+
 // ============================================================================
 // Product meta descriptions
 // Key = the REAL product slug (verbatim from products_data.json).

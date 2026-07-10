@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { verifyAuth, unauthorizedResponse, badRequestResponse, serverErrorResponse, notFoundResponse } from '@/lib/auth';
+import { normalizeSlug } from '@/lib/slug';
 
 // 防止静态生成时连接数据库
 export const dynamic = 'force-dynamic';
@@ -132,11 +133,18 @@ export async function POST(request: NextRequest) {
       return badRequestResponse('Name, slug, and sku are required');
     }
 
+    // P0: normalize the slug server-side so the stored value always equals the
+    // link slug built by getProductHref() (prevents new-product detail 404).
+    const slug = normalizeSlug(body.slug);
+    if (!slug) {
+      return badRequestResponse('Invalid slug');
+    }
+
     // 检查 slug 和 sku 是否已存在
     const existingProduct = await prisma.product.findFirst({
       where: {
         OR: [
-          { slug: body.slug },
+          { slug },
           { sku: body.sku },
         ],
       },
@@ -148,7 +156,7 @@ export async function POST(request: NextRequest) {
 
     // 准备数据
     const productData: Prisma.ProductCreateInput = {
-      slug: body.slug,
+      slug,
       sku: body.sku,
       name: body.name || {},
       description: body.description || null,
@@ -175,6 +183,11 @@ export async function POST(request: NextRequest) {
     // V8.5 fix: bug 1 — persist the product-level FAQ list (Json) when provided.
     if (body.faq !== undefined) {
       createData.faq = body.faq ?? null;
+    }
+
+    // Canonical specs (V8.6) — the field the frontend detail page renders.
+    if (body.specs !== undefined) {
+      createData.specs = body.specs ?? null;
     }
 
     // 处理分类关联
@@ -247,12 +260,15 @@ export async function PUT(request: NextRequest) {
     }
 
     // 如果 slug 或 sku 改变了，检查是否已存在
-    if ((body.slug && body.slug !== existingProduct.slug) ||
+    // P0: normalize the incoming slug so the stored value always equals the
+    // link slug built by getProductHref().
+    const normalizedIncomingSlug = body.slug !== undefined ? normalizeSlug(body.slug) : existingProduct.slug;
+    if ((body.slug && normalizedIncomingSlug !== existingProduct.slug) ||
         (body.sku && body.sku !== existingProduct.sku)) {
       const conflictProduct = await prisma.product.findFirst({
         where: {
           OR: [
-            { slug: body.slug },
+            { slug: normalizedIncomingSlug },
             { sku: body.sku },
           ],
           NOT: { id },
@@ -268,7 +284,7 @@ export async function PUT(request: NextRequest) {
     const updateData: Prisma.ProductUpdateInput = {};
 
     if (body.name !== undefined) updateData.name = body.name;
-    if (body.slug !== undefined) updateData.slug = body.slug;
+    if (body.slug !== undefined) updateData.slug = normalizedIncomingSlug;
     if (body.sku !== undefined) updateData.sku = body.sku;
     if (body.description !== undefined) updateData.description = body.description;
     if (body.shortDescription !== undefined) updateData.shortDescription = body.shortDescription;
@@ -284,6 +300,8 @@ export async function PUT(request: NextRequest) {
     if (body.seoTitle !== undefined) updateData.seoTitle = body.seoTitle;
     if (body.seoDescription !== undefined) updateData.seoDescription = body.seoDescription;
     if (body.seoKeywords !== undefined) updateData.seoKeywords = body.seoKeywords;
+    // Canonical specs (V8.6) — the field the frontend detail page renders.
+    if (body.specs !== undefined) (updateData as Record<string, unknown>).specs = body.specs ?? null;
 
     // 处理分类关联
     if (body.categoryIds !== undefined) {
