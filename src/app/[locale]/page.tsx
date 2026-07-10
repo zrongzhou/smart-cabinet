@@ -150,8 +150,14 @@ export default async function HomePage({ params: { locale } }: HomePageProps) {
     blogItems = [];
   }
 
+  // 首页 hero 是 ssr:false 的 client 组件，其 <h1> 不会进入服务端 HTML。
+  // 这里补一个服务端渲染的 <h1>（视觉隐藏），保证 SSR 输出含唯一主标题，利于 SEO/可访问性。
+  const meta = PAGE_META[locale] || PAGE_META.en;
+  const homeH1 = meta.title.split(' | ')[0] || meta.title;
+
   return (
     <>
+      <h1 className="sr-only">{homeH1}</h1>
       <HeroSection />
       <FeaturedProducts />
       <AdvantagesSection />
