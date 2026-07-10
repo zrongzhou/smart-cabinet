@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { getMergedBlogList } from '@/lib/blogs';
+import { getBaseUrl } from '@/lib/seo';
 
 // Force dynamic rendering (this route uses request.headers)
 export const dynamic = 'force-dynamic';
@@ -16,10 +17,9 @@ export async function GET(request: NextRequest) {
   const locales = ['en'];
 
   try {
-    // Get the host from the request headers
-    const host = request.headers.get('host') || 'www.wstoolcabinet.com';
-    const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
-    const baseUrl = `${protocol}://${host}`;
+    // 统一使用 getBaseUrl()（优先环境变量 NEXT_PUBLIC_BASE_URL），保证 sitemap 的 <loc> 指向标准域名，
+    // 避免经由服务器 IP 访问时 sitemap 输出 IP 地址。
+    const baseUrl = getBaseUrl();
 
     // Fetch active products from DB
     const products = await prisma.product.findMany({
