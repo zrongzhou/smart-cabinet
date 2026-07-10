@@ -1,6 +1,5 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { headers } from 'next/headers';
 import ProductDetailClient from '@/components/products/ProductDetailClient';
 import ProductFaqSection from './ProductFaqSection';
 import { Product } from '@/lib/api';
@@ -146,11 +145,9 @@ export async function buildProductMetadata(
   const autoKeywords = buildDetailPageKeywords(productNameEn || '', productNameForKw || '', urlSlug);
   const keywords = autoKeywords.join(', ');
 
-  // Dynamically determine the base URL from the request headers
-  const headersList = await headers();
-  const host = headersList.get('host') || 'www.wstoolcabinet.com';
-  const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
-  const baseUrl = `${protocol}://${host}`;
+  // 统一使用 getBaseUrl()（优先环境变量 NEXT_PUBLIC_BASE_URL），确保所有 canonical/og/hreflang 链接一致指向标准域名，
+  // 避免经由服务器 IP 访问时 canonical 落到 IP 而与首页硬编码域名混用。
+  const baseUrl = getBaseUrl();
 
   // Construct absolute URL for og:image
   const ogImageUrl = image ? (image.startsWith('http') ? image : `${baseUrl}${image.startsWith('/') ? '' : '/'}${image}`) : '';
