@@ -106,6 +106,26 @@ function normalizeFaq(raw: any): FaqItem[] {
     }));
 }
 
+// 将 FAQ 关联表记录映射为 FaqItem[]（与 ProductFaqEditor 的 FaqItem 结构一致）。
+// 前台详情页读取的是 FAQ 关联表，故后台编辑页也应以此为数据源来展示 FAQ。
+function faqRecordsToItems(records: any[]): FaqItem[] {
+  if (!Array.isArray(records)) return [];
+  return records
+    .filter((r: any) => r && (r.question || r.answer))
+    .map((r: any) => ({
+      question: {
+        en: typeof r?.question?.en === 'string' ? r.question.en : (typeof r?.question === 'string' ? r.question : ''),
+        zh: typeof r?.question?.zh === 'string' ? r.question.zh : '',
+        ar: typeof r?.question?.ar === 'string' ? r.question.ar : '',
+      },
+      answer: {
+        en: typeof r?.answer?.en === 'string' ? r.answer.en : (typeof r?.answer === 'string' ? r.answer : ''),
+        zh: typeof r?.answer?.zh === 'string' ? r.answer.zh : '',
+        ar: typeof r?.answer?.ar === 'string' ? r.answer.ar : '',
+      },
+    }));
+}
+
 export default function EditProductPage() {
   const router = useRouter();
   const params = useParams();
@@ -361,8 +381,14 @@ export default function EditProductPage() {
             if (typeof sk === 'number') return String(sk);
             return '';
           })(),
-          // V8.5 fix: bug 1 — load the product-level FAQ list (Json).
-          faq: normalizeFaq(product.faq),
+          // V8.5 fix: bug 1 — 优先读取 FAQ 关联表（前台展示的数据源）；
+          // 关联表为空时再兜底读取产品级 faq Json。修复「后台 FAQ 不显示」：
+          // 实际 FAQ 数据存于 faqs 关联表，而 product.faq Json 为 null。
+          faq: (() => {
+            const fromRelation = faqRecordsToItems((product as any).faqs);
+            if (fromRelation.length > 0) return fromRelation;
+            return normalizeFaq(product.faq);
+          })(),
         });
         setProductFound(true);
       } catch (err: any) {

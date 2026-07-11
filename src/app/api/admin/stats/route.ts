@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
       totalMessages,
       unreadMessages,
     ] = await Promise.all([
-      prisma.product.count(),
+      prisma.product.count({ where: { deletedAt: null } }),
       prisma.blogPost.count(),
       prisma.fAQ.count(),
       prisma.category.count(),

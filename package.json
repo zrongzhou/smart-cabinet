@@ -13,7 +13,8 @@
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "seed:keywords": "tsx scripts/seed/seed-keywords.ts"
+    "seed:keywords": "tsx scripts/seed/seed-keywords.ts",
+    "seed:blog-translations": "tsx scripts/seed/seed-blog-translations.ts"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",

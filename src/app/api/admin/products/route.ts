@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
     if (id) {
       const product = await prisma.product.findFirst({
         where: { id, deletedAt: null },
-        include: { categories: true, tags: true },
+        include: { categories: true, tags: true, faqs: { orderBy: { order: 'asc' } } },
       });
       if (!product) {
         return NextResponse.json({ data: [] });
@@ -328,6 +328,25 @@ export async function PUT(request: NextRequest) {
     // V8.5 fix: bug 1 — persist the product-level FAQ list (Json) when provided.
     if (body.faq !== undefined) {
       (updateData as Record<string, unknown>).faq = body.faq ?? null;
+    }
+
+    // V8.5 fix: bug 1 — 同步产品级 FAQ 到 FAQ 关联表，使前台（读取 prisma.fAQ）能反映后台编辑结果。
+    // 数据底座为 FAQ 关联表（前台详情页取数来源），故在此同步，保证后台编辑后前台可见。
+    if (body.faq !== undefined) {
+      const faqItems: any[] = Array.isArray(body.faq) ? body.faq : [];
+      await prisma.fAQ.deleteMany({ where: { productId: id } });
+      if (faqItems.length > 0) {
+        await prisma.fAQ.createMany({
+          data: faqItems.map((item: any, idx: number) => ({
+            productId: id,
+            question: (item?.question ?? {}) as Prisma.InputJsonValue,
+            answer: (item?.answer ?? {}) as Prisma.InputJsonValue,
+            category: typeof item?.category === 'string' && item.category ? item.category : 'product',
+            order: typeof item?.order === 'number' ? item.order : idx + 1,
+            status: typeof item?.status === 'string' && item.status ? item.status : 'active',
+          })),
+        });
+      }
     }
 
     // 更新产品

@@ -216,7 +216,9 @@ export default async function ProductDetailView({ locale, lookupSlug, canonicalP
 
     product = dbProduct as any;
 
-    // v265: 取该产品已激活的 FAQ（按 order 升序），并预解析为纯字符串供客户端组件使用
+    // v265: 取该产品已激活的 FAQ（按 order 升序），并预解析为纯字符串供客户端组件使用。
+    // 主数据源为 FAQ 关联表（prisma.fAQ）；若该表为空，则兜底读取产品级 faq Json，
+    // 保证「数据存在就渲染」（specs 优先、faq Json 兜底）。
     const faqRecords = await prisma.fAQ.findMany({
       where: { productId: dbProduct.id, status: 'active' },
       orderBy: { order: 'asc' },
@@ -226,6 +228,17 @@ export default async function ProductDetailView({ locale, lookupSlug, canonicalP
       answer: translate(f.answer, locale),
       category: f.category || 'product',
     }));
+
+    // 兜底：FAQ 关联表无数据但产品自带 faq Json 时，解析 Json（兼容旧数据 / 手动编辑写入）。
+    if (resolvedFaqs.length === 0 && Array.isArray((dbProduct as any).faq)) {
+      resolvedFaqs = (dbProduct as any).faq
+        .filter((x: any) => x && (x.question || x.answer))
+        .map((x: any) => ({
+          question: typeof x.question === 'string' ? x.question : translate(x.question, locale),
+          answer: typeof x.answer === 'string' ? x.answer : translate(x.answer, locale),
+          category: 'product',
+        }));
+    }
 
     // Find related products (same category)
     const productCatIds = getCategoryIds((dbProduct as any).categories || []);
