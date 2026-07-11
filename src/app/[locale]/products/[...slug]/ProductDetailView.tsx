@@ -5,7 +5,7 @@ import ProductFaqSection from './ProductFaqSection';
 import { Product } from '@/lib/api';
 import { prisma } from '@/lib/prisma';
 import { jsonLdFAQ, jsonLdBreadcrumb, getBaseUrl } from '@/lib/seo';
-import { buildDetailPageKeywords, buildHreflang } from '@/lib/seo-keywords';
+import { buildDetailPageKeywords, buildHreflang, resolvePageKeywords } from '@/lib/seo-keywords';
 import { productMeta } from '@/lib/seo-page-meta';
 
 // Helper function to translate i18n objects
@@ -144,15 +144,9 @@ export async function buildProductMetadata(
   const urlSlug = (canonicalPath || '').split('/').pop() || '';
   const autoKeywords = buildDetailPageKeywords(productNameEn || '', productNameForKw || '', urlSlug);
 
-  // SEO 关键词策略（Task C）：优先使用后台为该语言配置的 seoKeywords（非空字符串/数组），
-  // 否则 fallback 到自动两级关键词系统。seo-keywords.ts 引擎契约保持零改动。
-  const seoKeywordsRaw = productAny.seoKeywords?.[locale];
-  const seoKeywordsStr = Array.isArray(seoKeywordsRaw)
-    ? seoKeywordsRaw.filter((x: any) => x != null).map((x: any) => String(x)).join(', ')
-    : typeof seoKeywordsRaw === 'string'
-      ? seoKeywordsRaw
-      : '';
-  const keywords = seoKeywordsStr.trim() ? seoKeywordsStr : autoKeywords.join(', ');
+  // SEO 关键词策略（manual>auto）：优先使用后台为该语言配置的 seoKeywords（非空字符串/数组），
+  // 否则 fallback 到自动两级关键词系统。通过共享 helper resolvePageKeywords 统一处理空值。
+  const keywords = resolvePageKeywords(productAny.seoKeywords?.[locale], autoKeywords);
 
   // 统一使用 getBaseUrl()（优先环境变量 NEXT_PUBLIC_BASE_URL），确保所有 canonical/og/hreflang 链接一致指向标准域名，
   // 避免经由服务器 IP 访问时 canonical 落到 IP 而与首页硬编码域名混用。

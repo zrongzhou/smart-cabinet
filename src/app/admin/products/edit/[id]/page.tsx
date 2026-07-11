@@ -532,11 +532,12 @@ export default function EditProductPage() {
         featured: form.featured,
         hidePrice: form.hidePrice,
         order: form.order,
-        // SEO 关键词：存为三语对象，使 buildProductMetadata 能渲染到 <meta keywords>
+        // SEO 关键词（manual>auto）：仅保存英文手动值到 en，zh/ar 置 null，
+        // 让产品详情页回落到自动两级关键词系统（本地化完整标题），避免英文串外溢到中/阿页。
         seoKeywords: {
-          en: form.seoKeywords,
-          zh: form.seoKeywords,
-          ar: form.seoKeywords,
+          en: form.seoKeywords || null,
+          zh: null,
+          ar: null,
         },
       });
       router.push('/admin/products');

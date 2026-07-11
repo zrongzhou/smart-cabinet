@@ -15,11 +15,9 @@
           "specs_en": "Product Model: DL80-48 / Customizable\nProduct Type: CNC Tool Vending Machine / Smart CNC Tool Cabinet\nOverall Dimensions: 1800(H) × 1165(W) × 850(D) mm\nLocker Size: 159(H) × 117(W) × 300(D) mm\nCabinet Color: Standard White / Customizable\nNet Weight: Approx. 306 kg\nCapacity: 80 independent channels + 48 side lockers\nStorage Structure: 8 layers, 10 channels per layer; side locker module for large tools and return items\nManaged Items: End mills, drills, taps, carbide inserts, reamers, boring tools, tool holders, gauges, PPE, spare parts and MRO supplies\nAccess Methods: Employee card, face recognition, PIN code, QR code\nSoftware Functions: Inventory tracking, usage records, low-stock alerts, user permission management and report export\nSystem Integration: ERP, MES, SAP and other inventory systems can be customized\nApplication: CNC machining workshops, machine shops, tool rooms, manufacturing plants and MRO warehouses\nPackage: Wooden box",
           "faq_en": "Q1: What tools can this CNC tool vending machine manage?\nA1: It can manage end mills, drills, taps, carbide inserts, reamers, boring tools, tool holders, gauges and other CNC cutting tools.\n\nQ2: Can the side lockers be used for used tool return?\nA2: Yes. The 48 side lockers can be used for used tool return, large tool storage, PPE, spare parts and other customized items.\n\nQ3: Can the cabinet track who takes each tool?\nA3: Yes. The system can record employee, item name, quantity, pickup time, return status, machine, department or cost center.\n\nQ4: Can it remind us when tools are low in stock?\nA4: Yes. Low-stock alerts can be set for each tool to support timely replenishment and avoid production delays.\n\nQ5: Can this tool vending machine connect with ERP or MES?\nA5: Yes. ERP, MES, SAP and other inventory systems can be integrated according to project requirements.",
           "seo_keywords": [
-            "CNC Tool Vending Machine",
-            "CNC tool vending machine",
-            "CNC tool cabinet",
-            "cutting tool vending machine",
-            "tool dispensing cabinet"
+            "CNC tool storage cabinet",
+            "tool dispensing cabinet",
+            "tool inventory control"
           ],
           "image_ids": [
             "ID:ID_4910167FF7D84B4CA879563D4F7C5936",
@@ -37,9 +35,9 @@
           "specs_en": "Model: DL80F\nProduct Type: CNC Tool Vending Auxiliary Cabinet / Tool Vending Expansion Cabinet\nFunction: Capacity expansion for CNC tool vending system\nOverall Dimensions: 1800(H) × 800(W) × 850(D) mm\nCabinet Color: Standard White / Customizable\nStorage Structure: Multi-layer tool dispensing channels\nManaged Items: End mills, drills, taps, carbide inserts, reamers, boring tools, tool holders, gauges and spare tools\nControl Method: Connected and managed by master cabinet\nSystem Combination: One master cabinet can connect with one or more auxiliary cabinets\nSoftware Functions: Tool issuing records, inventory tracking, user permission management, low-stock alerts and report export\nCustomization: Cabinet size, channel quantity, internal layout and managed item types can be customized\nApplication: CNC machining workshops, machine shops, tool rooms, manufacturing plants and MRO warehouses\nPackage: Wooden box",
           "faq_en": "Q1: What is the DL80F auxiliary cabinet used for?\nA1: The DL80F is used to expand the storage capacity of a CNC tool vending system. It works with a master cabinet and does not require a separate control screen.\n\nQ2: Can one master cabinet connect with more than one DL80F cabinet?\nA2: Yes. The system can support one-to-two, one-to-three or multi-cabinet combinations according to the project requirements.\n\nQ3: What tools can be stored in the DL80F cabinet?\nA3: It can store end mills, drills, taps, carbide inserts, reamers, boring tools, tool holders, gauges and other CNC cutting tools.\n\nQ4: Can the DL80F record tool usage?\nA4: Yes. Tool issuing records, user information, inventory changes and low-stock alerts are managed through the master cabinet software.\n\nQ5: Can the internal layout be customized?\nA5: Yes. The channel quantity, storage layout and managed tool types can be customized based on the size and type of tools.",
           "seo_keywords": [
-            "CNC tool storage expansion",
-            "tool dispensing cabinet",
-            "CNC tool inventory management"
+            "CNC cutting tool storage",
+            "auxiliary tool cabinet",
+            "tool vending expansion"
           ],
           "image_ids": [
             "ID:ID_5251D72AA60E4C24A64D3AF2568250C5",
@@ -57,10 +55,9 @@
           "specs_en": "Model:QT-G110\nProduct Type: Smart Tool Locker Cabinet / Industrial Tool Locker Cabinet\nStorage Type: Multi-compartment locker cabinet\nCabinet Structure: Main control cabinet + locker storage area\nManaged Items: Hand tools, power tools, molds, PPE, safety supplies, spare parts, batteries, electrical parts, maintenance kits and MRO supplies\nAccess Methods: Employee card, PIN code, QR code, face recognition / Customizable\nManagement Mode: Item pickup, item return, user permission control and inventory tracking\nSoftware Functions: Usage records, stock alerts, user management, department management, report export and inventory analysis\nCustomization: Locker size, compartment quantity, cabinet color, storage layout and software workflow can be customized\nApplication: Manufacturing plants, tool rooms, maintenance rooms, workshops, MRO warehouses and production lines\nSystem Integration: ERP, MES, SAP and other inventory systems can be customized\nPackage: Wooden box",
           "faq_en": "Q1: What materials can this smart tool locker cabinet manage?\nA1: It can manage hand tools, power tools, molds, PPE, safety supplies, spare parts, batteries, electrical parts, maintenance kits and other MRO materials.\n\nQ2: Can each locker store different items?\nA2: Yes. Each compartment can be assigned to different item types, departments or user groups according to the management requirement.\n\nQ3: Can the locker size be customized?\nA3: Yes. The locker size, compartment quantity and internal layout can be customized based on the size of tools or materials.\n\nQ4: Can it track who takes each item?\nA4: Yes. The system can record user information, pickup time, item name, quantity, department and return status.\n\nQ5: Is this cabinet suitable for MRO material management?\nA5: Yes. It is suitable for MRO warehouses, maintenance rooms and production areas that manage tools, spare parts and consumables.",
           "seo_keywords": [
-            "tool inventory cabinet",
-            "PPE locker cabinet",
-            "spare parts locker cabinet",
-            "multi compartment tool cabinet"
+            "industrial tool locker",
+            "MRO storage cabinet",
+            "PPE locker cabinet"
           ],
           "image_ids": [
             "ID:ID_58F3989212A942A38C2DFF67F0D72444",
@@ -77,12 +74,9 @@
           "specs_en": "Product Type: Modular Tool Vending System / Combined Smart Cabinet System\nSystem Structure: Main control cabinet + CNC tool vending cabinet + smart locker cabinets / Customizable\nCabinet Combination: One-to-two, one-to-three or multi-cabinet system\nManaged Items: End mills, drills, taps, carbide inserts, reamers, boring tools, tool holders, PPE, spare parts, large tools, used tools, maintenance kits and MRO supplies\nStorage Modules: CNC tool dispensing channels, auxiliary tool cabinet, smart locker compartments and side storage modules\nAccess Methods: Employee card, PIN code, QR code, face recognition / Customizable\nManagement Mode: Tool issuing, item pickup, used tool return, inventory tracking and permission control\nSoftware Functions: User management, item management, usage records, low-stock alerts, return records, report export and inventory analysis\nCustomization: Cabinet quantity, locker size, storage layout, cabinet color, software workflow and managed item categories can be customized\nApplication: CNC machining workshops, tool rooms, manufacturing plants, maintenance rooms and MRO warehouses\nSystem Integration: ERP, MES, SAP and other inventory systems can be customized\nPackage: Wooden box",
           "faq_en": "Q1: What is a modular tool vending system?\nA1: It is a combined smart cabinet system that connects CNC tool vending cabinets, auxiliary cabinets and smart locker cabinets under one management platform.\n\nQ2: What materials can this system manage?\nA2: It can manage CNC cutting tools, PPE, spare parts, large tools, used tool returns, maintenance kits and other MRO supplies.\n\nQ3: Can one master cabinet connect with several cabinets?\nA3: Yes. The system can support one-to-two, one-to-three or multi-cabinet combinations depending on storage capacity and site layout.\n\nQ4: Can it manage both tool dispensing and locker storage?\nA4: Yes. CNC tool dispensing channels and smart locker compartments can work together in one system for mixed-material management.\n\nQ5: Can the cabinet combination be customized?\nA5: Yes. Cabinet quantity, locker size, channel layout, color and software workflow can be customized according to different factory requirements.",
           "seo_keywords": [
-            "modular industrial vending machine",
-            "industrial vending machine",
-            "tool vending machine",
-            "CNC tool vending machine",
-            "smart locker vending machine",
-            "MRO vending machine"
+            "multi-cabinet vending system",
+            "MRO vending machine",
+            "tool and PPE vending"
           ],
           "image_ids": [
             "ID:ID_94A68AFBEA224875A3C5C1FBD35C3039",
@@ -100,11 +94,9 @@
           "specs_en": "Model:QT-DR6\nProduct Type: Smart Drawer Tool Cabinet / Tool Tracking Cabinet\nStorage Type: Multi-drawer cabinet with compartment layout\nCapacity: Up to 324 compartments / Customizable\nManaged Items: Calipers, micrometers, plug gauges, ring gauges, thread gauges, fixtures, jigs, molds, hand tools, tool holders and reusable assets\nAccess Methods: Employee card, PIN code, QR code, face recognition / Customizable\nManagement Mode: Tool issuing, tool return, fixed-location storage and usage tracking\nSoftware Functions: User permission management, issue records, return records, overdue reminders, inventory reports and data export\nApplication: Tool rooms, inspection rooms, CNC workshops, mold shops, maintenance areas and manufacturing plants\nCustomization: Drawer quantity, compartment size, cabinet dimensions, color and software workflow can be customized\nSystem Integration: ERP, MES, SAP and other inventory systems can be customized\nPackage: Wooden box",
           "faq_en": "Q1: What items can this smart drawer tool cabinet manage?\nA1: It can manage calipers, micrometers, plug gauges, ring gauges, thread gauges, fixtures, jigs, molds, hand tools and other reusable tools.\n\nQ2: Is this cabinet suitable for measuring tool management?\nA2: Yes. The drawer and compartment structure is very suitable for gauges, measuring tools and inspection tools that need fixed-location storage.\n\nQ3: Can the cabinet track tool return?\nA3: Yes. The system can record tool issuing and return status, helping reduce missing tools and unreturned assets.\n\nQ4: Can the drawer compartments be customized?\nA4: Yes. Drawer quantity, compartment size and internal layout can be customized according to the size and type of tools.\n\nQ5: Can it manage tools by employee or department?\nA5: Yes. Usage records can be tracked by employee, department, machine, project or cost center depending on the software setup.",
           "seo_keywords": [
-            "smart drawer tool cabinet",
-            "tool tracking cabinet",
             "gauge storage cabinet",
             "measuring tool cabinet",
-            "reusable tool management"
+            "reusable tool storage"
           ],
           "image_ids": [
             "ID:ID_BE7BA224E00C4D2ABFFDF29EEDEE4FD7",
@@ -122,11 +114,9 @@
           "specs_en": "Model:QT-G34\nProduct Type: Weight-Based Smart Vending Cabinet / Smart Weighing Cabinet\nStorage Type: Shelf storage with weighing sensor system\nManagement Method: Open door, take items, close door and automatic weight-based calculation\nManaged Items: Screws, nuts, bolts, washers, rivets, fittings, terminals, cable ties, small spare parts, electrical parts and MRO consumables\nAccess Methods: Employee card, PIN code, QR code, face recognition / Customizable\nSensor System: Built-in weighing sensors for inventory change detection\nSoftware Functions: User management, item management, pickup records, weight-based inventory tracking, low-stock alerts, report export and consumption analysis\nCustomization: Shelf quantity, bin size, cabinet dimensions, color, managed item categories and software workflow can be customized\nApplication: Manufacturing plants, assembly lines, maintenance rooms, MRO warehouses, tool rooms and production workshops\nSystem Integration: ERP, MES, SAP and other inventory systems can be customized\nPackage: Wooden box",
           "faq_en": "Q1: What is a weight-based vending cabinet?\nA1: It is a smart cabinet that uses weighing sensors to calculate inventory changes after employees take materials from the cabinet.\n\nQ2: What items are suitable for this cabinet?\nA2: It is suitable for screws, nuts, bolts, washers, rivets, fittings, terminals, cable ties, small spare parts and other bulk consumables.\n\nQ3: How does the cabinet record material pickup?\nA3: Employees log in, open the door, take items and close the door. The system detects the weight change and records the pickup automatically.\n\nQ4: Is it better than counting small parts one by one?\nA4: Yes. For bulk fasteners and consumables, weight-based management is more efficient than manual counting or single-item dispensing.\n\nQ5: Can low-stock alerts be set for each material?\nA5: Yes. Minimum stock levels can be set for each item, and the system can remind users when replenishment is needed.",
           "seo_keywords": [
-            "weight-based vending cabinet",
-            "smart weighing cabinet",
-            "fastener vending cabinet",
-            "screw vending cabinet",
-            "nuts and bolts inventory cabinet"
+            "fastener inventory cabinet",
+            "industrial consumables vending",
+            "smart weighing cabinet"
           ],
           "image_ids": [
             "ID:ID_3D2C8826245B45DC9A719D7200983079",
@@ -144,12 +134,9 @@
           "specs_en": "Product Type: Automated Micro Warehouse Cabinet / Automated Storage Cabinet\nStorage Type: Internal automated storage with robotic handling system\nManagement Mode: Item pickup, item return, fixed-position storage and return tracking\nManaged Items: Printing wheels, coding wheels, fixtures, jigs, molds, gauges, tool holders, standard parts, reusable tools and production changeover parts\nItem Type: Non-consumable, returnable and regular-shaped items\nAccess Methods: Employee card, PIN code, QR code, face recognition / Customizable\nPickup Method: Employee selects item on screen and collects it from pickup window\nReturn Method: Employee returns item through the return area, and the system places it back to the assigned internal position\nSoftware Functions: User permission management, item location management, pickup records, return records, overdue reminders, inventory status and report export\nCustomization: Cabinet size, storage capacity, tray layout, item identification method and software workflow can be customized\nApplication: Printing factories, packaging plants, manufacturing workshops, tool rooms, mold shops and production changeover areas\nSystem Integration: ERP, MES, SAP and other inventory systems can be customized\nPackage: Wooden box",
           "faq_en": "Q1: What items are suitable for this automated storage cabinet?\nA1: It is suitable for non-consumable and returnable items such as printing wheels, coding wheels, fixtures, jigs, molds, gauges, tool holders and standard production parts.\n\nQ2: Why is it suitable for printing wheels?\nA2: Printing wheels often look similar but have different specifications. The automated storage system helps employees pick the correct item and return it to the assigned position.\n\nQ3: How does the return process work?\nA3: After use, the employee returns the item to the cabinet. The internal robotic handling system places it back into its assigned storage position.\n\nQ4: Is this cabinet used for consumables like screws and nuts?\nA4: It is more suitable for reusable and returnable items. For bulk consumables such as screws, nuts and washers, a weight-based vending cabinet is usually more suitable.\n\nQ5: Can the storage positions be customized?\nA5: Yes. The internal tray layout, storage capacity and item position settings can be customized according to item size, shape and management process.",
           "seo_keywords": [
-            "automated storage cabinet",
-            "automated micro warehouse cabinet",
             "robotic storage cabinet",
-            "returnable tool cabinet",
-            "printing wheel storage cabinet",
-            "reusable parts management"
+            "reusable parts storage",
+            "automated storage cabinet"
           ],
           "image_ids": [
             "ID:ID_FF69DAFCA4CF43CAA3AD22BFE5FB1DB7"
@@ -166,12 +153,8 @@
           "faq_en": "Q1: What items can this RFID smart cabinet manage?\nA1: It can manage documents, files, archives, contracts, drawings, reusable assets, high-value items and other controlled materials.\n\nQ2: How does RFID help with document or asset management?\nA2: Each item can be attached with an RFID tag. The cabinet can identify tagged items and update inventory status more efficiently than manual checking.\n\nQ3: Can the cabinet track document borrowing and return?\nA3: Yes. The system can record who borrowed the file or asset, when it was taken, when it was returned and whether it is overdue.\n\nQ4: Is this only for file storage?\nA4: No. It can also be used for reusable assets, tools, samples, equipment parts and other items that need RFID tracking.\n\nQ5: Can the RFID cabinet be customized?\nA5: Yes. Cabinet size, compartment quantity, RFID tag type, door layout and software workflow can be customized according to the application.",
           "seo_keywords": [
             "RFID smart cabinet",
-            "RFID cabinet",
-            "RFID file cabinet",
-            "RFID file tracking system",
-            "RFID document management",
-            "RFID asset tracking system",
-            "RFID inventory cabinet"
+            "document tracking cabinet",
+            "asset management cabinet"
           ],
           "image_ids": [
             "ID:ID_67658D0CBB4543DD9C99D0B9B5510629",
@@ -196,14 +179,9 @@
           "specs_en": "Model DL60A\nMOQ 1pc\nOverall Dimensions 1600*720*600 mm\ncapacity 6x10 slots\nNetworking options  Ethernet, 4G, Wi-Fi\nItem Categories Consumables CNC inserts, end mills, drills, taps, etc\n Power consumption 100-200W\nPackage Wooden box",
           "faq_en": "Q1: What CNC tools can be managed in this smart cabinet?\nA1: It can manage common CNC cutting tools such as end mills, drills, taps, carbide inserts, reamers, boring tools, tool holders and gauges. The storage layout can be adjusted according to tool size and tool usage frequency.\n\nQ2: Can the system track tool usage by employee or machine?\nA2: Yes. Each pickup can be recorded by employee, item, quantity, time, machine, department or cost center. This helps machine shops analyze tool consumption and reduce unrecorded tool collection.\n\nQ3: Can the cabinet remind us when cutting tools are low in stock?\nA3: Yes. Minimum stock levels can be set for each tool. When the stock of end mills, inserts, drills or taps reaches the warning level, the system can send a low-stock reminder for timely replenishment.\n\nQ4: Is it suitable for tool rooms and CNC production lines?\nA4: Yes. The cabinet can be placed in a central tool room or near CNC machining centers. Operators can collect approved tools at the point of use, which reduces waiting time and improves production efficiency.\n\nQ5: Can used tools or regrinding tools be returned through the system?\nA5: Yes. Depending on the cabinet configuration, used tool return can be managed through return lockers or assigned return compartments. This is useful for tool regrinding, cost tracking and tool life management.\n\nQ6: Can the system help control CNC tool cost?\nA6: Yes. Usage data can be exported by employee, machine, department or cost center, which helps managers analyze cutting tool cost and identify abnormal consumption.\n\nQ7: Can different tools have different pickup permissions?\nA7: Yes. Permission rules can be configured by tool category, employee role, department or machining area. This helps control access to high-value tools such as carbide inserts and special tool holders.\n\nQ8: Can the cabinet manage both standard and non-standard CNC tools?\nA8: Yes. Standard tools can be stored in dispensing channels, while larger or special tools can be managed in lockers, drawers or auxiliary cabinets.\n\nQ9: Can it support multiple CNC machines or production lines?\nA9: Yes. A cabinet can serve one workshop area, and multiple cabinets can be deployed across different CNC lines or tool rooms. Usage data can be managed by site or department.\n\nQ10: Can the cabinet reduce waiting time at the tool room?\nA10: Yes. Operators can collect approved cutting tools directly from the cabinet, which reduces manual issuing work and avoids waiting when the tool room is busy or closed.",
           "seo_keywords": [
-            "CNC tool management",
-            "CNC tool vending machine",
-            "cutting tool inventory management",
+            "CNC tool storage cabinet",
             "tool dispensing cabinet",
-            "carbide insert vending cabinet",
-            "end mill vending machine",
-            "CNC tool control",
-            "machine shop tool management"
+            "tool inventory control"
           ],
           "image_ids": [
             "ID:ID_64C6B7DB65FA47B28C6EB00B65757E88",
@@ -221,13 +199,8 @@
           "specs_en": "Main Application: PPE management and safety supplies control\nManaged Items :Safety gloves, masks, goggles, respirators, helmets, earplugs, protective clothing, and safety shoes\nSuitable Locations Safety gloves, masks, goggles, respirators, helmets, earplugs, protective clothing, and safety shoes\nCore Functions: User access control, issue records, usage limits, stock alerts, and replenishment reminders\n\nCompany service\n\nCompany service\nBigger Discounts :Offer for Large Orders Bigger discounts can be offered for large orders. Prices are negotiable based on your purchase quantity and project requirements. More favorable prices can also be offered for long-term cooperation customers.\nAfter-service :We provide professional after-sales service and technical support. If there is any product or system problem, we will help customers solve it in time. Our goal is to make every customer satisfied and keep long-term business cooperation.\nRisk Free, Quality Assurance We have over 10 years of experience in smart material cabinets and industrial vending systems. All products are produced under strict quality control, including cabinet structure, electronic parts, software system, and final testing before shipment.\nCustomized Method: We can provide different cabinet types and combinations according to customer requirements, such as tool cabinets, PPE cabinets, drawer cabinets, weighing cabinets, RFID cabinets, and vending machines. Software functions can also be customized for different management needs.\nAbout Us: Our company is a professional manufacturer of smart material cabinets and industrial vending systems, focusing on MRO inventory management solutions. Our products are widely used in CNC machining, manufacturing, auto parts, catering, office, warehouse, and other industries. We help customers manage tools, spare parts, PPE, consumables, office supplies, and other materials more efficiently. You are welcome to make inquiry via info@wstoolcabinet.com and contact us at +8618122399528",
           "faq_en": "Q1: What PPE items can be managed in the vending cabinet?\nA1: The cabinet can manage work gloves, safety glasses, masks, earplugs, respirators, protective sleeves, helmets, reflective vests, shoe covers and other safety supplies used in factories and workshops.\n\nQ2: Can employees collect PPE by ID card, PIN or face recognition?\nA2: Yes. Access methods can include employee card, PIN code, QR code, account login or face recognition. The factory can choose the method that best matches its employee management process.\n\nQ3: Can the system limit how many PPE items each employee can take?\nA3: Yes. Pickup limits can be set by employee, department, item type or time period. This helps reduce over-collection of gloves, masks and other high-frequency safety supplies.\n\nQ4: Can the PPE vending cabinet help safety managers track consumption?\nA4: Yes. The system records who collected each item, when it was collected and which department it belongs to. Reports can support safety management, purchasing and cost analysis.\n\nQ5: Is the cabinet suitable for different PPE package sizes?\nA5: Yes. Locker size, compartment layout and dispensing method can be customized for small items such as earplugs and larger items such as helmets, face shields or PPE kits.\n\nQ6: Can PPE issuing rules be different for each department?\nA6: Yes. For example, welding, machining, assembly and warehouse departments can have different PPE lists and pickup limits according to safety requirements.\n\nQ7: Can the cabinet support emergency PPE access?\nA7: Yes. Emergency access rules can be configured depending on site policy. Critical safety items can also be placed in easy-access compartments.\n\nQ8: Can managers see which PPE items are used most often?\nA8: Yes. The system can generate item usage reports to show consumption trends for gloves, masks, safety glasses and other PPE supplies.\n\nQ9: Can the cabinet help reduce PPE waste?\nA9: Yes. Controlled pickup, collection limits and user records make employees more accountable and help reduce unnecessary collection of gloves and other consumables.\n\nQ10: Can PPE items with different package sizes be stored together?\nA10: Yes. Small items such as earplugs and larger items such as helmets or face shields can be stored in different lockers or customized compartments.",
           "seo_keywords": [
-            "PPE vending machine",
-            "PPE vending cabinet",
-            "safety supplies vending machine",
+            "safety supplies vending",
             "industrial PPE cabinet",
-            "glove vending machine",
-            "safety equipment vending",
-            "PPE inventory management",
             "employee PPE distribution"
           ],
           "image_ids": [
@@ -246,14 +219,9 @@
           "specs_en": "Item Description\nProduct Category Fasteners & Consumables Management\nProduct Type Smart weighing cabinet / industrial consumables vending cabinet\nMain Application Line-side storage, assembly workshop, maintenance room, MRO supply area\nManaged Items Screws, nuts, bolts, washers, rivets, clips, terminals, fittings, cable ties, O-rings, seals, gaskets, small spare parts\nInventory Method Weight-based sensing, compartment storage, or customized material tracking\nAccess Method Employee card, PIN, face recognition, QR code, or account login\nMain Functions Controlled access, automatic usage records, low-stock alerts, replenishment reminders, report export\nData Records User, item, time, department, machine number, quantity or weight change, collection reason\nSoftware Support Inventory report, consumption analysis, user permission, stock warning, ERP/MES/SAP integration\nCustom Options Cabinet size, shelf layout, weighing module, compartment quantity, color, logo, language, software workflow\nSuitable Industries CNC machining, automotive parts, electronics, metal fabrication, mold manufacturing, equipment maintenance",
           "faq_en": "Q1: Is weight-based management suitable for screws and nuts?\nA1: Yes. For bulk fasteners such as screws, nuts, bolts and washers, weight-based inventory is often more efficient than counting each piece manually. The system calculates stock changes based on weight difference.\n\nQ2: What consumables can be stored in this type of cabinet?\nA2: It can manage screws, nuts, bolts, washers, rivets, fittings, terminals, cable ties, electrical parts, small spare parts and other high-frequency MRO consumables.\n\nQ3: How does the cabinet record pickup for small parts?\nA3: Employees log in, open the cabinet or compartment, take the required materials and close the door. The system detects inventory change and records the pickup information automatically.\n\nQ4: Can different bins or shelves manage different fasteners?\nA4: Yes. Each bin, shelf or compartment can be assigned to a different SKU. The layout can be customized according to item size, packaging method and daily consumption volume.\n\nQ5: Can low-stock alerts be set for fasteners and consumables?\nA5: Yes. Minimum stock levels can be set for each item. When screws, nuts, bolts or other consumables are below the set level, the system can remind the warehouse or purchasing team to replenish.\n\nQ6: Can the cabinet manage open-bin fasteners?\nA6: Yes. Open-bin or shelf storage can be combined with weighing sensors or controlled access depending on the management method required.\n\nQ7: Can it manage fasteners by SKU?\nA7: Yes. Each SKU can be assigned to a bin, shelf, locker or weighing position. The system records item name, SKU, stock level and pickup history.\n\nQ8: Can the cabinet reduce stock errors for small parts?\nA8: Yes. Weight-based calculation and automatic pickup records reduce the need for manual counting and help keep inventory more accurate.\n\nQ9: Is it suitable for high-volume production consumables?\nA9: Yes. It is suitable for high-frequency consumables used in assembly lines, maintenance rooms, metal fabrication workshops and MRO storage areas.\n\nQ10: Can replenishment be managed by minimum stock level?\nA10: Yes. Minimum stock and warning stock levels can be set for each consumable item, helping purchasing or warehouse teams replenish before shortages happen.",
           "seo_keywords": [
-            "fastener vending machine",
-            "fastener vending cabinet",
-            "screw vending machine",
-            "nuts and bolts inventory cabinet",
-            "smart weighing cabinet",
-            "MRO consumables cabinet",
-            "small parts inventory management",
-            "industrial consumables vending"
+            "industrial vending machine",
+            "MRO consumables",
+            "screws nuts bolts vending"
           ],
           "image_ids": [
             "ID:ID_3ABB802D9F1E4E8CAC4299CAEF9B6EE9",
@@ -270,15 +238,9 @@
           "specs_en": "Item Description\nProduct Category Documents & Archives Management\nProduct Type Smart file cabinet / smart document cabinet / archive locker\nMain Application Document room, archive room, engineering office, quality department, factory file center\nManaged Items Engineering drawings, contracts, manuals, inspection records, quality documents, batch records, project files, confidential files\nAccess Method Employee card, PIN, face recognition, QR code, account login or customized access method\nFile Identification File number, drawer number, compartment number, barcode, QR code or customized document code\nMain Functions File borrowing, file return, access control, return tracking, overdue reminder, record export\nData Records User, file name, file number, drawer/compartment number, borrowing time, return time, department, document status\nCabinet Structure Multi-drawer file cabinet, smart archive cabinet, modular expansion file locker\nSoftware Support Document database, permission management, borrowing records, file search, report export\nCustom Options Cabinet size, drawer quantity, compartment size, color, logo, software language, document workflow\nSuitable Industries Manufacturing, engineering, automotive, electronics, aerospace, laboratory, quality management, office archive management",
           "faq_en": "Q1: Can the smart file cabinet record file borrowing and return?\nA1: Yes. The system can record who borrowed a file, when it was taken, when it was returned and whether the file is overdue. This helps reduce missing documents and unclear responsibility.\n\nQ2: What documents can be managed in this cabinet?\nA2: It can manage contracts, drawings, certificates, project files, technical records, archives, paper folders and other documents that need controlled borrowing and storage.\n\nQ3: Is RFID required for document management?\nA3: Not always. A standard smart file cabinet can manage files by drawer number, file code, barcode or manual selection. RFID can be added when automatic item identification is required.\n\nQ4: Can different departments have different access permissions?\nA4: Yes. Access permissions can be set by employee, department, file category or document level. This is useful for finance, engineering, quality, HR and archive departments.\n\nQ5: Can the cabinet help find files faster?\nA5: Yes. Files can be assigned to fixed drawers or compartments, and the system can show storage location and borrowing status. This reduces manual searching in file rooms.\n\nQ6: Can the cabinet manage confidential documents?\nA6: Yes. User permissions can be set for confidential files, contracts and controlled records so that only authorized employees can access them.\n\nQ7: Can overdue file returns be reminded?\nA7: Yes. The system can record expected return time and generate overdue reminders when files, drawings or archives are not returned on time.\n\nQ8: Can files be searched by name or code?\nA8: Yes. Files can be registered by name, file number, project code, drawing number or other identifiers to make searching and locating easier.\n\nQ9: Can the cabinet manage engineering drawings?\nA9: Yes. Engineering drawings, technical documents and project files can be stored in assigned drawers or compartments with borrowing records.\n\nQ10: Can the cabinet be used in government or enterprise archives?\nA10: Yes. It is suitable for enterprises, archives, government offices, factories and departments that need controlled document borrowing and return records.",
           "seo_keywords": [
-            "smart file cabinet",
             "document management cabinet",
-            "archive cabinet",
-            "file tracking cabinet",
-            "smart archive cabinet",
-            "file borrowing cabinet",
-            "secure document storage",
-            "document storage cabinet",
-            "drawing management cabinet"
+            "archive storage cabinet",
+            "work order tracking"
           ],
           "image_ids": [
             "ID:ID_CB6A53A7EBC54D50B3DA1A6EDEEED5B0",
@@ -296,15 +258,9 @@
           "specs_en": "Model QTL64\nProduct Type Smart Employee Locker Cabinet\nLocker Quantity 64 independent lockers\nDoor Type Opaque steel doors / solid metal doors\nMain Application Employee personal storage, staff lockers, workplace item storage\nManaged Items Personal belongings, bags, uniforms, workwear, documents, mobile phones, keys, small tools\nAccess Methods IC card, PIN code, face recognition, QR code, fingerprint optional\nControl System Central touchscreen control system\nScreen Size 10-inch / 15-inch touch screen optional\nCabinet Material Cold-rolled steel with powder coating\nCabinet Color White, grey, blue or customized color\nLocker Size Customizable according to item size\nOverall Dimensions Custom size available based on 64-door layout\nPower Supply AC 110V / 220V, 50/60Hz\nNetwork WiFi, Ethernet, 4G optional\nSoftware Functions User management, access records, locker status monitoring, remote management\nData Records Automatic storage and pickup records by user, time and locker number\nInstallation Indoor floor-standing installation\nSuitable Locations Factories, offices, schools, gyms, hospitals, workshops, warehouses\nCustomization Locker quantity, cabinet size, door size, color, access method and software integration can be customized",
           "faq_en": "Q1: Can employees open lockers without physical keys?\nA1: Yes. Smart lockers can support PIN code, employee card, QR code, face recognition or account login, reducing the need for manual keys and key replacement.\n\nQ2: What can employees store in the locker?\nA2: Employees can store bags, uniforms, shoes, helmets, laptops, personal belongings, visitor items and other daily workplace items depending on locker size.\n\nQ3: Can locker size and quantity be customized?\nA3: Yes. Locker quantity, door size, cabinet color, screen position and access method can be customized for factories, offices, gyms, schools or staff areas.\n\nQ4: Can one locker be assigned to one employee?\nA4: Yes. The system can support fixed locker assignment or temporary locker use, depending on the workplace management process.\n\nQ5: Is it suitable for both offices and factories?\nA5: Yes. It can be used in office buildings, factories, staff changing rooms, visitor areas, schools, gyms and other places that need organized personal storage.\n\nQ6: Can the locker be used for temporary visitors?\nA6: Yes. It can support temporary locker assignment for visitors, contractors or short-term users, depending on the software configuration.\n\nQ7: Can the system show locker occupancy?\nA7: Yes. Managers can view which lockers are occupied, available or assigned, making it easier to manage staff storage areas.\n\nQ8: Can lockers be opened remotely by an administrator?\nA8: Remote opening can be configured for authorized administrators, depending on the site security policy and software setup.\n\nQ9: Can it be used in staff changing rooms?\nA9: Yes. Employee smart lockers are suitable for staff changing rooms, factory entrances, office areas, gyms, schools and dormitory areas.\n\nQ10: Can locker records be exported?\nA10: Yes. Locker use records can be exported for administration, security review or facility management.",
           "seo_keywords": [
-            "employee smart lockers",
-            "smart locker system",
-            "staff lockers",
-            "workplace lockers",
-            "employee storage lockers",
-            "smart storage locker",
-            "office smart locker",
-            "factory employee lockers",
-            "personal storage locker"
+            "employee locker system",
+            "workplace storage locker",
+            "office smart locker"
           ],
           "image_ids": [
             "ID:ID_F963856DF83E4DCD9E94036EC05E7CB9",
@@ -322,12 +278,9 @@
           "specs_en": "Model DR128\nStorage Method Multiple independent drawers for classified material storage\nSuitable Locations Tool rooms, CNC workshops, maintenance departments, laboratories, warehouses, production lines, and MRO inventory centers\ncapacity 128 compartments\nSystem Integration Approx. 300kg\nItem Categories Consumables Optional integration with ERP, MES, SAP, WMS, and other enterprise management systems\nPower consumption 200-380W\nPackage Wooden box",
           "faq_en": "Q1: What reusable tools and assets can be managed?\nA1: The cabinet can manage calipers, micrometers, gauges, fixtures, jigs, molds, tool holders, shared tools, printing wheels and other returnable or high-value industrial assets.\n\nQ2: Can the system track whether a tool has been returned?\nA2: Yes. The system records tool checkout and return status. Managers can see which tools are in the cabinet, which tools are in use and which tools are overdue.\n\nQ3: Can each tool have a fixed storage position?\nA3: Yes. Drawer compartments, lockers or internal storage positions can be assigned to specific tools. This helps users return items to the correct location and reduces wrong placement.\n\nQ4: Is this different from consumable inventory management?\nA4: Yes. Reusable tool management focuses on checkout, return and responsibility tracking. Consumable management focuses more on stock reduction and replenishment after use.\n\nQ5: Can the cabinet reduce tool loss?\nA5: Yes. Because every pickup and return is recorded by user and time, employees become more accountable and managers can identify missing or overdue tools more quickly.\n\nQ6: Can the cabinet manage calibration tools?\nA6: Yes. Calibration tools, measuring tools and inspection gauges can be stored in assigned compartments with checkout and return records.\n\nQ7: Can the system remind users to return tools?\nA7: Yes. Overdue reminders can be configured so managers can follow up on tools that have not been returned within the expected time.\n\nQ8: Can it manage high-value shared assets?\nA8: Yes. High-value tools, fixtures, handheld devices, test equipment and reusable production assets can be managed with controlled access and usage records.\n\nQ9: Can tool condition be recorded after return?\nA9: A return workflow can be customized to include condition check, maintenance status or user remarks when the item is returned.\n\nQ10: Which cabinet type is best for reusable assets?\nA10: Smart drawer cabinets are suitable for gauges and small tools, RFID cabinets are suitable for tagged assets, and automated storage cabinets are suitable for standard-shaped returnable items.",
           "seo_keywords": [
-            "tool tracking cabinet",
-            "tool management cabinet",
-            "reusable tool tracking",
-            "asset tracking cabinet",
-            "tool checkout system",
-            "smart drawer tool cabinet"
+            "tool tracking system",
+            "reusable asset management",
+            "gauge tracking cabinet"
           ],
           "image_ids": [
             "ID:ID_D350BC1E28464F2CA08D52F6EC41336E",
@@ -345,14 +298,9 @@
           "specs_en": "Product Category Office Supplies Management\nProduct Type Office supply vending machine / smart office supply cabinet / self-service supply locker\nMain Application Office supply room, administration office, coworking space, school, corporate workplace, IT department\nManaged Items Stationery, pens, notebooks, labels, paper, toner, ink cartridges, cables, adapters, USB drives, keyboards, mice, small office tools\nAccess Method Employee card, PIN, QR code, face recognition, account login or customized access method\nMain Functions Self-service pickup, access control, automatic records, inventory tracking, low-stock alerts, report export\nData Records User, item name, quantity, pickup time, department, cost center, stock level\nCabinet Structure Multi-compartment locker, drawer cabinet, grid cabinet, mixed-size compartment cabinet\nSoftware Support Item database, user permission, department usage report, inventory warning, replenishment list\nCustom Options Cabinet size, compartment quantity, drawer size, color, logo, screen size, software language\nSuitable Users Offices, schools, coworking spaces, factories, banks, hospitals, government offices, IT departments",
           "faq_en": "Q1: What office supplies can be stored in the vending cabinet?\nA1: It can store pens, notebooks, sticky notes, paper, labels, toner, ink cartridges, USB drives, cables, chargers, adapters, keyboards, mice, batteries and other workplace supplies.\n\nQ2: Can office supply usage be tracked by department?\nA2: Yes. The system can record pickup by employee, department or cost center. This helps companies understand which departments use more stationery, toner or IT accessories.\n\nQ3: Can IT accessories and stationery be managed together?\nA3: Yes. Different locker sizes or compartments can be used for small stationery and larger IT accessories such as keyboards, mice, adapters and chargers.\n\nQ4: Can the cabinet reduce office administration work?\nA4: Yes. Employees can collect approved items by themselves, while the system records the pickup automatically. This reduces manual distribution by administrative staff.\n\nQ5: Can pickup limits be set for office consumables?\nA5: Yes. Collection limits can be set by employee, department, item type or time period to control unnecessary use of office supplies.\n\nQ6: Can the cabinet manage toner and ink cartridges?\nA6: Yes. Toner, ink cartridges, labels, paper, printer accessories and other office consumables can be stored and issued through the cabinet.\n\nQ7: Can managers set approval rules for expensive supplies?\nA7: Yes. Higher-value items such as toner, keyboards, adapters or IT accessories can require permission or approval before pickup.\n\nQ8: Can the cabinet support multiple office floors?\nA8: Yes. Cabinets can be placed on different floors or office areas, and usage data can be managed by location or department.\n\nQ9: Can employees search items on the screen?\nA9: Yes. The software interface can list available items by name, category or code, helping employees find the correct supplies faster.\n\nQ10: Can it help with monthly office supply cost analysis?\nA10: Yes. Reports can show item consumption by department, employee or cost center, making monthly office supply cost analysis easier.",
           "seo_keywords": [
-            "office supply vending machine",
-            "office supplies vending cabinet",
-            "smart office supply cabinet",
             "stationery vending machine",
-            "office inventory management",
-            "IT supplies locker",
-            "workplace supplies cabinet",
-            "office consumables management"
+            "workplace consumables",
+            "IT supplies locker"
           ],
           "image_ids": [
             "ID:ID_42BF2D2AE593414288C953E6F68D8D13",
@@ -370,16 +318,9 @@
           "specs_en": "Item Description\n\nProduct Category Food Pickup and Meal Collection\nProduct Type Smart food pickup locker / meal pickup locker / takeout locker\nMain Application Office buildings, corporate campuses, canteens, schools, hospitals, apartments, food delivery pickup points\nStored Items Takeout meals, lunch boxes, employee meals, drinks, snacks, restaurant orders, pre-ordered food\nStorage Options Ambient, heated, refrigerated, or mixed-temperature compartments\nPickup Method QR code, pickup code, employee card, PIN, touchscreen operation or customized access method\nMain Functions Order storage, compartment assignment, self-service pickup, pickup record, timeout reminder\nCabinet Structure Multi-compartment locker, master control screen, small and large compartment combination\nSoftware Support Order management, user record, pickup status, compartment status, backend management\nCustom Options Heating function, cooling function, compartment size, door quantity, cabinet color, logo, software language\nSuitable Users Office buildings, food delivery operators, property management companies, canteens, restaurants, campuses",
           "faq_en": "Q1: Can the food pickup locker provide heating or cooling?\nA1: Yes. The locker can be customized with heated, refrigerated or ambient compartments according to the food type and application scenario.\n\nQ2: How do users collect their meals?\nA2: Users can collect meals by QR code, pickup code, employee card, PIN or other configured access methods. The system can guide users to the correct compartment.\n\nQ3: Is it suitable for office buildings?\nA3: Yes. It is suitable for office lobbies, cafeterias, corporate campuses, schools, hospitals and smart building food delivery areas.\n\nQ4: What food items can be stored?\nA4: It can store takeout meals, lunch boxes, drinks, snacks, cold food, hot meals, restaurant orders, cafeteria orders and packaged food.\n\nQ5: Can different compartment sizes be combined?\nA5: Yes. Small, medium and large compartments can be combined to fit drinks, lunch boxes and larger meal packages.\n\nQ6: Can the food locker be connected with ordering systems?\nA6: System integration can be customized depending on the ordering platform, pickup code method and project requirements.\n\nQ7: Can pickup codes prevent wrong meal collection?\nA7: Yes. Each order can be linked to a pickup code or QR code, so users only open the assigned compartment for their meal.\n\nQ8: Can hot and cold food be stored in the same cabinet?\nA8: Yes. Mixed-temperature cabinet designs can combine heated, refrigerated and ambient compartments in one locker system.\n\nQ9: Can the locker be branded for restaurants or office buildings?\nA9: Yes. Cabinet color, signage, interface, logo area and door layout can be customized for corporate buildings, cafeterias or food service brands.\n\nQ10: Can the system record whether a meal has been collected?\nA10: Yes. Pickup status can be recorded, including order number, compartment, pickup time and collection result depending on software configuration.",
           "seo_keywords": [
-            "food pickup locker",
-            "smart food locker",
-            "meal pickup locker",
-            "takeout locker",
-            "contactless food pickup",
+            "meal collection locker",
             "office food locker",
-            "refrigerated food locker",
-            "heated food locker",
-            "food delivery locker",
-            "meal collection locker"
+            "takeout pickup locker"
           ],
           "image_ids": [
             "FLOAT:image2.png"
@@ -395,15 +336,9 @@
           "specs_en": "Product Category Chemical Liquid Bottle Management\nProduct Type Smart refrigerated chemical storage cabinet / temperature-controlled chemical cabinet\nMain Application Laboratory, chemical room, testing center, R&D department, factory material room\nStored Items Chemical liquid bottles, reagents, testing solutions, samples, additives, laboratory liquids\nStorage Mode Refrigerated storage, temperature-controlled storage, or customized cooling range\nAccess Method Employee card, PIN, QR code, face recognition, account login or customized method\nMain Functions Controlled access, bottle pickup record, inventory tracking, temperature monitoring, low-stock alert\nData Records User, bottle name, item code, pickup time, department, quantity, storage location, inventory status\nCabinet Structure Multi-layer shelves, transparent doors, refrigerated compartment, smart touchscreen control\nSoftware Support Item database, user permission, inventory report, temperature record, replenishment reminder\nCustom Options Cooling temperature range, shelf layout, bottle capacity, cabinet size, color, logo, software language\nSafety Options Lock control, access permission, leakage tray, alarm reminder, optional ventilation design\nSuitable Users Laboratories, chemical manufacturers, medical labs, universities, R&D centers, quality testing rooms",
           "faq_en": "Q1: Can the cabinet store chemical liquid bottles and reagents?\nA1: Yes. It can be configured for reagent bottles, lab samples, testing solutions, additives and other liquid bottle materials that need controlled access and organized storage.\n\nQ2: Is refrigerated or temperature-controlled storage available?\nA2: Yes. Cooling or temperature-controlled storage can be customized according to the storage requirements of the material. The required temperature range should be confirmed before production.\n\nQ3: Can it store flammable or corrosive liquids?\nA3: It depends on the chemical properties and safety requirements. Flammable, corrosive or hazardous liquids need to be confirmed before selecting cabinet structure, ventilation and safety options.\n\nQ4: Can bottle access be recorded?\nA4: Yes. The system can record user, time, item name, bottle status and inventory changes, helping laboratories or factories improve chemical inventory traceability.\n\nQ5: Can safety accessories be added?\nA5: Options such as leakage trays, alarms, ventilation, permission control and custom shelves can be discussed according to the material type and application environment.\n\nQ6: Can each bottle have an assigned storage position?\nA6: Yes. Bottles can be assigned to fixed shelves, compartments or positions, helping users find and return chemical bottles more accurately.\n\nQ7: Can access be limited by user role?\nA7: Yes. Access permissions can be set by user, department, project or chemical category to improve safety and responsibility control.\n\nQ8: Can the cabinet manage expiration dates?\nA8: Expiration date management can be customized in the software so users can track reagent validity and reduce expired material use.\n\nQ9: Can the system export chemical usage records?\nA9: Yes. Usage records can be exported for laboratory management, safety review, purchasing analysis or internal inventory control.\n\nQ10: What information should be confirmed before ordering?\nA10: Bottle size, material type, storage temperature, safety requirements, ventilation needs and access workflow should be confirmed before cabinet design.",
           "seo_keywords": [
-            "refrigerated chemical storage cabinet",
-            "chemical storage cabinet",
-            "smart chemical cabinet",
-            "reagent storage cabinet",
-            "liquid bottle storage cabinet",
-            "temperature controlled chemical cabinet",
-            "lab chemical cabinet",
-            "chemical inventory management",
-            "refrigerated reagent cabinet"
+            "lab reagent cabinet",
+            "liquid bottle storage",
+            "temperature controlled cabinet"
           ],
           "image_ids": [
             "ID:ID_44AC628A30D8456A8BE2FEA41527BC09",
@@ -427,12 +362,9 @@
           "specs_en": "",
           "faq_en": "Q1: What materials can be managed for CNC machining factories?\nA1: The system can manage end mills, drills, taps, carbide inserts, reamers, boring tools, gauges, tool holders, PPE, fasteners and MRO supplies.\n\nQ2: Can the cabinet track tool usage by CNC machine?\nA2: Yes. Tool pickup can be recorded by employee, machine, department, job number or cost center depending on the software setup.\n\nQ3: Can it help reduce cutting tool costs?\nA3: Yes. Usage reports help managers analyze tool consumption, reduce unrecorded collection and identify abnormal use of inserts, drills or end mills.\n\nQ4: Which cabinet is best for cutting tools?\nA4: CNC tool vending machines are best for standard cutting tools, while drawer cabinets are better for gauges and reusable measuring tools.\n\nQ5: Can used tools be returned through the system?\nA5: Yes. Used tool return can be managed through return lockers or assigned compartments depending on the cabinet configuration.\n\nQ6: Can it work for 24-hour CNC workshops?\nA6: Yes. Authorized operators can collect approved tools at any time, reducing dependence on manual tool room issuing.\n\nQ7: Can the system alert us before tools run out?\nA7: Yes. Minimum stock levels can be set for each SKU, and low-stock reminders can support timely replenishment.\n\nQ8: Can the cabinet connect with ERP or MES?\nA8: ERP, MES, SAP or other inventory systems can be integrated according to project requirements.\n\nQ9: Can the storage capacity be expanded later?\nA9: Yes. Auxiliary cabinets and modular vending systems can be added as tool SKU quantity increases.\n\nQ10: Is this suitable for precision parts manufacturers?\nA10: Yes. It is especially suitable for precision parts factories that need strict tool control, cost tracking and production continuity.",
           "seo_keywords": [
-            "CNC tool vending machine",
-            "CNC tool management",
-            "cutting tool inventory management",
-            "machine shop tool management",
-            "tool dispensing cabinet",
-            "carbide insert"
+            "CNC machining tool management",
+            "precision parts manufacturing",
+            "tool crib automation"
           ],
           "image_ids": [
             "ID:ID_690FBA587FA942C59415F33E23264716",
@@ -450,13 +382,9 @@
           "specs_en": "",
           "faq_en": "Q1: What materials can a smart factory cabinet system manage?\nA1: It can manage tools, PPE, spare parts, fasteners, office supplies, batteries, labels, maintenance kits and other MRO consumables.\n\nQ2: Can one system manage multiple departments?\nA2: Yes. Users, departments, item categories and cabinet locations can be managed through the software.\n\nQ3: Can the cabinet reduce manual warehouse issuing?\nA3: Yes. Employees can collect approved items by themselves, while the system automatically records each pickup.\n\nQ4: Is it suitable for smart factory projects?\nA4: Yes. The system supports digital inventory data, usage records, reports and optional ERP/MES integration.\n\nQ5: Can different cabinet types be combined?\nA5: Yes. Locker cabinets, drawer cabinets, weighing cabinets and vending machines can be combined for mixed material management.\n\nQ6: Can low-stock alerts be set for each SKU?\nA6: Yes. Minimum stock and warning stock levels can be set for each item.\n\nQ7: Can it support multiple factory locations?\nA7: Multiple cabinets can be deployed across different workshops, warehouses or plants depending on the software configuration.\n\nQ8: Can pickup limits be set for consumables?\nA8: Yes. Collection rules can be set by user, department, item category or time period.\n\nQ9: Can reports be exported for purchasing?\nA9: Yes. Pickup records and stock reports can support purchasing, warehouse management and cost analysis.\n\nQ10: Can cabinet layout be customized?\nA10: Yes. Locker sizes, drawer layout, weighing shelves and cabinet combinations can be customized according to material types.",
           "seo_keywords": [
-            "smart factory inventory management",
-            "industrial vending machine",
+            "smart factory inventory",
             "MRO inventory management",
-            "smart cabinet system",
-            "factory supplies vending",
-            "manufacturing inventory control",
-            "industrial supplies vending cabinet"
+            "point-of-use storage"
           ],
           "image_ids": [
             "ID:ID_C9CFB3CDBE1C4CD898B907A73C29F3D4",
@@ -474,13 +402,9 @@
           "specs_en": "",
           "faq_en": "Q1: What materials are common in metal fabrication workshops?\nA1: Common items include screws, nuts, bolts, washers, rivets, grinding discs, cutting discs, drill bits, welding tips, hand tools and PPE.\n\nQ2: Which cabinet is suitable for fasteners?\nA2: A fastener vending machine or weight-based vending cabinet is suitable for screws, nuts, bolts, washers and other bulk small parts.\n\nQ3: Can abrasive consumables be managed?\nA3: Yes. Grinding discs, cutting discs and similar workshop consumables can be managed in lockers or compartments according to size and package type.\n\nQ4: Can the system track usage by project?\nA4: A project or work order field can be added to the pickup process when project-based cost tracking is needed.\n\nQ5: Can the cabinet manage PPE for metal workshops?\nA5: Yes. PPE such as gloves, safety glasses, masks, face shields and protective sleeves can be managed through a PPE vending cabinet.\n\nQ6: Can it reduce tool loss?\nA6: Yes. Controlled access and user records help reduce missing hand tools and unrecorded material collection.\n\nQ7: Can locker sizes be customized?\nA7: Yes. Locker sizes and compartment layouts can be customized for large tools, tool kits or packaged consumables.\n\nQ8: Is the system suitable for aluminum processing plants?\nA8: Yes. It can manage cutting tools, fasteners, abrasives, measuring tools and maintenance supplies used in aluminum processing.\n\nQ9: Can low-stock alerts be set for workshop consumables?\nA9: Yes. Each item can have a minimum stock level and replenishment reminder.\n\nQ10: Can usage reports be exported?\nA10: Yes. Reports can be exported for workshop management, purchasing and cost analysis.",
           "seo_keywords": [
-            "metal fabrication tool management",
-            "fastener vending machine",
-            "industrial consumables cabinet",
-            "workshop tool cabinet",
-            "aluminum processing tools",
-            "PPE vending cabinet",
-            "MRO supplies cabinet"
+            "metal fabrication tool storage",
+            "abrasive wheel storage",
+            "PPE vending"
           ],
           "image_ids": [
             "ID:ID_30DA5689896441D59E6F422EA24511B2",
@@ -498,11 +422,8 @@
           "faq_en": "Q1: What items can be managed in a mold shop?\nA1: The system can manage mold repair tools, ejector pins, springs, screws, inserts, polishing tools, gauges, cutting tools and maintenance spare parts.\n\nQ2: Can usage be linked to mold number?\nA2: A mold number, machine number or work order field can be added to the pickup workflow when traceability is required.\n\nQ3: Which cabinet is best for mold components?\nA3: Small mold components can be managed in drawer cabinets, locker cabinets or fastener cabinets depending on size and quantity.\n\nQ4: Can technicians collect parts during night shifts?\nA4: Yes. Authorized technicians can collect approved items from the cabinet during different shifts while the system records each pickup.\n\nQ5: Can the cabinet reduce missing mold tools?\nA5: Yes. Controlled access and pickup records make tool responsibility clearer and reduce untracked borrowing.\n\nQ6: Can emergency spare parts be stored in the cabinet?\nA6: Yes. Critical mold spare parts can be stored in assigned compartments with low-stock reminders.\n\nQ7: Can cutting tools for mold machining be managed?\nA7: Yes. CNC cutting tools such as end mills, drills, taps and inserts can be managed in CNC tool vending machines.\n\nQ8: Can drawer layouts be customized?\nA8: Yes. Drawer and compartment layouts can be customized for gauges, small tools and precision mold components.\n\nQ9: Can the system export reports?\nA9: Yes. Usage and inventory reports can support maintenance review, purchasing and cost tracking.\n\nQ10: Is it suitable for injection molding factories?\nA10: Yes. It is suitable for injection molding plants that manage molds, repair tools, spare parts and production consumables.",
           "seo_keywords": [
             "mold shop tool management",
-            "injection molding spare parts cabinet",
-            "mold maintenance tools",
-            "smart tool cabinet",
-            "precision tooling inventory",
-            "mold repair tool cabinet"
+            "injection molding spare parts",
+            "tool storage cabinet"
           ],
           "image_ids": [
             "ID:ID_8E7DF381E41E40228409F404099B02DE",
@@ -520,12 +441,9 @@
           "specs_en": "",
           "faq_en": "Q1: What materials can be managed in electronics manufacturing?\nA1: The system can manage ESD gloves, finger cots, wipes, labels, tweezers, soldering tips, connectors, terminals, cable ties and small tools.\n\nQ2: Can ESD supplies be controlled by employee?\nA2: Yes. PPE and ESD consumables can be issued by employee, department, line or item category.\n\nQ3: Can pickup limits be set for consumables?\nA3: Yes. Collection frequency and quantity limits can be set for gloves, wipes, finger cots and other high-frequency items.\n\nQ4: Is it suitable for semiconductor production?\nA4: Yes. Cabinet layout and workflow can be adapted for semiconductor support areas and clean production supply management.\n\nQ5: Can it manage small tools?\nA5: Yes. Drawer and locker cabinets can manage tweezers, screwdrivers, soldering tools, inspection tools and small fixtures.\n\nQ6: Can inventory reports be exported by line?\nA6: Yes. Reports can be exported by production line, department, employee or item category.\n\nQ7: Can the cabinet manage labels and packaging consumables?\nA7: Yes. Labels, tapes, packaging accessories and other production consumables can be managed in compartments or lockers.\n\nQ8: Can different departments have different access?\nA8: Yes. User permissions can be set by department, role or item type.\n\nQ9: Can low-stock alerts be used for line-side supplies?\nA9: Yes. Low-stock alerts help replenish high-frequency production materials before shortages affect production.\n\nQ10: Can cabinet size be customized?\nA10: Yes. Cabinet size, locker quantity, drawer layout and storage structure can be customized for small SKUs and mixed materials.",
           "seo_keywords": [
-            "electronics manufacturing inventory",
-            "ESD supplies vending cabinet",
-            "semiconductor consumables management",
-            "production line inventory",
-            "smart locker cabinet",
-            "electrical manufacturing supplies"
+            "ESD supplies management",
+            "semiconductor inventory",
+            "electronics manufacturing supplies"
           ],
           "image_ids": [
             "ID:ID_898796B1D1BC4A5FA5EBEA778CD6CDF2",
@@ -542,13 +460,9 @@
           "specs_en": "",
           "faq_en": "Q1: What materials can be managed in automotive factories?\nA1: The system can manage tools, torque tools, sockets, PPE, fasteners, spare parts, labels, cable ties and MRO supplies.\n\nQ2: Can the system support multi-shift production?\nA2: Yes. Authorized employees can collect approved materials at any time, while each pickup is recorded automatically.\n\nQ3: Can it manage line-side fasteners?\nA3: Yes. Fastener vending machines or weight-based cabinets can manage screws, nuts, bolts, washers and other high-frequency small parts.\n\nQ4: Can PPE pickup be controlled?\nA4: Yes. PPE pickup can be controlled by employee, department, item category and collection frequency.\n\nQ5: Can cabinet data support lean manufacturing?\nA5: Yes. Usage reports help analyze consumption by line, department or item category, supporting lean material control.\n\nQ6: Can spare parts be managed for maintenance teams?\nA6: Yes. Smart lockers can store sensors, belts, fittings, repair kits and other maintenance spare parts.\n\nQ7: Can the system connect with ERP or MES?\nA7: ERP, MES, SAP and other systems can be integrated according to project requirements.\n\nQ8: Can cabinets be deployed across different workshops?\nA8: Yes. Multiple cabinets can be installed in assembly, machining, maintenance and warehouse areas.\n\nQ9: Can cabinet appearance be customized?\nA9: Yes. Cabinet color, logo area, screen interface and locker layout can be customized.\n\nQ10: Is it suitable for EV components factories?\nA10: Yes. It is suitable for battery component, motor, electronics, assembly and machining support areas in EV supply chains.",
           "seo_keywords": [
-            "automotive manufacturing inventory",
-            "EV components manufacturing supplies",
-            "industrial vending machine",
-            "automotive MRO cabinet",
-            "PPE vending cabinet",
-            "fastener vending machine",
-            "production line inventory management"
+            "automotive tool inventory",
+            "EV components manufacturing",
+            "MRO supplies control"
           ],
           "image_ids": [
             "ID:ID_8214DA59428345B3B8E8668719729D78",
@@ -565,12 +479,9 @@
           "specs_en": "",
           "faq_en": "Q1: What materials can be managed for medical device manufacturing?\nA1: The system can manage gloves, masks, wipes, labels, gauges, calipers, hand tools, packaging aids, small spare parts and PPE.\n\nQ2: Can PPE distribution be controlled?\nA2: Yes. PPE collection can be controlled by employee, department, item category and collection frequency.\n\nQ3: Can the cabinet manage gauges and inspection tools?\nA3: Yes. Smart drawer cabinets can store gauges, calipers and inspection tools with checkout and return records.\n\nQ4: Can usage records be exported?\nA4: Yes. Pickup records, inventory changes and usage reports can be exported for internal review and inventory control.\n\nQ5: Can the system support clean production workflows?\nA5: Cabinet layout, access workflow and item categories can be customized for clean production support areas.\n\nQ6: Can different departments have different permissions?\nA6: Yes. Permissions can be set by department, employee role or item type.\n\nQ7: Can low-stock alerts be set for production consumables?\nA7: Yes. Minimum stock levels can be set for gloves, labels, wipes and other consumables.\n\nQ8: Can the cabinet reduce manual supply distribution?\nA8: Yes. Employees can collect approved items by themselves, reducing manual work for admin or warehouse teams.\n\nQ9: Can cabinet materials or color be customized?\nA9: Cabinet color, size, compartment layout and workflow can be customized according to project needs.\n\nQ10: Is this suitable for life science equipment factories?\nA10: Yes. It is suitable for factories producing laboratory equipment, medical devices and life science instruments.",
           "seo_keywords": [
-            "medical device manufacturing supplies",
-            "PPE vending cabinet",
-            "production consumables management",
-            "smart cabinet for medical manufacturing",
-            "clean production supplies",
-            "gauge storage cabinet"
+            "medical device inventory management",
+            "PPE distribution",
+            "controlled supplies cabinet"
           ],
           "image_ids": [
             "ID:ID_E8933838D8F643779BFD0DA6E84E6FFE",
@@ -588,13 +499,9 @@
           "specs_en": "",
           "faq_en": "Q1: What materials can be managed in new materials factories?\nA1: The system can manage production tools, PPE, chemical bottles, lab samples, spare parts, labels, fittings and MRO supplies.\n\nQ2: Can chemical bottles be stored in the cabinet?\nA2: Yes. Chemical bottles and reagents can be managed with suitable cabinet configuration. Refrigerated or safety options should be confirmed based on material properties.\n\nQ3: Can production and lab materials be managed together?\nA3: Yes. Different cabinet types can be used for production workshops, laboratories, testing rooms and maintenance areas.\n\nQ4: Can the system control access to sensitive materials?\nA4: Yes. Access permissions can be set by employee, department, project or material category.\n\nQ5: Can PPE and safety supplies be included?\nA5: Yes. PPE vending cabinets can manage gloves, masks, safety glasses and other protective supplies.\n\nQ6: Can spare parts and MRO supplies be tracked?\nA6: Yes. Spare parts, sensors, fittings and maintenance kits can be stored in smart lockers or industrial supplies cabinets.\n\nQ7: Can low-stock alerts be set?\nA7: Yes. Each item can have minimum stock and warning stock settings for replenishment management.\n\nQ8: Can the cabinet be customized for cable manufacturing?\nA8: Yes. Locker size, storage layout and item categories can be customized for cable accessories, tools and consumables.\n\nQ9: Can usage reports be exported?\nA9: Yes. Reports can be exported by user, department, project or material category.\n\nQ10: What should be confirmed for chemical storage?\nA10: Bottle size, material type, temperature, ventilation, safety requirements and access process should be confirmed before production.",
           "seo_keywords": [
-            "materials manufacturing inventory",
-            "chemical storage cabinet",
-            "new materials manufacturing supplies",
-            "cable manufacturing tools",
-            "functional materials inventory",
-            "industrial vending cabinet",
-            "MRO inventory management"
+            "production consumables inventory",
+            "cable manufacturing supplies",
+            "materials inventory control"
           ],
           "image_ids": [
             "ID:ID_459CEA5E7BBF4A898F799E71B6EA7586",
@@ -619,13 +526,9 @@
           "specs_en": "",
           "faq_en": "Q1: What types of smart cabinets can be customized?\nA1: We can customize tool vending machines, PPE vending cabinets, smart locker cabinets, drawer cabinets, weighing cabinets, RFID cabinets, refrigerated cabinets, food pickup lockers and combined cabinet systems.\n\nQ2: Can the cabinet size and locker layout be customized?\nA2: Yes. Cabinet dimensions, locker size, drawer quantity, compartment layout, channel quantity and internal structure can be designed according to the material size and storage method.\n\nQ3: Can the software workflow be customized?\nA3: Yes. The workflow can include employee login, item pickup, return tracking, approval process, collection limits, low-stock alerts, report export and system integration.\n\nQ4: Can the cabinet manage special materials?\nA4: Yes. If standard cabinets are not suitable, we can design custom storage modules for special tools, large items, chemical bottles, reusable assets or materials with unique storage requirements.\n\nQ5: Can it connect with ERP, MES or SAP?\nA5: Yes. ERP, MES, SAP, OA, WMS and other systems can be integrated according to project requirements.",
           "seo_keywords": [
-            "custom industrial vending machine",
-            "custom smart cabinet",
-            "industrial vending machine solutions",
-            "custom vending cabinet",
-            "smart cabinet solutions",
-            "custom tool vending machine",
-            "custom PPE vending cabinet"
+            "custom smart tool cabinet",
+            "custom MRO vending cabinet",
+            "tool storage solution"
           ],
           "image_ids": [
             "ID:ID_20F2CC6E9B5B4B76AA16EDA3F77D5DFE",

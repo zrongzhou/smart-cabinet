@@ -1,0 +1,369 @@
+{
+  "source": "Derived from 产品标题+URL.xlsx (修改关键词) + Meta decription.xlsx (Primary+Long-Tail for Blog group). English-only per table rules.",
+  "products": [
+    {
+      "sku": "CAB-007",
+      "slug": "automated-tool-storage-system",
+      "path": "products/automated-tool-storage-system",
+      "keywords_en": [
+        "robotic storage cabinet",
+        "reusable parts storage",
+        "automated storage cabinet"
+      ]
+    },
+    {
+      "sku": "MAT-003",
+      "slug": "fastener-vending-machine",
+      "path": "applications/fastener-vending-machine",
+      "keywords_en": [
+        "industrial vending machine",
+        "MRO consumables",
+        "screws nuts bolts vending"
+      ]
+    },
+    {
+      "sku": "IND-007",
+      "slug": "medical-device-inventory-management",
+      "path": "solutions/medical-device-inventory-management",
+      "keywords_en": [
+        "medical device inventory management",
+        "PPE distribution",
+        "controlled supplies cabinet"
+      ]
+    },
+    {
+      "sku": "MAT-007",
+      "slug": "office-supply-vending-machine",
+      "path": "applications/office-supply-vending-machine",
+      "keywords_en": [
+        "stationery vending machine",
+        "workplace consumables",
+        "IT supplies locker"
+      ]
+    },
+    {
+      "sku": "MAT-008",
+      "slug": "food-pickup-locker",
+      "path": "applications/food-pickup-locker",
+      "keywords_en": [
+        "meal collection locker",
+        "office food locker",
+        "takeout pickup locker"
+      ]
+    },
+    {
+      "sku": "MAT-004",
+      "slug": "secure-document-storage-cabinet",
+      "path": "applications/secure-document-storage-cabinet",
+      "keywords_en": [
+        "document management cabinet",
+        "archive storage cabinet",
+        "work order tracking"
+      ]
+    },
+    {
+      "sku": "CAB-002",
+      "slug": "tool-vending-expansion-cabinet",
+      "path": "tool-vending-expansion-cabinet",
+      "keywords_en": [
+        "CNC cutting tool storage",
+        "auxiliary tool cabinet",
+        "tool vending expansion"
+      ]
+    },
+    {
+      "sku": "CAB-006",
+      "slug": "weight-based-vending-cabinet",
+      "path": "weight-based-vending-cabinet",
+      "keywords_en": [
+        "fastener inventory cabinet",
+        "industrial consumables vending",
+        "smart weighing cabinet"
+      ]
+    },
+    {
+      "sku": "MAT-001",
+      "slug": "tool-vending-machine-cnc-tools",
+      "path": "applications/tool-vending-machine-cnc-tools",
+      "keywords_en": [
+        "CNC cutting tools",
+        "carbide inserts",
+        "end mills",
+        "tool dispensing cabinet"
+      ]
+    },
+    {
+      "sku": "MAT-006",
+      "slug": "rfid-tool-tracking-cabinet",
+      "path": "applications/rfid-tool-tracking-cabinet",
+      "keywords_en": [
+        "tool tracking system",
+        "reusable asset management",
+        "gauge tracking cabinet"
+      ]
+    },
+    {
+      "sku": "MAT-009",
+      "slug": "refrigerated-chemical-storage-cabinet",
+      "path": "applications/refrigerated-chemical-storage-cabinet",
+      "keywords_en": [
+        "lab reagent cabinet",
+        "liquid bottle storage",
+        "temperature controlled cabinet"
+      ]
+    },
+    {
+      "sku": "MAT-002",
+      "slug": "ppe-vending-machine",
+      "path": "applications/ppe-vending-machine",
+      "keywords_en": [
+        "safety supplies vending",
+        "industrial PPE cabinet",
+        "employee PPE distribution"
+      ]
+    },
+    {
+      "sku": "IND-005",
+      "slug": "electronics-esd-supplies-inventory",
+      "path": "solutions/electronics-esd-supplies-inventory",
+      "keywords_en": [
+        "ESD supplies management",
+        "semiconductor inventory",
+        "electronics manufacturing supplies"
+      ]
+    },
+    {
+      "sku": "CAB-005",
+      "slug": "smart-drawer-tool-cabinet",
+      "path": "smart-drawer-tool-cabinet",
+      "keywords_en": [
+        "gauge storage cabinet",
+        "measuring tool cabinet",
+        "reusable tool storage"
+      ]
+    },
+    {
+      "sku": "CAB-008",
+      "slug": "rfid-asset-tracking-cabinet",
+      "path": "rfid-asset-tracking-cabinet",
+      "keywords_en": [
+        "RFID smart cabinet",
+        "document tracking cabinet",
+        "asset management cabinet"
+      ]
+    },
+    {
+      "sku": "IND-002",
+      "slug": "smart-factory-inventory-management",
+      "path": "solutions/smart-factory-inventory-management",
+      "keywords_en": [
+        "smart factory inventory",
+        "MRO inventory management",
+        "point-of-use storage"
+      ]
+    },
+    {
+      "sku": "CAB-004",
+      "slug": "modular-industrial-vending-machine",
+      "path": "modular-industrial-vending-machine",
+      "keywords_en": [
+        "multi-cabinet vending system",
+        "MRO vending machine",
+        "tool and PPE vending"
+      ]
+    },
+    {
+      "sku": "IND-008",
+      "slug": "materials-manufacturing-inventory",
+      "path": "solutions/materials-manufacturing-inventory",
+      "keywords_en": [
+        "production consumables inventory",
+        "cable manufacturing supplies",
+        "materials inventory control"
+      ]
+    },
+    {
+      "sku": "CAB-003",
+      "slug": "smart-tool-locker-cabinet",
+      "path": "smart-tool-locker-cabinet",
+      "keywords_en": [
+        "industrial tool locker",
+        "MRO storage cabinet",
+        "PPE locker cabinet"
+      ]
+    },
+    {
+      "sku": "OTH-001",
+      "slug": "custom-industrial-vending-machine",
+      "path": "solutions/custom-industrial-vending-machine",
+      "keywords_en": [
+        "custom smart tool cabinet",
+        "custom MRO vending cabinet",
+        "tool storage solution"
+      ]
+    },
+    {
+      "sku": "MAT-005",
+      "slug": "smart-locker-system",
+      "path": "applications/smart-locker-system",
+      "keywords_en": [
+        "employee locker system",
+        "workplace storage locker",
+        "office smart locker"
+      ]
+    },
+    {
+      "sku": "IND-003",
+      "slug": "metal-fabrication-tool-management",
+      "path": "solutions/metal-fabrication-tool-management",
+      "keywords_en": [
+        "metal fabrication tool storage",
+        "abrasive wheel storage",
+        "PPE vending"
+      ]
+    },
+    {
+      "sku": "IND-004",
+      "slug": "mold-shop-tool-management",
+      "path": "solutions/mold-shop-tool-management",
+      "keywords_en": [
+        "mold shop tool management",
+        "injection molding spare parts",
+        "tool storage cabinet"
+      ]
+    },
+    {
+      "sku": "IND-001",
+      "slug": "cnc-machining-tool-management",
+      "path": "solutions/cnc-machining-tool-management",
+      "keywords_en": [
+        "CNC machining tool management",
+        "precision parts manufacturing",
+        "tool crib automation"
+      ]
+    },
+    {
+      "sku": "CAB-001",
+      "slug": "tool-vending-machine-cnc-tools",
+      "path": "products/tool-vending-machine-cnc-tools",
+      "keywords_en": [
+        "CNC tool storage cabinet",
+        "tool dispensing cabinet",
+        "tool inventory control"
+      ]
+    },
+    {
+      "sku": "IND-006",
+      "slug": "automotive-ev-parts-inventory",
+      "path": "solutions/automotive-ev-parts-inventory",
+      "keywords_en": [
+        "automotive tool inventory",
+        "EV components manufacturing",
+        "MRO supplies control"
+      ]
+    }
+  ],
+  "blogs": [
+    {
+      "slug": "ppe-vending-machine-safety-supplies-management",
+      "title": "How PPE Vending Machines Improve Safety Supplies Management",
+      "keywords_en": [
+        "PPE vending machine",
+        "PPE inventory management",
+        "safety supplies control",
+        "construction PPE cabinet"
+      ]
+    },
+    {
+      "slug": "cutting-tool-distributors-tool-vending-machine",
+      "title": "How Cutting Tool Distributors Can Grow Sales with Tool Vending Machines",
+      "keywords_en": [
+        "cutting tool distributor",
+        "tool vending machine business model",
+        "tool supplier growth",
+        "vending cabinet partnership"
+      ]
+    },
+    {
+      "slug": "tool-vending-machine-functions-cnc-workshop",
+      "title": "Key Tool Vending Machine Functions That Reduce Tool Waste",
+      "keywords_en": [
+        "tool vending machine functions",
+        "tool issue limits",
+        "used tool return",
+        "tool life tracking",
+        "CNC workshop tool control"
+      ]
+    },
+    {
+      "slug": "manual-tool-crib-to-smart-tool-cabinet",
+      "title": "From Manual Tool Crib to Smart Factory",
+      "keywords_en": [
+        "manual tool crib",
+        "smart tool cabinet",
+        "factory digital transformation",
+        "MRO inventory automation"
+      ]
+    },
+    {
+      "slug": "how-to-choose-cnc-tool-vending-machine",
+      "title": "How to Choose the Right CNC Tool Vending Machine",
+      "keywords_en": [
+        "choose CNC tool vending machine",
+        "tool vending cabinet selection",
+        "machine shop inventory control",
+        "CNC tooling storage"
+      ]
+    },
+    {
+      "slug": "tool-vending-machine-roi-guide",
+      "title": "Tool Vending Machine ROI Guide",
+      "keywords_en": [
+        "tool vending machine ROI",
+        "tool cost reduction",
+        "CNC tool inventory savings",
+        "industrial vending ROI"
+      ]
+    },
+    {
+      "slug": "mro-inventory-management-best-practices",
+      "title": "MRO Inventory Management Best Practices",
+      "keywords_en": [
+        "MRO inventory management",
+        "MRO vending machine",
+        "spare parts control",
+        "maintenance inventory cabinet"
+      ]
+    },
+    {
+      "slug": "grinding-wheel-storage-ppe-management",
+      "title": "Grinding Wheel Storage and PPE Management",
+      "keywords_en": [
+        "grinding wheel storage",
+        "abrasive wheel cabinet",
+        "cutting disc storage",
+        "PPE vending for fabrication"
+      ]
+    },
+    {
+      "slug": "smart-locker-cabinet-vs-tool-room",
+      "title": "Smart Locker Cabinet vs Traditional Tool Room",
+      "keywords_en": [
+        "smart locker cabinet",
+        "traditional tool room",
+        "industrial tool locker",
+        "MRO storage comparison"
+      ]
+    },
+    {
+      "slug": "smart-cabinet-erp-mes-sap-integration",
+      "title": "How Smart Cabinets Connect ERP, MES and SAP",
+      "keywords_en": [
+        "smart cabinet ERP integration",
+        "MES inventory integration",
+        "SAP tool management",
+        "industrial vending software"
+      ]
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import { getBaseUrl, jsonLdArticle } from '@/lib/seo';
-import { buildDetailPageKeywords, buildHreflang } from '@/lib/seo-keywords';
+import { buildDetailPageKeywords, buildHreflang, resolvePageKeywords } from '@/lib/seo-keywords';
 import { blogMeta, pickTrilingual } from '@/lib/seo-page-meta';
 import staticBlogs from '@/data/blogs';
 import BlogDetailClient, { BlogDetailDTO } from './BlogDetailClient';
@@ -67,7 +67,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   // 优先查数据库（新增博客只在 DB）。DB slug 格式不统一，兼容带/不带 .html
   const blog = await prisma.blogPost.findFirst({
     where: { slug: { in: [fullSlug, rawSlug] }, deletedAt: null },
-    select: { title: true, excerpt: true, publishedAt: true, image: true },
+    select: { title: true, excerpt: true, publishedAt: true, image: true, seoKeywords: true },
   });
 
   // DB 无记录时回退到静态兜底数据
@@ -77,7 +77,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const enTitle = (titleObj.en || rawSlug) as string;
   const displayTitle = (titleObj[loc] || enTitle) as string;
-  const keywords = buildDetailPageKeywords(enTitle, displayTitle, rawSlug);
+  // SEO 关键词（manual>auto）：优先使用后台手动设置的 seoKeywords（逗号分隔串），
+  // 留空则回落到自动两级关键词生成器。resolvePageKeywords 返回已 join 的串。
+  const manualKw = (blog?.seoKeywords as unknown as string | null) || '';
+  const keywords = resolvePageKeywords(manualKw, buildDetailPageKeywords(enTitle, displayTitle, rawSlug));
   const { canonical, languages } = buildHreflang(getBaseUrl(), loc, `blog/${fullSlug}`);
 
   // V8.10: 优先使用 xlsx 策划的 blogMeta 描述（按真实 slug 匹配），回退到 DB excerpt
@@ -91,7 +94,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: `${enTitle} | Qtech`,
     description,
-    keywords: keywords.join(', '),
+    keywords: keywords,
     alternates: { canonical, languages },
   };
 }

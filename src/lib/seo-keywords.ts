@@ -220,3 +220,21 @@ export function buildHreflang(
     },
   };
 }
+
+/**
+ * 关键词优先级解析（manual>auto）。
+ *  - manual 非空（字符串或数组）→ 优先使用手动值（数组会 join 成逗号分隔串）。
+ *  - manual 为空 / null / undefined / 空串 / 全空格 → 回退到自动生成的关键词 auto（join 成串）。
+ * 用于产品详情页（ProductDetailView）与博客详情页（blog/[slug]），实现
+ * 「后台手动设置优先，留空则回落到自动生成器」的硬规则。
+ * 不触及 buildDetailPageKeywords / looksLikeModel 等既有引擎契约。
+ */
+export function resolvePageKeywords(
+  manual: string | string[] | null | undefined,
+  auto: string[],
+): string {
+  const s = Array.isArray(manual)
+    ? manual.filter(Boolean).map(String).join(', ')
+    : (manual || '').toString().trim();
+  return s ? s : auto.join(', ');
+}
