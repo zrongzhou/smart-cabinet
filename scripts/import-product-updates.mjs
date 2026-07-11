@@ -58,6 +58,19 @@ function normalizeSlug(raw) {
   return normalizeLeaf(value);
 }
 
+/**
+ * 将「公开路径」反推为「库内存储 slug」。
+ * 与 src/lib/product-url.ts 的 getProductPublicPath 互逆：
+ *   - 柜体产品（products 路由）按 leaf 存/查，故 products/xxx -> xxx（去掉前缀）
+ *   - solutions/yyy、applications/zzz、或无前缀 leaf -> 原样保留（这些路由预拼前缀查库）
+ * 这样才能保证：getProductHref(slug) 生成的公开链接 === 路由查库用的 slug。
+ */
+function toStoredSlug(publicPath) {
+  if (!publicPath) return '';
+  if (publicPath.startsWith('products/')) return publicPath.slice('products/'.length);
+  return publicPath;
+}
+
 function asStr(v) {
   if (v == null) return '';
   if (Array.isArray(v)) return v.filter((x) => x != null).map(String).join(', ');
@@ -107,9 +120,11 @@ async function main() {
         }
       }
 
-      // 3) slug -> 规范化后更新（冲突则跳过）
+      // 3) slug -> 反推为「库内存储 slug」后规范化更新（冲突则跳过）
+      //    entry.slug 来自 Excel/URL，是公开路径（如 products/xxx、solutions/yyy），
+      //    需经 toStoredSlug 反转为存储 slug 再写库。
       if (entry.slug) {
-        const ns = normalizeSlug(entry.slug);
+        const ns = toStoredSlug(normalizeSlug(entry.slug));
         if (ns && ns !== product.slug) {
           const conflict = await prisma.product.findFirst({
             where: { slug: ns, NOT: { id: product.id } },

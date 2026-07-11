@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   // 全站关键词以英文为主：主词从英文标题提炼，二级用本语言标题核心（仅本语言页出现）
   // 标题不带 " | " 分隔符，避免 buildStaticPageKeywords 按 | 切分后只保留第一段（"faq"），
   // 从而保证英文关键词由完整英文标题提炼出多个词元（faq, ws, tool, cabinet）。
-  const en = 'FAQ WS Tool Cabinet';
+  const en = 'FAQ Qtech';
   const keywords = buildStaticPageKeywords(en, meta.title).join(', ');
   const { canonical, languages } = buildHreflang(getBaseUrl(), locale, '/faq');
   return {

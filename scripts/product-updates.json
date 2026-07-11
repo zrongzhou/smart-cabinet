@@ -2,7 +2,7 @@
   {
     "sku": "CAB-007",
     "title": "Automated Tool Storage System for Printing Wheels and Reusable Parts",
-    "slug": "products/automated-tool-storage-system",
+    "slug": "products/automated-tool-storage-system.html",
     "keywords": "robotic storage cabinet, reusable parts storage, automated storage cabinet",
     "oldUrl": "https://www.wstoolcabinet.com/en/automated-storage-cabinet.html",
     "newUrl": "https://www.wstoolcabinet.com/en/products/automated-tool-storage-system.html"
@@ -18,7 +18,7 @@
   {
     "sku": "IND-007",
     "title": "Industrial Vending Machine for Medical Device Manufacturing Supplies",
-    "slug": "solutions/medical-device-inventory-management",
+    "slug": "solutions/medical-device-inventory-management.html",
     "keywords": "medical device inventory management, PPE distribution, controlled supplies cabinet",
     "oldUrl": "https://www.wstoolcabinet.com/en/solutions/medical-device-manufacturing-supplies.html",
     "newUrl": "https://www.wstoolcabinet.com/en/solutions/medical-device-inventory-management.html"
@@ -42,7 +42,7 @@
   {
     "sku": "MAT-004",
     "title": "Secure Document Storage Cabinet for Archives, Work Orders and File Tracking",
-    "slug": "applications/secure-document-storage-cabinet",
+    "slug": "applications/secure-document-storage-cabinet.html",
     "keywords": "document management cabinet, archive storage cabinet, work order tracking",
     "oldUrl": "https://www.wstoolcabinet.com/en/applications/smart-file-cabinet.html",
     "newUrl": "https://www.wstoolcabinet.com/en/applications/secure-document-storage-cabinet.html"
@@ -66,7 +66,7 @@
   {
     "sku": "MAT-001",
     "title": "Tool Vending Machine for CNC Cutting Tools, Inserts and End Mills",
-    "slug": "applications/tool-vending-machine-cnc-tools",
+    "slug": "applications/tool-vending-machine-cnc-tools.html",
     "keywords": "CNC cutting tools, carbide inserts, end mills, tool dispensing cabinet",
     "oldUrl": "https://www.wstoolcabinet.com/en/applications/cnc-tool-vending-machine.html",
     "newUrl": "https://www.wstoolcabinet.com/en/applications/tool-vending-machine-cnc-tools.html"
@@ -74,7 +74,7 @@
   {
     "sku": "MAT-006",
     "title": "RFID Tool Tracking Cabinet for Gauges, Fixtures and Reusable Assets",
-    "slug": "applications/rfid-tool-tracking-cabinet",
+    "slug": "applications/rfid-tool-tracking-cabinet.html",
     "keywords": "tool tracking system, reusable asset management, gauge tracking cabinet",
     "oldUrl": "https://www.wstoolcabinet.com/en/applications/tool-tracking-system.html",
     "newUrl": "https://www.wstoolcabinet.com/en/applications/rfid-tool-tracking-cabinet.html"
@@ -82,7 +82,7 @@
   {
     "sku": "MAT-009",
     "title": "Refrigerated Chemical Storage Cabinet for Lab Reagents and Liquid Bottles",
-    "slug": "applications/refrigerated-chemical-storage-cabinet",
+    "slug": "applications/refrigerated-chemical-storage-cabinet.html",
     "keywords": "lab reagent cabinet, liquid bottle storage, temperature controlled cabinet",
     "oldUrl": "https://www.wstoolcabinet.com/en/applications/chemical-storage-cabinet.html",
     "newUrl": "https://www.wstoolcabinet.com/en/applications/refrigerated-chemical-storage-cabinet.html"
@@ -98,7 +98,7 @@
   {
     "sku": "IND-005",
     "title": "Industrial Vending Cabinet for Electronics, Semiconductor and ESD Supplies",
-    "slug": "solutions/electronics-esd-supplies-inventory",
+    "slug": "solutions/electronics-esd-supplies-inventory.html",
     "keywords": "ESD supplies management, semiconductor inventory, electronics manufacturing supplies",
     "oldUrl": "https://www.wstoolcabinet.com/en/solutions/electronics-manufacturing-inventory.html",
     "newUrl": "https://www.wstoolcabinet.com/en/solutions/electronics-esd-supplies-inventory.html"
@@ -194,7 +194,7 @@
   {
     "sku": "CAB-001",
     "title": "Tool Vending Machine for CNC Cutting Tools and Tool Inventory Control",
-    "slug": "products/tool-vending-machine-cnc-tools",
+    "slug": "products/tool-vending-machine-cnc-tools.html",
     "keywords": "CNC tool storage cabinet, tool dispensing cabinet, tool inventory control",
     "oldUrl": "https://www.wstoolcabinet.com/en/cnc-tool-vending-machines.html",
     "newUrl": "https://www.wstoolcabinet.com/en/products/tool-vending-machine-cnc-tools.html"
@@ -202,7 +202,7 @@
   {
     "sku": "IND-006",
     "title": "Industrial Vending Machine for Automotive and EV Parts Manufacturing",
-    "slug": "solutions/automotive-ev-parts-inventory",
+    "slug": "solutions/automotive-ev-parts-inventory.html",
     "keywords": "automotive tool inventory, EV components manufacturing, MRO supplies control",
     "oldUrl": "https://www.wstoolcabinet.com/en/solutions/automotive-manufacturing-inventory.html",
     "newUrl": "https://www.wstoolcabinet.com/en/solutions/automotive-ev-parts-inventory.html"

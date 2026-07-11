@@ -1,47 +1,47 @@
 [
   {
-    "source": "/en/automated-storage-cabinet",
-    "destination": "/en/products/automated-tool-storage-system",
+    "source": "/en/automated-storage-cabinet.html",
+    "destination": "/en/products/automated-tool-storage-system.html",
     "permanent": true
   },
   {
-    "source": "/en/solutions/medical-device-manufacturing-supplies",
-    "destination": "/en/solutions/medical-device-inventory-management",
+    "source": "/en/solutions/medical-device-manufacturing-supplies.html",
+    "destination": "/en/solutions/medical-device-inventory-management.html",
     "permanent": true
   },
   {
-    "source": "/en/applications/smart-file-cabinet",
-    "destination": "/en/applications/secure-document-storage-cabinet",
+    "source": "/en/applications/smart-file-cabinet.html",
+    "destination": "/en/applications/secure-document-storage-cabinet.html",
     "permanent": true
   },
   {
-    "source": "/en/applications/cnc-tool-vending-machine",
-    "destination": "/en/applications/tool-vending-machine-cnc-tools",
+    "source": "/en/applications/cnc-tool-vending-machine.html",
+    "destination": "/en/applications/tool-vending-machine-cnc-tools.html",
     "permanent": true
   },
   {
-    "source": "/en/applications/tool-tracking-system",
-    "destination": "/en/applications/rfid-tool-tracking-cabinet",
+    "source": "/en/applications/tool-tracking-system.html",
+    "destination": "/en/applications/rfid-tool-tracking-cabinet.html",
     "permanent": true
   },
   {
-    "source": "/en/applications/chemical-storage-cabinet",
-    "destination": "/en/applications/refrigerated-chemical-storage-cabinet",
+    "source": "/en/applications/chemical-storage-cabinet.html",
+    "destination": "/en/applications/refrigerated-chemical-storage-cabinet.html",
     "permanent": true
   },
   {
-    "source": "/en/solutions/electronics-manufacturing-inventory",
-    "destination": "/en/solutions/electronics-esd-supplies-inventory",
+    "source": "/en/solutions/electronics-manufacturing-inventory.html",
+    "destination": "/en/solutions/electronics-esd-supplies-inventory.html",
     "permanent": true
   },
   {
-    "source": "/en/cnc-tool-vending-machines",
-    "destination": "/en/products/tool-vending-machine-cnc-tools",
+    "source": "/en/cnc-tool-vending-machines.html",
+    "destination": "/en/products/tool-vending-machine-cnc-tools.html",
     "permanent": true
   },
   {
-    "source": "/en/solutions/automotive-manufacturing-inventory",
-    "destination": "/en/solutions/automotive-ev-parts-inventory",
+    "source": "/en/solutions/automotive-manufacturing-inventory.html",
+    "destination": "/en/solutions/automotive-ev-parts-inventory.html",
     "permanent": true
   }
 ]

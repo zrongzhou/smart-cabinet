@@ -10,7 +10,7 @@ export const managedItems: LandingContent[] = [
   {
     slug: 'cnc-tool-management',
     name: { en: 'CNC Tool Management Cabinets', zh: '', ar: '' },
-    metaTitle: 'CNC Tool Management Cabinets | WS Tool Cabinet',
+    metaTitle: 'CNC Tool Management Cabinets | Qtech',
     intro: [
       'CNC tool management cabinets give machine shops full control over cutting tools, from carbide inserts and end mills to drills, taps and tool holders. Every issue and return is recorded by user, so you always know who has which tool and when it was taken.',
       'With employee limits, return tracking and real-time inventory reports, supervisors can stop tool waste, reduce search time and plan regrinding before a tool runs out.',
@@ -24,7 +24,7 @@ export const managedItems: LandingContent[] = [
   {
     slug: 'ppe-safety-supplies',
     name: { en: 'PPE & Safety Supplies Vending', zh: '', ar: '' },
-    metaTitle: 'PPE & Safety Supplies Vending | WS Tool Cabinet',
+    metaTitle: 'PPE & Safety Supplies Vending | Qtech',
     intro: [
       'PPE inventory management cabinets keep gloves, masks, goggles, respirators and safety gear available exactly where workers need them, without a staffed storeroom.',
       'Controlled access and low-stock alerts prevent both waste and stockouts, so your team stays protected and compliant on every shift.',
@@ -38,7 +38,7 @@ export const managedItems: LandingContent[] = [
   {
     slug: 'fasteners-consumables',
     name: { en: 'Fastener & Consumables Vending', zh: '', ar: '' },
-    metaTitle: 'Fastener & Consumables Vending Cabinets | WS Tool Cabinet',
+    metaTitle: 'Fastener & Consumables Vending Cabinets | Qtech',
     intro: [
       'Fastener and consumables cabinets manage screws, nuts, bolts, washers, rivets and small parts with automated pickup records, so the right component is always within reach of the line.',
       'By tracking every issue, you gain visibility into consumption, reduce line-side clutter and stop production from stopping on a missing bolt.',
@@ -52,7 +52,7 @@ export const managedItems: LandingContent[] = [
   {
     slug: 'documents-archives',
     name: { en: 'Document & Archive Management Cabinets', zh: '', ar: '' },
-    metaTitle: 'Document & Archive Management Cabinets | WS Tool Cabinet',
+    metaTitle: 'Document & Archive Management Cabinets | Qtech',
     intro: [
       'Document and archive cabinets protect files, drawings, contracts and work orders with secure access, numbered locations and audit trails.',
       'Authorized pickup and return records mean sensitive paperwork is never lost, and every document can be traced to the person who holds it.',
@@ -66,7 +66,7 @@ export const managedItems: LandingContent[] = [
   {
     slug: 'employee-personal-storage',
     name: { en: 'Employee Personal Storage Lockers', zh: '', ar: '' },
-    metaTitle: 'Employee Personal Storage Lockers | WS Tool Cabinet',
+    metaTitle: 'Employee Personal Storage Lockers | Qtech',
     intro: [
       'Employee personal storage lockers provide secure compartments for bags, uniforms, devices and personal items in factories or offices.',
       'Card, PIN or face-recognition access gives every worker a private space while giving facilities managers a clear record of locker usage.',
@@ -80,7 +80,7 @@ export const managedItems: LandingContent[] = [
   {
     slug: 'reusable-tools-assets',
     name: { en: 'Reusable Tools & Asset Tracking', zh: '', ar: '' },
-    metaTitle: 'Reusable Tools & Asset Tracking | WS Tool Cabinet',
+    metaTitle: 'Reusable Tools & Asset Tracking | Qtech',
     intro: [
       'Reusable tools and asset cabinets track gauges, fixtures, hand tools and shared equipment through issue, return and location records.',
       'Knowing where every shared asset is — and who has it — reduces loss, shortens search time and improves planned maintenance.',
@@ -94,7 +94,7 @@ export const managedItems: LandingContent[] = [
   {
     slug: 'office-supplies',
     name: { en: 'Office Supplies Vending Lockers', zh: '', ar: '' },
-    metaTitle: 'Office Supplies Vending Lockers | WS Tool Cabinet',
+    metaTitle: 'Office Supplies Vending Lockers | Qtech',
     intro: [
       'Office supplies cabinets manage stationery, printer toner, labels, chargers and shared office consumables with permission control.',
       'Self-service pickup keeps administration running while giving facilities a clear view of consumption across offices and departments.',
@@ -108,7 +108,7 @@ export const managedItems: LandingContent[] = [
   {
     slug: 'food-pickup-meal-collection',
     name: { en: 'Food Pickup & Meal Collection Lockers', zh: '', ar: '' },
-    metaTitle: 'Food Pickup & Meal Collection Lockers | WS Tool Cabinet',
+    metaTitle: 'Food Pickup & Meal Collection Lockers | Qtech',
     intro: [
       'Food pickup and meal collection lockers support offices, campuses and canteens with QR pickup, heating, cooling and secure compartments.',
       'Employees collect meals on their schedule while the kitchen manages deliveries through a contactless, theft-resistant locker system.',
@@ -122,7 +122,7 @@ export const managedItems: LandingContent[] = [
   {
     slug: 'chemical-liquid-management',
     name: { en: 'Chemical & Liquid Management Cabinets', zh: '', ar: '' },
-    metaTitle: 'Chemical & Liquid Management Cabinets | WS Tool Cabinet',
+    metaTitle: 'Chemical & Liquid Management Cabinets | Qtech',
     intro: [
       'Chemical liquid management cabinets control reagents, samples and bottles with refrigerated storage, permissions and full pickup records.',
       'Cooling options and audited access help labs and factories store controlled liquids safely while meeting traceability requirements.',
@@ -136,7 +136,7 @@ export const managedItems: LandingContent[] = [
   {
     slug: 'grinding-wheels-abrasive-discs',
     name: { en: 'Grinding Wheel & Abrasive Disc Storage', zh: '', ar: '' },
-    metaTitle: 'Grinding Wheel & Abrasive Disc Storage | WS Tool Cabinet',
+    metaTitle: 'Grinding Wheel & Abrasive Disc Storage | Qtech',
     intro: [
       'Grinding wheel storage cabinets manage abrasive discs, cut-off wheels and PPE with sealed compartments and humidity control options.',
       'Dry, controlled storage protects brittle abrasives from damage and keeps safety gear close to the workstation.',

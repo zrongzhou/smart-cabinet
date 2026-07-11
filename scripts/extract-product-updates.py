@@ -19,10 +19,10 @@ extract-product-updates.py — 一次性脚本：把 Excel 里的产品更新清
     原网站URL / 修改后的URL  用于生成 301 重定向（二者都非空且不同才生成）
 
 slug 提取规则（与 src/lib/slug.ts 的 normalizeSlug 保持一致）：
-    - 去掉 `https://www.wstoolcabinet.com/en/` 前缀与 `.html` 后缀
+    - 去掉 `https://www.wstoolcabinet.com/en/` 域名前缀；**保留 `.html` 后缀**（URL 形态必须与表格一致）
     - 例如 `.../en/products/automated-tool-storage-system.html`
-      -> `products/automated-tool-storage-system`
-    - 例如 `.../en/automated-storage-cabinet.html` -> `automated-storage-cabinet`
+      -> `products/automated-tool-storage-system.html`
+    - 例如 `.../en/automated-storage-cabinet.html` -> `automated-storage-cabinet.html`
     - 叶子段小写、空格转连字符、去除非法字符、折叠多余连字符
 """
 
@@ -70,7 +70,7 @@ def normalize_slug(raw: str) -> str:
 
 
 def slug_from_url(url: str):
-    """从完整 URL 提取规范化后的 slug（去掉域名前缀和 .html 后缀）。"""
+    """从完整 URL 提取规范化后的 slug（去掉域名前缀，保留 .html 后缀）。"""
     if not url:
         return None
     url = str(url).strip()
@@ -82,14 +82,9 @@ def slug_from_url(url: str):
         seg = path.rstrip("/").split("/")[-1]
         if not seg:
             return None
-        seg = re.sub(r"\.html?$", "", seg)
         return normalize_slug(seg)
     s = parts[1].split("?", 1)[0]  # 去掉 query
     s = s.strip("/")
-    if s.endswith(".html"):
-        s = s[: -len(".html")]
-    elif s.endswith(".htm"):
-        s = s[: -len(".htm")]
     if not s:
         return None
     return normalize_slug(s)

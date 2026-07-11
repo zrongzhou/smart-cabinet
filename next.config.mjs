@@ -18,16 +18,26 @@ const nextConfig = {
     // 301 重定向：旧产品 URL -> 新 URL（来源：Excel「产品标题+URL.xlsx」中 URL 变化的产品）
     // 由 scripts/import-product-updates.* 配套的 scripts/redirects.json 生成。
     // slug 已按 src/lib/slug.ts 的 normalizeSlug 规范化，与 getProductHref 生成的链接一致。
+    // 旧站 URL 均带 .html，故新 URL 和 destination 也带 .html；同时提供无后缀 source 兜底。
     const productUrlRedirects = [
-      { source: '/en/automated-storage-cabinet', destination: '/en/products/automated-tool-storage-system', permanent: true },
-      { source: '/en/solutions/medical-device-manufacturing-supplies', destination: '/en/solutions/medical-device-inventory-management', permanent: true },
-      { source: '/en/applications/smart-file-cabinet', destination: '/en/applications/secure-document-storage-cabinet', permanent: true },
-      { source: '/en/applications/cnc-tool-vending-machine', destination: '/en/applications/tool-vending-machine-cnc-tools', permanent: true },
-      { source: '/en/applications/tool-tracking-system', destination: '/en/applications/rfid-tool-tracking-cabinet', permanent: true },
-      { source: '/en/applications/chemical-storage-cabinet', destination: '/en/applications/refrigerated-chemical-storage-cabinet', permanent: true },
-      { source: '/en/solutions/electronics-manufacturing-inventory', destination: '/en/solutions/electronics-esd-supplies-inventory', permanent: true },
-      { source: '/en/cnc-tool-vending-machines', destination: '/en/products/tool-vending-machine-cnc-tools', permanent: true },
-      { source: '/en/solutions/automotive-manufacturing-inventory', destination: '/en/solutions/automotive-ev-parts-inventory', permanent: true },
+      { source: '/en/automated-storage-cabinet', destination: '/en/products/automated-tool-storage-system.html', permanent: true },
+      { source: '/en/automated-storage-cabinet.html', destination: '/en/products/automated-tool-storage-system.html', permanent: true },
+      { source: '/en/solutions/medical-device-manufacturing-supplies', destination: '/en/solutions/medical-device-inventory-management.html', permanent: true },
+      { source: '/en/solutions/medical-device-manufacturing-supplies.html', destination: '/en/solutions/medical-device-inventory-management.html', permanent: true },
+      { source: '/en/applications/smart-file-cabinet', destination: '/en/applications/secure-document-storage-cabinet.html', permanent: true },
+      { source: '/en/applications/smart-file-cabinet.html', destination: '/en/applications/secure-document-storage-cabinet.html', permanent: true },
+      { source: '/en/applications/cnc-tool-vending-machine', destination: '/en/applications/tool-vending-machine-cnc-tools.html', permanent: true },
+      { source: '/en/applications/cnc-tool-vending-machine.html', destination: '/en/applications/tool-vending-machine-cnc-tools.html', permanent: true },
+      { source: '/en/applications/tool-tracking-system', destination: '/en/applications/rfid-tool-tracking-cabinet.html', permanent: true },
+      { source: '/en/applications/tool-tracking-system.html', destination: '/en/applications/rfid-tool-tracking-cabinet.html', permanent: true },
+      { source: '/en/applications/chemical-storage-cabinet', destination: '/en/applications/refrigerated-chemical-storage-cabinet.html', permanent: true },
+      { source: '/en/applications/chemical-storage-cabinet.html', destination: '/en/applications/refrigerated-chemical-storage-cabinet.html', permanent: true },
+      { source: '/en/solutions/electronics-manufacturing-inventory', destination: '/en/solutions/electronics-esd-supplies-inventory.html', permanent: true },
+      { source: '/en/solutions/electronics-manufacturing-inventory.html', destination: '/en/solutions/electronics-esd-supplies-inventory.html', permanent: true },
+      { source: '/en/cnc-tool-vending-machines', destination: '/en/products/tool-vending-machine-cnc-tools.html', permanent: true },
+      { source: '/en/cnc-tool-vending-machines.html', destination: '/en/products/tool-vending-machine-cnc-tools.html', permanent: true },
+      { source: '/en/solutions/automotive-manufacturing-inventory', destination: '/en/solutions/automotive-ev-parts-inventory.html', permanent: true },
+      { source: '/en/solutions/automotive-manufacturing-inventory.html', destination: '/en/solutions/automotive-ev-parts-inventory.html', permanent: true },
     ];
     return [
       ...productUrlRedirects,

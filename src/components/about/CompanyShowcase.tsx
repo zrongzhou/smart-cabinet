@@ -95,7 +95,7 @@ const FACTORY_HIGHLIGHTS = [
   { value: '60', suffix: '+', labelKey: 'about.showcase.fCountries', icon: Globe, gradient: 'linear-gradient(135deg, #d97706, #f59e0b)' },
 ];
 
-/** ═══════ 墨韵 · 秋彦 手写签名 子组件 ═══════ */
+/** ═══════ 墨韵 · 秋渊 手写签名 子组件 ═══════ */
 
 /** 墨迹飞白装饰点 */
 function InkSplatter({ className }: { className?: string }) {
@@ -112,7 +112,7 @@ function InkSplatter({ className }: { className?: string }) {
 }
 
 /**
- * 毛笔手写签名 — "秋彦"
+ * 毛笔手写签名 — "秋渊"
  * 用大号楷体 + 斜切变换模拟签名的流畅笔触感
  * 配合书写动画：从左到右逐字显现
  */
@@ -123,7 +123,7 @@ function InkSignature() {
       style={{
         animation: 'ink-sign-write 0.8s cubic-bezier(.25,.46,.45,.94) both',
       }}
-      aria-label="Qiuyan Signature"
+      aria-label="Qiuyuan Signature"
     >
       {/* 主文字 — 毛笔楷体，略带斜度像签名 */}
       <span
@@ -139,7 +139,7 @@ function InkSignature() {
           filter: 'contrast(1.05)',
         }}
       >
-        秋彦
+        秋渊
       </span>
 
       {/* 签名虚线下划线（像纸上签名的下划线） */}
@@ -274,7 +274,7 @@ export default function CompanyShowcase({ t }: CompanyShowcaseProps) {
             <span className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-200 to-transparent" />
           </div>
 
-          {/* ═══ 墨韵 · 秋彦手写签名数据卡 ═══ */}
+          {/* ═══ 墨韵 · 秋渊手写签名数据卡 ═══ */}
           <div className="mt-4 relative rounded-2xl overflow-hidden"
             style={{
               background: 'linear-gradient(160deg, #FDFBF7 0%, #FAF8F3 40%, #F7F4ED 100%)',

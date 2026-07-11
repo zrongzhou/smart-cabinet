@@ -72,7 +72,7 @@ describe('Navbar Component', () => {
 
     mockFetchUnifiedSettings.mockResolvedValue({
       companyName: 'Qtech Tool Cabinet',
-      companyNameZh: '秋彦工具柜',
+      companyNameZh: '秋渊工具柜',
       companyNameAr: 'قفص أدوات',
       logo: '/images/logo.svg',
     });
@@ -173,7 +173,7 @@ describe('Navbar Component', () => {
 
     mockFetchUnifiedSettings.mockResolvedValue({
       companyName: 'Qtech Tool Cabinet',
-      companyNameZh: '秋彦工具柜',
+      companyNameZh: '秋渊工具柜',
       companyNameAr: 'قفص أدوات',
       logo: '/images/logo.svg',
     });
@@ -181,7 +181,7 @@ describe('Navbar Component', () => {
     render(<CartProvider><Navbar /></CartProvider>);
     
     await waitFor(() => {
-      expect(screen.getByText('秋彦工具柜')).toBeInTheDocument();
+      expect(screen.getByText('秋渊工具柜')).toBeInTheDocument();
     });
   });
 

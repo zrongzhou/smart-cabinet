@@ -53,7 +53,7 @@ describe('Footer Component', () => {
     });
 
     mockFetchUnifiedSettings.mockResolvedValue({
-      companyName: 'WS Tool Cabinet',
+      companyName: 'Qtech',
       companyNameZh: '沃思工具柜',
       companyNameAr: 'خزانة أدوات WS',
       contactEmail: 'sabrina@wstoolcabinet.com',
@@ -76,7 +76,7 @@ describe('Footer Component', () => {
     render(<Footer />);
     
     await waitFor(() => {
-      expect(screen.getByText('WS Tool Cabinet')).toBeInTheDocument();
+      expect(screen.getByText('Qtech')).toBeInTheDocument();
     });
   });
 
@@ -129,7 +129,7 @@ describe('Footer Component', () => {
     
     await waitFor(() => {
       expect(
-        screen.getByText(`© ${currentYear} Guangzhou Qiuyan Technology Co., Ltd. All rights reserved.`)
+        screen.getByText(`© ${currentYear} Guangzhou Qiuyuan Technology Co., Ltd. All rights reserved.`)
       ).toBeInTheDocument();
     });
   });
@@ -154,7 +154,7 @@ describe('Footer Component', () => {
     });
 
     mockFetchUnifiedSettings.mockResolvedValue({
-      companyName: 'WS Tool Cabinet',
+      companyName: 'Qtech',
       companyNameZh: '沃思工具柜',
       companyNameAr: 'خزانة أدوات WS',
     });
@@ -190,7 +190,7 @@ describe('Footer Component', () => {
     
     // Should still render with default values
     await waitFor(() => {
-      expect(screen.getByText('WS Tool Cabinet')).toBeInTheDocument();
+      expect(screen.getByText('Qtech')).toBeInTheDocument();
     });
   });
 

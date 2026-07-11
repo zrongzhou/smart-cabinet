@@ -158,8 +158,8 @@ export interface Review {
 // NOTE: These are NOT read from localStorage. If API fails, component shows error/loading.
 // ============================================================
 const DEFAULT_SETTINGS: SiteSettings = {
-  companyName: 'Guangzhou Qiuyan Technology Co., Ltd.',
-  companyNameZh: '广州秋彦科技有限公司',
+  companyName: 'Guangzhou Qiuyuan Technology Co., Ltd.',
+  companyNameZh: '广州秋渊科技有限公司',
   companyNameAr: 'قوانغتشو تشيويان لتكنولوجيا المحدودة',
   logo: '',
   favicon: '',
@@ -181,9 +181,9 @@ const DEFAULT_SETTINGS: SiteSettings = {
   socialLinkedin: '',
   socialYoutube: '',
   socialInstagram: '',
-  socialWechat: 'SmartCabinet_Qiuyan',
+  socialWechat: 'SmartCabinet_Qiuyuan',
   socialWeibo: '',
-  footerCopyright: '\u00A9 2024 Guangzhou Qiuyan Technology Co., Ltd. All rights reserved.',
+  footerCopyright: '\u00A9 2024 Guangzhou Qiuyuan Technology Co., Ltd. All rights reserved.',
   footerLinks: '[{"label":"Privacy Policy","url":"/privacy"},{"label":"Terms of Service","url":"/terms"}]',
   wechatWebhookUrl: '',
   wechatNotificationEnabled: false,

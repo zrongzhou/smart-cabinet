@@ -12,7 +12,7 @@ export const landingPages: LandingContent[] = [
   {
     slug: 'custom-smart-cabinet',
     name: { en: 'Custom Smart Cabinet Solutions', zh: '', ar: '' },
-    metaTitle: 'Custom Smart Cabinet Solutions | WS Tool Cabinet',
+    metaTitle: 'Custom Smart Cabinet Solutions | Qtech',
     intro: [
       'Custom smart cabinet solutions adapt to CNC tools, PPE, documents, liquids and MRO supplies. We tailor size, access control, software and workflow to your operation.',
       'From a single cabinet to a multi-station vending network, our engineering team designs storage that fits your space, your items and your processes.',
@@ -26,7 +26,7 @@ export const landingPages: LandingContent[] = [
   {
     slug: 'factory-display',
     name: { en: 'Smart Cabinet Factory Display', zh: '', ar: '' },
-    metaTitle: 'Smart Cabinet Factory Display | WS Tool Cabinet',
+    metaTitle: 'Smart Cabinet Factory Display | Qtech',
     intro: [
       'Visit our smart cabinet factory to see the production workshop and quality process behind CNC tool vending machines, PPE cabinets and industrial lockers.',
       'From sheet-metal fabrication to final inspection, our display shows how each cabinet is built, tested and prepared for global delivery.',
@@ -40,7 +40,7 @@ export const landingPages: LandingContent[] = [
   {
     slug: 'shipping-delivery',
     name: { en: 'Shipping & Delivery', zh: '', ar: '' },
-    metaTitle: 'Shipping & Delivery | WS Tool Cabinet',
+    metaTitle: 'Shipping & Delivery | Qtech',
     intro: [
       'Learn about wooden box packaging and delivery options for smart cabinets, CNC tool vending machines and industrial vending systems.',
       'Every cabinet is crated for overseas transit and shipped through reliable freight partners, with documentation handled for smooth customs clearance.',

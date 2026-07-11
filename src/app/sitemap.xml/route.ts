@@ -21,9 +21,15 @@ export async function GET(request: NextRequest) {
     // 避免经由服务器 IP 访问时 sitemap 输出 IP 地址。
     const baseUrl = getBaseUrl();
 
-    // Fetch active products from DB
+    // Defensive exclusion of legacy/dead product slugs that were renamed.
+    const EXCLUDED_PRODUCT_SLUGS = new Set<string>([
+      'cnc-tool-vending-machines.html',
+      'automated-storage-cabinet.html',
+      'cnc-tool-vending-machines',
+      'automated-storage-cabinet',
+    ]);
     const products = await prisma.product.findMany({
-      where: { status: 'active', deletedAt: null },
+      where: { status: 'active', deletedAt: null, slug: { notIn: [...EXCLUDED_PRODUCT_SLUGS] } },
       select: { slug: true, updatedAt: true },
     });
 

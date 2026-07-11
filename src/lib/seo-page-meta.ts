@@ -247,6 +247,36 @@ export const blogMeta: Record<string, Trilingual> = {
     zh: '',
     ar: '',
   },
+  'how-to-choose-cnc-tool-vending-machine.html': {
+    en: 'A practical guide to choosing a CNC tool vending machine by tool type, capacity, access method, software and workshop layout.',
+    zh: '',
+    ar: '',
+  },
+  'tool-vending-machine-roi-guide.html': {
+    en: 'Calculate tool vending machine ROI by tracking tool consumption, stockouts, manual labor, regrinding returns and inventory savings.',
+    zh: '',
+    ar: '',
+  },
+  'mro-inventory-management-best-practices.html': {
+    en: 'Use MRO inventory management best practices to control spare parts, PPE, tools and consumables with smart cabinets and reports.',
+    zh: '',
+    ar: '',
+  },
+  'grinding-wheel-storage-ppe-management.html': {
+    en: 'Learn why grinding wheel storage needs dry, controlled cabinets and how PPE vending improves abrasive disc use in fabrication shops.',
+    zh: '',
+    ar: '',
+  },
+  'smart-locker-cabinet-vs-tool-room.html': {
+    en: 'Compare smart locker cabinets with traditional tool rooms for speed, accountability, inventory visibility and 24/7 material access.',
+    zh: '',
+    ar: '',
+  },
+  'smart-cabinet-erp-mes-sap-integration.html': {
+    en: 'See how smart cabinets connect with ERP, MES and SAP systems to share inventory data, employee usage records and replenishment reports.',
+    zh: '',
+    ar: '',
+  },
 };
 
 // ============================================================================

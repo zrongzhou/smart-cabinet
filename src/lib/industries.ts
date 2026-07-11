@@ -10,7 +10,7 @@ export const industries: LandingContent[] = [
   {
     slug: 'cnc-machining-precision-parts',
     name: { en: 'CNC Machining & Precision Parts', zh: '', ar: '' },
-    metaTitle: 'CNC Machining & Precision Parts Tool Management | WS Tool Cabinet',
+    metaTitle: 'CNC Machining & Precision Parts Tool Management | Qtech',
     intro: [
       'CNC machining tool management solutions control cutting tools, gauges and MRO supplies for machine shops and precision parts factories.',
       'Keep expensive inserts and end mills accountable, reduce tool-room search time and give planners live data to avoid downtime.',
@@ -24,7 +24,7 @@ export const industries: LandingContent[] = [
   {
     slug: 'general-manufacturing-smart-factory',
     name: { en: 'Smart Factory & General Manufacturing', zh: '', ar: '' },
-    metaTitle: 'Smart Factory Inventory Management | WS Tool Cabinet',
+    metaTitle: 'Smart Factory Inventory Management | Qtech',
     intro: [
       'Smart factory inventory management cabinets help manufacturers control MRO supplies, PPE, tools and spare parts at the point of use.',
       'Connect storage to your production lines so materials are available exactly when and where they are needed, with full visibility.',
@@ -38,7 +38,7 @@ export const industries: LandingContent[] = [
   {
     slug: 'metal-fabrication-aluminum-processing',
     name: { en: 'Metal Fabrication & Aluminum Processing', zh: '', ar: '' },
-    metaTitle: 'Metal Fabrication Tool Storage | WS Tool Cabinet',
+    metaTitle: 'Metal Fabrication Tool Storage | Qtech',
     intro: [
       'Metal fabrication smart cabinets manage abrasives, cutting discs, welding supplies, fasteners and PPE for high-usage workshops.',
       'Keep consumables and safety gear close to cutting and welding stations while logging every issue for cost control.',
@@ -52,7 +52,7 @@ export const industries: LandingContent[] = [
   {
     slug: 'mold-injection-molding-tooling',
     name: { en: 'Mold & Injection Molding Tooling', zh: '', ar: '' },
-    metaTitle: 'Mold & Injection Molding Tool Management | WS Tool Cabinet',
+    metaTitle: 'Mold & Injection Molding Tool Management | Qtech',
     intro: [
       'Mold and injection molding cabinets organize mold components, maintenance tools, nozzles, gauges and spare parts with traceable access.',
       'Reduce mold-change downtime by keeping the right components staged and accounted for, with a clear record of who took what.',
@@ -66,7 +66,7 @@ export const industries: LandingContent[] = [
   {
     slug: 'electronics-semiconductor-manufacturing',
     name: { en: 'Electronics & Semiconductor Manufacturing', zh: '', ar: '' },
-    metaTitle: 'Electronics & Semiconductor Inventory Cabinets | WS Tool Cabinet',
+    metaTitle: 'Electronics & Semiconductor Inventory Cabinets | Qtech',
     intro: [
       'Electronics and semiconductor smart cabinets manage ESD tools, precision parts, cleanroom supplies and optical components securely.',
       'Controlled, clean storage protects sensitive components and helps high-tech lines meet quality and traceability standards.',
@@ -80,7 +80,7 @@ export const industries: LandingContent[] = [
   {
     slug: 'automotive-ev-components',
     name: { en: 'Automotive & EV Components', zh: '', ar: '' },
-    metaTitle: 'Automotive & EV Component Inventory | WS Tool Cabinet',
+    metaTitle: 'Automotive & EV Component Inventory | Qtech',
     intro: [
       'Automotive and EV component cabinets control tools, fasteners, PPE and line-side MRO supplies for assembly, machining and maintenance.',
       'Support mixed-model lines with point-of-use storage that keeps assembly moving and gives supervisors live usage data.',
@@ -94,7 +94,7 @@ export const industries: LandingContent[] = [
   {
     slug: 'medical-device-life-science-equipment',
     name: { en: 'Medical Device & Life Science Equipment', zh: '', ar: '' },
-    metaTitle: 'Medical Device & Life Science Inventory | WS Tool Cabinet',
+    metaTitle: 'Medical Device & Life Science Inventory | Qtech',
     intro: [
       'Medical device smart cabinets manage controlled tools, samples, PPE and production supplies with permissions, traceability and audit logs.',
       'Meet strict quality requirements with logged access to instruments and materials used in regulated production.',
@@ -108,7 +108,7 @@ export const industries: LandingContent[] = [
   {
     slug: 'new-materials-cable-functional-materials',
     name: { en: 'New Materials & Cable Manufacturing', zh: '', ar: '' },
-    metaTitle: 'New Materials & Cable Manufacturing Inventory | WS Tool Cabinet',
+    metaTitle: 'New Materials & Cable Manufacturing Inventory | Qtech',
     intro: [
       'New materials and cable factories use smart cabinets to manage consumables, test tools, spare parts and production supplies.',
       'Control high-mix materials at the line and capture usage data that helps planning and quality teams reduce waste.',
@@ -122,7 +122,7 @@ export const industries: LandingContent[] = [
   {
     slug: 'aerospace-machining-tool-management',
     name: { en: 'Aerospace Machining Tool Management', zh: '', ar: '' },
-    metaTitle: 'Aerospace Machining Tool Management | WS Tool Cabinet',
+    metaTitle: 'Aerospace Machining Tool Management | Qtech',
     intro: [
       'Aerospace machining smart cabinets support secure tool issue, work order material pickup and local data modes for controlled workshops.',
       'Meet aerospace traceability needs with locked, audited storage and offline-capable operation for restricted environments.',
@@ -136,7 +136,7 @@ export const industries: LandingContent[] = [
   {
     slug: 'construction-ppe-management',
     name: { en: 'Construction PPE Management', zh: '', ar: '' },
-    metaTitle: 'Construction PPE Management | WS Tool Cabinet',
+    metaTitle: 'Construction PPE Management | Qtech',
     intro: [
       'Construction PPE management lockers control helmets, gloves, safety glasses, respirators and worksite supplies with user records.',
       'Move PPE to the site gate with self-service lockers that log every issue, so crews stay protected and supplies stay accounted for.',
