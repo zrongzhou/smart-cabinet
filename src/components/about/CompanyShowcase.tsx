@@ -17,7 +17,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { Users, Factory, Award, ShieldCheck, BadgeCheck, CheckCircle, Globe } from 'lucide-react';
+import { Users, Factory, Award, ShieldCheck, BadgeCheck, CheckCircle } from 'lucide-react';
 import AboutStoneBook from '@/components/about/AboutStoneBook';
 
 interface CompanyShowcaseProps {
@@ -87,81 +87,9 @@ const CERT_BADGES = [
   { name: '10+ Patents', icon: Award },
 ];
 
-/** V8.7 fix (bug 4): small factory stats shown under the photo on the left
- *  column. Coordinates with the trust metrics / certification wall on the
- *  right while filling the previously empty space below the image. */
-const FACTORY_HIGHLIGHTS = [
-  { value: '20,000', suffix: '㎡', labelKey: 'about.showcase.fArea', icon: Factory, gradient: 'linear-gradient(135deg, #059669, #10b981)' },
-  { value: '300', suffix: '+', labelKey: 'about.showcase.fStaff', icon: Users, gradient: 'linear-gradient(135deg, #2563eb, #3b82f6)' },
-  { value: '60', suffix: '+', labelKey: 'about.showcase.fCountries', icon: Globe, gradient: 'linear-gradient(135deg, #d97706, #f59e0b)' },
-];
-
-/** ═══════ Factory Stats — compact cards below the stone book ═══════ */
-
-/** 单个数据指标卡（现代简洁风） */
-function InkStatCard({ item, t, delay }: {
-  item: typeof FACTORY_HIGHLIGHTS[number];
-  t: (key: string) => string;
-  delay: number;
-}) {
-  const Icon = item.icon;
-  const palette = [
-    { bar: 'linear-gradient(90deg,#059669,#10b981)', bg: '#ECFDF5', ring: 'rgba(5,150,105,0.15)', icon: '#059669' },
-    { bar: 'linear-gradient(90deg,#2563eb,#3b82f6)', bg: '#EFF6FF', ring: 'rgba(37,99,235,0.15)', icon: '#2563eb' },
-    { bar: 'linear-gradient(90deg,#d97706,#f59e0b)',   bg: '#FFFBEB', ring: 'rgba(217,119,6,0.15)',   icon: '#d97706' },
-  ];
-  const idx = item.gradient.includes('059669') ? 0 : item.gradient.includes('2563eb') ? 1 : 2;
-  const p = palette[idx];
-
-  return (
-    <div
-      className="rounded-xl overflow-hidden bg-white transition-all duration-500 hover:-translate-y-1 hover:shadow-lg group"
-      style={{
-        border: `1px solid ${p.ring}`,
-        boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
-        animation: `ink-card-in 0.55s cubic-bezier(.25,.46,.45,.94) ${delay}ms both`,
-      }}
-    >
-      <div className="h-1 w-full" style={{ background: p.bar }} />
-      <div className="p-4 pt-3">
-        <div className="flex items-center gap-2.5 mb-2">
-          <span
-            className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110"
-            style={{ background: p.bg, border: `1.5px solid ${p.ring}` }}
-          >
-            <Icon strokeWidth={1.8} className="w-[18px] h-[18px]" style={{ color: p.icon }} />
-          </span>
-          <span className="text-[11px] font-medium text-gray-400 leading-tight">{t(item.labelKey)}</span>
-        </div>
-        <div className="pl-[42px]">
-          <span className="text-[26px] sm:text-[28px] font-bold tabular-nums tracking-tight text-gray-900">
-            {item.value}
-          </span>
-          <span className="text-base font-semibold ml-0.5 opacity-60" style={{ color: p.icon }}>{item.suffix}</span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ═══════ Card entrance animation ═══════ */
-function InkKeyframes() {
-  return (
-    <style jsx global>{`
-      @keyframes ink-card-in {
-        from { opacity: 0; transform: translateY(14px) scale(0.97); }
-        to   { opacity: 1; transform: translateY(0) scale(1); }
-      }
-    `}</style>
-  );
-}
-
 export default function CompanyShowcase({ t, locale }: CompanyShowcaseProps) {
   return (
     <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative overflow-hidden bg-gradient-to-br from-blue-50/40 via-indigo-50/30 to-white">
-      {/* 墨韵动画关键帧 */}
-      <InkKeyframes />
-
       {/* Soft animated depth layer */}
       <div className="absolute inset-0 opacity-[0.5]" style={{
         background:
@@ -206,16 +134,9 @@ export default function CompanyShowcase({ t, locale }: CompanyShowcaseProps) {
             <span className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-200 to-transparent" />
           </div>
 
-          {/* ═══ Stone Book — brand chronicle (replaces old InkSignature card) ═══ */}
+          {/* ═══ Stone Book — brand chronicle ═══ */}
           <div className="mt-4">
             <AboutStoneBook t={t} locale={locale} />
-          </div>
-
-          {/* ═══ Factory highlight stat cards ═══ */}
-          <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-            {FACTORY_HIGHLIGHTS.map((h, idx) => (
-              <InkStatCard key={h.labelKey} item={h} t={t} delay={idx * 150} />
-            ))}
           </div>
         </div>
 
