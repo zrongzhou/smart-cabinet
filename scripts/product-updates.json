@@ -190,5 +190,21 @@
     "keywords": "CNC machining tool management, precision parts manufacturing, tool crib automation",
     "oldUrl": "https://www.wstoolcabinet.com/en/solutions/cnc-machining-tool-management.html",
     "newUrl": ""
+  },
+  {
+    "sku": "CAB-001",
+    "title": "Tool Vending Machine for CNC Cutting Tools and Tool Inventory Control",
+    "slug": "products/tool-vending-machine-cnc-tools",
+    "keywords": "CNC tool storage cabinet, tool dispensing cabinet, tool inventory control",
+    "oldUrl": "https://www.wstoolcabinet.com/en/cnc-tool-vending-machines.html",
+    "newUrl": "https://www.wstoolcabinet.com/en/products/tool-vending-machine-cnc-tools.html"
+  },
+  {
+    "sku": "IND-006",
+    "title": "Industrial Vending Machine for Automotive and EV Parts Manufacturing",
+    "slug": "solutions/automotive-ev-parts-inventory",
+    "keywords": "automotive tool inventory, EV components manufacturing, MRO supplies control",
+    "oldUrl": "https://www.wstoolcabinet.com/en/solutions/automotive-manufacturing-inventory.html",
+    "newUrl": "https://www.wstoolcabinet.com/en/solutions/automotive-ev-parts-inventory.html"
   }
 ]
