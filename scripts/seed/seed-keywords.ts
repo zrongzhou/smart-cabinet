@@ -12,9 +12,8 @@
  *  - 末尾打印匹配统计 + products_data.json 是否同步。
  *
  * --also-source（默认 ON）：同时回填 scripts/import/source/products_data.json。
- *   products_data.json 无 sku 字段，按每个产品 url 派生 slug 匹配
- *   （去前导 /、去 .html、去路径前缀，只留最后一段，例如
- *    /products/tool-vending-machine-cnc-tools.html → tool-vending-machine-cnc-tools）。
+ *   products_data.json 无 sku 字段，按 seed 的 path（含前缀，如 products/...、applications/...）
+ *   与 url 末尾 `/<path>.html` 精确匹配，避免同 slug 不同 path 的产品互相覆盖（如 MAT-001 vs CAB-001）。
  *   这样 DB 与源数据保持同步，重跑导入不会回滚本次关键词。
  *
  * 运行：npm run seed:keywords   （等价于 npx tsx scripts/seed/seed-keywords.ts）
@@ -39,19 +38,13 @@ function parseAlsoSource(argv: string[]): boolean {
   return alsoSource;
 }
 
-/** 从 products_data.json 的产品 url 派生 slug：去前导 /、去 .html、只留最后一段 */
-function deriveSlugFromUrl(url: string | undefined): string {
-  if (!url) return '';
-  return (url || '')
-    .replace(/^\/+/, '')
-    .replace(/\.html?$/i, '')
-    .split('/')
-    .pop() || '';
-}
+// deriveSlugFromUrl removed: the --also-source sync now matches products_data.json by
+// exact `path` (prefix included), avoiding same-slug collisions (MAT-001 vs CAB-001).
 
 interface SeedProduct {
   sku: string;
   slug: string;
+  path: string;
   keywords_en: string[];
 }
 interface SeedBlog {
@@ -141,27 +134,36 @@ async function main(): Promise<void> {
   let sourceSynced = false;
   if (alsoSource) {
     try {
-      // seed slug -> keywords_en 映射（seed 内若存在重复 slug，后者覆盖前者）
-      const slugToKw = new Map<string, string[]>();
-      for (const p of products) slugToKw.set(p.slug, p.keywords_en);
+      // Build path -> keywords_en (path already unique per seed, prefix included)
+      const pathToKw = new Map<string, string[]>();
+      for (const p of products) pathToKw.set(p.path, p.keywords_en);
 
       const source = JSON.parse(readFileSync(SOURCE_PATH, 'utf-8'));
       const sheets = Array.isArray(source.sheets) ? source.sheets : [];
       let patched = 0;
-      for (const sheet of sheets) {
-        const rows = Array.isArray(sheet.products) ? sheet.products : [];
-        for (const row of rows) {
-          const rowSlug = deriveSlugFromUrl(row.url);
-          const kw = slugToKw.get(rowSlug);
-          if (kw) {
-            row.seo_keywords = kw;
-            patched++;
+      const unmatchedSeeds: string[] = [];
+      for (const p of products) {
+        let matched = false;
+        for (const sheet of sheets) {
+          const rows = Array.isArray(sheet.products) ? sheet.products : [];
+          for (const row of rows) {
+            // path includes prefix, e.g. "products/..." or "applications/...";
+            // url ends with "/<path>.html" -> unambiguous match
+            if (row.url && row.url.includes('/' + p.path + '.html')) {
+              row.seo_keywords = p.keywords_en;
+              patched++;
+              matched = true;
+            }
           }
         }
+        if (!matched) {
+          unmatchedSeeds.push(p.sku + ' ' + p.path);
+          console.log('UNMATCHED source path', p.path, '(sku', p.sku + ')');
+        }
       }
+      console.log(`[SOURCE] 路径匹配 ${patched} 条; 未匹配种子: [${unmatchedSeeds.join(', ')}]`);
       writeFileSync(SOURCE_PATH, JSON.stringify(source, null, 2));
       sourceSynced = true;
-      console.log(`[SOURCE] products_data.json 同步完成，匹配产品 ${patched} 条。`);
     } catch (e) {
       sourceSynced = false;
       console.error('[SOURCE] 同步 products_data.json 失败：', (e as Error).message);

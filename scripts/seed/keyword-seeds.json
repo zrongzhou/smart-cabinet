@@ -64,7 +64,7 @@
     {
       "sku": "CAB-002",
       "slug": "tool-vending-expansion-cabinet",
-      "path": "tool-vending-expansion-cabinet",
+      "path": "products/tool-vending-expansion-cabinet",
       "keywords_en": [
         "CNC cutting tool storage",
         "auxiliary tool cabinet",
@@ -74,7 +74,7 @@
     {
       "sku": "CAB-006",
       "slug": "weight-based-vending-cabinet",
-      "path": "weight-based-vending-cabinet",
+      "path": "products/weight-based-vending-cabinet",
       "keywords_en": [
         "fastener inventory cabinet",
         "industrial consumables vending",
@@ -135,7 +135,7 @@
     {
       "sku": "CAB-005",
       "slug": "smart-drawer-tool-cabinet",
-      "path": "smart-drawer-tool-cabinet",
+      "path": "products/smart-drawer-tool-cabinet",
       "keywords_en": [
         "gauge storage cabinet",
         "measuring tool cabinet",
@@ -145,7 +145,7 @@
     {
       "sku": "CAB-008",
       "slug": "rfid-asset-tracking-cabinet",
-      "path": "rfid-asset-tracking-cabinet",
+      "path": "products/rfid-asset-tracking-cabinet",
       "keywords_en": [
         "RFID smart cabinet",
         "document tracking cabinet",
@@ -165,7 +165,7 @@
     {
       "sku": "CAB-004",
       "slug": "modular-industrial-vending-machine",
-      "path": "modular-industrial-vending-machine",
+      "path": "products/modular-industrial-vending-machine",
       "keywords_en": [
         "multi-cabinet vending system",
         "MRO vending machine",
@@ -185,7 +185,7 @@
     {
       "sku": "CAB-003",
       "slug": "smart-tool-locker-cabinet",
-      "path": "smart-tool-locker-cabinet",
+      "path": "products/smart-tool-locker-cabinet",
       "keywords_en": [
         "industrial tool locker",
         "MRO storage cabinet",
