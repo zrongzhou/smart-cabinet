@@ -6,8 +6,8 @@
  * 行为：
  *  - 产品：按 sku 在 Product 表匹配；命中 → 写入 { en: keywords_en, zh: [], ar: [] }；
  *    未命中 → 打印 `UNMATCHED sku <sku>`。
- *  - 博客：slug 兼容带/不带 .html；命中 → 写入逗号分隔串 keywords_en.join(', ')；
- *    未命中 → 打印 `UNMATCHED blog <slug>`。
+ *  - 博客：slug 兼容带/不带 .html（DB 中的 BlogPost.slug 实际带 .html 后缀，seed 的 slug 干净无后缀）；
+ *    命中 → 写入逗号分隔串 keywords_en.join(', ')；未命中 → 打印 `UNMATCHED blog <slug>`。
  *  - 每个 update 包 try/catch，缺失行不抛错；幂等（重跑 = no-op）。
  *  - 末尾打印匹配统计 + products_data.json 是否同步。
  *
@@ -101,11 +101,18 @@ async function main(): Promise<void> {
     }
 
     // --- 博客：slug 兼容带/不带 .html ---
+    // DB 中的 BlogPost.slug 实际带 .html 后缀（如 `xxx.html`），而 seed 的 slug 干净无后缀。
+    // 为同时兼容「seed 干净 slug ↔ DB 带 .html slug」，候选集须包含四种变体：
+    //   - b.slug（seed 原值，可能已带或不带 .html）
+    //   - slugBase（去掉 .html 后的纯 slug）
+    //   - slugBase + '.html'（DB 实际形态）
+    //   - b.slug + '.html'（防御：seed 已经是纯 slug 时补全）
     for (const b of blogs) {
       const slugBase = b.slug.replace(/\.html$/i, '');
+      const slugCandidates = [b.slug, slugBase, slugBase + '.html', b.slug + '.html'];
       try {
         const found = await prisma.blogPost.findFirst({
-          where: { slug: { in: [b.slug, slugBase] }, deletedAt: null },
+          where: { slug: { in: slugCandidates }, deletedAt: null },
           select: { id: true },
         });
         if (found) {
