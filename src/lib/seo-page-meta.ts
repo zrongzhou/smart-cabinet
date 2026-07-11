@@ -80,8 +80,8 @@ export function pickTrilingualDescription(
 // Key = the REAL product slug (verbatim from products_data.json).
 // ============================================================================
 export const productMeta: Record<string, Trilingual> = {
-  'cnc-tool-vending-machines.html': {
-    en: 'CNC tool vending machines manage inserts, end mills, drills and taps with secure dispensing, return tracking and real-time inventory reports.',
+  'tool-vending-machine-cnc-tools.html': {
+    en: 'Tool vending machines for CNC cutting tools manage inserts, end mills, drills and taps with secure dispensing, return tracking and real-time inventory reports.',
     zh: '',
     ar: '',
   },
@@ -110,8 +110,8 @@ export const productMeta: Record<string, Trilingual> = {
     zh: '',
     ar: '',
   },
-  'automated-storage-cabinet.html': {
-    en: 'Automated micro warehouse cabinets use internal robotics to issue and return reusable tools or printing wheels to the correct storage position.',
+  'automated-tool-storage-system.html': {
+    en: 'Automated tool storage systems use internal robotics to issue and return reusable tools or printing wheels to the correct storage position.',
     zh: '',
     ar: '',
   },
@@ -120,8 +120,8 @@ export const productMeta: Record<string, Trilingual> = {
     zh: '',
     ar: '',
   },
-  'applications/cnc-tool-vending-machine.html': {
-    en: 'CNC tool management cabinets control inserts, end mills, drills, taps and holders with employee limits, return tracking and reports.',
+  'applications/tool-vending-machine-cnc-tools.html': {
+    en: 'Tool vending machines for CNC cutting tools control inserts, end mills, drills, taps and holders with employee limits, return tracking and reports.',
     zh: '',
     ar: '',
   },
@@ -135,8 +135,8 @@ export const productMeta: Record<string, Trilingual> = {
     zh: '',
     ar: '',
   },
-  'applications/smart-file-cabinet.html': {
-    en: 'Smart file cabinets secure drawings, work orders and archives with authorized pickup, return records and searchable document storage.',
+  'applications/secure-document-storage-cabinet.html': {
+    en: 'Secure document storage cabinets secure drawings, work orders and archives with authorized pickup, return records and searchable document storage.',
     zh: '',
     ar: '',
   },
@@ -145,8 +145,8 @@ export const productMeta: Record<string, Trilingual> = {
     zh: '',
     ar: '',
   },
-  'applications/tool-tracking-system.html': {
-    en: 'Reusable tools and asset cabinets track gauges, fixtures, hand tools and shared equipment through issue, return and location records.',
+  'applications/rfid-tool-tracking-cabinet.html': {
+    en: 'RFID tool tracking cabinets track gauges, fixtures, hand tools and shared equipment through issue, return and location records.',
     zh: '',
     ar: '',
   },
@@ -160,8 +160,8 @@ export const productMeta: Record<string, Trilingual> = {
     zh: '',
     ar: '',
   },
-  'applications/chemical-storage-cabinet.html': {
-    en: 'Chemical liquid management cabinets store bottles, reagents and controlled liquids with cooling options, user permissions and issue records.',
+  'applications/refrigerated-chemical-storage-cabinet.html': {
+    en: 'Refrigerated chemical storage cabinets store bottles, reagents and controlled liquids with cooling options, user permissions and issue records.',
     zh: '',
     ar: '',
   },
@@ -185,18 +185,18 @@ export const productMeta: Record<string, Trilingual> = {
     zh: '',
     ar: '',
   },
-  'solutions/electronics-manufacturing-inventory.html': {
-    en: 'Electronics and semiconductor smart cabinets manage ESD tools, precision parts, cleanroom supplies and optical components securely.',
+  'solutions/electronics-esd-supplies-inventory.html': {
+    en: 'Industrial vending cabinets for electronics, semiconductor and ESD supplies manage ESD tools, precision parts, cleanroom supplies and optical components securely.',
     zh: '',
     ar: '',
   },
-  'solutions/automotive-manufacturing-inventory.html': {
-    en: 'Automotive and EV component cabinets control tools, fasteners, PPE and line-side MRO supplies for assembly, machining and maintenance.',
+  'solutions/automotive-ev-parts-inventory.html': {
+    en: 'Industrial vending machines for automotive and EV parts manufacturing control tools, fasteners, PPE and line-side MRO supplies for assembly, machining and maintenance.',
     zh: '',
     ar: '',
   },
-  'solutions/medical-device-manufacturing-supplies.html': {
-    en: 'Medical device smart cabinets manage controlled tools, samples, PPE and production supplies with permissions, traceability and audit logs.',
+  'solutions/medical-device-inventory-management.html': {
+    en: 'Industrial vending machines for medical device manufacturing manage controlled tools, samples, PPE and production supplies with permissions, traceability and audit logs.',
     zh: '',
     ar: '',
   },
@@ -244,36 +244,6 @@ export const blogMeta: Record<string, Trilingual> = {
   },
   'cnc-tool-inventory-management-guide.html': {
     en: 'A practical guide to CNC tool inventory management: organize inserts, end mills and drills, track usage and cut tooling waste.',
-    zh: '',
-    ar: '',
-  },
-  'how-to-choose-cnc-tool-vending-machine.html': {
-    en: 'A practical guide to choosing a CNC tool vending machine by tool type, capacity, access method, software and workshop layout.',
-    zh: '',
-    ar: '',
-  },
-  'tool-vending-machine-roi-guide.html': {
-    en: 'Calculate tool vending machine ROI by tracking tool consumption, stockouts, manual labor, regrinding returns and inventory savings.',
-    zh: '',
-    ar: '',
-  },
-  'mro-inventory-management-best-practices.html': {
-    en: 'Use MRO inventory management best practices to control spare parts, PPE, tools and consumables with smart cabinets and reports.',
-    zh: '',
-    ar: '',
-  },
-  'grinding-wheel-storage-ppe-management.html': {
-    en: 'Learn why grinding wheel storage needs dry, controlled cabinets and how PPE vending improves abrasive disc use in fabrication shops.',
-    zh: '',
-    ar: '',
-  },
-  'smart-locker-cabinet-vs-tool-room.html': {
-    en: 'Compare smart locker cabinets with traditional tool rooms for speed, accountability, inventory visibility and 24/7 material access.',
-    zh: '',
-    ar: '',
-  },
-  'smart-cabinet-erp-mes-sap-integration.html': {
-    en: 'See how smart cabinets connect with ERP, MES and SAP systems to share inventory data, employee usage records and replenishment reports.',
     zh: '',
     ar: '',
   },

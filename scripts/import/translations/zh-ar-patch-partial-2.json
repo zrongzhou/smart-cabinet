@@ -543,7 +543,7 @@
       }
     ]
   },
-  "solutions/electronics-manufacturing-inventory.html": {
+  "solutions/electronics-esd-supplies-inventory.html": {
     "name": {
       "zh": "电子、半导体、电气与光学制造",
       "ar": "تصنيع الإلكترونيات وأشباه الموصلات والكهرباء والبصريات"
@@ -679,7 +679,7 @@
       }
     ]
   },
-  "solutions/automotive-manufacturing-inventory.html": {
+  "solutions/automotive-ev-parts-inventory.html": {
     "name": {
       "zh": "汽车与电动汽车零部件制造",
       "ar": "تصنيع مكونات السيارات والمركبات الكهربائية"
@@ -815,7 +815,7 @@
       }
     ]
   },
-  "solutions/medical-device-manufacturing-supplies.html": {
+  "solutions/medical-device-inventory-management.html": {
     "name": {
       "zh": "医疗器械与生命科学设备制造",
       "ar": "تصنيع الأجهزة الطبية ومعدات علوم الحياة"

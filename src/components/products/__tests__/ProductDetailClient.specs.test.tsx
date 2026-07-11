@@ -35,7 +35,7 @@ const labels = {
 
 const baseProduct = (specs: any) => ({
   id: 'p1',
-  slug: 'cnc-tool-vending-machines.html',
+  slug: 'tool-vending-machine-cnc-tools.html',
   sku: 'SKU-001',
   price: 0,
   hidePrice: true,

@@ -3,9 +3,9 @@
   "dimension": "By Managed items",
   "products": [
     {
-      "slug": "applications/cnc-tool-vending-machine.html",
+      "slug": "applications/tool-vending-machine-cnc-tools.html",
       "sku": "MAT-001",
-      "url": "/applications/cnc-tool-vending-machine.html",
+      "url": "/applications/tool-vending-machine-cnc-tools.html",
       "name_en": "CNC Tool Management",
       "seoTitle_en": "CNC Tool Vending Machine for Cutting Tools, Inserts, End Mills and Taps",
       "description_en": "CNC Tool Management is designed for machining workshops, tool rooms and manufacturing plants that use many cutting tools every day. Smart cabinets help manage end mills, drills, taps, carbide inserts, reamers, boring tools and tool holders with controlled access, usage records and inventory alerts.",
@@ -207,9 +207,9 @@
       ]
     },
     {
-      "slug": "applications/smart-file-cabinet.html",
+      "slug": "applications/secure-document-storage-cabinet.html",
       "sku": "MAT-004",
-      "url": "/applications/smart-file-cabinet.html",
+      "url": "/applications/secure-document-storage-cabinet.html",
       "name_en": "Documents & Archives",
       "seoTitle_en": "Smart File Cabinet for Document Management, Archive Storage and File Tracking",
       "description_en": "Documents & Archives Management is designed for offices, factories, archives and departments that need controlled borrowing and return of files, drawings, contracts and paper records. Smart file cabinets help reduce missing files and make document access traceable.",
@@ -345,9 +345,9 @@
       ]
     },
     {
-      "slug": "applications/tool-tracking-system.html",
+      "slug": "applications/rfid-tool-tracking-cabinet.html",
       "sku": "MAT-006",
-      "url": "/applications/tool-tracking-system.html",
+      "url": "/applications/rfid-tool-tracking-cabinet.html",
       "name_en": "Reusable Tools & Assets",
       "seoTitle_en": "Tool Tracking System for Reusable Tools, Gauges, Fixtures and Asset Control",
       "description_en": "Reusable Tools & Assets Management is for non-consumable items that need to be issued, used and returned. Smart drawer cabinets and automated storage cabinets help manage gauges, fixtures, molds, tool holders, shared tools and high-value assets with clear responsibility records.",
@@ -545,9 +545,9 @@
       ]
     },
     {
-      "slug": "applications/chemical-storage-cabinet.html",
+      "slug": "applications/refrigerated-chemical-storage-cabinet.html",
       "sku": "MAT-009",
-      "url": "/applications/chemical-storage-cabinet.html",
+      "url": "/applications/refrigerated-chemical-storage-cabinet.html",
       "name_en": "Chemical Liquid Management",
       "seoTitle_en": "Refrigerated Chemical Storage Cabinet for Lab Reagents, Liquid Bottles and Samples",
       "description_en": "Chemical Liquid Management is for laboratories, testing centers and factories that need controlled storage for reagents, liquid bottles, samples and temperature-sensitive materials. Refrigerated smart cabinets help control access, record usage and improve chemical inventory visibility.",

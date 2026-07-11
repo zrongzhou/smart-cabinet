@@ -57,7 +57,7 @@ describe('P0 normalizeSlug — basic normalisation', () => {
   });
 
   it('leaves an already-clean slug unchanged', () => {
-    expect(normalizeSlug('cnc-tool-vending-machines')).toBe('cnc-tool-vending-machines');
+    expect(normalizeSlug('tool-vending-machine-cnc-tools')).toBe('tool-vending-machine-cnc-tools');
   });
 });
 

@@ -26,7 +26,7 @@ const prisma = new PrismaClient();
 /** slug(裸) -> { en, zh, ar } 官方产品名映射（基于 title_en 提取的短名称） */
 const OFFICIAL_NAMES: Record<string, { en: string; zh: string; ar: string }> = {
   // ---------- 柜体分类 (products/) ----------
-  'cnc-tool-vending-machines': {
+  'tool-vending-machine-cnc-tools': {
     en: 'CNC Tool Vending Machine',
     zh: 'CNC刀具售货机',
     ar: 'آلة بيع أدوات CNC',
@@ -56,7 +56,7 @@ const OFFICIAL_NAMES: Record<string, { en: string; zh: string; ar: string }> = {
     zh: '智能称重售货机',
     ar: 'وزن بيع الآلات',
   },
-  'automated-storage-cabinet': {
+  'automated-tool-storage-system': {
     en: 'Automated Micro Warehouse Cabinet',
     zh: '自动化微型仓储柜',
     ar: 'مستودع صغير آلي',
@@ -68,7 +68,7 @@ const OFFICIAL_NAMES: Record<string, { en: string; zh: string; ar: string }> = {
   },
 
   // ---------- 物料管理 (applications/) ----------
-  'cnc-tool-vending-machine': {
+  'tool-vending-machine-cnc-tools': {
     en: 'CNC Tool Vending Machine',
     zh: 'CNC刀具管理售货机',
     ar: 'آلة إدارة أدوات CNC',
@@ -83,7 +83,7 @@ const OFFICIAL_NAMES: Record<string, { en: string; zh: string; ar: string }> = {
     zh: '紧固件耗材售货机',
     ar: 'خزانة بيع المسامير',
   },
-  'smart-file-cabinet': {
+  'secure-document-storage-cabinet': {
     en: 'Smart File Cabinet',
     zh: '智能档案文件柜',
     ar: 'خزانة ملفات ذكية',
@@ -93,7 +93,7 @@ const OFFICIAL_NAMES: Record<string, { en: string; zh: string; ar: string }> = {
     zh: '员工智能储物柜',
     ar: 'نظام خزائن ذكي',
   },
-  'tool-tracking-system': {
+  'rfid-tool-tracking-cabinet': {
     en: 'Tool Tracking System',
     zh: '工具跟踪管理系统',
     ar: 'نظام تتبع الأدوات',
@@ -108,7 +108,7 @@ const OFFICIAL_NAMES: Record<string, { en: string; zh: string; ar: string }> = {
     zh: '智能餐饮取餐柜',
     ar: 'خزانة استلام الطعام',
   },
-  'chemical-storage-cabinet': {
+  'refrigerated-chemical-storage-cabinet': {
     en: 'Refrigerated Chemical Storage Cabinet',
     zh: '化学品冷藏存储柜',
     ar: 'خزانة تخزين كيميائية',
@@ -135,17 +135,17 @@ const OFFICIAL_NAMES: Record<string, { en: string; zh: string; ar: string }> = {
     zh: '模具注塑精密工装解决方案',
     ar: 'حل القوالب والحقن',
   },
-  'electronics-manufacturing-inventory': {
+  'electronics-esd-supplies-inventory': {
     en: 'Electronics Manufacturing Smart Cabinet Solution',
     zh: '电子半导体电气光学制造解决方案',
     ar: 'حل تصنيع الإلكترونيات',
   },
-  'automotive-manufacturing-inventory': {
+  'automotive-ev-parts-inventory': {
     en: 'Automotive & EV Manufacturing Solution',
     zh: '汽车与电动汽车零部件制造解决方案',
     ar: 'حل تصنيع السيارات الكهربائية',
   },
-  'medical-device-manufacturing-supplies': {
+  'medical-device-inventory-management': {
     en: 'Medical Device Manufacturing Smart Cabinet Solution',
     zh: '医疗器械与生命科学设备解决方案',
     ar: 'حل تصنيع الأجهزة الطبية',
@@ -167,8 +167,8 @@ const OFFICIAL_NAMES: Record<string, { en: string; zh: string; ar: string }> = {
 /**
  * 将数据库存储的 slug 规约为裸 slug，以匹配 OFFICIAL_NAMES 的 key。
  * 示例：
- *   "cnc-tool-vending-machines.html"          -> "cnc-tool-vending-machines"
- *   "applications/cnc-tool-vending-machine.html" -> "cnc-tool-vending-machine"
+ *   "tool-vending-machine-cnc-tools.html"          -> "tool-vending-machine-cnc-tools"
+ *   "applications/tool-vending-machine-cnc-tools.html" -> "tool-vending-machine-cnc-tools"
  *   "solutions/cnc-machining-tool-management.html" -> "cnc-machining-tool-management"
  */
 function normalizeSlug(slug: string): string {

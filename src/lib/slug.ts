@@ -14,7 +14,7 @@
  *    it uses the stored slug verbatim, a normalized slug guarantees the link
  *    and the lookup use the exact same string → no 404.
  *  - Preserve the legacy `/` path prefix used by seed slugs
- *    (e.g. `applications/cnc-tool-vending-machine.html`). Only the *leaf*
+ *    (e.g. `applications/tool-vending-machine-cnc-tools.html`). Only the *leaf*
  *    segment after the last `/` is normalized, so editing an existing
  *    application/solution product never corrupts its routing prefix.
  */

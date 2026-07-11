@@ -22,7 +22,7 @@ slug 提取规则（与 src/lib/slug.ts 的 normalizeSlug 保持一致）：
     - 去掉 `https://www.wstoolcabinet.com/en/` 域名前缀；**保留 `.html` 后缀**（URL 形态必须与表格一致）
     - 例如 `.../en/products/automated-tool-storage-system.html`
       -> `products/automated-tool-storage-system.html`
-    - 例如 `.../en/automated-storage-cabinet.html` -> `automated-storage-cabinet.html`
+    - 例如 `.../en/products/automated-tool-storage-system.html` -> `products/automated-tool-storage-system.html`
     - 叶子段小写、空格转连字符、去除非法字符、折叠多余连字符
 """
 

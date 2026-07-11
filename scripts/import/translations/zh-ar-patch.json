@@ -1,5 +1,5 @@
 {
-  "cnc-tool-vending-machines.html": {
+  "tool-vending-machine-cnc-tools.html": {
     "name": {
       "zh": "CNC刀具自动售货机",
       "ar": "ماكينات بيع أدوات التصنيع CNC"
@@ -567,7 +567,7 @@
       }
     ]
   },
-  "automated-storage-cabinet.html": {
+  "automated-tool-storage-system.html": {
     "name": {
       "zh": "微型仓储柜",
       "ar": "خزائن التخزين المصغرة"
@@ -759,7 +759,7 @@
       }
     ]
   },
-  "applications/cnc-tool-vending-machine.html": {
+  "applications/tool-vending-machine-cnc-tools.html": {
     "name": {
       "zh": "CNC刀具管理",
       "ar": "إدارة أدوات CNC"
@@ -1167,7 +1167,7 @@
       }
     ]
   },
-  "applications/smart-file-cabinet.html": {
+  "applications/secure-document-storage-cabinet.html": {
     "name": {
       "zh": "文档与档案",
       "ar": "المستندات والأرشيف"
@@ -1439,7 +1439,7 @@
       }
     ]
   },
-  "applications/tool-tracking-system.html": {
+  "applications/rfid-tool-tracking-cabinet.html": {
     "name": {
       "zh": "可复用工具与资产",
       "ar": "الأدوات القابلة لإعادة الاستخدام والأصول"
@@ -1839,7 +1839,7 @@
       }
     ]
   },
-  "applications/chemical-storage-cabinet.html": {
+  "applications/refrigerated-chemical-storage-cabinet.html": {
     "name": {
       "zh": "化学液体管理",
       "ar": "إدارة السوائل الكيميائية"
@@ -2519,7 +2519,7 @@
       }
     ]
   },
-  "solutions/electronics-manufacturing-inventory.html": {
+  "solutions/electronics-esd-supplies-inventory.html": {
     "name": {
       "zh": "电子、半导体、电气与光学制造",
       "ar": "تصنيع الإلكترونيات وأشباه الموصلات والكهرباء والبصريات"
@@ -2655,7 +2655,7 @@
       }
     ]
   },
-  "solutions/automotive-manufacturing-inventory.html": {
+  "solutions/automotive-ev-parts-inventory.html": {
     "name": {
       "zh": "汽车与电动汽车零部件制造",
       "ar": "تصنيع مكونات السيارات والمركبات الكهربائية"
@@ -2791,7 +2791,7 @@
       }
     ]
   },
-  "solutions/medical-device-manufacturing-supplies.html": {
+  "solutions/medical-device-inventory-management.html": {
     "name": {
       "zh": "医疗器械与生命科学设备制造",
       "ar": "تصنيع الأجهزة الطبية ومعدات علوم الحياة"

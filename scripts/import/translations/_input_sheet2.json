@@ -269,9 +269,9 @@
       ]
     },
     {
-      "slug": "solutions/electronics-manufacturing-inventory.html",
+      "slug": "solutions/electronics-esd-supplies-inventory.html",
       "sku": "IND-005",
-      "url": "/solutions/electronics-manufacturing-inventory.html",
+      "url": "/solutions/electronics-esd-supplies-inventory.html",
       "name_en": "Electronics, Semiconductor, Electrical and Optical Manufacturing",
       "seoTitle_en": "Smart Cabinet Solution for Electronics, Semiconductor and ESD Supplies Management",
       "description_en": "Electronics, semiconductor, electrical and optical manufacturing sites use many small tools, ESD supplies, labels, connectors and production consumables. Smart cabinets help manage high-frequency items near production lines and improve material traceability.",
@@ -335,9 +335,9 @@
       ]
     },
     {
-      "slug": "solutions/automotive-manufacturing-inventory.html",
+      "slug": "solutions/automotive-ev-parts-inventory.html",
       "sku": "IND-006",
-      "url": "/solutions/automotive-manufacturing-inventory.html",
+      "url": "/solutions/automotive-ev-parts-inventory.html",
       "name_en": "Automotive and EV Components Manufacturing",
       "seoTitle_en": "Industrial Vending Machine Solution for Automotive and EV Components Manufacturing",
       "description_en": "Automotive and EV components factories need stable access to tools, PPE, fasteners, spare parts and maintenance supplies across assembly lines, machining areas and maintenance departments. Smart vending cabinets help standardize material issuing and improve inventory visibility.",
@@ -402,9 +402,9 @@
       ]
     },
     {
-      "slug": "solutions/medical-device-manufacturing-supplies.html",
+      "slug": "solutions/medical-device-inventory-management.html",
       "sku": "IND-007",
-      "url": "/solutions/medical-device-manufacturing-supplies.html",
+      "url": "/solutions/medical-device-inventory-management.html",
       "name_en": "Medical Device and Life Science Equipment Manufacturing",
       "seoTitle_en": "Smart Cabinet Solution for Medical Device Manufacturing Supplies and PPE",
       "description_en": "Medical device and life science equipment manufacturers need controlled access to PPE, tools, gauges, labels and production consumables. Smart cabinets help organize materials, record pickup and improve visibility for clean and regulated production environments.",

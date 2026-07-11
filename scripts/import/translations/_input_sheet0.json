@@ -3,9 +3,9 @@
   "dimension": "By cabinets types",
   "products": [
     {
-      "slug": "cnc-tool-vending-machines.html",
+      "slug": "tool-vending-machine-cnc-tools.html",
       "sku": "CAB-001",
-      "url": "/products/cnc-tool-vending-machines.html",
+      "url": "/products/tool-vending-machine-cnc-tools.html",
       "name_en": "CNC Tool Vending Machines",
       "seoTitle_en": "CNC Tool Vending Machine - Smart CNC Tool Cabinet for Tool Inventory Management",
       "description_en": "This CNC Tool Vending Machine is designed for CNC machining workshops, machine shops and tool rooms to manage cutting tools and MRO supplies at the point of use. It supports controlled dispensing, tool issuing records, return tracking, low-stock alerts and inventory reports for end mills, drills, taps, carbide inserts, reamers, boring tools, tool holders and other CNC tools. The 48 side lockers can also be used for used tool return, large tool storage, PPE, spare parts and customized material management.",
@@ -297,9 +297,9 @@
       ]
     },
     {
-      "slug": "automated-storage-cabinet.html",
+      "slug": "automated-tool-storage-system.html",
       "sku": "CAB-007",
-      "url": "/products/automated-storage-cabinet.html",
+      "url": "/products/automated-tool-storage-system.html",
       "name_en": "Micro Warehousing Cabinets",
       "seoTitle_en": "Automated Micro Warehouse Cabinet for Printing Wheels, Tools and Reusable Parts",
       "description_en": "This Automated Micro Warehouse Cabinet is designed for managing non-consumable, returnable and standard-shaped industrial items. It is especially suitable for materials that look very similar but must not be picked incorrectly, such as printing wheels, coding wheels, fixtures, jigs, molds, gauges, tool holders and other reusable production parts.\n\nEmployees can log in, select the required item and collect it from the pickup window. After use, the item can be returned to the cabinet, and the internal robotic handling system automatically places it back into its assigned storage position. This helps factories reduce wrong picking, improve return management and keep reusable tools and standard parts traceable.",

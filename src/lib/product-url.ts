@@ -7,9 +7,9 @@
  * （柜体=`xxx.html`，物料=`applications/xxx.html`，行业=`solutions/xxx.html`）。
  *
  * 为保留 Excel 原 url 可达，所有产品链接都应依据 slug 是否含 "/" 决定公开路径：
- *   - slug 含 "/"（如 `applications/cnc-tool-vending-machine.html`）
+ *   - slug 含 "/"（如 `applications/tool-vending-machine-cnc-tools.html`）
  *       → 公开路径即 slug 本身
- *   - 否则（如 `cnc-tool-vending-machines.html`）
+ *   - 否则（如 `tool-vending-machine-cnc-tools.html`）
  *       → 公开路径为 `products/<slug>`
  */
 

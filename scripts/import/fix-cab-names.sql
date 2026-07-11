@@ -2,7 +2,7 @@
 -- NOT the L2 sub-category name (name_en). Category assignment (L2) is already correct in categories table.
 -- Fix en/zh/ar for all 8 CAB products.
 
-UPDATE products SET "name" = '{"en":"CNC Tool Vending Machine - Smart CNC Tool Cabinet for Tool Inventory Management","zh":"CNC刀具自动售货机 - 用于刀具库存管理的智能CNC工具柜","ar":"ماكينة بيع أدوات CNC - خزانة أدوات CNC ذكية لإدارة مخزون الأدوات"}'::jsonb WHERE "slug"='cnc-tool-vending-machines.html';
+UPDATE products SET "name" = '{"en":"CNC Tool Vending Machine - Smart CNC Tool Cabinet for Tool Inventory Management","zh":"CNC刀具自动售货机 - 用于刀具库存管理的智能CNC工具柜","ar":"ماكينة بيع أدوات CNC - خزانة أدوات CNC ذكية لإدارة مخزون الأدوات"}'::jsonb WHERE "slug"='tool-vending-machine-cnc-tools.html';
 
 UPDATE products SET "name" = '{"en":"DL80F Tool Vending Auxiliary Cabinet for CNC Cutting Tool Storage Expansion","zh":"DL80F 刀具售货辅助柜 - 用于CNC切削刀具存储扩展","ar":"خزانة مساعدة لماكينة بيع الأدوات DL80F لتوسيع تخزين أدوات CNC"}'::jsonb WHERE "slug"='tool-vending-expansion-cabinet.html';
 
@@ -14,6 +14,6 @@ UPDATE products SET "name" = '{"en":"Smart Drawer Tool Cabinet for Measuring Too
 
 UPDATE products SET "name" = '{"en":"Weight-based vending cabinet for fasteners screws nuts and industrial consumables","zh":"称重式自动售货柜 - 用于紧固件、螺丝、螺母和工业耗材","ar":"خزانة بيع مبنية على الوزن للمثبتات والمسامير والصواميل واللوازم الصناعية"}'::jsonb WHERE "slug"='weight-based-vending-cabinet.html';
 
-UPDATE products SET "name" = '{"en":"Automated Micro Warehouse Cabinet for Printing Wheels, Tools and Reusable Parts","zh":"自动化微型仓储柜 - 用于印轮、工具和可重复使用零件","ar":"خزانة مستودع صغير آلي لعجلات الطباعة والأدوات والقطع القابلة لإعادة الاستخدام"}'::jsonb WHERE "slug"='automated-storage-cabinet.html';
+UPDATE products SET "name" = '{"en":"Automated Micro Warehouse Cabinet for Printing Wheels, Tools and Reusable Parts","zh":"自动化微型仓储柜 - 用于印轮、工具和可重复使用零件","ar":"خزانة مستودع صغير آلي لعجلات الطباعة والأدوات والقطع القابلة لإعادة الاستخدام"}'::jsonb WHERE "slug"='automated-tool-storage-system.html';
 
 UPDATE products SET "name" = '{"en":"RFID Smart Cabinet for Document Tracking, Asset Management and File Storage","zh":"RFID智能柜 - 用于文档追踪、资产管理和文件存储","ar":"خزانة ذكية RFID لتتبع المستندات وإدارة الأصول وتخزين الملفات"}'::jsonb WHERE "slug"='rfid-asset-tracking-cabinet.html';

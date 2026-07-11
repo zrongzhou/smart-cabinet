@@ -8,7 +8,7 @@
           "sheet": "按照柜体分类",
           "col": 1,
           "name_en": "CNC Tool Vending Machines",
-          "url": "/products/cnc-tool-vending-machines.html",
+          "url": "/products/tool-vending-machine-cnc-tools.html",
           "image_count": 3,
           "images": [
             {
@@ -130,7 +130,7 @@
           "sheet": "按照柜体分类",
           "col": 7,
           "name_en": "Micro Warehousing Cabinets",
-          "url": "/products/automated-storage-cabinet.html",
+          "url": "/products/automated-tool-storage-system.html",
           "image_count": 1,
           "images": [
             {
@@ -170,7 +170,7 @@
           "sheet": "按照物料管理分类",
           "col": 1,
           "name_en": "CNC Tool Management",
-          "url": "/applications/cnc-tool-vending-machine.html",
+          "url": "/applications/tool-vending-machine-cnc-tools.html",
           "image_count": 3,
           "images": [
             {
@@ -229,7 +229,7 @@
           "sheet": "按照物料管理分类",
           "col": 4,
           "name_en": "Documents & Archives",
-          "url": "/applications/smart-file-cabinet.html",
+          "url": "/applications/secure-document-storage-cabinet.html",
           "image_count": 3,
           "images": [
             {
@@ -271,7 +271,7 @@
           "sheet": "按照物料管理分类",
           "col": 6,
           "name_en": "Reusable Tools & Assets",
-          "url": "/applications/tool-tracking-system.html",
+          "url": "/applications/rfid-tool-tracking-cabinet.html",
           "image_count": 3,
           "images": [
             {
@@ -326,7 +326,7 @@
           "sheet": "按照物料管理分类",
           "col": 9,
           "name_en": "Chemical Liquid Management",
-          "url": "/applications/chemical-storage-cabinet.html",
+          "url": "/applications/refrigerated-chemical-storage-cabinet.html",
           "image_count": 2,
           "images": [
             {
@@ -429,7 +429,7 @@
           "sheet": "按照行业分类",
           "col": 5,
           "name_en": "Electronics, Semiconductor, Electrical and Optical Manufacturing",
-          "url": "/solutions/electronics-manufacturing-inventory.html",
+          "url": "/solutions/electronics-esd-supplies-inventory.html",
           "image_count": 2,
           "images": [
             {
@@ -446,7 +446,7 @@
           "sheet": "按照行业分类",
           "col": 6,
           "name_en": "Automotive and EV Components Manufacturing",
-          "url": "/solutions/automotive-manufacturing-inventory.html",
+          "url": "/solutions/automotive-ev-parts-inventory.html",
           "image_count": 2,
           "images": [
             {
@@ -463,7 +463,7 @@
           "sheet": "按照行业分类",
           "col": 7,
           "name_en": "Medical Device and Life Science Equipment Manufacturing",
-          "url": "/solutions/medical-device-manufacturing-supplies.html",
+          "url": "/solutions/medical-device-inventory-management.html",
           "image_count": 3,
           "images": [
             {

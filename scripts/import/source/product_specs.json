@@ -226,8 +226,8 @@
    ]
   ],
   "appTitle": "Automated Micro Warehouse Cabinet for Printing Wheels, Tools and Reusable Parts",
-  "appUrl": "/products/automated-storage-cabinet.html",
-  "appSlug": "automated-storage-cabinet",
+  "appUrl": "/products/automated-tool-storage-system.html",
+  "appSlug": "automated-tool-storage-system",
   "matched": true
  },
  {
@@ -432,8 +432,8 @@
    ]
   ],
   "appTitle": "Smart Cabinet Solution for Medical Device Manufacturing Supplies and PPE",
-  "appUrl": "/solutions/medical-device-manufacturing-supplies.html",
-  "appSlug": "medical-device-manufacturing-supplies",
+  "appUrl": "/solutions/medical-device-inventory-management.html",
+  "appSlug": "medical-device-inventory-management",
   "matched": true
  },
  {
@@ -549,8 +549,8 @@
    ]
   ],
   "appTitle": "Industrial Vending Machine Solution for Automotive and EV Components Manufacturing",
-  "appUrl": "/solutions/automotive-manufacturing-inventory.html",
-  "appSlug": "automotive-manufacturing-inventory",
+  "appUrl": "/solutions/automotive-ev-parts-inventory.html",
+  "appSlug": "automotive-ev-parts-inventory",
   "matched": true
  },
  {
@@ -642,8 +642,8 @@
    ]
   ],
   "appTitle": "Smart Cabinet Solution for Electronics, Semiconductor and ESD Supplies Management",
-  "appUrl": "/solutions/electronics-manufacturing-inventory.html",
-  "appSlug": "electronics-manufacturing-inventory",
+  "appUrl": "/solutions/electronics-esd-supplies-inventory.html",
+  "appSlug": "electronics-esd-supplies-inventory",
   "matched": true
  },
  {
@@ -1175,8 +1175,8 @@
    ]
   ],
   "appTitle": "Refrigerated Chemical Storage Cabinet for Lab Reagents, Liquid Bottles and Samples",
-  "appUrl": "/applications/chemical-storage-cabinet.html",
-  "appSlug": "chemical-storage-cabinet",
+  "appUrl": "/applications/refrigerated-chemical-storage-cabinet.html",
+  "appSlug": "refrigerated-chemical-storage-cabinet",
   "matched": true
  },
  {
@@ -1454,8 +1454,8 @@
    ]
   ],
   "appTitle": "Tool Tracking System for Reusable Tools, Gauges, Fixtures and Asset Control",
-  "appUrl": "/applications/tool-tracking-system.html",
-  "appSlug": "tool-tracking-system",
+  "appUrl": "/applications/rfid-tool-tracking-cabinet.html",
+  "appSlug": "rfid-tool-tracking-cabinet",
   "matched": true
  },
  {
@@ -1822,8 +1822,8 @@
    ]
   ],
   "appTitle": "CNC Tool Vending Machine for Cutting Tools, Inserts, End Mills and Taps",
-  "appUrl": "/applications/cnc-tool-vending-machine.html",
-  "appSlug": "cnc-tool-vending-machine",
+  "appUrl": "/applications/tool-vending-machine-cnc-tools.html",
+  "appSlug": "tool-vending-machine-cnc-tools",
   "matched": true
  },
  {
@@ -2324,8 +2324,8 @@
    ]
   ],
   "appTitle": "CNC Tool Vending Machine - Smart CNC Tool Cabinet for Tool Inventory Management",
-  "appUrl": "/products/cnc-tool-vending-machines.html",
-  "appSlug": "cnc-tool-vending-machines",
+  "appUrl": "/products/tool-vending-machine-cnc-tools.html",
+  "appSlug": "tool-vending-machine-cnc-tools",
   "matched": true
  },
  {
@@ -2429,8 +2429,8 @@
    ]
   ],
   "appTitle": "Smart File Cabinet for Document Management, Archive Storage and File Tracking",
-  "appUrl": "/applications/smart-file-cabinet.html",
-  "appSlug": "smart-file-cabinet",
+  "appUrl": "/applications/secure-document-storage-cabinet.html",
+  "appSlug": "secure-document-storage-cabinet",
   "matched": true
  }
 ]

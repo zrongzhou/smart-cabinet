@@ -46,15 +46,15 @@ describe('N3 buildDetailPageKeywords — title + slug union, no model leak', () 
     const kw = buildDetailPageKeywords(
       'CNC Tool Vending Machine',
       'CNC Tool Vending Machine',
-      'cnc-tool-vending-machines.html',
+      'tool-vending-machine-cnc-tools.html',
     );
     const joined = kw.join(',');
     expect(joined).toContain('cnc');
     expect(joined).toContain('tool');
     expect(joined).toContain('vending');
-    // URL slug contributes "machines" (plural) alongside title "machine"
+    // URL slug contributes "tools" (plural) alongside title "machine"
     expect(joined).toContain('machine');
-    expect(joined).toContain('machines');
+    expect(joined).toContain('tools');
     // full display name appended
     expect(joined).toContain('CNC Tool Vending Machine');
   });
