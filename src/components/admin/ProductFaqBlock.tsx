@@ -5,13 +5,19 @@ import { Plus, Save, Trash2, ArrowUp, ArrowDown, Loader2 } from 'lucide-react';
 import { adminApi } from '@/data/unified-data';
 import { FAQ_CATEGORIES, PRODUCT_FAQ_STATUS_OPTIONS, ProductFaqStatus } from '@/data/faq-constants';
 import JsonTrilingualInput, { TrilingualValue } from './JsonTrilingualInput';
+import type { FaqItem } from '@/components/product/ProductFaqEditor';
 
 /**
  * ProductFaqBlock — 编辑页「产品 FAQ」区块（T02 / P0）
  *
  * 职责：
- * - 挂载时按 productId 从 adminApi 加载该产品的 FAQ 并回填
- * - 支持逐条「即时保存/删除」（POST/PUT/DELETE），不并入主「更新产品」按钮（解耦）
+ * - 支持两种数据源：
+ *   1) JSON 模式（initialFaq 非空）：直接渲染产品 `product.faq` Json 字段
+ *      （[{ question:{en,zh,ar}, answer:{en,zh,ar} }]），编辑/增删后整份写回
+ *      product.faq（via adminApi.updateProduct），不触碰关联表。用于让旧产品
+ *      （关联表无记录但 product.faq 有数据）在后台正确展示 FAQ。
+ *   2) 关联表模式（initialFaq 为空）：按 productId 从 adminApi 加载关联表 FAQ，
+ *      逐条即时保存/删除（POST/PUT/DELETE），不并入主「更新产品」按钮（解耦）。
  * - 支持三语录入、分类(11 枚举)、状态(active/draft)、排序(数字 + 上移/下移)、空状态引导
  *
  * 设计约束：
@@ -40,6 +46,11 @@ interface FaqDraft {
 
 interface ProductFaqBlockProps {
   productId: string;
+  /**
+   * 可选：直接注入产品级 FAQ（product.faq Json 数组）。
+   * 非空时优先以 JSON 模式渲染并写回 product.faq；为空则回退到关联表模式。
+   */
+  initialFaq?: FaqItem[];
 }
 
 function normalizeTrilingual(input: any): TrilingualText {
@@ -64,16 +75,53 @@ function mapApiFaqToDraft(faq: any): FaqDraft {
   };
 }
 
-export default function ProductFaqBlock({ productId }: ProductFaqBlockProps) {
-  const [faqRows, setFaqRows] = useState<FaqDraft[]>([]);
-  const [loading, setLoading] = useState(true);
+/** 把 product.faq 的 Json 条目映射为可编辑的 FaqDraft。 */
+function mapInitialFaqToDraft(item: any, index: number): FaqDraft {
+  return {
+    id: `json-${index}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+    question: normalizeTrilingual(item?.question),
+    answer: normalizeTrilingual(item?.answer),
+    category: FAQ_CATEGORIES[0].value,
+    status: 'active',
+    order: index,
+    _isNew: false,
+    _saving: false,
+    _deleting: false,
+  };
+}
+
+/** 把 FaqDraft 序列化为 product.faq 的 Json 形态（FaqItem）。 */
+function serializeJsonFaq(row: FaqDraft) {
+  return {
+    question: {
+      en: row.question.en,
+      zh: row.question.zh,
+      ar: row.question.ar || row.question.en,
+    },
+    answer: {
+      en: row.answer.en,
+      zh: row.answer.zh,
+      ar: row.answer.ar || row.answer.en,
+    },
+  };
+}
+
+export default function ProductFaqBlock({ productId, initialFaq }: ProductFaqBlockProps) {
+  // initialFaq 非空 -> JSON 模式（渲染 product.faq）；否则回退关联表模式。
+  const hasInitialFaq = Array.isArray(initialFaq) && initialFaq.length > 0;
+  const faqMode: 'json' | 'relational' = hasInitialFaq ? 'json' : 'relational';
+
+  const [faqRows, setFaqRows] = useState<FaqDraft[]>(() =>
+    hasInitialFaq ? (initialFaq as FaqItem[]).map((item, i) => mapInitialFaqToDraft(item, i)) : [],
+  );
+  const [loading, setLoading] = useState(faqMode === 'json' ? false : true);
   const [error, setError] = useState('');
 
   const updateRow = useCallback((id: string, updater: (row: FaqDraft) => FaqDraft) => {
     setFaqRows((prev) => prev.map((r) => (r.id === id ? updater(r) : r)));
   }, []);
 
-  // 组装提交数据（AR 缺省回退 EN）
+  // 组装提交数据（AR 缺省回退 EN）——关联表模式使用
   const buildPayload = (row: FaqDraft) => ({
     question: {
       en: row.question.en,
@@ -90,8 +138,17 @@ export default function ProductFaqBlock({ productId }: ProductFaqBlockProps) {
     order: row.order,
   });
 
-  // 挂载加载该产品 FAQ
+  // JSON 模式：把整份 faqRows 写回 product.faq（Json 字段），不触碰关联表。
+  const persistJsonFaq = async (rows: FaqDraft[]) => {
+    await adminApi.updateProduct(productId, { faq: rows.map(serializeJsonFaq) });
+  };
+
+  // 挂载加载该产品 FAQ（仅关联表模式需要走接口；JSON 模式数据已由 initialFaq 注入）
   useEffect(() => {
+    if (faqMode === 'json') {
+      setLoading(false);
+      return;
+    }
     let cancelled = false;
     const load = async () => {
       setLoading(true);
@@ -110,7 +167,7 @@ export default function ProductFaqBlock({ productId }: ProductFaqBlockProps) {
     return () => {
       cancelled = true;
     };
-  }, [productId]);
+  }, [productId, faqMode]);
 
   // 新增草稿行
   const addRow = () => {
@@ -131,7 +188,7 @@ export default function ProductFaqBlock({ productId }: ProductFaqBlockProps) {
     });
   };
 
-  // 保存单行（新行 POST 带 productId；旧行 PUT）
+  // 保存单行
   const saveRow = async (row: FaqDraft) => {
     if (row._saving || row._deleting) return;
     // 新行校验：英文问题 / 答案必填
@@ -142,20 +199,23 @@ export default function ProductFaqBlock({ productId }: ProductFaqBlockProps) {
     updateRow(row.id, (r) => ({ ...r, _saving: true }));
     setError('');
     try {
+      // JSON 模式：整份写回 product.faq
+      if (faqMode === 'json') {
+        await persistJsonFaq(faqRows);
+        setFaqRows((prev) =>
+          prev.map((r) =>
+            r.id === row.id ? { ...r, _isNew: false, _saving: false } : { ...r, _saving: false },
+          ),
+        );
+        return;
+      }
+      // 关联表模式
       if (row._isNew) {
         const created = await adminApi.createFaq({ ...buildPayload(row), productId });
-        updateRow(row.id, () => ({
-          ...mapApiFaqToDraft(created),
-          _isNew: false,
-          _saving: false,
-        }));
+        updateRow(row.id, () => ({ ...mapApiFaqToDraft(created), _isNew: false, _saving: false }));
       } else {
         const updated = await adminApi.updateFaq(row.id, buildPayload(row));
-        updateRow(row.id, () => ({
-          ...mapApiFaqToDraft(updated),
-          _isNew: false,
-          _saving: false,
-        }));
+        updateRow(row.id, () => ({ ...mapApiFaqToDraft(updated), _isNew: false, _saving: false }));
       }
     } catch (err: any) {
       updateRow(row.id, (r) => ({ ...r, _saving: false }));
@@ -163,7 +223,7 @@ export default function ProductFaqBlock({ productId }: ProductFaqBlockProps) {
     }
   };
 
-  // 删除单行（新行仅本地移除；旧行二次确认后 DELETE）
+  // 删除单行
   const deleteRow = async (row: FaqDraft) => {
     if (row._deleting || row._saving) return;
     if (row._isNew) {
@@ -173,6 +233,22 @@ export default function ProductFaqBlock({ productId }: ProductFaqBlockProps) {
     const confirmed = window.confirm('确认删除该 FAQ？此操作不可撤销。');
     if (!confirmed) return;
 
+    // JSON 模式：从整份中移除后写回 product.faq
+    if (faqMode === 'json') {
+      const next = faqRows.filter((r) => r.id !== row.id);
+      updateRow(row.id, (r) => ({ ...r, _deleting: true }));
+      setError('');
+      try {
+        await persistJsonFaq(next);
+        setFaqRows(next);
+      } catch (err: any) {
+        updateRow(row.id, (r) => ({ ...r, _deleting: false }));
+        setError(err.message || '删除 FAQ 失败');
+      }
+      return;
+    }
+
+    // 关联表模式
     updateRow(row.id, (r) => ({ ...r, _deleting: true }));
     setError('');
     try {
@@ -184,13 +260,33 @@ export default function ProductFaqBlock({ productId }: ProductFaqBlockProps) {
     }
   };
 
-  // 上移 / 下移（交换 order 并即时持久化两条非新行）
+  // 上移 / 下移
   const moveRow = async (rowId: string, direction: 'up' | 'down') => {
     const sorted = [...faqRows].sort((a, b) => a.order - b.order);
     const idx = sorted.findIndex((r) => r.id === rowId);
     const targetIdx = direction === 'up' ? idx - 1 : idx + 1;
     if (idx === -1 || targetIdx < 0 || targetIdx >= sorted.length) return;
 
+    // JSON 模式：本地重排后整份写回 product.faq
+    if (faqMode === 'json') {
+      const [moved] = sorted.splice(idx, 1);
+      sorted.splice(targetIdx, 0, moved);
+      const reordered = sorted.map((r, i) => ({ ...r, order: i }));
+      const affected = new Set(reordered.map((r) => r.id));
+      setFaqRows(reordered);
+      setFaqRows((prev) => prev.map((r) => (affected.has(r.id) ? { ...r, _saving: true } : r)));
+      setError('');
+      try {
+        await persistJsonFaq(reordered);
+        setFaqRows((prev) => prev.map((r) => ({ ...r, _saving: false })));
+      } catch (err: any) {
+        setFaqRows((prev) => prev.map((r) => ({ ...r, _saving: false })));
+        setError(err.message || '排序保存失败');
+      }
+      return;
+    }
+
+    // 关联表模式：交换 order 并即时持久化两条非新行
     const current = sorted[idx];
     const neighbor = sorted[targetIdx];
     const newCurrentOrder = neighbor.order;
@@ -239,6 +335,9 @@ export default function ProductFaqBlock({ productId }: ProductFaqBlockProps) {
 
       <p className="text-sm text-gray-500 mb-4">
         为该产品单独维护三语 FAQ，保存后即时在前台详情页生效（仅 active 状态可见，draft 不展示）。
+        {faqMode === 'json' && (
+          <span className="ml-1 text-indigo-500 font-medium">（当前数据来自产品 FAQ 字段）</span>
+        )}
       </p>
 
       {error && (

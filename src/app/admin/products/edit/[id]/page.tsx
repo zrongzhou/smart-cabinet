@@ -170,6 +170,10 @@ export default function EditProductPage() {
     seoKeywords: '', // Added for SEO keywords
   });
 
+  // 产品级 FAQ（product.faq Json 字段）——传给 ProductFaqBlock 作为优先数据源。
+  // 旧产品关联表无记录但 product.faq 里有数据，借此在后台正确展示 FAQ。
+  const [initialFaq, setInitialFaq] = useState<any[]>([]);
+
   // Track if auto-fill has been done (to avoid re-running on subsequent edits)
   const autoFilledRef = useRef(false);
 
@@ -386,6 +390,8 @@ export default function EditProductPage() {
           })(),
         });
         setProductFound(true);
+        // 注入产品级 FAQ（product.faq Json 字段）作为 ProductFaqBlock 的优先数据源
+        setInitialFaq(Array.isArray(product.faq) ? product.faq : []);
       } catch (err: any) {
         setProductFound(false);
         setError(err?.message || '加载产品失败');
@@ -1063,7 +1069,7 @@ export default function EditProductPage() {
         </div>
 
         {/* ===== Product FAQ (per-product) ===== */}
-        <ProductFaqBlock productId={productId} />
+        <ProductFaqBlock productId={productId} initialFaq={initialFaq} />
 
         {/* Submit */}
         <div className="flex items-center justify-end gap-3">

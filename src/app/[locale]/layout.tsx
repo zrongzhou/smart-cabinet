@@ -8,7 +8,6 @@ import JsonLd from '@/components/JsonLd';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { LocaleProvider, Locale } from '@/lib/i18n';
 import { AuthProvider } from '@/components/AuthProvider';
-import { CartProvider } from '@/context/CartContext';
 import enMessages from '@/messages/en.json';
 import zhMessages from '@/messages/zh.json';
 import arMessages from '@/messages/ar.json';
@@ -54,7 +53,6 @@ export default function LocaleLayout({ children, params: { locale } }: LocaleLay
     <ErrorBoundary>
     <LocaleProvider locale={currentLocale} messages={messages}>
       <AuthProvider>
-        <CartProvider>
           {/* Preconnect to external image domain for faster loading */}
           <link rel="preconnect" href="https://www.wstoolcabinet.com" crossOrigin="anonymous" />
           <link rel="dns-prefetch" href="https://www.wstoolcabinet.com" />
@@ -101,7 +99,6 @@ export default function LocaleLayout({ children, params: { locale } }: LocaleLay
           <main className="flex-1">{children}</main>
           <Footer />
           <BackToTop />
-        </CartProvider>
       </AuthProvider>
     </LocaleProvider>
     </ErrorBoundary>

@@ -15,7 +15,22 @@ const nextConfig = {
 
   // Redirect old admin URLs to 404 (new admin lives at /xiaozhouBackend)
   async redirects() {
+    // 301 重定向：旧产品 URL -> 新 URL（来源：Excel「产品标题+URL.xlsx」中 URL 变化的产品）
+    // 由 scripts/import-product-updates.* 配套的 scripts/redirects.json 生成。
+    // slug 已按 src/lib/slug.ts 的 normalizeSlug 规范化，与 getProductHref 生成的链接一致。
+    const productUrlRedirects = [
+      { source: '/en/automated-storage-cabinet', destination: '/en/products/automated-tool-storage-system', permanent: true },
+      { source: '/en/solutions/medical-device-manufacturing-supplies', destination: '/en/solutions/medical-device-inventory-management', permanent: true },
+      { source: '/en/applications/smart-file-cabinet', destination: '/en/applications/secure-document-storage-cabinet', permanent: true },
+      { source: '/en/applications/cnc-tool-vending-machine', destination: '/en/applications/tool-vending-machine-cnc-tools', permanent: true },
+      { source: '/en/applications/tool-tracking-system', destination: '/en/applications/rfid-tool-tracking-cabinet', permanent: true },
+      { source: '/en/applications/chemical-storage-cabinet', destination: '/en/applications/refrigerated-chemical-storage-cabinet', permanent: true },
+      { source: '/en/solutions/electronics-manufacturing-inventory', destination: '/en/solutions/electronics-esd-supplies-inventory', permanent: true },
+      { source: '/en/cnc-tool-vending-machines', destination: '/en/products/tool-vending-machine-cnc-tools', permanent: true },
+      { source: '/en/solutions/automotive-manufacturing-inventory', destination: '/en/solutions/automotive-ev-parts-inventory', permanent: true },
+    ];
     return [
+      ...productUrlRedirects,
       { source: '/admin/:path*', destination: '/404', permanent: false },
       { source: '/admin', destination: '/404', permanent: false },
     ];
