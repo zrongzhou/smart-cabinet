@@ -26,8 +26,6 @@ const nextConfig = {
       { source: '/en/applications/tool-tracking-system', destination: '/en/applications/rfid-tool-tracking-cabinet', permanent: true },
       { source: '/en/applications/chemical-storage-cabinet', destination: '/en/applications/refrigerated-chemical-storage-cabinet', permanent: true },
       { source: '/en/solutions/electronics-manufacturing-inventory', destination: '/en/solutions/electronics-esd-supplies-inventory', permanent: true },
-      { source: '/en/cnc-tool-vending-machines', destination: '/en/products/tool-vending-machine-cnc-tools', permanent: true },
-      { source: '/en/solutions/automotive-manufacturing-inventory', destination: '/en/solutions/automotive-ev-parts-inventory', permanent: true },
     ];
     return [
       ...productUrlRedirects,
