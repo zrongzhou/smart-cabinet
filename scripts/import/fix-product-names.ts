@@ -68,11 +68,6 @@ const OFFICIAL_NAMES: Record<string, { en: string; zh: string; ar: string }> = {
   },
 
   // ---------- 物料管理 (applications/) ----------
-  'tool-vending-machine-cnc-tools': {
-    en: 'CNC Tool Vending Machine',
-    zh: 'CNC刀具管理售货机',
-    ar: 'آلة إدارة أدوات CNC',
-  },
   'ppe-vending-machine': {
     en: 'PPE Vending Machine',
     zh: 'PPE安全防护用品售货机',
