@@ -18,6 +18,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { Users, Factory, Award, ShieldCheck, BadgeCheck, CheckCircle, Globe } from 'lucide-react';
+import AboutStoneBook from '@/components/about/AboutStoneBook';
 
 interface CompanyShowcaseProps {
   t: (key: string) => string;
@@ -95,70 +96,7 @@ const FACTORY_HIGHLIGHTS = [
   { value: '60', suffix: '+', labelKey: 'about.showcase.fCountries', icon: Globe, gradient: 'linear-gradient(135deg, #d97706, #f59e0b)' },
 ];
 
-/** ═══════ 墨韵 · 秋彦 手写签名 子组件 ═══════ */
-
-/** 墨迹飞白装饰点 */
-function InkSplatter({ className }: { className?: string }) {
-  return (
-    <span className={`pointer-events-none ${className || ''}`} aria-hidden="true">
-      <span className="absolute w-[5px] h-[5px] rounded-full bg-black opacity-[0.07]" style={{ top: '4px', left: '6px' }} />
-      <span className="absolute w-[3px] h-[3px] rounded-full bg-black opacity-[0.05]" style={{ top: '12px', left: '16px' }} />
-      <span className="absolute w-[3.5px] h-[3.5px] rounded-full bg-black opacity-[0.04]" style={{ top: '18px', left: '2px' }} />
-      {/* 右侧朱红墨点 */}
-      <span className="absolute w-[4px] h-[4px] rounded-full opacity-[0.07]" style={{ top: '6px', right: '8px', background: '#C41E3A' }} />
-      <span className="absolute w-[3px] h-[3px] rounded-full opacity-[0.05]" style={{ top: '16px', right: '2px', background: '#C41E3A' }} />
-    </span>
-  );
-}
-
-/**
- * 毛笔手写签名 — "秋彦"
- * 用大号楷体 + 斜切变换模拟签名的流畅笔触感
- * 配合书写动画：从左到右逐字显现
- */
-function InkSignature() {
-  return (
-    <div
-      className="relative select-none"
-      style={{
-        animation: 'ink-sign-write 0.8s cubic-bezier(.25,.46,.45,.94) both',
-      }}
-      aria-label="Qiuyan Signature"
-    >
-      {/* 主文字 — 毛笔楷体，略带斜度像签名 */}
-      <span
-        className="block text-center leading-none"
-        style={{
-          fontFamily: "'STKaiti','KaiTi','SimSun','Noto Serif SC','Ma Shan Zheng','Zhi Mang Xing',cursive",
-          fontSize: '28px',
-          fontWeight: 700,
-          color: '#1a1a2e',
-          letterSpacing: '0.15em',
-          textShadow: '1px 1px 0 rgba(201,160,103,0.15), 2px 2px 4px rgba(26,26,46,0.08)',
-          transform: 'rotate(-2deg)',
-          filter: 'contrast(1.05)',
-        }}
-      >
-        秋彦
-      </span>
-
-      {/* 签名虚线下划线（像纸上签名的下划线） */}
-      <span
-        className="block mx-auto mt-1 h-px opacity-20"
-        style={{
-          width: '72%',
-          background: 'linear-gradient(90deg, transparent 10%, #1a1a2e 30%, #1a1a2e 70%, transparent 90%)',
-        }}
-      />
-
-      {/* 笔锋拖尾暗示 */}
-      <span
-        className="absolute -bottom-0.5 right-[18%] w-4 h-0.5 opacity-10 rounded-full"
-        style={{ background: '#1a1a2e', transform: 'rotate(-15deg)' }}
-      />
-    </div>
-  );
-}
+/** ═══════ Factory Stats — compact cards below the stone book ═══════ */
 
 /** 单个数据指标卡（现代简洁风） */
 function InkStatCard({ item, t, delay }: {
@@ -206,16 +144,10 @@ function InkStatCard({ item, t, delay }: {
   );
 }
 
-/* ═══════ 墨韵关键帧动画 ═══════ */
+/* ═══════ Card entrance animation ═══════ */
 function InkKeyframes() {
   return (
     <style jsx global>{`
-      @keyframes ink-sign-write {
-        0%   { clip-path: inset(0 100% 0 0); opacity: 0; }
-        40%  { clip-path: inset(0 60% 0 0); opacity: 0.7; }
-        70%  { clip-path: inset(0 10% 0 0); opacity: 1; }
-        100% { clip-path: inset(0 0% 0 0); opacity: 1; }
-      }
       @keyframes ink-card-in {
         from { opacity: 0; transform: translateY(14px) scale(0.97); }
         to   { opacity: 1; transform: translateY(0) scale(1); }
@@ -224,7 +156,7 @@ function InkKeyframes() {
   );
 }
 
-export default function CompanyShowcase({ t }: CompanyShowcaseProps) {
+export default function CompanyShowcase({ t, locale }: CompanyShowcaseProps) {
   return (
     <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative overflow-hidden bg-gradient-to-br from-blue-50/40 via-indigo-50/30 to-white">
       {/* 墨韵动画关键帧 */}
@@ -274,53 +206,16 @@ export default function CompanyShowcase({ t }: CompanyShowcaseProps) {
             <span className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-200 to-transparent" />
           </div>
 
-          {/* ═══ 墨韵 · 秋彦手写签名数据卡 ═══ */}
-          <div className="mt-4 relative rounded-2xl overflow-hidden"
-            style={{
-              background: 'linear-gradient(160deg, #FDFBF7 0%, #FAF8F3 40%, #F7F4ED 100%)',
-              border: '1px solid rgba(212,197,169,0.45)',
-              boxShadow: '0 4px 20px rgba(139,69,19,0.05), 0 1px 2px rgba(0,0,0,0.02)',
-            }}
-          >
-            {/* 墨迹飞白装饰 */}
-            <InkSplatter className="absolute top-2.5 left-2.5 w-[28px] h-[26px]" />
-            <InkSplatter className="absolute top-2.5 right-2.5 w-[26px] h-[24px]" />
+          {/* ═══ Stone Book — brand chronicle (replaces old InkSignature card) ═══ */}
+          <div className="mt-4">
+            <AboutStoneBook t={t} locale={locale} />
+          </div>
 
-            {/* ── 头部：毛笔签名 + 品牌 ── */}
-            <div className="relative z-10 pt-5 pb-3 px-5">
-              <div className="flex flex-col items-center gap-1.5">
-                {/* 手写签名 */}
-                <InkSignature />
-
-                {/* QIUYAN 英文品牌名 */}
-                <span
-                  className="text-xs font-semibold tracking-[0.35em] text-[#6B5D4D] opacity-70"
-                  style={{ fontFamily: 'Georgia,"Times New Roman","Noto Serif SC",serif' }}
-                >QIUYAN</span>
-
-                <span className="text-[9.5px] tracking-[0.28em] text-[#9B8E7E] uppercase opacity-55">Technology · Est. 2010</span>
-              </div>
-
-              {/* 金线分隔 */}
-              <div className="mt-3 mx-auto max-w-xs h-px" style={{
-                background: 'linear-gradient(90deg, transparent, #C9A067 20%, #E8D5A3 50%, #C9A067 80%, transparent)',
-              }} />
-            </div>
-
-            {/* ── 三项数据指标卡 ── */}
-            <div className="relative z-10 px-4 pb-5">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-                {FACTORY_HIGHLIGHTS.map((h, idx) => (
-                  <InkStatCard key={h.labelKey} item={h} t={t} delay={idx * 150} />
-                ))}
-              </div>
-            </div>
-
-            {/* 底部墨痕暗示 */}
-            <div className="absolute bottom-1 left-0 right-0 flex justify-center gap-24 pointer-events-none px-6">
-              <div className="h-[2px] rounded-full opacity-[0.03] bg-black" style={{ width: '60px' }} />
-              <div className="h-[2px] rounded-full opacity-[0.025] bg-black" style={{ width: '80px' }} />
-            </div>
+          {/* ═══ Factory highlight stat cards ═══ */}
+          <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+            {FACTORY_HIGHLIGHTS.map((h, idx) => (
+              <InkStatCard key={h.labelKey} item={h} t={t} delay={idx * 150} />
+            ))}
           </div>
         </div>
 

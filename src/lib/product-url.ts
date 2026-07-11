@@ -16,7 +16,13 @@
 /** 返回产品相对公开路径（不含 locale 前缀，也不含站点根）。 */
 export function getProductPublicPath(slug: string | null | undefined): string {
   if (!slug) return '';
-  return slug.includes('/') ? slug : `products/${slug}`;
+  // Only solutions/ and applications/ prefixed slugs bypass the products/ segment.
+  // A cabinet leaf that accidentally contains a stray "/" (e.g. "test-abc/a.html")
+  // must still go through products/[...slug] — otherwise the URL would 404 because
+  // no root-level route matches it.
+  const lower = slug.toLowerCase();
+  if (lower.startsWith('solutions/') || lower.startsWith('applications/')) return slug;
+  return `products/${slug}`;
 }
 
 /** 返回产品导航链接（含 locale 前缀）。空 slug 返回 '#'。 */

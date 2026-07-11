@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { getMergedBlogList } from '@/lib/blogs';
 import { getBaseUrl } from '@/lib/seo';
+import { getProductPublicPath } from '@/lib/product-url';
 
 // Force dynamic rendering (this route uses request.headers)
 export const dynamic = 'force-dynamic';
@@ -104,9 +105,7 @@ export async function GET(request: NextRequest) {
 
       // Product pages for each locale
       for (const product of products) {
-        // 按 store 的 slug 决定公开路径：含 "/" 的（如 applications/...、solutions/...）
-        // 公开路径即 slug 本身；否则落在 /products/ 下（柜体）。
-        const publicPath = product.slug.includes('/') ? product.slug : `products/${product.slug}`;
+        const publicPath = getProductPublicPath(product.slug);
         const url = `${baseUrl}/${locale}/${publicPath}`;
 
         if (seen.has(url)) continue;
