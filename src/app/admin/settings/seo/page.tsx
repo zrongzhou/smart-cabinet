@@ -141,7 +141,7 @@ export default function SeoSettingsPage() {
                 value={settings.footerCopyright}
                 onChange={(e) => setSettings((prev) => ({ ...prev, footerCopyright: e.target.value }))}
                 className="admin-form-input w-full"
-                placeholder="© 2024 Guangzhou Qiuyuan Technology Co., Ltd. All rights reserved."
+                placeholder="© 2024 Guangzhou Qiuyan Technology Co., Ltd. All rights reserved."
               />
             </div>
             <div>

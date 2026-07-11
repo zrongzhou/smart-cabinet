@@ -129,7 +129,7 @@ describe('Footer Component', () => {
     
     await waitFor(() => {
       expect(
-        screen.getByText(`© ${currentYear} Guangzhou Qiuyuan Technology Co., Ltd. All rights reserved.`)
+        screen.getByText(`© ${currentYear} Guangzhou Qiuyan Technology Co., Ltd. All rights reserved.`)
       ).toBeInTheDocument();
     });
   });

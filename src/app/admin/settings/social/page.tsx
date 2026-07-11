@@ -16,7 +16,7 @@ export default function SocialSettingsPage() {
     { key: 'socialLinkedin', label: 'LinkedIn', icon: <Linkedin className="w-4 h-4 inline mr-1 text-blue-700" />, placeholder: 'https://linkedin.com/company/...' },
     { key: 'socialYoutube', label: 'YouTube', icon: <Youtube className="w-4 h-4 inline mr-1 text-red-600" />, placeholder: 'https://youtube.com/...' },
     { key: 'socialInstagram', label: 'Instagram', icon: <Instagram className="w-4 h-4 inline mr-1 text-pink-600" />, placeholder: 'https://instagram.com/...' },
-    { key: 'socialWechat', label: '微信号', icon: <span className="w-4 h-4 inline-block mr-1" />, placeholder: 'SmartCabinet_Qiuyuan' },
+    { key: 'socialWechat', label: '微信号', icon: <span className="w-4 h-4 inline-block mr-1" />, placeholder: 'SmartCabinet_Qiuyan' },
     { key: 'socialWeibo', label: '微博链接', icon: <span className="w-4 h-4 inline-block mr-1" />, placeholder: 'https://weibo.com/...' },
   ] as const;
 

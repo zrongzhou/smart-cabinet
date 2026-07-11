@@ -6,11 +6,11 @@ import { AboutClient } from './AboutClient';
 const PAGE_META: Record<string, { title: string; description: string }> = {
   en: {
     title: 'About Qtech Tool Cabinet | Smart Cabinet Manufacturer in China',
-    description: 'Guangzhou Qiuyuan Technology manufactures smart material cabinets, CNC tool vending machines and MRO inventory solutions with 11 years of experience.',
+    description: 'Guangzhou Qiuyan Technology manufactures smart material cabinets, CNC tool vending machines and MRO inventory solutions with 11 years of experience.',
   },
   zh: {
     title: '关于 Qtech 智能工具柜 | 中国智能柜制造商',
-    description: '了解广州秋渊科技——一家服务于全球工厂的智能工具柜与工业自动售货机制造商。',
+    description: '了解广州秋彦科技——一家服务于全球工厂的智能工具柜与工业自动售货机制造商。',
   },
   ar: {
     title: 'حول Qtech لخزائن الأدوات الذكية | مصنع الخزائن الذكية في الصين',

@@ -202,7 +202,7 @@ export default function TrustBadges({ locale: propLocale }: TrustBadgesProps) {
             className="text-center text-xs font-bold uppercase tracking-widest mb-10 relative z-10"
             style={{ color: '#94a3b8' }}
           >
-            {locale === 'zh' ? '广州秋渊科技有限公司 · 成立于2015年' : locale === 'ar' ? 'شركة قوانغتشو تشيويان للتكنولوجيا · تأسست عام 2015' : 'Guangzhou Qiuyuan Technology Co., Ltd. · Established 2015'}
+            {locale === 'zh' ? '广州秋彦科技有限公司 · 成立于2015年' : locale === 'ar' ? 'شركة قوانغتشو تشيويان للتكنولوجيا · تأسست عام 2015' : 'Guangzhou Qiuyan Technology Co., Ltd. · Established 2015'}
           </p>
 
           {/* Stats grid */}

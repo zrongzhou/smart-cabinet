@@ -75,7 +75,7 @@ export default function Footer() {
     locale === 'zh' ? zhVal : locale === 'ar' ? arVal : enVal;
 
   const displayName = settings ? L(settings.companyNameZh || '', settings.companyName || '', settings.companyNameAr || '') : 'Qtech';
-  const displayCompany = settings ? L(settings.companyNameZh || '广州秋渊科技有限公司', settings.companyName || 'Guangzhou Qiuyuan Technology Co., Ltd.', settings.companyNameAr || '') : 'Guangzhou Qiuyuan Technology Co., Ltd.';
+  const displayCompany = settings ? L(settings.companyNameZh || '广州秋彦科技有限公司', settings.companyName || 'Guangzhou Qiuyan Technology Co., Ltd.', settings.companyNameAr || '') : 'Guangzhou Qiuyan Technology Co., Ltd.';
   // Support multi-value contact info (arrays from admin settings)
   const displayEmails = (settings?.contactEmails && Array.isArray(settings.contactEmails) && settings.contactEmails.length > 0)
     ? settings.contactEmails.filter(e => e && e.trim())

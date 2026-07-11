@@ -114,7 +114,7 @@ export function ContactClient() {
       color: 'bg-orange-50 text-orange-600 border-orange-100',
     },
     // V8.3 fix: bug 2 — removed the WeChat customer-service contact block entirely
-    // (no longer showing "WeChat: QiuyuanTech" / "Scan QR code to add customer service").
+    // (no longer showing "WeChat: QiuyanTech" / "Scan QR code to add customer service").
     // WhatsApp entry (only show if WhatsApp numbers are configured)
     ...(displayWhatsAppNumbers.length > 0 ? [{
       icon: Phone,

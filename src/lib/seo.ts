@@ -68,7 +68,7 @@ export const SITE_CONFIG = {
     'liquid material cabinet','液体管理柜',
     'RFID tool tracking','automated tool management','intelligent storage solution',
     'CNC cutting tool management','end mill cabinet','tap management',
-    '广州秋渊科技','Qiuyuan Technology','smart tool management system'
+    '广州秋彦科技','Qiuyan Technology','smart tool management system'
   ],
   ogImage: '/images/og-default.svg',
   twitterHandle: '@wstoolcabinet',
@@ -192,7 +192,7 @@ export function jsonLdWebsite() {
     }),
     publisher: {
       '@type': 'Organization',
-      name: 'Guangzhou Qiuyuan Technology Co., Ltd.',
+      name: 'Guangzhou Qiuyan Technology Co., Ltd.',
       ...(baseUrl && { url: baseUrl }),
     },
   };
@@ -206,8 +206,8 @@ export function jsonLdOrganization() {
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'Guangzhou Qiuyuan Technology Co., Ltd.',
-    alternateName: '广州秋渊科技有限公司 / Qtech',
+    name: 'Guangzhou Qiuyan Technology Co., Ltd.',
+    alternateName: '广州秋彦科技有限公司 / Qtech',
     ...(baseUrl && { url: baseUrl }),
     ...(baseUrl && { logo: `${baseUrl}/images/logo.png` }),
     contactPoint: {
@@ -264,7 +264,7 @@ export function jsonLdProduct(product: {
         availability: `https://schema.org/${product.availability || 'InStock'}`,
         seller: {
           '@type': 'Organization',
-          name: 'Guangzhou Qiuyuan Technology Co., Ltd.',
+          name: 'Guangzhou Qiuyan Technology Co., Ltd.',
         },
       },
     }),
@@ -338,7 +338,7 @@ export function jsonLdArticle(post: {
     },
     publisher: {
       '@type': 'Organization',
-      name: 'Guangzhou Qiuyuan Technology Co., Ltd.',
+      name: 'Guangzhou Qiuyan Technology Co., Ltd.',
       ...(baseUrl && { logo: { '@type': 'ImageObject', url: `${baseUrl}/images/logo.png` } }),
     },
   };
@@ -353,8 +353,8 @@ export function jsonLdLocalBusiness() {
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
     ...(baseUrl && { '@id': `${baseUrl}/#organization` }),
-    name: 'Guangzhou Qiuyuan Technology Co., Ltd.',
-    alternateName: ['广州秋渊科技有限公司', 'Qtech', 'Qiuyuan Technology'],
+    name: 'Guangzhou Qiuyan Technology Co., Ltd.',
+    alternateName: ['广州秋彦科技有限公司', 'Qtech', 'Qiuyan Technology'],
     description: SITE_CONFIG.defaultDescription,
     ...(baseUrl && { url: baseUrl }),
     ...(baseUrl && { logo: `${baseUrl}/images/about/company-logo.png` }),
@@ -416,7 +416,7 @@ export function jsonLdService(service: {
     ...(baseUrl && { url: `${baseUrl}${service.url}` }),
     provider: {
       '@type': 'Organization',
-      name: 'Guangzhou Qiuyuan Technology Co., Ltd.',
+      name: 'Guangzhou Qiuyan Technology Co., Ltd.',
       ...(baseUrl && { url: baseUrl }),
     },
     serviceType: service.category || 'Manufacturing Support Service',
@@ -521,7 +521,7 @@ export function jsonLdWebPage(page: {
     ...(page.dateModified && { dateModified: page.dateModified }),
     publisher: {
       '@type': 'Organization',
-      name: 'Guangzhou Qiuyuan Technology Co., Ltd.',
+      name: 'Guangzhou Qiuyan Technology Co., Ltd.',
       ...(baseUrl && { logo: { '@type': 'ImageObject', url: `${baseUrl}/images/about/company-logo.png` } }),
     },
   };

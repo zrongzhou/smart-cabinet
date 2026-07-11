@@ -107,7 +107,7 @@ export async function generateMetadata({ params }: { params: { locale: string } 
       title: meta.title,
       description: meta.description,
       url: `${SITE_URL}/${locale}`,
-      siteName: 'Qtech | Guangzhou Qiuyuan Technology',
+      siteName: 'Qtech | Guangzhou Qiuyan Technology',
       locale: locale === 'zh' ? 'zh_CN' : locale === 'ar' ? 'ar_SA' : 'en_US',
       type: 'website',
       // N1: ensure the homepage has a shareable Open Graph image (absolute URL).

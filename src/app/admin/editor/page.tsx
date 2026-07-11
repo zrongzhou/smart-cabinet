@@ -131,7 +131,7 @@ const DEFAULT_BLOCKS: Record<string, ContentBlock[]> = {
     { id: 'home-stats-1', type: 'stats', title: { zh: '数据统计', en: 'Statistics', ar: 'إحصائيات' }, content: { stat1Label: '服务客户', stat1Value: '800+', stat2Label: '产品型号', stat2Value: '100+', stat3Label: '国家地区', stat3Value: '30+' }, images: [], order: 3, status: 'active' },
   ],
   about: [
-    { id: 'about-intro-1', type: 'text', title: { zh: '公司简介', en: 'Company Intro', ar: 'مقدمة الشركة' }, content: { bodyZh: '广州秋渊科技有限公司专注于智能存储解决方案的研发与制造...', bodyEn: 'Guangzhou Qiuyuan Technology specializes in R&D and manufacturing of intelligent storage solutions...', bodyAr: '' }, images: [], order: 0, status: 'active' },
+    { id: 'about-intro-1', type: 'text', title: { zh: '公司简介', en: 'Company Intro', ar: 'مقدمة الشركة' }, content: { bodyZh: '广州秋彦科技有限公司专注于智能存储解决方案的研发与制造...', bodyEn: 'Guangzhou Qiuyan Technology specializes in R&D and manufacturing of intelligent storage solutions...', bodyAr: '' }, images: [], order: 0, status: 'active' },
     { id: 'about-image-1', type: 'image', title: { zh: '公司图片', en: 'Company Image', ar: 'صورة الشركة' }, content: { imageUrl: '', imageCaption: '' }, images: [], order: 1, status: 'active' },
   ],
   products: [

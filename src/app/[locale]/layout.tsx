@@ -75,8 +75,8 @@ export default function LocaleLayout({ children, params: { locale } }: LocaleLay
           <JsonLd data={{
             '@context': 'https://schema.org',
             '@type': 'Organization',
-            name: 'Guangzhou Qiuyuan Technology Co., Ltd.',
-            alternateName: '广州秋渊科技有限公司 / Qtech',
+            name: 'Guangzhou Qiuyan Technology Co., Ltd.',
+            alternateName: '广州秋彦科技有限公司 / Qtech',
             url: 'https://www.wstoolcabinet.com',
             logo: 'https://www.wstoolcabinet.com/images/logo.svg',
             contactPoint: {
