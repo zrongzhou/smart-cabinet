@@ -67,11 +67,13 @@ export default function AddBlogPage() {
     try {
       setSaving(true);
 
-      // Use the manually-entered slug if valid, otherwise auto-generate from title
-      const rawSlug = (formData.slug || '').trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+      // Use the manually-entered slug if valid, otherwise auto-generate from title.
+      // Keep dots so blog slugs like "xxx.html" survive (DB convention: blog slugs
+      // carry the .html suffix — without it the detail page URL would 404).
+      const rawSlug = (formData.slug || '').trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9.-]/g, '');
       let slug = rawSlug;
       if (!slug) {
-        slug = formData.titleEn.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+        slug = formData.titleEn.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9.-]/g, '');
       }
       if (!slug) {
         slug = formData.titleZh.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9\u4e00-\u9fff-]/g, '').toLowerCase();
