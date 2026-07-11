@@ -12,6 +12,7 @@ import { fetchUnifiedSettings, SiteSettings } from '@/data/unified-data';
 import OceanHeader from '@/components/OceanHeader';
 import Image from 'next/image';
 import CompanyShowcase from '@/components/about/CompanyShowcase';
+import AboutStoneBook from '@/components/about/AboutStoneBook';
 import ValuesBook from '@/components/about/ValuesBook';
 import ClientWall from '@/components/about/ClientWall';
 
@@ -394,6 +395,9 @@ export function AboutClient() {
 
       {/* Company Introduction — extracted to <CompanyShowcase> (V8 visual refresh) */}
       <CompanyShowcase t={t} locale={locale} />
+
+      {/* V8.10 — Task C: stone-book brand chronicle band */}
+      <AboutStoneBook t={t} locale={locale} />
 
       {/* Customer Pain Points — V6 glassmorphism diagnosis rows */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-gradient-to-b from-stone-50/60 to-white">

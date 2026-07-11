@@ -5,7 +5,9 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Save, Upload, X, Plus, Trash2, Image as ImageIcon, FolderOpen, ExternalLink } from 'lucide-react';
 import { adminApi } from '@/data/unified-data';
+import { toStoredSlug } from '@/lib/slug';
 import ProductFaqEditor, { type FaqItem } from '@/components/product/ProductFaqEditor';
+import ProductSpecsEditor, { type SpecItem } from '@/components/product/ProductSpecsEditor';
 
 export const dynamic = 'force-dynamic';
 
@@ -39,6 +41,7 @@ export default function AddProductPage() {
     specificationsAr: '',
     seoKeywords: '', // Added for SEO keywords
     faq: [] as FaqItem[], // V8.5 fix: bug 1 — product-level FAQ list
+    specs: [] as SpecItem[], // V8.6: canonical trilingual specs array
   });
 
   // Generate SEO keywords from product names
@@ -243,10 +246,14 @@ export default function AddProductPage() {
     try {
       // Check slug uniqueness
       const uniqueSlug = await generateUniqueSlug(form.slug);
-      
+      // V8.10: store the slug exactly as getProductHref() will build the public
+      // link from it (strip `products/` for cabinet leaves, collapse stray
+      // internal slashes) so the detail page never 404s.
+      const storedSlug = toStoredSlug(uniqueSlug);
+
       await adminApi.createProduct({
         name: { en: form.nameEn, zh: form.nameZh || form.nameEn, ar: form.nameAr || form.nameEn },
-        slug: uniqueSlug,
+        slug: storedSlug,
         sku: form.sku,
         price: parseFloat(form.price) || 0,
         categoryIds: form.categoryIds,
@@ -275,6 +282,8 @@ export default function AddProductPage() {
         },
         // V8.5 fix: bug 1 — persist the product FAQ list (Json).
         faq: form.faq,
+        // V8.6: canonical specs (Json array of trilingual {param,value}).
+        specs: form.specs,
       });
       router.push('/xiaozhouBackend/products');
     } catch (err: any) {
@@ -684,6 +693,14 @@ export default function AddProductPage() {
                 dir="rtl"
               />
             </div>
+          </div>
+
+          {/* V8.6 — structured canonical specs editor (primary, trilingual) */}
+          <div className="mt-6 pt-6 border-t border-gray-100">
+            <ProductSpecsEditor
+              value={form.specs}
+              onChange={(items) => handleChange('specs', items)}
+            />
           </div>
         </div>
 

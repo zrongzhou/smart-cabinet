@@ -5,7 +5,9 @@ import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Save, Loader2, Upload, X, Plus, Image as ImageIcon, FolderOpen, ExternalLink, PackageX } from 'lucide-react';
 import { adminApi } from '@/data/unified-data';
+import { toStoredSlug } from '@/lib/slug';
 import ProductFaqEditor, { type FaqItem } from '@/components/product/ProductFaqEditor';
+import ProductSpecsEditor, { type SpecItem, type SpecLang } from '@/components/product/ProductSpecsEditor';
 
 export const dynamic = 'force-dynamic';
 
@@ -126,6 +128,91 @@ function faqRecordsToItems(records: any[]): FaqItem[] {
     }));
 }
 
+  // ===== V8.6 (Task A) — canonical specs helpers =====
+  // Normalize a single field into a trilingual object, accepting either a
+  // {en,zh,ar} object or a plain string (mirrored to all three locales).
+  function asTrilingual(v: any): SpecLang {
+    if (v && typeof v === 'object' && !Array.isArray(v)) {
+      return {
+        en: typeof v.en === 'string' ? v.en : '',
+        zh: typeof v.zh === 'string' ? v.zh : '',
+        ar: typeof v.ar === 'string' ? v.ar : '',
+      };
+    }
+    if (typeof v === 'string') return { en: v, zh: v, ar: v };
+    return { en: '', zh: '', ar: '' };
+  }
+
+  // Split a single "param: value" line into its two halves. Tolerant of
+  // multiple separators (`:` `：` `=` `–` `—` `-`) and surrounding whitespace.
+  function splitKV(line: string): [string, string] {
+    const parts = line.split(/[:：=–—-]\s*/).map((s) => s.trim());
+    if (parts.length < 2) return [line.trim(), ''];
+    return [parts[0], parts.slice(1).join(': ')];
+  }
+
+  // Parse the legacy `specifications` text blob (per-locale EN/zh/AR) into the
+  // canonical SpecItem[] shape. Each locale's lines are merged positionally:
+  // line i of EN supplies the param/value, zh/ar at the same index translate.
+  function parseLegacyToSpecs(legacyText: any): SpecItem[] {
+    const build = (raw: any): string[] =>
+      typeof raw === 'string'
+        ? raw.split('\n').map((l) => l.trim()).filter(Boolean)
+        : [];
+    const enLines = build(legacyText?.en);
+    const zhLines = build(legacyText?.zh);
+    const arLines = build(legacyText?.ar);
+    const max = Math.max(enLines.length, zhLines.length, arLines.length);
+    const items: SpecItem[] = [];
+    for (let i = 0; i < max; i++) {
+      const [enParam, enValue] = enLines[i] ? splitKV(enLines[i]) : ['', ''];
+      const zhHalf = zhLines[i] ? splitKV(zhLines[i]) : ['', ''];
+      const arHalf = arLines[i] ? splitKV(arLines[i]) : ['', ''];
+      // Use the EN param as the canonical key; only use other locales when they
+      // actually carry content, otherwise mirror the EN value.
+      items.push({
+        param: {
+          en: enParam,
+          zh: zhHalf[0] || enParam,
+          ar: arHalf[0] || enParam,
+        },
+        value: {
+          en: enValue,
+          zh: zhHalf[1] || enValue,
+          ar: arHalf[1] || enValue,
+        },
+      });
+    }
+    return items;
+  }
+
+  // Normalize whatever is stored in `product.specs` into SpecItem[].
+  // Priority: array of {param,value} (canonical) -> key/value object form ->
+  // fallback to parsing the legacy `specifications` text. Returns [] if empty.
+  function normalizeSpecs(raw: any, legacyText: any): SpecItem[] {
+    if (Array.isArray(raw)) {
+      return raw
+        .filter((x: any) => x && typeof x === 'object')
+        .map((x: any) => ({
+          param: asTrilingual(x?.param),
+          value: asTrilingual(x?.value),
+        }))
+        .filter(
+          (it: SpecItem) =>
+            it.param.en || it.param.zh || it.param.ar ||
+            it.value.en || it.value.zh || it.value.ar
+        );
+    }
+    if (raw && typeof raw === 'object') {
+      // Key/value object form: { "Dimension": {en,zh,ar} | "string", ... }
+      return Object.entries(raw as Record<string, any>).map(([k, v]) => ({
+        param: { en: k, zh: k, ar: k },
+        value: asTrilingual(v),
+      }));
+    }
+    return parseLegacyToSpecs(legacyText);
+  }
+
 export default function EditProductPage() {
   const router = useRouter();
   const params = useParams();
@@ -177,6 +264,7 @@ export default function EditProductPage() {
     specificationsAr: '',
     seoKeywords: '', // Added for SEO keywords
     faq: [] as FaqItem[], // V8.5 fix: bug 1 — product-level FAQ list
+    specs: [] as SpecItem[], // V8.6: canonical trilingual specs array
   });
 
   // Track if auto-fill has been done (to avoid re-running on subsequent edits)
@@ -389,6 +477,10 @@ export default function EditProductPage() {
             if (fromRelation.length > 0) return fromRelation;
             return normalizeFaq(product.faq);
           })(),
+          // V8.6: canonical specs — read product.specs (trilingual array) as the
+          // primary source; fall back to parsing the legacy `specifications`
+          // text so old products keep their data.
+          specs: normalizeSpecs(product.specs, product.specifications),
         });
         setProductFound(true);
       } catch (err: any) {
@@ -509,10 +601,14 @@ export default function EditProductPage() {
       // Check slug uniqueness
       const slug = form.slug || form.nameEn.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || 'product-' + Date.now();
       const uniqueSlug = await generateUniqueSlug(slug);
-      
+      // V8.10: store the slug exactly as getProductHref() will build the
+      // public link from it (strip `products/` for cabinet leaves, collapse any
+      // stray internal slash) so the detail page never 404s.
+      const storedSlug = toStoredSlug(uniqueSlug);
+
       await adminApi.updateProduct(productId, {
         name: { en: form.nameEn, zh: form.nameZh, ar: form.nameAr },
-        slug: uniqueSlug,
+        slug: storedSlug,
         sku: form.sku,
         price: parseFloat(form.price) || 0,
         categoryIds: form.categoryIds,
@@ -541,6 +637,8 @@ export default function EditProductPage() {
         },
         // V8.5 fix: bug 1 — persist the product FAQ list (Json).
         faq: form.faq,
+        // V8.6: canonical specs (Json array of trilingual {param,value}).
+        specs: form.specs,
       });
       router.push('/xiaozhouBackend/products');
     } catch (err: any) {
@@ -1064,6 +1162,14 @@ export default function EditProductPage() {
                 dir="rtl"
               />
             </div>
+          </div>
+
+          {/* V8.6 — structured canonical specs editor (primary, trilingual) */}
+          <div className="mt-6 pt-6 border-t border-gray-100">
+            <ProductSpecsEditor
+              value={form.specs}
+              onChange={(items) => handleChange('specs', items)}
+            />
           </div>
         </div>
 

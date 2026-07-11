@@ -278,9 +278,15 @@ export default async function ProductDetailView({ locale, lookupSlug, canonicalP
       if (Array.isArray(productAny.specs) && productAny.specs.length > 0) {
         const result: Record<string, string> = {};
         for (const row of productAny.specs) {
-          if (row && row.param) {
+          if (row && row.param != null) {
+            // V8.6: param may be a trilingual {en,zh,ar} object (new canonical
+            // form saved by the admin editor) OR a plain string key (legacy).
+            // Resolve to a per-locale label so both shapes render correctly.
+            const paramLabel = typeof row.param === 'object'
+              ? translate(row.param, locale)
+              : String(row.param);
             const val = typeof row.value === 'object' ? translate(row.value, locale) : String(row.value ?? '');
-            result[row.param] = val;
+            result[paramLabel] = val;
           }
         }
         if (Object.keys(result).length > 0) {

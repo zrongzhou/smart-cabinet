@@ -59,3 +59,43 @@ export function normalizeSlug(raw: string): string {
   }
   return normalizeLeaf(value);
 }
+
+/**
+ * Convert a user-entered "URL / slug" (public path or raw slug) into the value
+ * that should be persisted as `Product.slug` in the database.
+ *
+ * This is the inverse of `getProductPublicPath()` in product-url.ts:
+ *   - Cabinet products are stored as a *leaf* slug; `getProductPublicPath()`
+ *     re-prepends `products/`, so a user-entered public path
+ *     `products/xxx.html` must have that prefix stripped.
+ *   - `solutions/...` and `applications/...` keep their directory prefix
+ *     verbatim (their dedicated routes expect the prefixed slug).
+ *   - A cabinet leaf MUST NOT contain a `/`: otherwise `getProductPublicPath()`
+ *     would treat the slash as a routing prefix and SKIP the `products/` segment
+ *     when building the link, so the generated detail URL would 404. Any stray
+ *     internal slash (e.g. a pasted `.../a.html`) is therefore collapsed to a
+ *     hyphen before we normalize.
+ *   - Everything is finally passed through `normalizeSlug()` so the stored value
+ *     always equals the link slug built by `getProductHref()` (no 404).
+ */
+export function toStoredSlug(input: string): string {
+  const raw = (input || '').trim();
+  if (!raw) return '';
+
+  // Prefixed routes keep their directory prefix untouched.
+  if (/^(solutions|applications)\//i.test(raw)) {
+    return normalizeSlug(raw);
+  }
+
+  // Public-path form `products/xxx` -> strip the `products/` prefix to obtain
+  // the cabinet leaf (getProductPublicPath() re-adds it when building the link).
+  let leaf = raw;
+  if (leaf.toLowerCase().startsWith('products/')) {
+    leaf = leaf.slice('products/'.length);
+  }
+
+  // Cabinet leaves must be slash-free (see note above). Collapse any internal slash.
+  leaf = leaf.replace(/\//g, '-');
+
+  return normalizeSlug(leaf);
+}
