@@ -18,7 +18,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { Users, Factory, Award, ShieldCheck, BadgeCheck, CheckCircle } from 'lucide-react';
-import AboutStoneBook from '@/components/about/AboutStoneBook';
+import AboutBowKnot from '@/components/about/AboutBowKnot';
 
 interface CompanyShowcaseProps {
   t: (key: string) => string;
@@ -134,9 +134,9 @@ export default function CompanyShowcase({ t, locale }: CompanyShowcaseProps) {
             <span className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-200 to-transparent" />
           </div>
 
-          {/* ═══ Stone Book — brand chronicle ═══ */}
+          {/* ═══ Ribbon Bow — brand chronicle ═══ */}
           <div className="mt-4">
-            <AboutStoneBook t={t} locale={locale} />
+            <AboutBowKnot t={t} locale={locale} />
           </div>
         </div>
 

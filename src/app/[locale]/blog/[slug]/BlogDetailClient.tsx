@@ -3,6 +3,7 @@
 import { Calendar, User, ArrowLeft, Facebook, Twitter, Linkedin } from 'lucide-react';
 import { useLocale } from '@/lib/i18n';
 import { notFound } from 'next/navigation';
+import BlogFaqSection, { type BlogFaqItem } from './BlogFaqSection';
 
 /**
  * Blog detail DTO —— 由服务端 page.tsx 构造并作为 props 传入。
@@ -117,6 +118,81 @@ export default function BlogDetailClient({ blog, recentBlogs }: BlogDetailClient
     return { body: html, faq: null };
   }
 
+  /**
+   * TASK 4 (plan b): parse a blog FAQ HTML block (the markup extracted
+   * by `splitBlogFaq`, i.e. everything after `<h2>FAQ</h2>`) into
+   * structured { question, answer, category }[] items for <BlogFaqSection>.
+   *
+   * The FAQ block is authored as a series of <p>/<div>/<li> entries,
+   * typically `<p><strong>Question?</strong><br/>Answer…</p>`. We:
+   *   - split on top-level <p>/<div>/<li> blocks,
+   *   - take the <strong>/<b> text as the question (or split on the
+   *     first <br> when no emphasis is used),
+   *   - take the remaining text as the answer,
+   *   - strip all HTML so the answer renders as plain text in the accordion.
+   *
+   * This is a pure string parser (no DOMParser / window) so it is safe
+   * during SSR. If the block has NO question markers at all (i.e. it is
+   * just free prose), we return [] and the caller falls back to the legacy
+   * prose `.blog-faq` rendering — preserving behaviour for old posts.
+   */
+  function stripHtml(s: string): string {
+    return s
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/&nbsp;/gi, ' ')
+      .replace(/&amp;/gi, '&')
+      .replace(/&lt;/gi, '<')
+      .replace(/&gt;/gi, '>')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function parseBlogFaqItems(html: string): BlogFaqItem[] {
+    if (!html) return [];
+    const items: BlogFaqItem[] = [];
+    let foundStructured = false;
+
+    const blockRegex = /<(p|div|li)\b[^>]*>([\s\S]*?)<\/\1>/gi;
+    let m: RegExpExecArray | null;
+    while ((m = blockRegex.exec(html)) !== null) {
+      const inner = m[2] || '';
+      if (!inner.trim()) continue;
+
+      const strongMatch = inner.match(/<(strong|b)\b[^>]*>([\s\S]*?)<\/\1>/i);
+      let question = '';
+      let answer = '';
+
+      if (strongMatch) {
+        question = stripHtml(strongMatch[2]);
+        const withoutStrong = inner.replace(strongMatch[0], '');
+        answer = stripHtml(withoutStrong);
+        foundStructured = true;
+      } else {
+        const brSplit = inner.split(/<br\s*\/?>/i);
+        if (brSplit.length > 1) {
+          question = stripHtml(brSplit[0]);
+          answer = stripHtml(brSplit.slice(1).join(' '));
+          foundStructured = true;
+        }
+        // else: a plain prose paragraph with no question marker — skip it
+        // so we keep the legacy prose rendering as the fallback.
+      }
+
+      // Drop any leading separator (colon / dash / middot) that may have
+      // been carried over from the answer text.
+      question = question.replace(/^[\s:：\-–—·]+/, '').trim();
+      answer = answer.replace(/^[\s:：\-–—·]+/, '').trim();
+
+      if (question) {
+        items.push({ question, answer, category: 'blog' });
+      }
+    }
+
+    // Only switch to the structured accordion when we actually found
+    // question markers; otherwise keep the original prose block.
+    return foundStructured ? items : [];
+  }
+
   const FAQ_HEADING: Record<string, string> = {
     en: 'Frequently Asked Questions',
     zh: '常见问题',
@@ -170,6 +246,7 @@ export default function BlogDetailClient({ blog, recentBlogs }: BlogDetailClient
   const content = blog!.content?.[locale as 'en' | 'zh' | 'ar'] || '';
 
   const { body, faq } = splitBlogFaq(content);
+  const faqItems = faq ? parseBlogFaqItems(faq) : [];
   const bodyHtml = injectCoverImageInContent(body, getInlineBlogDetailImage(blog!));
 
   return (
@@ -217,19 +294,25 @@ export default function BlogDetailClient({ blog, recentBlogs }: BlogDetailClient
             dangerouslySetInnerHTML={{ __html: bodyHtml }}
           />
 
-          {/* V8.7 fix (bug 7): FAQ rendered in its own separated, styled block
-              so it never sits directly against the article body. */}
-          {faq && (
-            <section
-              className="mt-10 pt-8 border-t border-gray-200 dark:border-slate-700"
-              aria-label={FAQ_HEADING[locale] || FAQ_HEADING.en}
-            >
-              <h2 className="mb-5 flex items-center gap-3 text-2xl font-bold text-gray-900 dark:text-white">
-                <span className="h-1 w-10 rounded-full bg-gradient-to-r from-blue-600 to-blue-400" />
-                {FAQ_HEADING[locale] || FAQ_HEADING.en}
-              </h2>
-              <div className="blog-faq" dangerouslySetInnerHTML={{ __html: faq }} />
-            </section>
+          {/* TASK 4: FAQ — structured accordion (mirrors ProductFaqSection).
+              When we can parse the body FAQ block into Q/A items we render
+              the elegant <BlogFaqSection> accordion; otherwise we keep the
+              legacy prose `.blog-faq` block so older posts still show FAQ. */}
+          {faqItems.length > 0 ? (
+            <BlogFaqSection faqs={faqItems} locale={locale} />
+          ) : (
+            faq && (
+              <section
+                className="mt-10 pt-8 border-t border-gray-200 dark:border-slate-700"
+                aria-label={FAQ_HEADING[locale] || FAQ_HEADING.en}
+              >
+                <h2 className="mb-5 flex items-center gap-3 text-2xl font-bold text-gray-900 dark:text-white">
+                  <span className="h-1 w-10 rounded-full bg-gradient-to-r from-blue-600 to-blue-400" />
+                  {FAQ_HEADING[locale] || FAQ_HEADING.en}
+                </h2>
+                <div className="blog-faq" dangerouslySetInnerHTML={{ __html: faq }} />
+              </section>
+            )
           )}
 
           <style jsx global>{`

@@ -61,6 +61,62 @@ export default function ProductDetailClient({
     }
   };
 
+  // TASK 3 fix: detect whether usable specs exist. The resolved specs may be
+  // a key/value object (canonical + legacy shapes) or a non-empty string
+  // (legacy prose). NOTE: previously the Specifications tab was NOT the default
+  // active tab, so the resolved spec table was hidden behind a non-active
+  // tab and new products' spec tables effectively never showed. We now render
+  // the specs table in an always-visible, prominent block ABOVE the tabs.
+  const hasSpecs =
+    !!product._resolvedSpecs &&
+    (typeof product._resolvedSpecs === 'string'
+      ? product._resolvedSpecs.trim() !== ''
+      : Object.keys(product._resolvedSpecs).length > 0);
+
+  /** Render the specs as a clear, consistent table (or prose box for string specs). */
+  const renderSpecsTable = () => {
+    const specs = product._resolvedSpecs;
+    if (typeof specs === 'string') {
+      if (!specs.trim()) return null;
+      return (
+        <div className="bg-gray-50 rounded-xl overflow-hidden border border-gray-200">
+          <div className="p-5 text-gray-600 whitespace-pre-wrap">{safeText(specs)}</div>
+        </div>
+      );
+    }
+    let specsObj: Record<string, any> | null = null;
+    if (Array.isArray(specs)) {
+      // Safety net: array form [{param, value}] -> key/value object.
+      specsObj = {};
+      for (const row of specs) {
+        if (row && row.param != null) specsObj[String(row.param)] = row.value ?? '';
+      }
+    } else {
+      specsObj = specs as Record<string, any>;
+    }
+    if (!specsObj || Object.keys(specsObj).length === 0) return null;
+    return (
+      <div className="bg-gray-50 rounded-xl overflow-hidden border border-gray-200">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm min-w-[400px]">
+            <tbody>
+              {Object.entries(specsObj).map(([key, value]: [string, any], index: number) => (
+                <tr key={key} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                  <td className="px-4 py-3 font-medium text-gray-900 min-w-[120px] border-r border-gray-200">
+                    {safeText(key)}
+                  </td>
+                  <td className="px-4 py-3 text-gray-600">
+                    {safeText(value) || '-'}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  };
+
   // Reset retry state when switching images
   const handleSelectImage = (index: number) => {
     setSelectedImage(index);
@@ -429,6 +485,22 @@ export default function ProductDetailClient({
 
           {/* Tabs Section */}
           <div className="px-6 lg:px-8 pb-8 border-t border-gray-200">
+            {/* TASK 3 fix: Specifications are ALWAYS shown here (prominent),
+                above the tabs, so new products' spec tables are never hidden
+                behind a non-default tab. */}
+            {hasSpecs && (
+              <div className="mt-2 mb-8">
+                <div className="flex items-center gap-2.5 mb-3">
+                  <span className="w-1.5 h-5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-500" />
+                  <h3 className="flex items-center gap-2 text-base font-bold text-gray-900">
+                    <Ruler className="w-4 h-4 text-blue-600" />
+                    {labels.specifications}
+                  </h3>
+                </div>
+                {renderSpecsTable()}
+              </div>
+            )}
+
             {/* Tab Navigation */}
             <div className="flex flex-wrap gap-1 -mb-px mt-6">
               <button
@@ -442,20 +514,6 @@ export default function ProductDetailClient({
                 <FileText className="w-4 h-4 inline-block mr-2" />
                 {labels.description}
               </button>
-
-              {product._resolvedSpecs && (typeof product._resolvedSpecs === 'string' ? product._resolvedSpecs.trim() !== '' : Object.keys(product._resolvedSpecs).length > 0) && (
-                <button
-                  onClick={() => setActiveTab('specifications')}
-                  className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors ${
-                    activeTab === 'specifications'
-                      ? 'border-blue-600 text-blue-600'
-                      : 'border-transparent text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  <Ruler className="w-4 h-4 inline-block mr-2" />
-                  {labels.specifications}
-                </button>
-              )}
 
               {product._resolvedFeatures && product._resolvedFeatures.length > 0 && (
                 <button
@@ -497,59 +555,6 @@ export default function ProductDetailClient({
                   )}
                 </div>
               )}
-
-              {/* Specifications Tab */}
-              {activeTab === 'specifications' && product._resolvedSpecs && (() => {
-                // Normalize specs into a key-value object so BOTH the
-                // [{param, value}] array shape and the plain key-value object
-                // shape render through the same <table> branch (P2 fix).
-                let specsObj: Record<string, any> | null = null;
-                if (typeof product._resolvedSpecs === 'string') {
-                  if (!product._resolvedSpecs.trim()) return null;
-                  return (
-                    <div className="prose prose-sm max-w-none">
-                      <div
-                        className="bg-gray-50 rounded-xl p-5 border border-gray-200 whitespace-pre-wrap text-gray-600"
-                        dangerouslySetInnerHTML={{ __html: safeText(product._resolvedSpecs) }}
-                      />
-                    </div>
-                  );
-                } else if (Array.isArray(product._resolvedSpecs)) {
-                  // Array form [{param, value}] -> key-value object (dedup by param).
-                  specsObj = {};
-                  for (const row of product._resolvedSpecs) {
-                    if (row && row.param) specsObj[row.param] = row.value ?? '';
-                  }
-                } else {
-                  specsObj = product._resolvedSpecs as Record<string, any>;
-                }
-
-                if (!specsObj || Object.keys(specsObj).length === 0) return null;
-
-                // Key-value format specs
-                return (
-                  <div className="prose prose-sm max-w-none">
-                    <div className="bg-gray-50 rounded-xl overflow-hidden border border-gray-200">
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-sm min-w-[400px]">
-                          <tbody>
-                            {Object.entries(specsObj).map(([key, value]: [string, any], index: number) => (
-                              <tr key={key} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                                <td className="px-4 py-3 font-medium text-gray-900 min-w-[120px] border-r border-gray-200">
-                                  {safeText(key)}
-                                </td>
-                                <td className="px-4 py-3 text-gray-600">
-                                  {safeText(value) || '-'}
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })()}
 
               {/* Features Tab */}
               {activeTab === 'features' && product._resolvedFeatures && (() => {
