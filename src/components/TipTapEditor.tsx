@@ -21,15 +21,17 @@ import {
   AlignLeft, AlignCenter, AlignRight, AlignJustify, Minus, SquareCode, Youtube as YoutubeIcon,
   Table as TableIcon, Palette, Highlighter, Plus, Trash2,
 } from 'lucide-react';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface TipTapEditorProps {
   content: string;
   onChange: (html: string) => void;
   placeholder?: string;
+  /** Active locale for toolbar labels; supports 'zh' | 'en' | 'ar'. Defaults to 'en'. */
+  locale?: string;
 }
 
-export default function TipTapEditor({ content, onChange, placeholder = '请输入内容...' }: TipTapEditorProps) {
+export default function TipTapEditor({ content, onChange, placeholder = '请输入内容...', locale = 'en' }: TipTapEditorProps) {
   const lastContentRef = useRef<string>('');
   const colorInputRef = useRef<HTMLInputElement>(null);
 
@@ -96,6 +98,49 @@ export default function TipTapEditor({ content, onChange, placeholder = '请输�
       }
     }
   }, [content, editor]);
+
+  // ── Block format (paragraph / heading) selector ──────────────────────────
+  // Tracks the block type at the current cursor so the dropdown reflects the
+  // active paragraph/heading, and lets the user convert the block on demand.
+  const [blockType, setBlockType] = useState<'paragraph' | 'h1' | 'h2' | 'h3' | 'h4'>('paragraph');
+
+  // Localized label for the "Paragraph" option (H1–H4 stay universal).
+  const paragraphLabel: Record<string, string> = {
+    zh: '正文',
+    en: 'Paragraph',
+    ar: 'فقرة',
+  };
+
+  const applyBlockFormat = (value: string) => {
+    if (!editor) return;
+    if (value === 'paragraph') {
+      editor.chain().focus().setParagraph().run();
+    } else {
+      const level = Number(value.replace('h', '')) as 1 | 2 | 3 | 4;
+      editor.chain().focus().toggleHeading({ level }).run();
+    }
+    setBlockType(value as 'paragraph' | 'h1' | 'h2' | 'h3' | 'h4');
+  };
+
+  // Keep the selector in sync with the cursor position (fires on move/edit).
+  useEffect(() => {
+    if (!editor) return;
+    const syncBlockType = () => {
+      let current: 'paragraph' | 'h1' | 'h2' | 'h3' | 'h4' = 'paragraph';
+      if (editor.isActive('heading', { level: 1 })) current = 'h1';
+      else if (editor.isActive('heading', { level: 2 })) current = 'h2';
+      else if (editor.isActive('heading', { level: 3 })) current = 'h3';
+      else if (editor.isActive('heading', { level: 4 })) current = 'h4';
+      setBlockType(current);
+    };
+    editor.on('selectionUpdate', syncBlockType);
+    editor.on('transaction', syncBlockType);
+    syncBlockType();
+    return () => {
+      editor.off('selectionUpdate', syncBlockType);
+      editor.off('transaction', syncBlockType);
+    };
+  }, [editor]);
 
   if (!editor) return null;
 
@@ -181,6 +226,23 @@ export default function TipTapEditor({ content, onChange, placeholder = '请输�
         </ToolButton>
 
         <div className="w-px h-6 bg-gray-300 mx-1" />
+
+        {/* 段落 / 标题格式选择器：随光标同步，可一键将当前块切换为正文或 H1–H4 */}
+        <div className="flex items-center">
+          <select
+            value={blockType}
+            onChange={(e) => applyBlockFormat(e.target.value)}
+            title="文本格式 / Text format"
+            aria-label="文本格式"
+            className="text-sm rounded-md border border-gray-300 bg-white px-2 py-1.5 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200"
+          >
+            <option value="paragraph">{paragraphLabel[locale] ?? 'Paragraph'}</option>
+            <option value="h1">H1</option>
+            <option value="h2">H2</option>
+            <option value="h3">H3</option>
+            <option value="h4">H4</option>
+          </select>
+        </div>
 
         <ToolButton onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} active={editor.isActive('heading', { level: 1 })} title="标题1">
           <span className="text-sm font-bold">H1</span>

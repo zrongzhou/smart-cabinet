@@ -437,6 +437,7 @@ export default function EditBlogPage() {
               <TipTapEditor
                 content={formData.contentZh}
                 onChange={(html) => setFormData(f => ({ ...f, contentZh: html }))}
+                locale="zh"
               />
             </div>
           </div>
@@ -450,6 +451,7 @@ export default function EditBlogPage() {
               <TipTapEditor
                 content={formData.contentEn}
                 onChange={(html) => setFormData(f => ({ ...f, contentEn: html }))}
+                locale="en"
               />
             </div>
           </div>
@@ -494,6 +496,7 @@ export default function EditBlogPage() {
               <TipTapEditor
                 content={formData.contentAr}
                 onChange={(html) => setFormData(f => ({ ...f, contentAr: html }))}
+                locale="ar"
               />
             </div>
           </div>

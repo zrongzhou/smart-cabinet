@@ -1,0 +1,50 @@
+classDiagram
+    %% 数据契约（规范 Json 形态，产品 & 博客统一）
+    class TrilingualKeywords {
+        +string en
+        +string zh
+        +string ar
+    }
+
+    class Product {
+        +Json seoKeywords
+    }
+    Product --> TrilingualKeywords : seoKeywords 存为
+
+    class BlogPost {
+        +Json seoKeywords
+    }
+    BlogPost --> TrilingualKeywords : seoKeywords 存为
+
+    %% 助手模块
+    class SeoKeywordsResolve {
+        +resolvePageKeywords(manual, auto, locale) string[]
+        +normalizeSeoKeywords(input) TrilingualKeywords
+        +toKeywordTokens(value) string[]
+    }
+
+    class SeoKeywords {
+        +buildDetailPageKeywords(en, display, slug) string[]
+        +buildListPageKeywords(enNames, displayNames) string[]
+        +buildStaticPageKeywords(enTitle, displayTitle) string[]
+    }
+
+    SeoKeywordsResolve ..> SeoKeywords : 复用 auto 输出
+    SeoKeywordsResolve ..> TrilingualKeywords : 归一化目标
+
+    %% 调用方
+    class ProductDetailView {
+        +buildProductMetadata()
+    }
+    class BlogDetailPage {
+        +generateMetadata()
+    }
+    class AdminProductsAPI
+    class AdminBlogsAPI
+
+    ProductDetailView ..> SeoKeywordsResolve : resolvePageKeywords
+    BlogDetailPage ..> SeoKeywordsResolve : resolvePageKeywords
+    AdminProductsAPI ..> SeoKeywordsResolve : normalizeSeoKeywords
+    AdminBlogsAPI ..> SeoKeywordsResolve : normalizeSeoKeywords
+    ProductDetailView ..> SeoKeywords : buildDetailPageKeywords
+    BlogDetailPage ..> SeoKeywords : buildDetailPageKeywords

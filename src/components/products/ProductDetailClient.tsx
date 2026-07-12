@@ -41,7 +41,7 @@ export default function ProductDetailClient({
   const [selectedImage, setSelectedImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
-  const [activeTab, setActiveTab] = useState<'description' | 'features' | 'reviews'>('description');
+  const [activeTab, setActiveTab] = useState<'description' | 'features' | 'specifications' | 'reviews'>('description');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [mainImageError, setMainImageError] = useState(false);
   const [mainImageLoading, setMainImageLoading] = useState(true);
@@ -499,7 +499,7 @@ export default function ProductDetailClient({
                 {labels.description}
               </button>
 
-              {hasSpecs || (product._resolvedFeatures && product._resolvedFeatures.length > 0) ? (
+              {product._resolvedFeatures && product._resolvedFeatures.length > 0 ? (
                 <button
                   onClick={() => setActiveTab('features')}
                   className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors ${
@@ -510,6 +510,22 @@ export default function ProductDetailClient({
                 >
                   <Star className="w-4 h-4 inline-block mr-2" />
                   {labels.features}
+                </button>
+              ) : null}
+
+              {/* Specifications — dedicated tab (per product page spec). Only shown
+                  when the product actually carries spec data (hasSpecs). */}
+              {hasSpecs ? (
+                <button
+                  onClick={() => setActiveTab('specifications')}
+                  className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors ${
+                    activeTab === 'specifications'
+                      ? 'border-blue-600 text-blue-600'
+                      : 'border-transparent text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  <Ruler className="w-4 h-4 inline-block mr-2" />
+                  {labels.specifications}
                 </button>
               ) : null}
 
@@ -540,11 +556,10 @@ export default function ProductDetailClient({
                 </div>
               )}
 
-              {/* Features Tab — shows the feature highlights grid, and (when
-                  present) the specification table below it, so specs live
-                  together with the product's features per the product page spec. */}
+              {/* Features Tab — shows only the feature highlights grid now that
+                  specifications have their own dedicated tab. */}
               {activeTab === 'features' && (
-                <div className="max-w-none space-y-8">
+                <div className="max-w-none">
                   {product._resolvedFeatures && product._resolvedFeatures.length > 0 && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {product._resolvedFeatures.map((feature: string, index: number) => (
@@ -557,19 +572,21 @@ export default function ProductDetailClient({
                       ))}
                     </div>
                   )}
+                </div>
+              )}
 
-                  {hasSpecs && (
-                    <div>
-                      <div className="flex items-center gap-2.5 mb-3">
-                        <span className="w-1.5 h-5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-500" />
-                        <h3 className="flex items-center gap-2 text-base font-bold text-gray-900">
-                          <Ruler className="w-4 h-4 text-blue-600" />
-                          {labels.specifications}
-                        </h3>
-                      </div>
-                      {renderSpecsTable()}
-                    </div>
-                  )}
+              {/* Specifications Tab — dedicated tab (per product page spec). Rendered
+                  only when the product has specs (hasSpecs). Reuses renderSpecsTable(). */}
+              {activeTab === 'specifications' && hasSpecs && (
+                <div className="max-w-none">
+                  <div className="flex items-center gap-2.5 mb-3">
+                    <span className="w-1.5 h-5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-500" />
+                    <h3 className="flex items-center gap-2 text-base font-bold text-gray-900">
+                      <Ruler className="w-4 h-4 text-blue-600" />
+                      {labels.specifications}
+                    </h3>
+                  </div>
+                  {renderSpecsTable()}
                 </div>
               )}
 

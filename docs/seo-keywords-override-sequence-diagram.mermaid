@@ -1,0 +1,48 @@
+sequenceDiagram
+    %% ===== 页面渲染：manual 优先级裁决 =====
+    actor Crawler
+    participant Page as 详情页(generateMetadata)
+    participant DB as Prisma/PostgreSQL
+    participant Resolve as resolvePageKeywords
+    participant Auto as seo-keywords.ts
+
+    Crawler->>Page: 请求 /[locale]/products|blog/...
+    Page->>DB: findFirst(select 含 seoKeywords)
+    DB-->>Page: product/blog + seoKeywords(Json?)
+    Page->>Auto: buildDetailPageKeywords(title, slug)
+    Auto-->>Page: auto: string[]
+    Page->>Resolve: resolvePageKeywords({manual, auto, locale})
+    alt manual[locale] 非空
+        Resolve-->>Page: 返回 manual(原样, 不过滤)
+    else manual[locale] 空/缺失
+        Resolve-->>Page: 返回 auto
+    end
+    Page-->>Crawler: <meta name="keywords" content="...">
+
+    %% ===== 后台保存：归一化落库 =====
+    actor Admin
+    participant UI as admin add/edit 表单(三语框)
+    participant API as /api/admin/products|blogs
+    participant Norm as normalizeSeoKeywords
+    participant DB2 as blog_posts / products
+
+    Admin->>UI: 填 en/zh/ar 关键词
+    UI->>API: POST/PUT {seoKeywords:{en,zh,ar}}
+    API->>Norm: normalizeSeoKeywords(body.seoKeywords)
+    Norm-->>API: {en,zh,ar} 字符串
+    API->>DB2: upsert seoKeywords(JsonB)
+    DB2-->>API: ok
+
+    %% ===== 一次性种子脚本 =====
+    actor Operator
+    participant Script as scripts/seed-keywords.mjs
+    participant CSV as 关键词表格(csv/json)
+    participant DB3 as blog_posts / products
+
+    Operator->>Script: node seed-keywords.mjs --file x.csv --mode merge
+    Script->>CSV: 读取行(entity,slug,keywords_*)
+    loop 每行
+        Script->>DB3: findFirst(slug)
+        DB3-->>Script: 现有 seoKeywords
+        Script->>DB3: update seoKeywords(仅补空语言)
+    end
