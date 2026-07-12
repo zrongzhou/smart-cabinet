@@ -9,14 +9,35 @@ import {
 } from './commandWhitelist';
 
 describe('commandWhitelist — security contract (V8 T5 / Q2)', () => {
-  it('exposes exactly the five white-listed actions', () => {
+  it('exposes exactly the white-listed actions (incl. certificate management)', () => {
     expect([...ALLOWED_ACTIONS].sort()).toEqual(
-      ['reload-nginx', 'renew-ssl', 'restore-default-config', 'restart-app', 'update-nginx-config'].sort()
+      [
+        'reload-nginx',
+        'renew-ssl',
+        'restore-default-config',
+        'restart-app',
+        'update-nginx-config',
+        'list-certificates',
+        'renew-cert',
+        'apply-cert',
+        'upload-cert',
+      ].sort()
     );
   });
 
   it('accepts every allowed action with no params', () => {
+    // Only param-free actions are expected to pass with no params.
+    // (update-nginx-config / renew-cert / apply-cert / upload-cert require
+    //  domain/email and are validated separately below.)
+    const NO_PARAM_ACTIONS = new Set([
+      'restart-app',
+      'reload-nginx',
+      'renew-ssl',
+      'restore-default-config',
+      'list-certificates',
+    ]);
     for (const action of ALLOWED_ACTIONS) {
+      if (!NO_PARAM_ACTIONS.has(action)) continue;
       expect(validateAction(action).ok, `action ${action} should be allowed`).toBe(true);
     }
   });
@@ -63,6 +84,22 @@ describe('commandWhitelist — security contract (V8 T5 / Q2)', () => {
       validateAction('update-nginx-config', { domain: 'www.example.com', port: 3000, sslEmail: 'a@b.com' }).ok
     ).toBe(true);
     expect(validateAction('update-nginx-config', { domain: 'bad', port: 3000, sslEmail: 'a@b.com' }).ok).toBe(false);
+  });
+
+  it('certificate actions validate their parameters', () => {
+    // list-certificates takes no params
+    expect(validateAction('list-certificates').ok).toBe(true);
+    // renew-cert requires a valid domain
+    expect(validateAction('renew-cert', { domain: 'www.example.com' }).ok).toBe(true);
+    expect(validateAction('renew-cert', {}).ok).toBe(false);
+    expect(validateAction('renew-cert', { domain: 'bad' }).ok).toBe(false);
+    // apply-cert requires domain + email
+    expect(validateAction('apply-cert', { domain: 'www.example.com', email: 'a@b.com' }).ok).toBe(true);
+    expect(validateAction('apply-cert', { domain: 'www.example.com' }).ok).toBe(false);
+    expect(validateAction('apply-cert', { domain: 'www.example.com', email: 'bad' }).ok).toBe(false);
+    // upload-cert requires a valid domain (files validated in the route)
+    expect(validateAction('upload-cert', { domain: 'www.example.com' }).ok).toBe(true);
+    expect(validateAction('upload-cert', {}).ok).toBe(false);
   });
 
   it('treats empty / missing params as "not provided"', () => {

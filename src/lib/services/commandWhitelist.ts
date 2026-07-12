@@ -13,13 +13,18 @@
  *    `child_process.execFile(cmd, [args])` exclusively.
  */
 
-/** The five white-listed service actions. */
+/** The white-listed service actions (incl. certificate management). */
 export type ServiceAction =
   | 'restart-app'
   | 'reload-nginx'
   | 'renew-ssl'
   | 'update-nginx-config'
-  | 'restore-default-config';
+  | 'restore-default-config'
+  // Certificate management (certbot + manual upload)
+  | 'list-certificates'
+  | 'renew-cert'
+  | 'apply-cert'
+  | 'upload-cert';
 
 /**
  * White-listed actions. Kept as a frozen Set so callers can do `has()` and the
@@ -31,6 +36,11 @@ export const ALLOWED_ACTIONS: ReadonlySet<ServiceAction> = new Set<ServiceAction
   'renew-ssl', // certbot renew
   'update-nginx-config', // write white-listed file then reload
   'restore-default-config', // copy built-in template then reload
+  // Certificate management
+  'list-certificates', // return parsed certbot domain list (GET or POST)
+  'renew-cert', // certbot renew --cert-name <domain>
+  'apply-cert', // certbot certonly --nginx -d <domain> -m <email>
+  'upload-cert', // multipart: validate + stage cert/key then reload nginx
 ]);
 
 /** Parameters accepted (and validated) by the service actions. */
@@ -38,6 +48,8 @@ export interface ServiceParams {
   domain?: string;
   port?: number | string;
   sslEmail?: string;
+  /** Notification email used by `apply-cert` (same shape as `sslEmail`). */
+  email?: string;
 }
 
 /** Result of `validateAction`. */
@@ -57,7 +69,7 @@ export const PORT_MIN = 80;
 export const PORT_MAX = 65535;
 
 /** Parameter keys that are permitted at all (others are rejected). */
-const KNOWN_PARAM_KEYS = new Set(['domain', 'port', 'sslEmail']);
+const KNOWN_PARAM_KEYS = new Set(['domain', 'port', 'sslEmail', 'email']);
 
 function coercePort(value: unknown): number | null {
   if (typeof value === 'number') return Number.isFinite(value) ? value : null;
@@ -133,8 +145,12 @@ export function validateAction(
     const err = validateEmail(p.sslEmail);
     if (err) return { ok: false, error: err };
   }
+  if (p.email !== undefined && p.email !== null && p.email !== '') {
+    const err = validateEmail(p.email);
+    if (err) return { ok: false, error: err };
+  }
 
-  // 4) `update-nginx-config` requires all three fields to be present & valid.
+  // 4) Action-specific requirements.
   if (action === 'update-nginx-config') {
     const domainErr = validateDomain(p.domain);
     if (domainErr) return { ok: false, error: `update-nginx-config requires a valid "domain".` };
@@ -143,6 +159,23 @@ export function validateAction(
     const emailErr = validateEmail(p.sslEmail);
     if (emailErr) return { ok: false, error: `update-nginx-config requires a valid "sslEmail".` };
   }
+
+  // Certificate actions.
+  if (action === 'renew-cert') {
+    const domainErr = validateDomain(p.domain);
+    if (domainErr) return { ok: false, error: `renew-cert requires a valid "domain".` };
+  }
+  if (action === 'apply-cert') {
+    const domainErr = validateDomain(p.domain);
+    if (domainErr) return { ok: false, error: `apply-cert requires a valid "domain".` };
+    const emailErr = validateEmail(p.email ?? p.sslEmail);
+    if (emailErr) return { ok: false, error: `apply-cert requires a valid "email".` };
+  }
+  if (action === 'upload-cert') {
+    const domainErr = validateDomain(p.domain);
+    if (domainErr) return { ok: false, error: `upload-cert requires a valid "domain".` };
+  }
+  // `list-certificates` accepts no parameters.
 
   return { ok: true };
 }

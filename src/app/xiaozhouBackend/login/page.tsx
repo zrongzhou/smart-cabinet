@@ -37,9 +37,17 @@ export default function AdminLoginPage() {
           // Store the real signed JWT returned by the login API so admin API
           // calls (Bearer) pass the requireAdmin() server-side guard.
           localStorage.setItem('admin_token', data.token);
+          // First-time env-bootstrap login requires setting a real password.
+          if (data.mustChangePassword) {
+            localStorage.setItem('admin_must_change_password', 'true');
+          } else {
+            localStorage.removeItem('admin_must_change_password');
+          }
         }
-        // Hard redirect to admin dashboard
-        window.location.href = '/xiaozhouBackend';
+        // If the password still uses the insecure default, force the admin to
+        // set a new one before reaching the dashboard.
+        const target = data.mustChangePassword ? '/xiaozhouBackend/settings/security' : '/xiaozhouBackend';
+        window.location.href = target;
       } else {
         setError(data.error || '登录失败 / Login failed');
         setLoading(false);
@@ -125,10 +133,9 @@ export default function AdminLoginPage() {
             </button>
           </form>
 
-          {/* Hint */}
-          <div className="mt-6 text-center text-sm text-gray-500">
-            <p>默认账号: admin / 默认密码: admin123</p>
-            <p className="mt-1">Default: admin / admin123</p>
+          {/* Security note — never expose credentials here */}
+          <div className="mt-6 text-center text-sm text-gray-400">
+            <p>请使用您的管理员账号登录</p>
           </div>
         </div>
       </div>

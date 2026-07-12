@@ -1,31 +1,25 @@
 'use client';
 
 /**
- * AboutBowKnot — brand colophon / signature block (time-illusion watch)
+ * AboutBowKnot — brand colophon / signature block (flower greenhouse).
  * -----------------------------------------------------------
  * Sits directly under the company photo inside <CompanyShowcase> and acts as
  * a refined "colophon" that carries (承托) the image above.
  *
- * Design language — "时光幻象 · 腕表风" (time-illusion watch):
- *  - The focal point is now an analog timepiece rather than a loose
- *    calligraphic signature. The brand monogram 「秋彦」 is engraved on the
- *    dial's lower arc, and a small cinnabar seal (印) is set as a hallmark at
- *    the watch's lower-right, so the piece still reads as a signed artwork.
- *  - "Time-illusion" (幻象): behind the main dial floats a faint, slightly
- *    larger ghost echo that counter-rotates very slowly — a mirage of time.
- *    Beneath it, a soft mirrored reflection fades into the page, like the
- *    watch resting on still water.
- *  - The perpetual second hand (cinnabar) keeps a quiet, living tick — the
- *    illusion that the brand page itself keeps time.
- *  - Texture & palette: faint paper-grain overlay, slate/indigo dial with a
- *    gold (#C9A067) bezel, and a cinnabar (#C73E3A) seal echoing the brand
- *    mark. A thin gold divider at the top visually "catches" the photo above.
- *  - RTL-safe: only text uses `dir`; the geometry stays centered LTR and the
- *    seal simply mirrors to the other side.
+ * Design language — "繁花温室 · 花园风" (blooming greenhouse):
+ *  - The focal point is now a small garden / greenhouse scene instead of a
+ *    timepiece. A white picket fence runs along the front, a flower bed with
+ *    colourful blossoms (pinks / yellows / corals) and tufts of grass sit
+ *    behind it, and a couple of butterflies flutter around the blooms.
+ *  - Everything sways gently in the wind (CSS transforms with staggered
+ *    delays) so the scene feels alive without any network assets.
+ *  - The brand monogram 「秋彦」 is engraved on a wooden garden sign / plaque
+ *    set into the scene — a natural label, not a watch dial and not a red seal.
+ *  - Palette: bright, natural greens, pinks and yellows on a soft sky.
  *
- * No extra network font requests: the brush fonts come from the system font
- * stack (行楷 / Kai variants are commonly installed on macOS / Windows) and
- * gracefully fall back to a cursive / serif face.
+ * No extra network font requests: only system fonts / safe fallbacks are used.
+ * RTL-safe: the whole scene is centred and symmetrical; nothing is hard-pinned
+ * to left/right, so Arabic layout mirrors cleanly.
  */
 
 import { useState, useEffect, useRef } from 'react';
@@ -33,135 +27,104 @@ import { useState, useEffect, useRef } from 'react';
 interface AboutBowKnotProps {
   /** Translation helper. Kept on the public interface for API stability. */
   t: (key: string) => string;
-  /** Active locale; drives RTL mirroring and (future) localized copy. */
+  /** Active locale; drives RTL mirroring only (geometry stays centred). */
   locale: string;
 }
 
-// Faint paper-grain texture (inline SVG turbulence) — no network request.
-const PAPER_GRAIN_URI =
-  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")";
-
-/** Hour markers 0..11 around the dial. */
-const TICKS = Array.from({ length: 12 }, (_, i) => i);
-
-/**
- * A single analog watch face. Rendered up to three times (main, ghost echo,
- * reflection) — `idPrefix` keeps the SVG gradient ids unique across instances,
- * and `showSecondHand` lets the echo/reflection stay calm.
- */
-function WatchFace({ idPrefix, showSecondHand = true }: { idPrefix: string; showSecondHand?: boolean }) {
-  const dialId = `${idPrefix}Dial`;
-  const bezelId = `${idPrefix}Bezel`;
-
+/** A single flower: stem + leaves + petals + centre. Colours passed in. */
+function Flower({
+  x,
+  y,
+  scale = 1,
+  petal,
+  petalDark,
+  center,
+  delay = 0,
+  duration = 4,
+}: {
+  x: number;
+  y: number;
+  scale?: number;
+  petal: string;
+  petalDark: string;
+  center: string;
+  delay?: number;
+  duration?: number;
+}) {
   return (
-    <svg viewBox="0 0 240 240" width="100%" height="100%" role="img" aria-label="QIUYAN timepiece">
-      <defs>
-        <radialGradient id={dialId} cx="50%" cy="40%" r="62%">
-          <stop offset="0%" stopColor="#2b3650" />
-          <stop offset="55%" stopColor="#1d2740" />
-          <stop offset="100%" stopColor="#11192c" />
-        </radialGradient>
-        <linearGradient id={bezelId} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#E7CB8C" />
-          <stop offset="48%" stopColor="#C9A067" />
-          <stop offset="100%" stopColor="#9C7B45" />
-        </linearGradient>
-      </defs>
-
-      {/* Bezel + dark rim */}
-      <circle cx="120" cy="120" r="114" fill={`url(#${bezelId})`} />
-      <circle cx="120" cy="120" r="106" fill="#0f1626" />
-
-      {/* Dial face */}
-      <circle cx="120" cy="120" r="100" fill={`url(#${dialId})`} />
-      <circle cx="120" cy="120" r="100" fill="none" stroke="rgba(201,160,103,0.32)" strokeWidth="1" />
-
-      {/* Hour ticks */}
-      {TICKS.map((i) => {
-        const angle = i * 30;
-        const isQuarter = i % 3 === 0;
-        const outer = 94;
-        const inner = isQuarter ? 80 : 87;
-        const rad = ((angle - 90) * Math.PI) / 180;
-        const x1 = 120 + outer * Math.cos(rad);
-        const y1 = 120 + outer * Math.sin(rad);
-        const x2 = 120 + inner * Math.cos(rad);
-        const y2 = 120 + inner * Math.sin(rad);
-        return (
-          <line
-            key={i}
-            x1={x1}
-            y1={y1}
-            x2={x2}
-            y2={y2}
-            stroke={isQuarter ? '#C9A067' : 'rgba(201,160,103,0.55)'}
-            strokeWidth={isQuarter ? 3 : 1.6}
-            strokeLinecap="round"
+    <g
+      transform={`translate(${x} ${y}) scale(${scale})`}
+      className="bk-sway"
+      style={{
+        transformBox: 'fill-box',
+        transformOrigin: '50% 100%',
+        animationDuration: `${duration}s`,
+        animationDelay: `${delay}s`,
+      }}
+    >
+      {/* stem */}
+      <path d="M0 0 C -2 -22, 2 -42, 0 -64" stroke="#3f9d52" strokeWidth="3" fill="none" strokeLinecap="round" />
+      {/* leaves */}
+      <path d="M0 -30 C -14 -34, -22 -26, -20 -16 C -10 -18, -2 -24, 0 -30 Z" fill="#4caf6a" />
+      <path d="M0 -44 C 14 -48, 22 -40, 20 -30 C 10 -32, 2 -38, 0 -44 Z" fill="#57bd76" />
+      {/* petals */}
+      <g transform="translate(0 -70)">
+        {[0, 72, 144, 216, 288].map((deg) => (
+          <ellipse
+            key={deg}
+            cx="0"
+            cy="-12"
+            rx="8"
+            ry="13"
+            fill={petal}
+            stroke={petalDark}
+            strokeWidth="1"
+            transform={`rotate(${deg})`}
           />
-        );
-      })}
+        ))}
+        {/* centre */}
+        <circle cx="0" cy="0" r="7" fill={center} />
+        <circle cx="0" cy="0" r="7" fill="none" stroke="rgba(0,0,0,0.08)" strokeWidth="1" />
+      </g>
+    </g>
+  );
+}
 
-      {/* Brand wordmark on the dial (12 o'clock area) */}
-      <text
-        x="120"
-        y="80"
-        textAnchor="middle"
-        fontFamily="Georgia, 'Times New Roman', serif"
-        fontSize="9"
-        letterSpacing="2"
-        fill="rgba(201,160,103,0.85)"
-      >
-        QIUYAN
-      </text>
+/** A single blade of grass that sways. */
+function Grass({ x, y, height = 26, delay = 0 }: { x: number; y: number; height?: number; delay?: number }) {
+  return (
+    <path
+      d={`M${x} ${y} q -5 -${height * 0.6} 0 -${height} q 5 ${height * 0.6} 0 ${height} Z`}
+      fill="#5cbf7a"
+      className="bk-sway"
+      style={{
+        transformBox: 'fill-box',
+        transformOrigin: '50% 100%',
+        animationDuration: '3.4s',
+        animationDelay: `${delay}s`,
+      }}
+    />
+  );
+}
 
-      {/* Hour hand → 10 o'clock, minute hand → 2 o'clock (classic 10:10 stance) */}
-      <line
-        x1="120"
-        y1="124"
-        x2="120"
-        y2="74"
-        stroke="#1f2a44"
-        strokeWidth="6"
-        strokeLinecap="round"
-        transform="rotate(300 120 120)"
-      />
-      <line
-        x1="120"
-        y1="124"
-        x2="120"
-        y2="50"
-        stroke="#2b3650"
-        strokeWidth="4"
-        strokeLinecap="round"
-        transform="rotate(60 120 120)"
-      />
-
-      {/* Perpetual second hand (cinnabar) — the living "tick" of the illusion */}
-      {showSecondHand && (
-        <g className="bk-second-hand">
-          <line x1="120" y1="140" x2="120" y2="34" stroke="#C73E3A" strokeWidth="1.6" strokeLinecap="round" />
-          <circle cx="120" cy="140" r="4" fill="#C73E3A" />
-        </g>
-      )}
-
-      {/* Brand monogram engraved on the dial (the "signature") */}
-      <text
-        x="120"
-        y="170"
-        textAnchor="middle"
-        fontFamily="'Long Cang','Liu Jian Mao Cao','STXingkai','华文行楷','Xingkai SC','行楷','STKaiti','KaiTi','Noto Serif SC',cursive"
-        fontSize="22"
-        fontWeight="700"
-        fill="#C9A067"
-        style={{ opacity: 0.92 }}
-      >
-        秋彦
-      </text>
-
-      {/* Center cap */}
-      <circle cx="120" cy="120" r="6.5" fill="#C9A067" stroke="#fff" strokeWidth="1.4" />
-      <circle cx="120" cy="120" r="2.4" fill="#1f2a44" />
-    </svg>
+/** A fluttering butterfly (two wings that flap + a drifting path). */
+function Butterfly({ x, y, color, colorDark, delay = 0 }: { x: number; y: number; color: string; colorDark: string; delay?: number }) {
+  return (
+    <g
+      transform={`translate(${x} ${y})`}
+      className="bk-butterfly"
+      style={{ animationDelay: `${delay}s` }}
+    >
+      <g className="bk-wing" style={{ transformBox: 'fill-box', transformOrigin: '100% 50%' }}>
+        <path d="M0 0 C -14 -14, -22 -4, -20 6 C -16 12, -4 8, 0 0 Z" fill={color} stroke={colorDark} strokeWidth="0.8" />
+        <path d="M0 0 C -10 10, -18 12, -16 18 C -10 20, -2 10, 0 0 Z" fill={colorDark} opacity="0.85" />
+      </g>
+      <g className="bk-wing-r" style={{ transformBox: 'fill-box', transformOrigin: '0% 50%' }}>
+        <path d="M0 0 C 14 -14, 22 -4, 20 6 C 16 12, 4 8, 0 0 Z" fill={color} stroke={colorDark} strokeWidth="0.8" />
+        <path d="M0 0 C 10 10, 18 12, 16 18 C 10 20, 2 10, 0 0 Z" fill={colorDark} opacity="0.85" />
+      </g>
+      <line x1="0" y1="-3" x2="0" y2="6" stroke="#3a3a3a" strokeWidth="1.4" strokeLinecap="round" />
+    </g>
   );
 }
 
@@ -186,10 +149,6 @@ export default function AboutBowKnot({ locale }: AboutBowKnotProps) {
     return () => observer.disconnect();
   }, []);
 
-  // Seal is mirrored to the opposite side under RTL so the composition stays balanced.
-  const sealMarginStart = isRtl ? '0' : '0';
-  const sealMarginEnd = isRtl ? '0' : '0';
-
   return (
     <>
       <style jsx>{`
@@ -197,30 +156,38 @@ export default function AboutBowKnot({ locale }: AboutBowKnotProps) {
           from { opacity: 0; transform: translateY(12px); }
           to   { opacity: 1; transform: translateY(0); }
         }
-        /* Perpetual second-hand spin — the quiet "tick" of the time illusion. */
-        @keyframes bk-second-spin {
-          from { transform: rotate(0deg); }
-          to   { transform: rotate(360deg); }
+        /* Gentle wind sway for flowers & grass — pivots from the base. */
+        @keyframes bk-sway {
+          0%   { transform: rotate(-3deg); }
+          50%  { transform: rotate(3deg); }
+          100% { transform: rotate(-3deg); }
         }
-        .bk-second-hand {
-          transform-box: view-box;
-          transform-origin: 120px 120px;
-          animation: bk-second-spin 60s linear infinite;
+        .bk-sway {
+          animation-name: bk-sway;
+          animation-timing-function: ease-in-out;
+          animation-iteration-count: infinite;
         }
-        /* Slow counter-rotating ghost echo — the "mirage" of time. */
-        @keyframes bk-echo-spin {
-          from { transform: rotate(0deg); }
-          to   { transform: rotate(-360deg); }
+        /* Butterfly drifting path + soft bob. */
+        @keyframes bk-butterfly {
+          0%   { transform: translate(0px, 0px) rotate(-4deg); }
+          25%  { transform: translate(18px, -10px) rotate(6deg); }
+          50%  { transform: translate(34px, 2px) rotate(-3deg); }
+          75%  { transform: translate(16px, 10px) rotate(5deg); }
+          100% { transform: translate(0px, 0px) rotate(-4deg); }
         }
-        .bk-watch-echo {
-          transform-origin: center;
-          animation: bk-echo-spin 120s linear infinite;
+        .bk-butterfly {
+          animation-name: bk-butterfly;
+          animation-timing-function: ease-in-out;
+          animation-iteration-count: infinite;
+          animation-duration: 9s;
         }
-        /* Subtle "hand-stamped" entrance for the (small) seal hallmark. */
-        @keyframes bk-seal-pop {
-          0%   { opacity: 0; transform: rotate(-10deg) scale(1.3); }
-          60%  { opacity: 1; }
-          100% { opacity: 1; transform: rotate(0deg) scale(1); }
+        /* Wing flap. */
+        @keyframes bk-flap {
+          0%, 100% { transform: scaleX(1); }
+          50%      { transform: scaleX(0.45); }
+        }
+        .bk-wing, .bk-wing-r {
+          animation: bk-flap 0.45s ease-in-out infinite;
         }
         .bk-colophon { transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
         .bk-colophon:hover { transform: translateY(-3px); }
@@ -231,16 +198,9 @@ export default function AboutBowKnot({ locale }: AboutBowKnotProps) {
         className="bk-colophon relative w-full flex flex-col items-center text-center px-4 py-7 overflow-hidden"
         style={{ opacity: visible ? undefined : 0 }}
       >
-        {/* ═══ Faint paper-grain overlay (texture, no network request) ═══ */}
+        {/* ═══ Top soft divider — visually catches the company photo above ═══ */}
         <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0"
-          style={{ backgroundImage: PAPER_GRAIN_URI, opacity: 0.05, mixBlendMode: 'multiply' }}
-        />
-
-        {/* ═══ Top gold divider — visually catches the company photo above ═══ */}
-        <div
-          className="flex items-center gap-3 w-full max-w-[240px] mb-6"
+          className="flex items-center gap-3 w-full max-w-[260px] mb-5"
           aria-hidden="true"
           style={{
             animation: visible ? 'bk-fade-up 0.6s ease-out 0.1s both' : 'none',
@@ -249,86 +209,136 @@ export default function AboutBowKnot({ locale }: AboutBowKnotProps) {
         >
           <span
             className="h-px flex-1"
-            style={{ background: 'linear-gradient(90deg, transparent, rgba(201,160,103,0.55) 50%, transparent)' }}
+            style={{ background: 'linear-gradient(90deg, transparent, rgba(110,170,90,0.55) 50%, transparent)' }}
           />
-          <span className="w-1.5 h-1.5 rotate-45" style={{ background: '#C9A067' }} />
+          <span className="w-1.5 h-1.5 rotate-45" style={{ background: '#6cae5a' }} />
           <span
             className="h-px flex-1"
-            style={{ background: 'linear-gradient(90deg, transparent, rgba(201,160,103,0.55) 50%, transparent)' }}
+            style={{ background: 'linear-gradient(90deg, transparent, rgba(110,170,90,0.55) 50%, transparent)' }}
           />
         </div>
 
-        {/* ═══ The time-illusion watch (ghost echo + main dial + reflection) ═══ */}
+        {/* ═══ The garden / greenhouse scene ═══ */}
         <div
           className="relative flex items-center justify-center"
           style={{
             direction: isRtl ? 'rtl' : 'ltr',
-            width: 'min(260px, 82vw)',
-            height: 'min(260px, 82vw)',
+            width: 'min(380px, 90vw)',
+            height: 'min(300px, 72vw)',
           }}
         >
-          {/* Ghost echo — faint, oversized, counter-rotating mirage behind the dial */}
-          <div
-            className="bk-watch-echo absolute inset-0 flex items-center justify-center"
-            aria-hidden="true"
-            style={{
-              opacity: visible ? 0.16 : 0,
-              transition: 'opacity 1s ease-out 0.6s',
-            }}
+          <svg
+            viewBox="0 0 400 320"
+            width="100%"
+            height="100%"
+            role="img"
+            aria-label="秋彦 花园温室"
+            className="drop-shadow-[0_14px_30px_rgba(40,90,50,0.25)]"
           >
-            <div style={{ width: '108%', height: '108%' }}>
-              <WatchFace idPrefix="echo" showSecondHand={false} />
-            </div>
-          </div>
+            <defs>
+              <linearGradient id="bkSky" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#dff3ff" />
+                <stop offset="55%" stopColor="#eafaf0" />
+                <stop offset="100%" stopColor="#fbf7ec" />
+              </linearGradient>
+              <radialGradient id="bkSun" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="#fff6c2" />
+                <stop offset="100%" stopColor="#ffe680" stopOpacity="0" />
+              </radialGradient>
+              <linearGradient id="bkWood" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#c79a5b" />
+                <stop offset="100%" stopColor="#a9763b" />
+              </linearGradient>
+            </defs>
 
-          {/* Main watch dial + cinnabar seal hallmark */}
-          <div
-            className="relative"
-            style={{
-              width: '100%',
-              height: '100%',
-              animation: visible ? 'bk-fade-up 0.7s ease-out 0.25s both' : 'none',
-              filter: 'drop-shadow(0 14px 30px rgba(20,28,48,0.35))',
-            }}
-          >
-            <WatchFace idPrefix="main" showSecondHand />
+            {/* Sky */}
+            <rect x="0" y="0" width="400" height="320" rx="22" fill="url(#bkSky)" />
 
-            {/* Cinnabar seal hallmark overlapping the lower-right of the dial */}
-            <div
-              className="absolute"
-              style={{
-                right: '3%',
-                bottom: '7%',
-                animation: visible ? 'bk-seal-pop 0.6s cubic-bezier(.34,1.56,.64,1) 1s both' : 'none',
-              }}
-              aria-hidden="true"
-            >
-              <svg width="30" height="30" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="6" y="6" width="88" height="88" rx="14" fill="#C73E3A" />
-                <rect x="12" y="12" width="76" height="76" rx="10" fill="none" stroke="#ffffff" strokeWidth="3" opacity="0.9" />
-                <text x="50" y="43" textAnchor="middle" fontFamily="'STKaiti','KaiTi','Kaiti SC',serif" fontSize="32" fontWeight="700" fill="#ffffff">秋</text>
-                <text x="50" y="83" textAnchor="middle" fontFamily="'STKaiti','KaiTi','Kaiti SC',serif" fontSize="32" fontWeight="700" fill="#ffffff">彦</text>
-              </svg>
-            </div>
-          </div>
+            {/* Sun glow */}
+            <circle cx="320" cy="62" r="58" fill="url(#bkSun)" />
+            <circle cx="320" cy="62" r="22" fill="#ffe066" />
 
-          {/* Soft mirrored reflection — the watch resting on still water (幻象) */}
-          <div
-            className="absolute left-0 right-0 flex justify-center"
-            aria-hidden="true"
-            style={{
-              top: '88%',
-              opacity: visible ? 0.12 : 0,
-              transition: 'opacity 1.2s ease-out 0.9s',
-            }}
-          >
-            <div style={{ width: '70%', transform: 'scaleY(-1)', filter: 'blur(2px)' }}>
-              <WatchFace idPrefix="refl" showSecondHand={false} />
-            </div>
-          </div>
+            {/* Drifting clouds */}
+            <g opacity="0.85" fill="#ffffff">
+              <ellipse cx="90" cy="60" rx="34" ry="15" />
+              <ellipse cx="120" cy="52" rx="26" ry="14" />
+              <ellipse cx="64" cy="52" rx="22" ry="12" />
+            </g>
+
+            {/* Flower bed soil */}
+            <path d="M0 232 Q 200 206 400 232 L 400 298 Q 200 312 0 298 Z" fill="#7c5a3a" />
+            <path d="M0 232 Q 200 206 400 232 L 400 244 Q 200 220 0 244 Z" fill="#8a6743" />
+
+            {/* Grass tufts across the bed */}
+            <g>
+              {[28, 70, 120, 175, 230, 285, 340, 372].map((gx, i) => (
+                <Grass key={gx} x={gx} y={238 + (i % 2) * 4} height={22 + (i % 3) * 6} delay={i * 0.4} />
+              ))}
+            </g>
+
+            {/* Flowers — bright natural palette */}
+            <Flower x={70} y={236} scale={1.05} petal="#ff9ec4" petalDark="#f06fa6" center="#ffd23f" delay={0} duration={4.2} />
+            <Flower x={135} y={240} scale={0.9} petal="#ffd23f" petalDark="#f4b400" center="#ff9a3c" delay={0.8} duration={3.6} />
+            <Flower x={300} y={238} scale={1.1} petal="#ffb3c1" petalDark="#ef7fa0" center="#fff0a8" delay={0.4} duration={4.6} />
+            <Flower x={345} y={242} scale={0.85} petal="#c8a4ff" petalDark="#a87fe0" center="#ffd23f" delay={1.2} duration={3.9} />
+            <Flower x={205} y={244} scale={0.8} petal="#ff8fa3" petalDark="#e8657f" center="#ffe066" delay={1.6} duration={4.0} />
+
+            {/* Butterflies */}
+            <Butterfly x={110} y={150} color="#ff9ec4" colorDark="#e06a98" delay={0} />
+            <Butterfly x={250} y={120} color="#7fd1ff" colorDark="#3aa0e0" delay={2.5} />
+
+            {/* White picket fence across the front */}
+            <g>
+              <rect x="0" y="262" width="400" height="9" rx="3" fill="#ffffff" />
+              <rect x="0" y="288" width="400" height="9" rx="3" fill="#ffffff" />
+              {Array.from({ length: 21 }, (_, i) => 18 + i * 19).map((px) => (
+                <g key={px}>
+                  <rect x={px} y="250" width="13" height="50" rx="3" fill="#ffffff" stroke="#e7e7e7" strokeWidth="1" />
+                  <path d={`M${px} 250 l 6.5 -10 l 6.5 10 Z`} fill="#ffffff" stroke="#e7e7e7" strokeWidth="1" />
+                </g>
+              ))}
+            </g>
+
+            {/* Wooden garden sign engraved with 秋彦 */}
+            <g transform="translate(200 196)">
+              {/* posts */}
+              <rect x="-54" y="6" width="8" height="58" rx="3" fill="#9c6b38" />
+              <rect x="46" y="6" width="8" height="58" rx="3" fill="#9c6b38" />
+              {/* board */}
+              <rect x="-66" y="-34" width="132" height="48" rx="12" fill="url(#bkWood)" stroke="#8a5e2f" strokeWidth="2" />
+              {/* wood grain */}
+              <path d="M-58 -22 H 58 M-58 -10 H 58 M-58 2 H 58" stroke="#8a5e2f" strokeWidth="1" opacity="0.35" fill="none" />
+              {/* engraved monogram */}
+              <text
+                x="0"
+                y="2"
+                textAnchor="middle"
+                fontFamily="'Long Cang','Liu Jian Mao Cao','STXingkai','华文行楷','Xingkai SC','行楷','STKaiti','KaiTi','Noto Serif SC',serif"
+                fontSize="30"
+                fontWeight="700"
+                fill="#5a3a18"
+                style={{ opacity: 0.9 }}
+              >
+                秋彦
+              </text>
+              {/* engraved highlight (top-left) to read as carved */}
+              <text
+                x="-0.6"
+                y="1.2"
+                textAnchor="middle"
+                fontFamily="'Long Cang','Liu Jian Mao Cao','STXingkai','华文行楷','Xingkai SC','行楷','STKaiti','KaiTi','Noto Serif SC',serif"
+                fontSize="30"
+                fontWeight="700"
+                fill="#d9b483"
+                opacity="0.5"
+              >
+                秋彦
+              </text>
+            </g>
+          </svg>
         </div>
 
-        {/* ═══ Brand line + gold flourish ═══ */}
+        {/* ═══ Brand line ═══ */}
         <div
           className="mt-10 flex flex-col items-center"
           style={{
@@ -337,17 +347,17 @@ export default function AboutBowKnot({ locale }: AboutBowKnotProps) {
           }}
         >
           <div
-            className="text-[10px] sm:text-xs font-semibold tracking-[0.34em] text-slate-500"
+            className="text-[10px] sm:text-xs font-semibold tracking-[0.34em] text-emerald-700/80"
             style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
           >
-            QIUYAN · Qtech — Since Time Began
+            QIUYAN · 繁花温室
           </div>
           <svg className="mt-2" width="120" height="10" viewBox="0 0 120 10" fill="none" aria-hidden="true">
             <defs>
               <linearGradient id="bkFlourish" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0" stopColor="#C9A067" stopOpacity="0" />
-                <stop offset="0.5" stopColor="#C9A067" stopOpacity="0.9" />
-                <stop offset="1" stopColor="#C9A067" stopOpacity="0" />
+                <stop offset="0" stopColor="#6cae5a" stopOpacity="0" />
+                <stop offset="0.5" stopColor="#6cae5a" stopOpacity="0.9" />
+                <stop offset="1" stopColor="#6cae5a" stopOpacity="0" />
               </linearGradient>
             </defs>
             <path

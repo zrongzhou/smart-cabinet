@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowLeft, Globe, Mail, Facebook, Search, Bell, ArrowRight, Loader2, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Globe, Mail, Facebook, Search, Bell, ArrowRight, Loader2, CheckCircle, ShieldCheck } from 'lucide-react';
 import { useSettings, SiteSettings } from '@/lib/xiaozhouBackend-settings-common';
 
 export const dynamic = 'force-dynamic';
@@ -97,6 +97,15 @@ export default function SettingsIndexPage() {
         if (str(s.wecomToUser)) filled++;
         return { filled, total: 9 };
       },
+    },
+    {
+      key: 'security',
+      title: '安全设置',
+      description: '修改管理员密码等敏感凭据',
+      href: '/xiaozhouBackend/settings/security',
+      icon: ShieldCheck,
+      accent: 'red',
+      count: () => ({ filled: 1, total: 1 }),
     },
   ];
 

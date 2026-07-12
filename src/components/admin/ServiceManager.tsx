@@ -6,12 +6,14 @@
  * Client component rendered by both `/admin/services` and
  * `/xiaozhouBackend/services`. It shows the five white-listed actions as cards,
  * lets the operator fill the nginx site-config form (domain / port / email),
- * and surfaces the execution log (stdout/stderr/exit code) returned by
- * `POST /api/admin/services`. All actions require an admin JWT (enforced
- * server-side by `requireAdmin`).
+ * surfaces the execution log (stdout/stderr/exit code) returned by
+ * `POST /api/admin/services`, and (new) manages certbot TLS certificates:
+ * listing, renewing, applying/overwriting, and manually uploading certs.
+ *
+ * All actions require an admin JWT (enforced server-side by `requireAdmin`).
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   RefreshCw,
   Server,
@@ -23,6 +25,10 @@ import {
   CheckCircle2,
   XCircle,
   AlertTriangle,
+  Upload,
+  FileText,
+  KeyRound,
+  Plus,
 } from 'lucide-react';
 import { adminT } from '@/lib/admin-i18n';
 
@@ -54,7 +60,31 @@ interface ApiResponse {
   success?: boolean;
   output?: string;
   error?: string;
+  certs?: CertInfo[];
 }
+
+interface CertInfo {
+  name: string;
+  domains: string[];
+  expiry: string;
+  status: 'VALID' | 'EXPIRED' | 'INVALID' | 'UNKNOWN';
+  certPath?: string;
+  keyPath?: string;
+}
+
+const STATUS_STYLE: Record<CertInfo['status'], string> = {
+  VALID: 'bg-green-50 text-green-600',
+  EXPIRED: 'bg-red-50 text-red-600',
+  INVALID: 'bg-orange-50 text-orange-600',
+  UNKNOWN: 'bg-slate-100 text-slate-500',
+};
+
+const STATUS_LABEL: Record<CertInfo['status'], string> = {
+  VALID: adminT('services.certStatusValid'),
+  EXPIRED: adminT('services.certStatusExpired'),
+  INVALID: adminT('services.certStatusInvalid'),
+  UNKNOWN: 'UNKNOWN',
+};
 
 export default function ServiceManager() {
   const [domain, setDomain] = useState('');
@@ -64,6 +94,18 @@ export default function ServiceManager() {
   const [log, setLog] = useState('');
   const [lastSuccess, setLastSuccess] = useState<boolean | null>(null);
   const [formError, setFormError] = useState('');
+
+  // Certificate management state
+  const [certs, setCerts] = useState<CertInfo[]>([]);
+  const [certLoading, setCertLoading] = useState(true);
+  const [certError, setCertError] = useState('');
+  const [certRefreshing, setCertRefreshing] = useState(false);
+  const [newDomain, setNewDomain] = useState('');
+  const [newEmail, setNewEmail] = useState('');
+  const [uploadDomain, setUploadDomain] = useState<string | null>(null);
+  const [certFile, setCertFile] = useState<File | null>(null);
+  const [keyFile, setKeyFile] = useState<File | null>(null);
+  const [uploadMsg, setUploadMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
   const actions: ActionDef[] = [
     { action: 'restart-app', title: adminT('services.restartApp'), desc: adminT('services.restartAppDesc'), icon: RefreshCw, accent: 'blue' },
@@ -81,6 +123,40 @@ export default function ServiceManager() {
     return null;
   };
 
+  /**
+   * Generic service-action runner (JSON body). Used by both the action cards
+   * and the certificate buttons; appends output to the shared execution log.
+   */
+  const runServiceAction = async (action: string, params: Record<string, unknown> = {}) => {
+    setRunning(action);
+    setLog('');
+    setLastSuccess(null);
+    try {
+      const res = await fetch('/api/admin/services', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, params }),
+      });
+      const data = (await res.json()) as ApiResponse;
+      if (!res.ok) {
+        setLastSuccess(false);
+        setLog(data?.error || `HTTP ${res.status}`);
+      } else {
+        setLastSuccess(!!data.success);
+        setLog(data.output || (data.success ? adminT('services.success') : adminT('services.failed')));
+        // Any cert-affecting action should refresh the list.
+        if (action === 'renew-cert' || action === 'apply-cert' || action === 'upload-cert') {
+          void fetchCerts(true);
+        }
+      }
+    } catch (e) {
+      setLastSuccess(false);
+      setLog(e instanceof Error ? e.message : 'Request failed');
+    } finally {
+      setRunning(null);
+    }
+  };
+
   const runAction = async (def: ActionDef) => {
     if (def.needsForm) {
       const err = validateForm();
@@ -90,33 +166,83 @@ export default function ServiceManager() {
       }
       setFormError('');
     }
+    await runServiceAction(
+      def.action,
+      def.needsForm
+        ? { domain: domain.trim(), port: parseInt(port, 10), sslEmail: sslEmail.trim() }
+        : {}
+    );
+  };
 
-    setRunning(def.action);
-    setLog('');
-    setLastSuccess(null);
-
+  // ── Certificate management ──
+  const fetchCerts = async (silent = false) => {
+    if (silent) setCertRefreshing(true);
+    else setCertLoading(true);
+    setCertError('');
     try {
-      const res = await fetch('/api/admin/services', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: def.action,
-          params: def.needsForm
-            ? { domain: domain.trim(), port: parseInt(port, 10), sslEmail: sslEmail.trim() }
-            : {},
-        }),
-      });
+      const res = await fetch('/api/admin/services', { method: 'GET' });
       const data = (await res.json()) as ApiResponse;
       if (!res.ok) {
-        setLastSuccess(false);
-        setLog(data?.error || `HTTP ${res.status}`);
+        setCertError(data?.error || `HTTP ${res.status}`);
       } else {
-        setLastSuccess(!!data.success);
-        setLog(data.output || (data.success ? adminT('services.success') : adminT('services.failed')));
+        setCerts(Array.isArray(data.certs) ? (data.certs as CertInfo[]) : []);
       }
     } catch (e) {
-      setLastSuccess(false);
-      setLog(e instanceof Error ? e.message : 'Request failed');
+      setCertError(e instanceof Error ? e.message : 'Failed to fetch certificates');
+    } finally {
+      setCertLoading(false);
+      setCertRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    void fetchCerts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleApplyNew = async () => {
+    if (!DOMAIN_RE.test(newDomain.trim())) {
+      setCertError(adminT('services.invalidDomain'));
+      return;
+    }
+    if (!EMAIL_RE.test(newEmail.trim())) {
+      setCertError(adminT('services.invalidEmail'));
+      return;
+    }
+    setCertError('');
+    await runServiceAction('apply-cert', { domain: newDomain.trim(), email: newEmail.trim() });
+    setNewDomain('');
+  };
+
+  const handleUpload = async (certDomain: string) => {
+    if (!certFile || !keyFile) {
+      setUploadMsg({ ok: false, text: adminT('services.certUploadRequired') });
+      return;
+    }
+    if (!/\.(crt|pem)$/i.test(certFile.name) || !/\.key$/i.test(keyFile.name)) {
+      setUploadMsg({ ok: false, text: adminT('services.certUploadExt') });
+      return;
+    }
+    setRunning(`upload-cert:${certDomain}`);
+    setUploadMsg(null);
+    try {
+      const fd = new FormData();
+      fd.append('domain', certDomain);
+      fd.append('cert', certFile);
+      fd.append('key', keyFile);
+      const res = await fetch('/api/admin/services', { method: 'POST', body: fd });
+      const data = (await res.json()) as ApiResponse;
+      if (!res.ok) {
+        setUploadMsg({ ok: false, text: data?.error || `HTTP ${res.status}` });
+      } else {
+        setUploadMsg({ ok: !!data.success, text: data.output || (data.success ? adminT('services.success') : adminT('services.failed')) });
+        setCertFile(null);
+        setKeyFile(null);
+        setUploadDomain(null);
+        void fetchCerts(true);
+      }
+    } catch (e) {
+      setUploadMsg({ ok: false, text: e instanceof Error ? e.message : 'Upload failed' });
     } finally {
       setRunning(null);
     }
@@ -225,6 +351,206 @@ export default function ServiceManager() {
             </div>
           );
         })}
+      </div>
+
+      {/* ═══ Certificate management ═══ */}
+      <div className="mt-10">
+        <div className="mb-4 flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">{adminT('services.certTitle')}</h2>
+            <p className="text-gray-600 mt-1 text-sm">{adminT('services.certSubtitle')}</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => fetchCerts(true)}
+            disabled={certRefreshing}
+            className="admin-btn-secondary inline-flex items-center gap-2"
+          >
+            <RefreshCw className={`h-4 w-4 ${certRefreshing ? 'animate-spin' : ''}`} />
+            {adminT('services.certRefresh')}
+          </button>
+        </div>
+
+        {/* Apply for a new certificate */}
+        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm mb-6">
+          <h3 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
+            <Plus className="h-4 w-4 text-emerald-600" />
+            {adminT('services.certApplyNew')}
+          </h3>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <div>
+              <label className="mb-1 block text-xs font-medium text-gray-600">{adminT('services.domain')}</label>
+              <input
+                type="text"
+                value={newDomain}
+                onChange={(e) => setNewDomain(e.target.value)}
+                placeholder="www.example.com"
+                className="admin-input"
+                dir="ltr"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-gray-600">{adminT('services.certEmail')}</label>
+              <input
+                type="email"
+                value={newEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
+                placeholder="admin@example.com"
+                className="admin-input"
+                dir="ltr"
+              />
+            </div>
+            <div className="flex items-end">
+              <button
+                type="button"
+                disabled={running === 'apply-cert'}
+                onClick={handleApplyNew}
+                className="admin-btn-primary w-full inline-flex items-center justify-center gap-2"
+              >
+                {running === 'apply-cert' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+                {adminT('services.certApply')}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Certificate list */}
+        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+          {certLoading ? (
+            <div className="flex items-center justify-center py-10 text-gray-500">
+              <Loader2 className="h-6 w-6 animate-spin mr-2" />
+              {adminT('services.certLoading')}
+            </div>
+          ) : certError ? (
+            <div className="flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              <XCircle className="h-4 w-4 shrink-0" />
+              {certError}
+            </div>
+          ) : certs.length === 0 ? (
+            <p className="text-sm text-gray-400 py-6 text-center">{adminT('services.certEmpty')}</p>
+          ) : (
+            <div className="space-y-4">
+              {certs.map((cert) => {
+                const isUploading = running === `upload-cert:${cert.name}`;
+                const isRenewing = running === 'renew-cert' && uploadDomain === null;
+                return (
+                  <div
+                    key={cert.name}
+                    className="rounded-xl border border-gray-100 bg-slate-50/60 p-4"
+                  >
+                    <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-semibold text-gray-900">{cert.name}</span>
+                          <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_STYLE[cert.status]}`}>
+                            {STATUS_LABEL[cert.status]}
+                          </span>
+                        </div>
+                        <p className="mt-1 text-xs text-gray-500">
+                          {adminT('services.certExpiry')}: {cert.expiry || '—'}
+                        </p>
+                        {cert.domains.length > 1 && (
+                          <p className="mt-0.5 text-xs text-gray-400 truncate" dir="ltr">
+                            SAN: {cert.domains.join(', ')}
+                          </p>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <button
+                          type="button"
+                          disabled={running !== null}
+                          onClick={() => runServiceAction('renew-cert', { domain: cert.name })}
+                          className="admin-btn-secondary inline-flex items-center gap-1.5 px-3 py-2 text-xs"
+                        >
+                          <RefreshCw className={`h-3.5 w-3.5 ${isRenewing ? 'animate-spin' : ''}`} />
+                          {adminT('services.certRenew')}
+                        </button>
+                        <button
+                          type="button"
+                          disabled={running !== null || !EMAIL_RE.test(newEmail.trim())}
+                          onClick={() => runServiceAction('apply-cert', { domain: cert.name, email: newEmail.trim() })}
+                          title={EMAIL_RE.test(newEmail.trim()) ? '' : adminT('services.certApplyEmailHint')}
+                          className="admin-btn-secondary inline-flex items-center gap-1.5 px-3 py-2 text-xs"
+                        >
+                          <Plus className="h-3.5 w-3.5" />
+                          {adminT('services.certApply')}
+                        </button>
+                        <button
+                          type="button"
+                          disabled={running !== null}
+                          onClick={() => setUploadDomain((d) => (d === cert.name ? null : cert.name))}
+                          className="admin-btn-secondary inline-flex items-center gap-1.5 px-3 py-2 text-xs"
+                        >
+                          <Upload className="h-3.5 w-3.5" />
+                          {adminT('services.certUpload')}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Manual upload form */}
+                    {uploadDomain === cert.name && (
+                      <div className="mt-4 rounded-xl border border-gray-200 bg-white p-4">
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                          <div>
+                            <label className="mb-1 flex items-center gap-1.5 text-xs font-medium text-gray-600">
+                              <FileText className="h-3.5 w-3.5" />
+                              {adminT('services.certUploadCert')}
+                            </label>
+                            <input
+                              type="file"
+                              accept=".crt,.pem"
+                              onChange={(e) => setCertFile(e.target.files?.[0] ?? null)}
+                              className="block w-full text-sm text-gray-600"
+                              dir="ltr"
+                            />
+                          </div>
+                          <div>
+                            <label className="mb-1 flex items-center gap-1.5 text-xs font-medium text-gray-600">
+                              <KeyRound className="h-3.5 w-3.5" />
+                              {adminT('services.certUploadKey')}
+                            </label>
+                            <input
+                              type="file"
+                              accept=".key"
+                              onChange={(e) => setKeyFile(e.target.files?.[0] ?? null)}
+                              className="block w-full text-sm text-gray-600"
+                              dir="ltr"
+                            />
+                          </div>
+                        </div>
+                        <p className="mt-3 text-xs text-gray-400">{adminT('services.certUploadHint')}</p>
+                        <div className="mt-3 flex items-center gap-3">
+                          <button
+                            type="button"
+                            disabled={isUploading}
+                            onClick={() => handleUpload(cert.name)}
+                            className="admin-btn-primary inline-flex items-center gap-2 px-4 py-2 text-sm"
+                          >
+                            {isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                            {adminT('services.certUploadSubmit')}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => { setUploadDomain(null); setCertFile(null); setKeyFile(null); setUploadMsg(null); }}
+                            className="text-sm text-gray-500 hover:text-gray-700"
+                          >
+                            {adminT('services.cancel')}
+                          </button>
+                        </div>
+                        {uploadMsg && (
+                          <div className={`mt-3 flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm ${uploadMsg.ok ? 'border border-green-200 bg-green-50 text-green-700' : 'border border-red-200 bg-red-50 text-red-700'}`}>
+                            {uploadMsg.ok ? <CheckCircle2 className="h-4 w-4 shrink-0" /> : <XCircle className="h-4 w-4 shrink-0" />}
+                            <span className="whitespace-pre-wrap break-words">{uploadMsg.text}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Execution output */}
