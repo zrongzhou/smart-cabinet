@@ -19,6 +19,22 @@ function getBlogIcon(category: string) {
   return iconMap[category] || FileText;
 }
 
+/**
+ * 判断字符串是否为有效封面图 URL（排除 .svg 占位图）。
+ * 兼容本地路径（如 /images、/uploads、/api/media 等）与外链（http/https），
+ * 确保数据库上传封面（如 /api/media/xxx）与种子图都能被正确识别并优先展示。
+ */
+function isValidCoverImage(img?: string): boolean {
+  if (!img) return false;
+  const lower = img.toLowerCase();
+  if (lower.endsWith('.svg')) return false;
+  return (
+    lower.startsWith('/') ||
+    lower.startsWith('http://') ||
+    lower.startsWith('https://')
+  );
+}
+
 // Category solid color map for badges
 const categoryColorMap: Record<string, string> = {
   'Industry Trends': '#667eea',
@@ -301,20 +317,21 @@ export function BlogListClient({ initialBlogs = [], initialTotal = 0 }: { initia
                 ? (post.excerpt[locale] || post.excerpt.en || '')
                 : String(post.excerpt || '');
 
-              // === v151 图片匹配：按 slug 精确匹配 → 排除 SVG → fallback 轮换 ===
+              // === 封面图优先级（v239 修正）：上传/封面图 优先 → slug 主题图 → 轮换兜底 ===
               let cardImage: string;
               const postSlug = post.slug || '';
-              // 1. 优先按 slug 匹配主题相关图片
-              if (SLUG_TO_IMAGE[postSlug]) {
+              // 1. 优先使用文章自带的上传封面图（数据库 post.image / 种子 image）。
+              //    兼容 /images、/uploads、/api/media 等多种来源，仅排除 .svg 占位图，
+              //    确保用户通过后台上传的封面（如 /api/media/xxx）始终优先生效。
+              if (isValidCoverImage(post.image)) {
+                cardImage = post.image as string;
+              } else if (SLUG_TO_IMAGE[postSlug]) {
+                // 2. 无上传封面时，按 slug 匹配主题相关图片
                 cardImage = SLUG_TO_IMAGE[postSlug];
-              } else if (post.image && post.image.startsWith('/images/') && !post.image.endsWith('.svg')) {
-                // 2. API 返回的有效非 SVG 图片
-                cardImage = post.image;
               } else {
-                // 3. fallback：索引轮换
+                // 3. fallback：索引轮换，保证每张卡片都有图
                 cardImage = BLOG_IMAGE_FALLBACKS[index % BLOG_IMAGE_FALLBACKS.length];
               }
-              console.log(`[v151] card ${index}: slug="${postSlug}" → image="${cardImage}"`);
 
               // 分类显示
               const postCategory = (post.category || 'general').toLowerCase().trim();

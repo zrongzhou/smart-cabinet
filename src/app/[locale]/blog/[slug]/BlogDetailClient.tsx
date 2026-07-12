@@ -201,20 +201,34 @@ export default function BlogDetailClient({ blog, recentBlogs }: BlogDetailClient
     ar: 'الأسئلة الشائعة',
   };
 
-  // Recent Posts 图片选择 - 按 slug 匹配
+  // 判断字符串是否为有效封面图 URL（排除 .svg 占位图）。
+  // 与 BlogListClient.isValidCoverImage 保持一致：兼容 /images、/uploads、
+  // /api/media 等本地路径与外链（http/https），确保用户上传封面优先展示。
+  function isValidCoverImage(img?: string | null): boolean {
+    if (!img) return false;
+    const lower = img.toLowerCase();
+    if (lower.endsWith('.svg')) return false;
+    return (
+      lower.startsWith('/') ||
+      lower.startsWith('http://') ||
+      lower.startsWith('https://')
+    );
+  }
+
+  // Recent Posts 图片选择 - 上传封面优先 → slug 主题图 → 兜底轮换
   function getInlineBlogImage(post: BlogDetailDTO, index: number): string {
     const postSlug = post.slug || '';
+    if (isValidCoverImage(post.image)) return post.image as string;
     if (SLUG_TO_IMAGE[postSlug]) return SLUG_TO_IMAGE[postSlug];
-    if (post.image && post.image.startsWith('/images/') && !post.image.endsWith('.svg')) return post.image;
     return BLOG_IMAGE_FALLBACKS[index % BLOG_IMAGE_FALLBACKS.length];
   }
 
-  // 详情页图片选择 - 按 slug 匹配
+  // 详情页图片选择 - 上传封面优先 → slug 主题图 → 兜底哈希
   function getInlineBlogDetailImage(post: BlogDetailDTO): string {
     const postSlug = post.slug || '';
+    if (isValidCoverImage(post.image)) return post.image as string;
     if (SLUG_TO_IMAGE[postSlug]) return SLUG_TO_IMAGE[postSlug];
-    if (post.image && post.image.startsWith('/images/') && !post.image.endsWith('.svg')) return post.image;
-    // fallback
+    // fallback：按 slug 哈希稳定取图
     let hash = 0;
     for (let i = 0; i < postSlug.length; i++) hash = ((hash << 5) - hash) + postSlug.charCodeAt(i);
     return BLOG_IMAGE_FALLBACKS[Math.abs(hash) % BLOG_IMAGE_FALLBACKS.length];

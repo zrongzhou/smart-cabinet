@@ -1,23 +1,25 @@
 'use client';
 
 /**
- * AboutBowKnot — elegant brand colophon / signature block
+ * AboutBowKnot — brand colophon / signature block (time-illusion watch)
  * -----------------------------------------------------------
- * Sits directly under the company photo inside <CompanyShowcase> and acts
- * as a refined "colophon" that carries (承托) the image above.
+ * Sits directly under the company photo inside <CompanyShowcase> and acts as
+ * a refined "colophon" that carries (承托) the image above.
  *
- * Design language:
- *  - A single calligraphic 「秋彦」 signature is the focal point. It is set in a
- *    flowing running-script / brush font stack (行楷 → cursive), lightly rotated
- *    with a hand-drawn brush underline so it reads like a real signature.
- *  - A small hand-stamped cinnabar seal (印) overlaps the lower corner of the
- *    signature for a signed-and-sealed artwork feel. It is intentionally small
- *    and quiet so the calligraphy leads.
- *  - Texture & pattern: a faint paper-grain overlay, a soft ink-wash blot
- *    behind the signature, a subtle traditional wave (海水江崖) flourish, and a
- *    thin gold divider that visually "catches" the company photo above.
- *  - Site palette: slate / indigo / blue + gold (#C9A067) accent, with a
- *    cinnabar seal (#C73E3A) echoing the brand mark.
+ * Design language — "时光幻象 · 腕表风" (time-illusion watch):
+ *  - The focal point is now an analog timepiece rather than a loose
+ *    calligraphic signature. The brand monogram 「秋彦」 is engraved on the
+ *    dial's lower arc, and a small cinnabar seal (印) is set as a hallmark at
+ *    the watch's lower-right, so the piece still reads as a signed artwork.
+ *  - "Time-illusion" (幻象): behind the main dial floats a faint, slightly
+ *    larger ghost echo that counter-rotates very slowly — a mirage of time.
+ *    Beneath it, a soft mirrored reflection fades into the page, like the
+ *    watch resting on still water.
+ *  - The perpetual second hand (cinnabar) keeps a quiet, living tick — the
+ *    illusion that the brand page itself keeps time.
+ *  - Texture & palette: faint paper-grain overlay, slate/indigo dial with a
+ *    gold (#C9A067) bezel, and a cinnabar (#C73E3A) seal echoing the brand
+ *    mark. A thin gold divider at the top visually "catches" the photo above.
  *  - RTL-safe: only text uses `dir`; the geometry stays centered LTR and the
  *    seal simply mirrors to the other side.
  *
@@ -38,6 +40,130 @@ interface AboutBowKnotProps {
 // Faint paper-grain texture (inline SVG turbulence) — no network request.
 const PAPER_GRAIN_URI =
   "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")";
+
+/** Hour markers 0..11 around the dial. */
+const TICKS = Array.from({ length: 12 }, (_, i) => i);
+
+/**
+ * A single analog watch face. Rendered up to three times (main, ghost echo,
+ * reflection) — `idPrefix` keeps the SVG gradient ids unique across instances,
+ * and `showSecondHand` lets the echo/reflection stay calm.
+ */
+function WatchFace({ idPrefix, showSecondHand = true }: { idPrefix: string; showSecondHand?: boolean }) {
+  const dialId = `${idPrefix}Dial`;
+  const bezelId = `${idPrefix}Bezel`;
+
+  return (
+    <svg viewBox="0 0 240 240" width="100%" height="100%" role="img" aria-label="QIUYAN timepiece">
+      <defs>
+        <radialGradient id={dialId} cx="50%" cy="40%" r="62%">
+          <stop offset="0%" stopColor="#2b3650" />
+          <stop offset="55%" stopColor="#1d2740" />
+          <stop offset="100%" stopColor="#11192c" />
+        </radialGradient>
+        <linearGradient id={bezelId} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#E7CB8C" />
+          <stop offset="48%" stopColor="#C9A067" />
+          <stop offset="100%" stopColor="#9C7B45" />
+        </linearGradient>
+      </defs>
+
+      {/* Bezel + dark rim */}
+      <circle cx="120" cy="120" r="114" fill={`url(#${bezelId})`} />
+      <circle cx="120" cy="120" r="106" fill="#0f1626" />
+
+      {/* Dial face */}
+      <circle cx="120" cy="120" r="100" fill={`url(#${dialId})`} />
+      <circle cx="120" cy="120" r="100" fill="none" stroke="rgba(201,160,103,0.32)" strokeWidth="1" />
+
+      {/* Hour ticks */}
+      {TICKS.map((i) => {
+        const angle = i * 30;
+        const isQuarter = i % 3 === 0;
+        const outer = 94;
+        const inner = isQuarter ? 80 : 87;
+        const rad = ((angle - 90) * Math.PI) / 180;
+        const x1 = 120 + outer * Math.cos(rad);
+        const y1 = 120 + outer * Math.sin(rad);
+        const x2 = 120 + inner * Math.cos(rad);
+        const y2 = 120 + inner * Math.sin(rad);
+        return (
+          <line
+            key={i}
+            x1={x1}
+            y1={y1}
+            x2={x2}
+            y2={y2}
+            stroke={isQuarter ? '#C9A067' : 'rgba(201,160,103,0.55)'}
+            strokeWidth={isQuarter ? 3 : 1.6}
+            strokeLinecap="round"
+          />
+        );
+      })}
+
+      {/* Brand wordmark on the dial (12 o'clock area) */}
+      <text
+        x="120"
+        y="80"
+        textAnchor="middle"
+        fontFamily="Georgia, 'Times New Roman', serif"
+        fontSize="9"
+        letterSpacing="2"
+        fill="rgba(201,160,103,0.85)"
+      >
+        QIUYAN
+      </text>
+
+      {/* Hour hand → 10 o'clock, minute hand → 2 o'clock (classic 10:10 stance) */}
+      <line
+        x1="120"
+        y1="124"
+        x2="120"
+        y2="74"
+        stroke="#1f2a44"
+        strokeWidth="6"
+        strokeLinecap="round"
+        transform="rotate(300 120 120)"
+      />
+      <line
+        x1="120"
+        y1="124"
+        x2="120"
+        y2="50"
+        stroke="#2b3650"
+        strokeWidth="4"
+        strokeLinecap="round"
+        transform="rotate(60 120 120)"
+      />
+
+      {/* Perpetual second hand (cinnabar) — the living "tick" of the illusion */}
+      {showSecondHand && (
+        <g className="bk-second-hand">
+          <line x1="120" y1="140" x2="120" y2="34" stroke="#C73E3A" strokeWidth="1.6" strokeLinecap="round" />
+          <circle cx="120" cy="140" r="4" fill="#C73E3A" />
+        </g>
+      )}
+
+      {/* Brand monogram engraved on the dial (the "signature") */}
+      <text
+        x="120"
+        y="170"
+        textAnchor="middle"
+        fontFamily="'Long Cang','Liu Jian Mao Cao','STXingkai','华文行楷','Xingkai SC','行楷','STKaiti','KaiTi','Noto Serif SC',cursive"
+        fontSize="22"
+        fontWeight="700"
+        fill="#C9A067"
+        style={{ opacity: 0.92 }}
+      >
+        秋彦
+      </text>
+
+      {/* Center cap */}
+      <circle cx="120" cy="120" r="6.5" fill="#C9A067" stroke="#fff" strokeWidth="1.4" />
+      <circle cx="120" cy="120" r="2.4" fill="#1f2a44" />
+    </svg>
+  );
+}
 
 export default function AboutBowKnot({ locale }: AboutBowKnotProps) {
   const isRtl = locale === 'ar';
@@ -61,9 +187,8 @@ export default function AboutBowKnot({ locale }: AboutBowKnotProps) {
   }, []);
 
   // Seal is mirrored to the opposite side under RTL so the composition stays balanced.
-  const sealMarginStart = isRtl ? '0' : '-0.28em';
-  const sealMarginEnd = isRtl ? '-0.28em' : '0';
-  const sealRotation = isRtl ? '5deg' : '-5deg';
+  const sealMarginStart = isRtl ? '0' : '0';
+  const sealMarginEnd = isRtl ? '0' : '0';
 
   return (
     <>
@@ -72,37 +197,33 @@ export default function AboutBowKnot({ locale }: AboutBowKnotProps) {
           from { opacity: 0; transform: translateY(12px); }
           to   { opacity: 1; transform: translateY(0); }
         }
-        @keyframes bk-sign-write {
-          0%   { clip-path: inset(0 100% 0 0); opacity: 0; }
-          55%  { opacity: 1; }
-          100% { clip-path: inset(0 0% 0 0); opacity: 1; }
+        /* Perpetual second-hand spin — the quiet "tick" of the time illusion. */
+        @keyframes bk-second-spin {
+          from { transform: rotate(0deg); }
+          to   { transform: rotate(360deg); }
         }
-        /* Hand-drawn brush underline sweeps in after the signature appears. */
-        @keyframes bk-flourish-draw {
-          from { stroke-dashoffset: 240; }
-          to   { stroke-dashoffset: 0; }
+        .bk-second-hand {
+          transform-box: view-box;
+          transform-origin: 120px 120px;
+          animation: bk-second-spin 60s linear infinite;
         }
-        /* Subtle "hand-stamped" entrance for the (small) seal. */
-        @keyframes bk-seal-stamp {
-          0%   { opacity: 0; transform: rotate(-10deg) scale(1.35); }
+        /* Slow counter-rotating ghost echo — the "mirage" of time. */
+        @keyframes bk-echo-spin {
+          from { transform: rotate(0deg); }
+          to   { transform: rotate(-360deg); }
+        }
+        .bk-watch-echo {
+          transform-origin: center;
+          animation: bk-echo-spin 120s linear infinite;
+        }
+        /* Subtle "hand-stamped" entrance for the (small) seal hallmark. */
+        @keyframes bk-seal-pop {
+          0%   { opacity: 0; transform: rotate(-10deg) scale(1.3); }
           60%  { opacity: 1; }
-          100% { opacity: 1; transform: rotate(var(--bk-seal-rot, -5deg)) scale(1); }
-        }
-        /* Very gentle breathing of the ink-wash blot behind the signature. */
-        @keyframes bk-ink-breathe {
-          0%, 100% { transform: translate(-50%, -50%) scale(1);   opacity: 0.5; }
-          50%      { transform: translate(-50%, -50%) scale(1.08); opacity: 0.7; }
+          100% { opacity: 1; transform: rotate(0deg) scale(1); }
         }
         .bk-colophon { transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
         .bk-colophon:hover { transform: translateY(-3px); }
-        /* Brushed ink: dark slate with a faint warm undertone, clipped to glyph. */
-        .bk-sign-ink {
-          background: linear-gradient(116deg, #2b3650 0%, #1f2a44 42%, #4a3a28 78%, #6b4a2a 100%);
-          -webkit-background-clip: text;
-          background-clip: text;
-          color: #1f2a44; /* fallback if background-clip:text unsupported */
-          -webkit-text-fill-color: transparent;
-        }
       `}</style>
 
       <div
@@ -119,7 +240,7 @@ export default function AboutBowKnot({ locale }: AboutBowKnotProps) {
 
         {/* ═══ Top gold divider — visually catches the company photo above ═══ */}
         <div
-          className="flex items-center gap-3 w-full max-w-[240px] mb-5"
+          className="flex items-center gap-3 w-full max-w-[240px] mb-6"
           aria-hidden="true"
           style={{
             animation: visible ? 'bk-fade-up 0.6s ease-out 0.1s both' : 'none',
@@ -137,221 +258,79 @@ export default function AboutBowKnot({ locale }: AboutBowKnotProps) {
           />
         </div>
 
-        {/* ═══ Calligraphic signature + cinnabar seal (staggered colophon) ═══ */}
+        {/* ═══ The time-illusion watch (ghost echo + main dial + reflection) ═══ */}
         <div
-          className="relative mt-1 mb-3 flex items-end justify-center"
-          style={{ direction: isRtl ? 'rtl' : 'ltr' }}
+          className="relative flex items-center justify-center"
+          style={{
+            direction: isRtl ? 'rtl' : 'ltr',
+            width: 'min(260px, 82vw)',
+            height: 'min(260px, 82vw)',
+          }}
         >
-          {/* Soft ink-wash blot behind the signature (texture / depth). */}
+          {/* Ghost echo — faint, oversized, counter-rotating mirage behind the dial */}
           <div
+            className="bk-watch-echo absolute inset-0 flex items-center justify-center"
             aria-hidden="true"
-            className="bk-inkwash pointer-events-none absolute rounded-full -z-10"
             style={{
-              width: '200px',
-              height: '120px',
-              left: '50%',
-              top: '46%',
-              background:
-                'radial-gradient(closest-side, rgba(31,42,68,0.16), rgba(31,42,68,0.06) 58%, transparent 78%)',
-              filter: 'blur(7px)',
-              animation: visible ? 'bk-ink-breathe 7s ease-in-out 0.4s infinite' : 'none',
-              opacity: visible ? 0.5 : 0,
-            }}
-          />
-
-          {/* Traditional wave (海水江崖) flourish — subtle, behind the signature. */}
-          <svg
-            aria-hidden="true"
-            className="pointer-events-none absolute -z-10"
-            width="220"
-            height="44"
-            viewBox="0 0 220 44"
-            fill="none"
-            style={{
-              left: '50%',
-              bottom: '-26px',
-              transform: 'translateX(-50%)',
-              opacity: visible ? 0.22 : 0,
-              transition: 'opacity 0.8s ease-out 0.9s',
+              opacity: visible ? 0.16 : 0,
+              transition: 'opacity 1s ease-out 0.6s',
             }}
           >
-            <path
-              d="M8 30 Q 33 12, 58 30 T 108 30 T 158 30 T 208 30"
-              stroke="#C9A067"
-              strokeWidth="1.6"
-              strokeLinecap="round"
-            />
-            <path
-              d="M8 39 Q 33 21, 58 39 T 108 39 T 158 39 T 208 39"
-              stroke="#C9A067"
-              strokeWidth="1.2"
-              strokeLinecap="round"
-              opacity="0.7"
-            />
-          </svg>
-
-          {/* The signature — flowing brush / running-script face, slightly rotated
-              and ink-shadowed, with a hand-drawn brush underline flourish. */}
-          <div
-            className="bk-sign-ink relative"
-            style={{
-              fontFamily:
-                "'Long Cang','Liu Jian Mao Cao','Zhi Mang Xing','STXingkai','华文行楷','Xingkai SC','行楷','STKaiti','KaiTi','Kaiti SC','Noto Serif SC',cursive",
-              fontSize: 'clamp(52px, 11vw, 80px)',
-              fontWeight: 700,
-              letterSpacing: '-0.04em',
-              lineHeight: 1,
-              transform: 'rotate(-6deg)',
-              textShadow:
-                '1px 2px 1px rgba(31,42,68,0.22), 4px 7px 12px rgba(31,42,68,0.14)',
-              animation: visible
-                ? 'bk-sign-write 1.15s cubic-bezier(.25,.46,.45,.94) 0.25s both'
-                : 'none',
-            }}
-          >
-            秋彦
-            {/* Brush underline that draws in after the signature. */}
-            <svg
-              aria-hidden="true"
-              className="absolute left-0 w-full"
-              style={{ height: '14px', bottom: '-8px', overflow: 'visible' }}
-              viewBox="0 0 200 14"
-              fill="none"
-              preserveAspectRatio="none"
-            >
-              <defs>
-                <linearGradient id="bkSignStroke" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0" stopColor="#1f2a44" stopOpacity="0" />
-                  <stop offset="0.18" stopColor="#1f2a44" stopOpacity="0.65" />
-                  <stop offset="1" stopColor="#C9A067" stopOpacity="0.95" />
-                </linearGradient>
-              </defs>
-              <path
-                d="M6 9 C 56 2, 120 2, 194 8"
-                stroke="url(#bkSignStroke)"
-                strokeWidth="2.6"
-                strokeLinecap="round"
-                style={{
-                  strokeDasharray: 240,
-                  strokeDashoffset: visible ? 0 : 240,
-                  animation: visible ? 'bk-flourish-draw 0.9s ease-out 1.15s both' : 'none',
-                }}
-              />
-            </svg>
+            <div style={{ width: '108%', height: '108%' }}>
+              <WatchFace idPrefix="echo" showSecondHand={false} />
+            </div>
           </div>
 
-          {/* The seal — small 1:1 cinnabar rounded square with 「秋彦」 carved in
-              white, placed to overlap the lower corner of the signature for a
-              hand-stamped, off-grid feel. Intentionally quiet. Mirrored under
-              RTL via margin swap. */}
+          {/* Main watch dial + cinnabar seal hallmark */}
           <div
             className="relative"
             style={{
-              marginInlineStart: sealMarginStart,
-              marginInlineEnd: sealMarginEnd,
-              marginBottom: '-0.1em',
-              ['--bk-seal-rot' as any]: sealRotation,
-              transform: `rotate(${sealRotation})`,
-              animation: visible
-                ? 'bk-seal-stamp 0.7s cubic-bezier(.34,1.56,.64,1) 1.05s both'
-                : 'none',
+              width: '100%',
+              height: '100%',
+              animation: visible ? 'bk-fade-up 0.7s ease-out 0.25s both' : 'none',
+              filter: 'drop-shadow(0 14px 30px rgba(20,28,48,0.35))',
             }}
-            aria-hidden="true"
           >
-            <svg
-              width="34"
-              height="34"
-              viewBox="0 0 100 100"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <defs>
-                {/* Grain: dark fractal noise clipped to the seal shape, merged over
-                    the solid red to mimic uneven 印泥 (ink-paste) texture. */}
-                <filter id="bkSealGrain" x="-10%" y="-10%" width="120%" height="120%">
-                  <feTurbulence
-                    type="fractalNoise"
-                    baseFrequency="0.95"
-                    numOctaves="2"
-                    seed="11"
-                    stitchTiles="stitch"
-                    result="noise"
-                  />
-                  <feColorMatrix
-                    in="noise"
-                    type="matrix"
-                    values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.14 0"
-                    result="grain"
-                  />
-                  <feComposite in="grain" in2="SourceGraphic" operator="in" result="grainClipped" />
-                  <feMerge>
-                    <feMergeNode in="SourceGraphic" />
-                    <feMergeNode in="grainClipped" />
-                  </feMerge>
-                </filter>
-                {/* Heavier mottle toward the bottom edge — like a real stamp that
-                    presses harder at one side. */}
-                <radialGradient id="bkSealMottle" cx="50%" cy="82%" r="64%">
-                  <stop offset="0%" stopColor="#000000" stopOpacity="0.2" />
-                  <stop offset="55%" stopColor="#000000" stopOpacity="0.05" />
-                  <stop offset="100%" stopColor="#000000" stopOpacity="0" />
-                </radialGradient>
-              </defs>
+            <WatchFace idPrefix="main" showSecondHand />
 
-              {/* Cinnabar base with grain. */}
-              <rect
-                x="5"
-                y="5"
-                width="90"
-                height="90"
-                rx="15"
-                fill="#C73E3A"
-                filter="url(#bkSealGrain)"
-              />
-              {/* Uneven ink-paste shading. */}
-              <rect x="5" y="5" width="90" height="90" rx="15" fill="url(#bkSealMottle)" />
-              {/* Inner white frame (negative space of a carved seal). */}
-              <rect
-                x="11"
-                y="11"
-                width="78"
-                height="78"
-                rx="11"
-                fill="none"
-                stroke="#ffffff"
-                strokeWidth="3"
-                opacity="0.9"
-              />
-              {/* Seal characters — stacked 「秋」 over 「彦」. */}
-              <text
-                x="50"
-                y="42"
-                textAnchor="middle"
-                fontFamily="'STKaiti','KaiTi','Kaiti SC','Noto Serif SC',serif"
-                fontSize="36"
-                fontWeight="700"
-                fill="#ffffff"
-              >
-                秋
-              </text>
-              <text
-                x="50"
-                y="82"
-                textAnchor="middle"
-                fontFamily="'STKaiti','KaiTi','Kaiti SC','Noto Serif SC',serif"
-                fontSize="36"
-                fontWeight="700"
-                fill="#ffffff"
-              >
-                彦
-              </text>
-            </svg>
+            {/* Cinnabar seal hallmark overlapping the lower-right of the dial */}
+            <div
+              className="absolute"
+              style={{
+                right: '3%',
+                bottom: '7%',
+                animation: visible ? 'bk-seal-pop 0.6s cubic-bezier(.34,1.56,.64,1) 1s both' : 'none',
+              }}
+              aria-hidden="true"
+            >
+              <svg width="30" height="30" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="6" y="6" width="88" height="88" rx="14" fill="#C73E3A" />
+                <rect x="12" y="12" width="76" height="76" rx="10" fill="none" stroke="#ffffff" strokeWidth="3" opacity="0.9" />
+                <text x="50" y="43" textAnchor="middle" fontFamily="'STKaiti','KaiTi','Kaiti SC',serif" fontSize="32" fontWeight="700" fill="#ffffff">秋</text>
+                <text x="50" y="83" textAnchor="middle" fontFamily="'STKaiti','KaiTi','Kaiti SC',serif" fontSize="32" fontWeight="700" fill="#ffffff">彦</text>
+              </svg>
+            </div>
+          </div>
+
+          {/* Soft mirrored reflection — the watch resting on still water (幻象) */}
+          <div
+            className="absolute left-0 right-0 flex justify-center"
+            aria-hidden="true"
+            style={{
+              top: '88%',
+              opacity: visible ? 0.12 : 0,
+              transition: 'opacity 1.2s ease-out 0.9s',
+            }}
+          >
+            <div style={{ width: '70%', transform: 'scaleY(-1)', filter: 'blur(2px)' }}>
+              <WatchFace idPrefix="refl" showSecondHand={false} />
+            </div>
           </div>
         </div>
 
         {/* ═══ Brand line + gold flourish ═══ */}
         <div
-          className="mt-4 flex flex-col items-center"
+          className="mt-10 flex flex-col items-center"
           style={{
             animation: visible ? 'bk-fade-up 0.6s ease-out 0.8s both' : 'none',
             opacity: visible ? undefined : 0,
@@ -361,16 +340,9 @@ export default function AboutBowKnot({ locale }: AboutBowKnotProps) {
             className="text-[10px] sm:text-xs font-semibold tracking-[0.34em] text-slate-500"
             style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
           >
-            QIUYAN · Qtech
+            QIUYAN · Qtech — Since Time Began
           </div>
-          <svg
-            className="mt-2"
-            width="120"
-            height="10"
-            viewBox="0 0 120 10"
-            fill="none"
-            aria-hidden="true"
-          >
+          <svg className="mt-2" width="120" height="10" viewBox="0 0 120 10" fill="none" aria-hidden="true">
             <defs>
               <linearGradient id="bkFlourish" x1="0" y1="0" x2="1" y2="0">
                 <stop offset="0" stopColor="#C9A067" stopOpacity="0" />
