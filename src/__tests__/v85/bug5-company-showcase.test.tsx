@@ -1,14 +1,18 @@
 /**
  * Bug 5 (P2) — CompanyShowcase flow-line animation redesigned.
  *
- * The previous look used harsh dashed strokes (stroke-dasharray). V8.5 replaces
- * it with refined SOLID gradient strokes + a soft glow + slow drifting light
- * points, and the flow container is h-12 tall. We assert:
- *   - the animated flow SVG is present (class about-showcase-flow),
- *   - none of the flow <path>s use a dashed stroke (no dasharray anywhere),
- *   - the flow container carries the h-12 height.
+ * The previous look used harsh dashed strokes (stroke-dasharray). V8.5 replaced
+ * it with refined SOLID gradient strokes + a soft glow, and later rounds
+ * replaced the whole "data flow" block with a single thin gradient divider.
+ * This test asserts the current reality:
+ *   - a refined thin (h-px) divider is present and the old `about-showcase-flow`
+ *     SVG is gone,
+ *   - NO element renders a dashed stroke (no `dasharray` anywhere) — preserves
+ *     the original "no harsh dashed strokes" intent,
+ *   - the divider rule is a thin `h-px` line, not a tall `h-12` block.
  *
- * jsdom has no IntersectionObserver, so we stub it (the <Counter> instantiates one).
+ * jsdom has no IntersectionObserver, so we stub it (the <Counter> + signature
+ * instantiate one).
  */
 import { describe, it, expect, beforeAll, afterEach } from 'vitest';
 import { render, cleanup } from '@testing-library/react';
@@ -30,20 +34,19 @@ afterEach(() => cleanup());
 
 const t = (k: string) => k;
 
-describe('Bug 5 — refined (non-dashed) flow-line animation', () => {
-  it('renders the animated flow SVG', () => {
+describe('Bug 5 — refined (non-dashed) divider under the photo', () => {
+  it('renders the refined thin divider (no about-showcase-flow leftover)', () => {
     const { container } = render(<CompanyShowcase t={t} locale="en" />);
-    expect(container.querySelector('svg.about-showcase-flow')).not.toBeNull();
+    expect(container.querySelector('svg.about-showcase-flow')).toBeNull();
+    const rule = Array.from(container.querySelectorAll('span')).find(
+      (s) => s.className.includes('h-px') && s.className.includes('flex-1')
+    );
+    expect(rule, 'expected a thin h-px flex-1 gradient divider span').toBeTruthy();
   });
 
-  it('flow lines are SOLID strokes — no dasharray in any path or the SVG markup', () => {
+  it('the whole rendered section uses SOLID strokes — no dasharray anywhere', () => {
     const { container } = render(<CompanyShowcase t={t} locale="en" />);
-    const svg = container.querySelector('svg.about-showcase-flow') as SVGSVGElement;
-    expect(svg).not.toBeNull();
-
-    const paths = svg.querySelectorAll('path');
-    expect(paths.length).toBeGreaterThanOrEqual(3);
-
+    const paths = container.querySelectorAll('path');
     for (const p of Array.from(paths)) {
       // No dashed stroke attribute
       expect(p.getAttribute('stroke-dasharray')).toBeNull();
@@ -51,16 +54,17 @@ describe('Bug 5 — refined (non-dashed) flow-line animation', () => {
       const styleAttr = (p.getAttribute('style') || '').toLowerCase();
       expect(styleAttr).not.toContain('dasharray');
     }
-
-    // The whole SVG markup must be free of the dasharray keyword
-    expect(svg.outerHTML.toLowerCase()).not.toContain('dasharray');
+    // The whole section markup must be free of the dasharray keyword
+    expect(container.innerHTML.toLowerCase()).not.toContain('dasharray');
   });
 
-  it('the flow animation container keeps the refined h-12 height', () => {
+  it('the divider rule is a thin h-px line, not a tall h-12 block', () => {
     const { container } = render(<CompanyShowcase t={t} locale="en" />);
-    const flowWrap = Array.from(container.querySelectorAll('div')).find((d) =>
-      d.className.includes('h-12')
+    const rule = Array.from(container.querySelectorAll('span')).find(
+      (s) => s.className.includes('h-px') && s.className.includes('flex-1')
     );
-    expect(flowWrap, 'expected a div with class h-12 for the flow animation').toBeTruthy();
+    expect(rule, 'expected a thin h-px flex-1 gradient divider span').toBeTruthy();
+    expect(rule!.className).toContain('h-px');
+    expect(rule!.className).not.toContain('h-12');
   });
 });

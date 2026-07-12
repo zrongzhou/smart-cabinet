@@ -1,25 +1,31 @@
 'use client';
 
 /**
- * AboutBowKnot — brand colophon / signature block (3D realistic nameplate).
+ * AboutBowKnot — brand colophon / signature block (tech-blue gradient glow).
  * -----------------------------------------------------------
- * Sits directly under the company photo inside <CompanyShowcase> and acts as
- * a refined "colophon" that carries (承托) the image above.
+ * Sits directly under the company photo inside <CompanyShowcase> and acts as a
+ * refined "colophon" that carries (承托) the image above.
  *
- * Design language — "拟物写实铭牌" (photorealistic engraved nameplate):
- *  - A solid wooden plaque carries a brushed BRASS nameplate. The plate reads
- *    as a real object: it has visible THICKNESS (an offset "side" rect under
- *    the top face), a beveled raised edge, corner screws, a soft specular
- *    sheen, and a cast ground shadow.
- *  - The brand monogram 「秋彦」 is ENGRAVED (incised) into the brass using a
- *    three-layer emboss trick (a dark shadow copy, a recessed base, and a
- *    light highlight copy) so it looks carved, not printed.
- *  - Everything is pure CSS/SVG (gradients, filters, box-shadow, transform) —
- *    no external images or fonts are referenced.
+ * Design language — "科技蓝渐变光感" (tech-blue gradient glow):
+ *  - A luminous emblem: a rounded "chip" carrying the 「秋彦」 monogram, wrapped
+ *    in a cyan→blue→indigo→violet gradient stroke with a soft halo and a slowly
+ *    orbiting glow node — a clean, digital, "tech" read.
+ *  - Beside it a dual wordmark that always shows BOTH brand names:
+ *        「秋彦」  (Chinese brand, gradient + glow)
+ *        「Qtech」 (Latin wordmark, gradient + glow, letter-spaced)
+ *    plus a thin letter-spaced tagline for a precise, modern finish.
+ *  - Thin connecting circuit lines and scattered digital dots add texture
+ *    without clutter. Everything is pure CSS/SVG (gradients, filters,
+ *    drop-shadow, transform) — no external images or fonts are referenced.
  *
- * RTL-safe: the whole scene is centred and symmetrical; nothing is hard-pinned
- * to left/right, so Arabic layout mirrors cleanly. The `locale` prop drives
- * only the optional RTL mirroring; geometry stays centred.
+ * RTL-safe: the whole scene is centred and the SVG uses absolute coordinates,
+ * so geometry never flips. The brand lockup is explicitly forced to LTR via the
+ * `locale` prop so 「秋彦 / Qtech」 always read correctly on Arabic pages.
+ *
+ * i18n: the component is locale-agnostic for layout — it renders the same
+ * centred lockup for `zh` / `en` / `ar`. The `locale` prop is only consumed to
+ * pin the brand direction; the `t` helper is kept on the public interface for
+ * API stability (brand strings are fixed and language-neutral).
  */
 
 import { useState, useEffect, useRef } from 'react';
@@ -27,15 +33,23 @@ import { useState, useEffect, useRef } from 'react';
 interface AboutBowKnotProps {
   /** Translation helper. Kept on the public interface for API stability. */
   t: (key: string) => string;
-  /** Active locale; drives RTL mirroring only (geometry stays centred). */
+  /** Active locale; used only to keep the brand lockup LTR on RTL pages. */
   locale: string;
 }
 
+const BRAND_ZH = '秋彦';
+const BRAND_EN = 'Qtech';
+const TAGLINE = 'SMART STORAGE · IOT';
+
 export default function AboutBowKnot({ locale }: AboutBowKnotProps) {
+  // Brand names are script-fixed → always lay out left-to-right, even on `ar`.
   const isRtl = locale === 'ar';
+  const brandDir = isRtl ? 'ltr' : 'ltr';
+
   const containerRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
 
+  // Entrance animation: reveal once the block scrolls into view.
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -46,7 +60,7 @@ export default function AboutBowKnot({ locale }: AboutBowKnotProps) {
           observer.disconnect();
         }
       },
-      { threshold: 0.3 },
+      { threshold: 0.25 },
     );
     observer.observe(el);
     return () => observer.disconnect();
@@ -55,178 +69,306 @@ export default function AboutBowKnot({ locale }: AboutBowKnotProps) {
   return (
     <>
       <style jsx>{`
-        @keyframes bk-fade-up {
-          from { opacity: 0; transform: translateY(14px); }
-          to   { opacity: 1; transform: translateY(0); }
+        .bk-colophon {
+          transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+            opacity 0.6s ease;
         }
-        .bk-colophon { transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
-        .bk-colophon:hover { transform: translateY(-3px); }
+        .bk-colophon:hover {
+          transform: translateY(-2px);
+        }
+
+        /* Staggered entrance — children start hidden, reveal when visible. */
+        .bk-rise {
+          opacity: 0;
+          transform: translateY(18px);
+        }
+        .bk-colophon.is-visible .bk-rise {
+          opacity: 1;
+          transform: translateY(0);
+          transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .bk-colophon.is-visible .bk-rise-1 {
+          transition-delay: 0.05s;
+        }
+        .bk-colophon.is-visible .bk-rise-2 {
+          transition-delay: 0.22s;
+        }
+        .bk-colophon.is-visible .bk-rise-3 {
+          transition-delay: 0.42s;
+        }
+
+        /* Soft breathing halo behind the emblem. */
+        .bk-halo {
+          animation: bk-breathe 5.5s ease-in-out infinite;
+          transform-origin: center;
+        }
+        @keyframes bk-breathe {
+          0%,
+          100% {
+            opacity: 0.55;
+          }
+          50% {
+            opacity: 0.95;
+          }
+        }
+
+        /* Glow on gradient text / strokes (keeps the source glyph crisp). */
+        .bk-glow {
+          filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.45))
+            drop-shadow(0 0 14px rgba(99, 102, 241, 0.28));
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .bk-halo {
+            animation: none;
+          }
+          .bk-rise {
+            opacity: 1;
+            transform: none;
+          }
+        }
       `}</style>
 
       <div
         ref={containerRef}
-        className="bk-colophon relative w-full flex flex-col items-center text-center px-4 py-7 overflow-hidden"
-        style={{ opacity: visible ? undefined : 0 }}
+        className={`bk-colophon relative w-full flex flex-col items-center text-center px-4 py-8 overflow-hidden ${
+          visible ? 'is-visible' : ''
+        }`}
       >
-        {/* ═══ Top soft divider — visually catches the company photo above ═══ */}
+        {/* ═══ Top divider — thin gradient lines + glowing node ═══ */}
         <div
-          className="flex items-center gap-3 w-full max-w-[260px] mb-6"
+          className="bk-rise bk-rise-1 flex items-center gap-3 w-full max-w-[300px] mb-7"
           aria-hidden="true"
-          style={{
-            animation: visible ? 'bk-fade-up 0.6s ease-out 0.1s both' : 'none',
-            opacity: visible ? undefined : 0,
-          }}
         >
           <span
             className="h-px flex-1"
-            style={{ background: 'linear-gradient(90deg, transparent, rgba(150,120,70,0.6) 50%, transparent)' }}
+            style={{
+              background:
+                'linear-gradient(90deg, transparent, rgba(56,189,248,0.65) 60%, rgba(99,102,241,0.9))',
+            }}
           />
-          <span className="w-1.5 h-1.5 rotate-45" style={{ background: '#b8893a' }} />
+          <span
+            className="w-2 h-2 rounded-full"
+            style={{
+              background: '#38bdf8',
+              boxShadow: '0 0 8px 2px rgba(56,189,248,0.7)',
+            }}
+          />
           <span
             className="h-px flex-1"
-            style={{ background: 'linear-gradient(90deg, transparent, rgba(150,120,70,0.6) 50%, transparent)' }}
+            style={{
+              background:
+                'linear-gradient(90deg, rgba(99,102,241,0.9), rgba(56,189,248,0.65) 40%, transparent)',
+            }}
           />
         </div>
 
-        {/* ═══ The 3D realistic brass nameplate (pure CSS/SVG) ═══ */}
+        {/* ═══ Tech-blue gradient glow emblem + dual wordmark (pure SVG) ═══ */}
         <div
-          className="relative flex items-center justify-center"
-          style={{
-            direction: isRtl ? 'rtl' : 'ltr',
-            width: 'min(380px, 92vw)',
-            height: 'min(232px, 64vw)',
-            animation: visible ? 'bk-fade-up 0.7s ease-out 0.25s both' : 'none',
-            opacity: visible ? undefined : 0,
-          }}
+          className="bk-rise bk-rise-2 relative"
+          style={{ direction: brandDir as 'ltr' | 'rtl', width: 'min(440px, 94vw)' }}
         >
           <svg
-            viewBox="0 0 400 260"
+            viewBox="0 0 440 170"
             width="100%"
             height="100%"
             role="img"
-            aria-label="秋彦 铭牌"
-            className="drop-shadow-[0_18px_34px_rgba(40,25,10,0.32)]"
+            aria-label={`${BRAND_ZH} ${BRAND_EN} 品牌标识`}
+            style={{ overflow: 'visible' }}
           >
             <defs>
-              {/* Wooden plaque body */}
-              <linearGradient id="bkWood" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#7a5230" />
-                <stop offset="55%" stopColor="#5c3c20" />
-                <stop offset="100%" stopColor="#41291546" />
+              {/* Core cyan→blue→indigo→violet gradient for strokes + text */}
+              <linearGradient id="bkHue" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="#22d3ee" />
+                <stop offset="38%" stopColor="#38bdf8" />
+                <stop offset="68%" stopColor="#6366f1" />
+                <stop offset="100%" stopColor="#a855f7" />
               </linearGradient>
-              {/* Brass face — warm sheen top to deeper bottom */}
-              <linearGradient id="bkBrass" x1="0" y1="0" x2="0.15" y2="1">
-                <stop offset="0%" stopColor="#fbeeb4" />
-                <stop offset="42%" stopColor="#e0bb63" />
-                <stop offset="100%" stopColor="#a9772c" />
+              {/* Translucent fill for the chip body */}
+              <linearGradient id="bkChipFill" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="rgba(34,211,238,0.10)" />
+                <stop offset="100%" stopColor="rgba(168,85,247,0.16)" />
               </linearGradient>
-              {/* Raised bevel edge */}
-              <linearGradient id="bkBevel" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stopColor="rgba(255,250,224,0.95)" />
-                <stop offset="100%" stopColor="rgba(86,58,18,0.55)" />
-              </linearGradient>
-              {/* Screw head */}
-              <radialGradient id="bkScrew" cx="38%" cy="34%" r="70%">
-                <stop offset="0%" stopColor="#f6f6f6" />
-                <stop offset="55%" stopColor="#c4c4c4" />
-                <stop offset="100%" stopColor="#6c6c6c" />
+              {/* Radial halo behind the emblem */}
+              <radialGradient id="bkHalo" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="rgba(59,130,246,0.50)" />
+                <stop offset="55%" stopColor="rgba(99,102,241,0.16)" />
+                <stop offset="100%" stopColor="rgba(99,102,241,0)" />
               </radialGradient>
-              {/* Cast ground shadow */}
-              <radialGradient id="bkGround" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="rgba(0,0,0,0.38)" />
-                <stop offset="100%" stopColor="rgba(0,0,0,0)" />
-              </radialGradient>
-              {/* Top specular sheen */}
-              <linearGradient id="bkSheen" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="rgba(255,255,255,0.5)" />
-                <stop offset="100%" stopColor="rgba(255,255,255,0)" />
-              </linearGradient>
+              {/* Soft glow filter for the orbiting node + circuit ticks */}
+              <filter id="bkGlow" x="-60%" y="-60%" width="220%" height="220%">
+                <feGaussianBlur stdDeviation="3" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
             </defs>
 
-            {/* Ground shadow */}
-            <ellipse cx="200" cy="232" rx="152" ry="18" fill="url(#bkGround)" />
-
-            {/* Wooden plaque — thickness (side) + top face */}
-            <rect x="34" y="74" width="332" height="150" rx="22" fill="#3a2410" />
-            <rect x="34" y="58" width="332" height="150" rx="22" fill="url(#bkWood)" stroke="#2c1a0b" strokeWidth="2" />
-            {/* subtle wood grain */}
-            <g stroke="#3c2611" strokeWidth="1" opacity="0.25" fill="none">
-              <path d="M50 96 Q 200 86 350 98" />
-              <path d="M50 124 Q 200 116 350 126" />
-              <path d="M50 156 Q 200 148 350 158" />
-              <path d="M50 184 Q 200 178 350 186" />
+            {/* ── Background digital texture (faint dots) ── */}
+            <g fill="#6366f1" opacity="0.18">
+              <circle cx="14" cy="16" r="1.6" />
+              <circle cx="424" cy="26" r="1.6" />
+              <circle cx="406" cy="150" r="1.6" />
+              <circle cx="22" cy="150" r="1.6" />
+              <circle cx="250" cy="12" r="1.2" />
+              <circle cx="360" cy="158" r="1.2" />
             </g>
 
-            {/* Brass nameplate — thickness (side) + top face */}
-            <rect x="66" y="102" width="268" height="100" rx="14" fill="#6f4f1b" />
-            <rect x="66" y="92" width="268" height="100" rx="14" fill="url(#bkBrass)" />
-            {/* raised bevel edge */}
-            <rect x="74" y="100" width="252" height="84" rx="10" fill="none" stroke="url(#bkBevel)" strokeWidth="2.5" />
-            {/* top sheen across the brass */}
-            <path d="M78 100 Q 200 92 322 100 L 322 118 Q 200 110 78 118 Z" fill="url(#bkSheen)" opacity="0.5" />
-            {/* corner specular blob */}
-            <ellipse cx="112" cy="112" rx="58" ry="18" fill="#ffffff" opacity="0.12" />
+            {/* ── Breathing halo behind the chip ── */}
+            <ellipse
+              className="bk-halo"
+              cx="89"
+              cy="85"
+              rx="96"
+              ry="96"
+              fill="url(#bkHalo)"
+            />
 
-            {/* Corner screws */}
-            {[
-              [88, 112],
-              [312, 112],
-              [88, 172],
-              [312, 172],
-            ].map(([cx, cy], i) => (
-              <g key={i}>
-                <circle cx={cx} cy={cy} r="7.5" fill="url(#bkScrew)" stroke="#5a5a5a" strokeWidth="1" />
-                <line x1={cx - 4.5} y1={cy} x2={cx + 4.5} y2={cy} stroke="#6a6a6a" strokeWidth="1.6" strokeLinecap="round" />
-              </g>
-            ))}
+            {/* ── Orbiting glow node (rotates around chip centre) ── */}
+            <g>
+              <animateTransform
+                attributeName="transform"
+                type="rotate"
+                from="0 89 85"
+                to="360 89 85"
+                dur="16s"
+                repeatCount="indefinite"
+              />
+              <circle cx="89" cy="14" r="3.4" fill="#22d3ee" filter="url(#bkGlow)" />
+              <circle cx="89" cy="14" r="7" fill="none" stroke="#22d3ee" strokeOpacity="0.35" />
+            </g>
 
-            {/* Engraved monogram 「秋彦」 — three-layer incised emboss */}
-            <g
-              fontFamily="'Songti SC','SimSun','STSong','Noto Serif SC',Georgia,'Times New Roman',serif"
-              fontWeight="700"
-              fontSize="60"
+            {/* ── Chip: blurred stroke copy (outer glow) ── */}
+            <rect
+              x="30"
+              y="26"
+              width="118"
+              height="118"
+              rx="30"
+              fill="none"
+              stroke="url(#bkHue)"
+              strokeWidth="3"
+              opacity="0.55"
+              filter="url(#bkGlow)"
+            />
+            {/* ── Chip: body + crisp gradient stroke ── */}
+            <rect
+              x="30"
+              y="26"
+              width="118"
+              height="118"
+              rx="30"
+              fill="url(#bkChipFill)"
+              stroke="url(#bkHue)"
+              strokeWidth="2.4"
+            />
+            {/* ── Thin inner circuit ring for a precise, tech read ── */}
+            <rect
+              x="40"
+              y="36"
+              width="98"
+              height="98"
+              rx="24"
+              fill="none"
+              stroke="#38bdf8"
+              strokeOpacity="0.35"
+              strokeWidth="1"
+            />
+
+            {/* ── Monogram 「秋彦」 inside the chip ── */}
+            <text
+              className="bk-glow"
+              x="89"
+              y="87"
               textAnchor="middle"
               dominantBaseline="central"
+              fontFamily="'PingFang SC','Microsoft YaHei','Hiragino Sans GB','Noto Sans SC',system-ui,-apple-system,'Segoe UI',sans-serif"
+              fontSize="46"
+              fontWeight="700"
+              fill="url(#bkHue)"
             >
-              {/* shadow (down-right inside the groove) */}
-              <text x="201.5" y="144.5" fill="rgba(45,28,8,0.55)">秋彦</text>
-              {/* recessed base */}
-              <text x="200" y="143" fill="#c39a4f">秋彦</text>
-              {/* highlight (up-left lit edge) */}
-              <text x="198.5" y="141.5" fill="rgba(255,246,214,0.85)">秋彦</text>
+              {BRAND_ZH}
+            </text>
+
+            {/* ── Thin connector circuit from chip to wordmark ── */}
+            <g className="bk-glow">
+              <path
+                d="M150 85 H176"
+                stroke="url(#bkHue)"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                fill="none"
+              />
+              <circle cx="176" cy="85" r="2.4" fill="#38bdf8" />
+            </g>
+
+            {/* ── Wordmark 「Qtech」 (Latin, gradient + glow) ── */}
+            <text
+              className="bk-glow"
+              x="196"
+              y="80"
+              textAnchor="start"
+              dominantBaseline="alphabetic"
+              fontFamily="system-ui,-apple-system,'Segoe UI','Helvetica Neue',Arial,sans-serif"
+              fontSize="50"
+              fontWeight="800"
+              letterSpacing="0.5"
+              fill="url(#bkHue)"
+            >
+              {BRAND_EN}
+            </text>
+
+            {/* ── Letter-spaced tagline ── */}
+            <text
+              x="198"
+              y="108"
+              textAnchor="start"
+              dominantBaseline="alphabetic"
+              fontFamily="system-ui,-apple-system,'Segoe UI',Arial,sans-serif"
+              fontSize="12.5"
+              fontWeight="600"
+              letterSpacing="3"
+              fill="rgba(99,102,241,0.85)"
+            >
+              {TAGLINE}
+            </text>
+
+            {/* ── Little circuit ticks under the wordmark ── */}
+            <g stroke="#6366f1" strokeOpacity="0.5" strokeWidth="1.4" strokeLinecap="round">
+              <path d="M198 122 H214" />
+              <path d="M222 122 H242" />
+              <path d="M250 122 H268" />
             </g>
           </svg>
         </div>
 
-        {/* ═══ Brand line ═══ */}
+        {/* ═══ Bottom flourish — gradient line + glow dot ═══ */}
         <div
-          className="mt-9 flex flex-col items-center"
-          style={{
-            animation: visible ? 'bk-fade-up 0.6s ease-out 0.8s both' : 'none',
-            opacity: visible ? undefined : 0,
-          }}
+          className="bk-rise bk-rise-3 mt-7 flex items-center gap-3 w-full max-w-[300px]"
+          aria-hidden="true"
         >
-          <div
-            className="text-[10px] sm:text-xs font-semibold tracking-[0.34em] text-amber-800/90"
-            style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
-          >
-            QIUYAN · 秋彦
-          </div>
-          <svg className="mt-2" width="120" height="10" viewBox="0 0 120 10" fill="none" aria-hidden="true">
-            <defs>
-              <linearGradient id="bkFlourish" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0" stopColor="#b8893a" stopOpacity="0" />
-                <stop offset="0.5" stopColor="#b8893a" stopOpacity="0.9" />
-                <stop offset="1" stopColor="#b8893a" stopOpacity="0" />
-              </linearGradient>
-            </defs>
-            <path
-              d="M5 6 C 30 2, 52 2, 60 5 C 68 8, 90 8, 115 3"
-              stroke="url(#bkFlourish)"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-            />
-          </svg>
+          <span
+            className="h-px flex-1"
+            style={{
+              background:
+                'linear-gradient(90deg, transparent, rgba(56,189,248,0.6) 60%, rgba(99,102,241,0.85))',
+            }}
+          />
+          <span
+            className="w-1.5 h-1.5 rounded-full"
+            style={{
+              background: '#818cf8',
+              boxShadow: '0 0 7px 2px rgba(129,140,248,0.6)',
+            }}
+          />
+          <span
+            className="h-px flex-1"
+            style={{
+              background:
+                'linear-gradient(90deg, rgba(99,102,241,0.85), rgba(56,189,248,0.6) 40%, transparent)',
+            }}
+          />
         </div>
       </div>
     </>
