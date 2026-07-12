@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 import TipTapEditor from '@/components/TipTapEditor';
 import MediaPicker from '@/components/xiaozhouBackend/MediaPicker';
+import ProductFaqEditor, { type FaqItem, normalizeFaq } from '@/components/product/ProductFaqEditor';
 import { fetchUnifiedCategories, fetchUnifiedBlogs, adminApi, type BlogPostAPI } from '@/data/unified-data';
 
 export const dynamic = 'force-dynamic';
@@ -41,6 +42,7 @@ export default function EditBlogPage() {
     image: '',
     slug: '',
     seoKeywords: '',
+    faq: [] as FaqItem[],
   });
 
   useEffect(() => {
@@ -103,6 +105,9 @@ export default function EditBlogPage() {
           image: post.image || '',
           slug: post.slug || '',
           seoKeywords: post.seoKeywords || '',
+          // V8.11 — pre-fill the structured FAQ list (normalizeFaq tolerates
+          // null / string / partial shapes coming from the API).
+          faq: normalizeFaq(post.faq),
         });
       } catch (err: any) {
         setError(err.message || '加载文章失败');
@@ -152,6 +157,7 @@ export default function EditBlogPage() {
         tagIds: formData.tags,
         image: formData.image || null,
         seoKeywords: formData.seoKeywords || null,
+        faq: formData.faq,
       };
 
       await adminApi.updateBlog(postId, postData);
@@ -492,6 +498,18 @@ export default function EditBlogPage() {
             </div>
           </div>
         )}
+
+        {/* 常见问题 FAQ（博客级，结构化三语） */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-1">常见问题 FAQ</h2>
+          <p className="text-xs text-gray-400 mb-4">
+            为本文添加常见问题。留空则前台回退到正文中的 &lt;h2&gt;FAQ&lt;/h2&gt; 区块。
+          </p>
+          <ProductFaqEditor
+            value={formData.faq}
+            onChange={(items) => setFormData((f) => ({ ...f, faq: items }))}
+          />
+        </div>
 
         {/* 提交 */}
         <div className="flex items-center justify-end gap-3 pt-4">

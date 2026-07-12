@@ -41,7 +41,7 @@ export default function ProductDetailClient({
   const [selectedImage, setSelectedImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
-  const [activeTab, setActiveTab] = useState<'description' | 'specifications' | 'features' | 'reviews'>('description');
+  const [activeTab, setActiveTab] = useState<'description' | 'features' | 'reviews'>('description');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [mainImageError, setMainImageError] = useState(false);
   const [mainImageLoading, setMainImageLoading] = useState(true);
@@ -485,22 +485,6 @@ export default function ProductDetailClient({
 
           {/* Tabs Section */}
           <div className="px-6 lg:px-8 pb-8 border-t border-gray-200">
-            {/* TASK 3 fix: Specifications are ALWAYS shown here (prominent),
-                above the tabs, so new products' spec tables are never hidden
-                behind a non-default tab. */}
-            {hasSpecs && (
-              <div className="mt-2 mb-8">
-                <div className="flex items-center gap-2.5 mb-3">
-                  <span className="w-1.5 h-5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-500" />
-                  <h3 className="flex items-center gap-2 text-base font-bold text-gray-900">
-                    <Ruler className="w-4 h-4 text-blue-600" />
-                    {labels.specifications}
-                  </h3>
-                </div>
-                {renderSpecsTable()}
-              </div>
-            )}
-
             {/* Tab Navigation */}
             <div className="flex flex-wrap gap-1 -mb-px mt-6">
               <button
@@ -515,7 +499,7 @@ export default function ProductDetailClient({
                 {labels.description}
               </button>
 
-              {product._resolvedFeatures && product._resolvedFeatures.length > 0 && (
+              {hasSpecs || (product._resolvedFeatures && product._resolvedFeatures.length > 0) ? (
                 <button
                   onClick={() => setActiveTab('features')}
                   className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors ${
@@ -527,7 +511,7 @@ export default function ProductDetailClient({
                   <Star className="w-4 h-4 inline-block mr-2" />
                   {labels.features}
                 </button>
-              )}
+              ) : null}
 
               <button
                 onClick={() => setActiveTab('reviews')}
@@ -556,15 +540,14 @@ export default function ProductDetailClient({
                 </div>
               )}
 
-              {/* Features Tab */}
-              {activeTab === 'features' && product._resolvedFeatures && (() => {
-                const featuresArray = product._resolvedFeatures;
-                if (!featuresArray || featuresArray.length === 0) return null;
-                
-                return (
-                  <div className="prose prose-sm max-w-none">
+              {/* Features Tab — shows the feature highlights grid, and (when
+                  present) the specification table below it, so specs live
+                  together with the product's features per the product page spec. */}
+              {activeTab === 'features' && (
+                <div className="max-w-none space-y-8">
+                  {product._resolvedFeatures && product._resolvedFeatures.length > 0 && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {featuresArray.map((feature: string, index: number) => (
+                      {product._resolvedFeatures.map((feature: string, index: number) => (
                         <div key={index} className="flex items-start gap-3 p-4 glass-btn rounded-xl hover:shadow-md transition-all duration-300 group">
                           <span className="flex-shrink-0 w-6 h-6 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg flex items-center justify-center text-xs font-bold mt-0.5 group-hover:scale-110 transition-transform">
                             ✓
@@ -573,9 +556,22 @@ export default function ProductDetailClient({
                         </div>
                       ))}
                     </div>
-                  </div>
-                );
-              })()}
+                  )}
+
+                  {hasSpecs && (
+                    <div>
+                      <div className="flex items-center gap-2.5 mb-3">
+                        <span className="w-1.5 h-5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-500" />
+                        <h3 className="flex items-center gap-2 text-base font-bold text-gray-900">
+                          <Ruler className="w-4 h-4 text-blue-600" />
+                          {labels.specifications}
+                        </h3>
+                      </div>
+                      {renderSpecsTable()}
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Reviews Tab */}
               {activeTab === 'reviews' && product.slug && (

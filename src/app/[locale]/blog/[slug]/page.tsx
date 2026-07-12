@@ -25,11 +25,15 @@ function toBlogDto(row: {
   author?: string;
   publishedAt?: Date | string;
   image?: string | null;
+  faq?: any;
   tags?: { id: string; slug: string; name: any }[];
 }): BlogDetailDTO {
   const title = (row.title && typeof row.title === 'object' ? row.title : { en: '', zh: '', ar: '' }) as BlogDetailDTO['title'];
   const excerpt = (row.excerpt && typeof row.excerpt === 'object' ? row.excerpt : { en: '', zh: '', ar: '' }) as BlogDetailDTO['excerpt'];
   const content = (row.content && typeof row.content === 'object' ? row.content : { en: '', zh: '', ar: '' }) as BlogDetailDTO['content'];
+  // V8.11: pass the structured blog-level FAQ list through unchanged (it is
+  // already stored as the canonical [{ question:{en,zh,ar}, answer:{en,zh,ar} }]).
+  const faq = Array.isArray(row.faq) ? row.faq : undefined;
   return {
     id: row.id,
     slug: row.slug,
@@ -44,6 +48,7 @@ function toBlogDto(row: {
       slug: t.slug,
       name: (t.name && typeof t.name === 'object' ? t.name : { en: t.name || t.slug, zh: t.name || t.slug, ar: t.name || t.slug }),
     })),
+    faq: faq as BlogDetailDTO['faq'],
   };
 }
 
@@ -143,6 +148,8 @@ export default async function Page({ params }: PageProps) {
         publishedAt: (fb as any).publishedAt || new Date().toISOString(),
         image: (fb as any).image || null,
         tags: ((fb as any).tags || []).map((t: string) => ({ id: t, slug: t.toLowerCase().replace(/\s+/g, '-'), name: { en: t, zh: t, ar: t } })),
+        // Static seeds have no structured FAQ; fall back to the legacy body block.
+        faq: Array.isArray((fb as any).faq) ? (fb as any).faq : undefined,
       };
       // 静态近期文章
       recentBlogs = staticBlogs

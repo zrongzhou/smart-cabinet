@@ -46,6 +46,47 @@ function newFaqItem(): FaqItem {
   };
 }
 
+/**
+ * normalizeFaq — coerce an arbitrary `faq` payload (as stored on
+ * `Product.faq` / `BlogPost.faq`, or returned by the admin API) into a
+ * strictly-typed `FaqItem[]`.
+ *
+ * Robust against:
+ *  - `null` / `undefined` / non-array → `[]`
+ *  - a JSON string → parsed then normalized
+ *  - entries missing `question` / `answer` / per-locale fields → filled with
+ *    empty strings so downstream editors never hit `undefined`.
+ *
+ * This is the shared helper used by the product and blog editors when
+ * pre-filling their forms from persisted data.
+ */
+export function normalizeFaq(input: unknown): FaqItem[] {
+  if (!input) return [];
+  let arr: unknown[] = [];
+  if (Array.isArray(input)) {
+    arr = input;
+  } else if (typeof input === 'string') {
+    try {
+      const parsed = JSON.parse(input);
+      if (Array.isArray(parsed)) arr = parsed;
+    } catch {
+      return [];
+    }
+  }
+  if (arr.length === 0) return [];
+
+  const pickLang = (obj: any): FaqLang => ({
+    en: typeof obj?.en === 'string' ? obj.en : '',
+    zh: typeof obj?.zh === 'string' ? obj.zh : '',
+    ar: typeof obj?.ar === 'string' ? obj.ar : '',
+  });
+
+  return arr.map((item: any) => ({
+    question: pickLang(item?.question),
+    answer: pickLang(item?.answer),
+  }));
+}
+
 /** Locale metadata for rendering the three input columns. */
 const LOCALES: { key: keyof FaqLang; label: string }[] = [
   { key: 'en', label: 'English' },

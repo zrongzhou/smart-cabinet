@@ -39,6 +39,8 @@ function resolveStaticBlogForAdmin(idOrSlug: string): any | null {
     image: found.image || null,
     category: found.category || null,
     seoKeywords: null,
+    // Shape parity with the DB admin response: blog-level FAQ (none for seeds).
+    faq: null,
     // The edit page reads `post.tags?.map((t) => t.tagId)` — map string tags accordingly.
     tags: (found.tags || []).map((tag: string) => ({ tagId: tag })),
   };
@@ -82,8 +84,15 @@ async function writeBlogResilient<T>(
   try {
     return await run(payload);
   } catch (err) {
-    if (isMissingColumnError(err) && payload && 'seoKeywords' in payload) {
-      const { seoKeywords, ...rest } = payload;
+    // V8.11: also tolerate a missing `faq` column (new migration). Strip both
+    // the soft fields and retry once so the save still succeeds before/after
+    // the migration is applied.
+    if (
+      isMissingColumnError(err) &&
+      payload &&
+      ('seoKeywords' in payload || 'faq' in payload)
+    ) {
+      const { seoKeywords, faq, ...rest } = payload;
       return await run(rest);
     }
     throw err;
@@ -308,6 +317,13 @@ export async function POST(request: NextRequest) {
       category: body.category || null,
     };
 
+    // V8.11 — persist the blog-level FAQ list (structured [question/answer] x
+    // locale array coming from the editor). New migration column; writeBlogResilient
+    // below strips it if the migration has not been applied yet.
+    if (body.faq !== undefined) {
+      (blogData as any).faq = body.faq;
+    }
+
     // 创建博客（含标签关联）
     const createData: any = {
       ...blogData,
@@ -409,6 +425,8 @@ export async function PUT(request: NextRequest) {
           category: body.category || staticSeed.category || null,
           // V8.4 fix: bug 6 — persist seoKeywords (string sent by the editor form).
           seoKeywords: body.seoKeywords !== undefined ? body.seoKeywords : (staticSeed.seoKeywords ?? null),
+          // V8.11 — persist the blog-level FAQ list, falling back to the seed's faq.
+          faq: body.faq !== undefined ? body.faq : (staticSeed.faq ?? null),
         };
         // V8.5 fix: bug 3 — only connect tag ids that exist as BlogTag records.
         // Static-seed string tags are dropped here so no P2018 is thrown.
@@ -467,6 +485,8 @@ export async function PUT(request: NextRequest) {
     if (body.category !== undefined) updateData.category = body.category;
     // V8.4 fix: bug 6 — map seoKeywords so the blog editor can save it.
     if (body.seoKeywords !== undefined) updateData.seoKeywords = body.seoKeywords;
+    // V8.11 — map the blog-level FAQ list so the editor can save it.
+    if (body.faq !== undefined) (updateData as any).faq = body.faq;
 
     // 处理标签关联
     // V8.5 fix: bug 3 — only `set` tag ids that actually exist. This prevents

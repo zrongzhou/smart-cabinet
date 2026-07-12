@@ -19,6 +19,8 @@ export interface BlogDetailDTO {
   publishedAt?: string;
   image?: string | null;
   tags: { id: string; slug: string; name: { en: string; zh: string; ar: string } }[];
+  /** Blog-level structured FAQ list: [{ question: {en,zh,ar}, answer: {en,zh,ar} }]. */
+  faq?: { question: { en: string; zh: string; ar: string }; answer: { en: string; zh: string; ar: string } }[];
 }
 
 interface BlogDetailClientProps {
@@ -245,9 +247,34 @@ export default function BlogDetailClient({ blog, recentBlogs }: BlogDetailClient
 
   const content = blog!.content?.[locale as 'en' | 'zh' | 'ar'] || '';
 
+  // V8.11: prefer the structured blog-level FAQ list (edited via the admin UI).
+  // Each entry carries trilingual question/answer; we pick the current locale,
+  // falling back to English, and drop empty entries.
+  const structuredFaqs: BlogFaqItem[] = Array.isArray(blog!.faq)
+    ? (blog!.faq as any[])
+        .map((f: any) => ({
+          question:
+            f?.question?.[locale as 'en' | 'zh' | 'ar'] ||
+            f?.question?.en ||
+            '',
+          answer:
+            f?.answer?.[locale as 'en' | 'zh' | 'ar'] ||
+            f?.answer?.en ||
+            '',
+          category: 'blog',
+        }))
+        .filter((f: BlogFaqItem) => f.question.trim() !== '' || f.answer.trim() !== '')
+    : [];
+
+  // Legacy fallback: parse the trailing <h2>FAQ</h2> block out of the body HTML
+  // (preserves the old-blog experience for posts without a structured FAQ).
   const { body, faq } = splitBlogFaq(content);
-  const faqItems = faq ? parseBlogFaqItems(faq) : [];
+  const legacyFaqItems = faq ? parseBlogFaqItems(faq) : [];
   const bodyHtml = injectCoverImageInContent(body, getInlineBlogDetailImage(blog!));
+
+  // Render priority: structured FAQ → legacy parsed FAQ → legacy prose block.
+  const faqToRender: BlogFaqItem[] =
+    structuredFaqs.length > 0 ? structuredFaqs : legacyFaqItems;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 dark:from-slate-900 dark:to-slate-800">
@@ -298,8 +325,8 @@ export default function BlogDetailClient({ blog, recentBlogs }: BlogDetailClient
               When we can parse the body FAQ block into Q/A items we render
               the elegant <BlogFaqSection> accordion; otherwise we keep the
               legacy prose `.blog-faq` block so older posts still show FAQ. */}
-          {faqItems.length > 0 ? (
-            <BlogFaqSection faqs={faqItems} locale={locale} />
+          {faqToRender.length > 0 ? (
+            <BlogFaqSection faqs={faqToRender} locale={locale} />
           ) : (
             faq && (
               <section

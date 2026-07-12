@@ -101,6 +101,7 @@ model BlogPost {
   image       String?
   category    String?  // 分类 slug，固定枚举
   seoKeywords Json?     // SEO 关键词（逗号分隔字符串，由编辑器传入）
+  faq         Json?     // 博客级 FAQ 列表：[{ question: {zh,en,ar}, answer: {zh,en,ar} }]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   deletedAt   DateTime?
