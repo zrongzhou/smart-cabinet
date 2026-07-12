@@ -134,8 +134,8 @@ export default function CompanyShowcase({ t, locale }: CompanyShowcaseProps) {
             <span className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-200 to-transparent" />
           </div>
 
-          {/* ═══ Ribbon Bow — brand chronicle ═══ */}
-          <div className="mt-4">
+          {/* ═══ Brand signature / caption block (sits under the photo) ═══ */}
+          <div className="mt-6">
             <AboutBowKnot t={t} locale={locale} />
           </div>
         </div>
