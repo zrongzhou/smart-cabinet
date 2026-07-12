@@ -19,6 +19,7 @@
   "common.confirm": "Confirm",
   "common.logout": "Log out",
   "common.cancel": "Cancel",
+  "common.back": "Back",
   "common.adminRole": "System Administrator",
   "common.appName": "Smart Cabinet Pro",
   "services.title": "Service Management",
@@ -91,5 +92,15 @@
   "services.certApplyEmailHint": "Please fill in the application email above first.",
   "services.certUploadRequired": "Please select both a certificate and a private key file.",
   "services.certUploadExt": "Certificate must be .crt/.pem and key must be .key.",
-  "services.cancel": "Cancel"
+  "services.cancel": "Cancel",
+  "services.certbotUnavailable": "certbot is not installed on this server; only manual certificate upload is supported.",
+  "users.resetPassword": "Reset Password",
+  "users.resetPasswordTitle": "Reset User Password",
+  "users.resetPasswordConfirm": "Are you sure you want to reset this user's password? This cannot be undone.",
+  "users.newPassword": "New Password",
+  "users.confirmPassword": "Confirm New Password",
+  "users.passwordTooShort": "Password must be at least 8 characters.",
+  "users.passwordMismatch": "The two passwords do not match.",
+  "users.resetPasswordSuccess": "Password reset successfully.",
+  "users.resetPasswordFailed": "Failed to reset password. Please try again."
 }

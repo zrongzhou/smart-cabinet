@@ -39,6 +39,7 @@ import {
   renewCertificate,
   applyCertificate,
   uploadCertificate,
+  certbotAvailable,
 } from '@/lib/services/certificates';
 
 /** Build a human-readable log from a command / reload result. */
@@ -103,7 +104,8 @@ export async function GET(request: NextRequest) {
 
   try {
     const { certs, raw, code } = await listCertificates();
-    return NextResponse.json({ success: code === 0, certs, raw });
+    const certbot = await certbotAvailable();
+    return NextResponse.json({ success: code === 0, certs, raw, certbotAvailable: certbot });
   } catch (err) {
     return serverErrorResponse(err instanceof Error ? err.message : 'Failed to list certificates.');
   }

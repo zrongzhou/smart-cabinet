@@ -111,3 +111,13 @@ export async function removeUser(id: string): Promise<void> {
   });
   if (!res.ok) throw await parseError(res);
 }
+
+/** POST /api/admin/users/[id]/reset-password { newPassword } */
+export async function resetUserPassword(id: string, newPassword: string): Promise<void> {
+  const res = await fetch(`/api/admin/users/${id}/reset-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    body: JSON.stringify({ newPassword }),
+  });
+  if (!res.ok) throw await parseError(res);
+}

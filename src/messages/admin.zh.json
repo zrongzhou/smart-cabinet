@@ -19,6 +19,7 @@
   "common.confirm": "确认",
   "common.logout": "退出登录",
   "common.cancel": "取消",
+  "common.back": "返回",
   "common.adminRole": "系统管理员",
   "common.appName": "Smart Cabinet Pro",
   "services.title": "服务管理",
@@ -91,5 +92,15 @@
   "services.certApplyEmailHint": "请先在上方填写申请邮箱。",
   "services.certUploadRequired": "请同时选择证书与私钥文件。",
   "services.certUploadExt": "证书需为 .crt/.pem，私钥需为 .key。",
-  "services.cancel": "取消"
+  "services.cancel": "取消",
+  "services.certbotUnavailable": "当前服务器未安装 certbot，仅支持手动上传证书",
+  "users.resetPassword": "重置密码",
+  "users.resetPasswordTitle": "重置用户密码",
+  "users.resetPasswordConfirm": "确定要重置该用户的密码吗？此操作不可恢复。",
+  "users.newPassword": "新密码",
+  "users.confirmPassword": "确认新密码",
+  "users.passwordTooShort": "密码长度至少 8 位。",
+  "users.passwordMismatch": "两次输入的密码不一致。",
+  "users.resetPasswordSuccess": "密码已重置成功。",
+  "users.resetPasswordFailed": "密码重置失败，请稍后重试。"
 }

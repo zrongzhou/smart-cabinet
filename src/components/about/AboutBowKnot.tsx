@@ -1,25 +1,25 @@
 'use client';
 
 /**
- * AboutBowKnot — brand colophon / signature block (flower greenhouse).
+ * AboutBowKnot — brand colophon / signature block (3D realistic nameplate).
  * -----------------------------------------------------------
  * Sits directly under the company photo inside <CompanyShowcase> and acts as
  * a refined "colophon" that carries (承托) the image above.
  *
- * Design language — "繁花温室 · 花园风" (blooming greenhouse):
- *  - The focal point is now a small garden / greenhouse scene instead of a
- *    timepiece. A white picket fence runs along the front, a flower bed with
- *    colourful blossoms (pinks / yellows / corals) and tufts of grass sit
- *    behind it, and a couple of butterflies flutter around the blooms.
- *  - Everything sways gently in the wind (CSS transforms with staggered
- *    delays) so the scene feels alive without any network assets.
- *  - The brand monogram 「秋彦」 is engraved on a wooden garden sign / plaque
- *    set into the scene — a natural label, not a watch dial and not a red seal.
- *  - Palette: bright, natural greens, pinks and yellows on a soft sky.
+ * Design language — "拟物写实铭牌" (photorealistic engraved nameplate):
+ *  - A solid wooden plaque carries a brushed BRASS nameplate. The plate reads
+ *    as a real object: it has visible THICKNESS (an offset "side" rect under
+ *    the top face), a beveled raised edge, corner screws, a soft specular
+ *    sheen, and a cast ground shadow.
+ *  - The brand monogram 「秋彦」 is ENGRAVED (incised) into the brass using a
+ *    three-layer emboss trick (a dark shadow copy, a recessed base, and a
+ *    light highlight copy) so it looks carved, not printed.
+ *  - Everything is pure CSS/SVG (gradients, filters, box-shadow, transform) —
+ *    no external images or fonts are referenced.
  *
- * No extra network font requests: only system fonts / safe fallbacks are used.
  * RTL-safe: the whole scene is centred and symmetrical; nothing is hard-pinned
- * to left/right, so Arabic layout mirrors cleanly.
+ * to left/right, so Arabic layout mirrors cleanly. The `locale` prop drives
+ * only the optional RTL mirroring; geometry stays centred.
  */
 
 import { useState, useEffect, useRef } from 'react';
@@ -29,103 +29,6 @@ interface AboutBowKnotProps {
   t: (key: string) => string;
   /** Active locale; drives RTL mirroring only (geometry stays centred). */
   locale: string;
-}
-
-/** A single flower: stem + leaves + petals + centre. Colours passed in. */
-function Flower({
-  x,
-  y,
-  scale = 1,
-  petal,
-  petalDark,
-  center,
-  delay = 0,
-  duration = 4,
-}: {
-  x: number;
-  y: number;
-  scale?: number;
-  petal: string;
-  petalDark: string;
-  center: string;
-  delay?: number;
-  duration?: number;
-}) {
-  return (
-    <g
-      transform={`translate(${x} ${y}) scale(${scale})`}
-      className="bk-sway"
-      style={{
-        transformBox: 'fill-box',
-        transformOrigin: '50% 100%',
-        animationDuration: `${duration}s`,
-        animationDelay: `${delay}s`,
-      }}
-    >
-      {/* stem */}
-      <path d="M0 0 C -2 -22, 2 -42, 0 -64" stroke="#3f9d52" strokeWidth="3" fill="none" strokeLinecap="round" />
-      {/* leaves */}
-      <path d="M0 -30 C -14 -34, -22 -26, -20 -16 C -10 -18, -2 -24, 0 -30 Z" fill="#4caf6a" />
-      <path d="M0 -44 C 14 -48, 22 -40, 20 -30 C 10 -32, 2 -38, 0 -44 Z" fill="#57bd76" />
-      {/* petals */}
-      <g transform="translate(0 -70)">
-        {[0, 72, 144, 216, 288].map((deg) => (
-          <ellipse
-            key={deg}
-            cx="0"
-            cy="-12"
-            rx="8"
-            ry="13"
-            fill={petal}
-            stroke={petalDark}
-            strokeWidth="1"
-            transform={`rotate(${deg})`}
-          />
-        ))}
-        {/* centre */}
-        <circle cx="0" cy="0" r="7" fill={center} />
-        <circle cx="0" cy="0" r="7" fill="none" stroke="rgba(0,0,0,0.08)" strokeWidth="1" />
-      </g>
-    </g>
-  );
-}
-
-/** A single blade of grass that sways. */
-function Grass({ x, y, height = 26, delay = 0 }: { x: number; y: number; height?: number; delay?: number }) {
-  return (
-    <path
-      d={`M${x} ${y} q -5 -${height * 0.6} 0 -${height} q 5 ${height * 0.6} 0 ${height} Z`}
-      fill="#5cbf7a"
-      className="bk-sway"
-      style={{
-        transformBox: 'fill-box',
-        transformOrigin: '50% 100%',
-        animationDuration: '3.4s',
-        animationDelay: `${delay}s`,
-      }}
-    />
-  );
-}
-
-/** A fluttering butterfly (two wings that flap + a drifting path). */
-function Butterfly({ x, y, color, colorDark, delay = 0 }: { x: number; y: number; color: string; colorDark: string; delay?: number }) {
-  return (
-    <g
-      transform={`translate(${x} ${y})`}
-      className="bk-butterfly"
-      style={{ animationDelay: `${delay}s` }}
-    >
-      <g className="bk-wing" style={{ transformBox: 'fill-box', transformOrigin: '100% 50%' }}>
-        <path d="M0 0 C -14 -14, -22 -4, -20 6 C -16 12, -4 8, 0 0 Z" fill={color} stroke={colorDark} strokeWidth="0.8" />
-        <path d="M0 0 C -10 10, -18 12, -16 18 C -10 20, -2 10, 0 0 Z" fill={colorDark} opacity="0.85" />
-      </g>
-      <g className="bk-wing-r" style={{ transformBox: 'fill-box', transformOrigin: '0% 50%' }}>
-        <path d="M0 0 C 14 -14, 22 -4, 20 6 C 16 12, 4 8, 0 0 Z" fill={color} stroke={colorDark} strokeWidth="0.8" />
-        <path d="M0 0 C 10 10, 18 12, 16 18 C 10 20, 2 10, 0 0 Z" fill={colorDark} opacity="0.85" />
-      </g>
-      <line x1="0" y1="-3" x2="0" y2="6" stroke="#3a3a3a" strokeWidth="1.4" strokeLinecap="round" />
-    </g>
-  );
 }
 
 export default function AboutBowKnot({ locale }: AboutBowKnotProps) {
@@ -153,41 +56,8 @@ export default function AboutBowKnot({ locale }: AboutBowKnotProps) {
     <>
       <style jsx>{`
         @keyframes bk-fade-up {
-          from { opacity: 0; transform: translateY(12px); }
+          from { opacity: 0; transform: translateY(14px); }
           to   { opacity: 1; transform: translateY(0); }
-        }
-        /* Gentle wind sway for flowers & grass — pivots from the base. */
-        @keyframes bk-sway {
-          0%   { transform: rotate(-3deg); }
-          50%  { transform: rotate(3deg); }
-          100% { transform: rotate(-3deg); }
-        }
-        .bk-sway {
-          animation-name: bk-sway;
-          animation-timing-function: ease-in-out;
-          animation-iteration-count: infinite;
-        }
-        /* Butterfly drifting path + soft bob. */
-        @keyframes bk-butterfly {
-          0%   { transform: translate(0px, 0px) rotate(-4deg); }
-          25%  { transform: translate(18px, -10px) rotate(6deg); }
-          50%  { transform: translate(34px, 2px) rotate(-3deg); }
-          75%  { transform: translate(16px, 10px) rotate(5deg); }
-          100% { transform: translate(0px, 0px) rotate(-4deg); }
-        }
-        .bk-butterfly {
-          animation-name: bk-butterfly;
-          animation-timing-function: ease-in-out;
-          animation-iteration-count: infinite;
-          animation-duration: 9s;
-        }
-        /* Wing flap. */
-        @keyframes bk-flap {
-          0%, 100% { transform: scaleX(1); }
-          50%      { transform: scaleX(0.45); }
-        }
-        .bk-wing, .bk-wing-r {
-          animation: bk-flap 0.45s ease-in-out infinite;
         }
         .bk-colophon { transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
         .bk-colophon:hover { transform: translateY(-3px); }
@@ -200,7 +70,7 @@ export default function AboutBowKnot({ locale }: AboutBowKnotProps) {
       >
         {/* ═══ Top soft divider — visually catches the company photo above ═══ */}
         <div
-          className="flex items-center gap-3 w-full max-w-[260px] mb-5"
+          className="flex items-center gap-3 w-full max-w-[260px] mb-6"
           aria-hidden="true"
           style={{
             animation: visible ? 'bk-fade-up 0.6s ease-out 0.1s both' : 'none',
@@ -209,155 +79,145 @@ export default function AboutBowKnot({ locale }: AboutBowKnotProps) {
         >
           <span
             className="h-px flex-1"
-            style={{ background: 'linear-gradient(90deg, transparent, rgba(110,170,90,0.55) 50%, transparent)' }}
+            style={{ background: 'linear-gradient(90deg, transparent, rgba(150,120,70,0.6) 50%, transparent)' }}
           />
-          <span className="w-1.5 h-1.5 rotate-45" style={{ background: '#6cae5a' }} />
+          <span className="w-1.5 h-1.5 rotate-45" style={{ background: '#b8893a' }} />
           <span
             className="h-px flex-1"
-            style={{ background: 'linear-gradient(90deg, transparent, rgba(110,170,90,0.55) 50%, transparent)' }}
+            style={{ background: 'linear-gradient(90deg, transparent, rgba(150,120,70,0.6) 50%, transparent)' }}
           />
         </div>
 
-        {/* ═══ The garden / greenhouse scene ═══ */}
+        {/* ═══ The 3D realistic brass nameplate (pure CSS/SVG) ═══ */}
         <div
           className="relative flex items-center justify-center"
           style={{
             direction: isRtl ? 'rtl' : 'ltr',
-            width: 'min(380px, 90vw)',
-            height: 'min(300px, 72vw)',
+            width: 'min(380px, 92vw)',
+            height: 'min(232px, 64vw)',
+            animation: visible ? 'bk-fade-up 0.7s ease-out 0.25s both' : 'none',
+            opacity: visible ? undefined : 0,
           }}
         >
           <svg
-            viewBox="0 0 400 320"
+            viewBox="0 0 400 260"
             width="100%"
             height="100%"
             role="img"
-            aria-label="秋彦 花园温室"
-            className="drop-shadow-[0_14px_30px_rgba(40,90,50,0.25)]"
+            aria-label="秋彦 铭牌"
+            className="drop-shadow-[0_18px_34px_rgba(40,25,10,0.32)]"
           >
             <defs>
-              <linearGradient id="bkSky" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#dff3ff" />
-                <stop offset="55%" stopColor="#eafaf0" />
-                <stop offset="100%" stopColor="#fbf7ec" />
-              </linearGradient>
-              <radialGradient id="bkSun" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="#fff6c2" />
-                <stop offset="100%" stopColor="#ffe680" stopOpacity="0" />
-              </radialGradient>
+              {/* Wooden plaque body */}
               <linearGradient id="bkWood" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#c79a5b" />
-                <stop offset="100%" stopColor="#a9763b" />
+                <stop offset="0%" stopColor="#7a5230" />
+                <stop offset="55%" stopColor="#5c3c20" />
+                <stop offset="100%" stopColor="#41291546" />
+              </linearGradient>
+              {/* Brass face — warm sheen top to deeper bottom */}
+              <linearGradient id="bkBrass" x1="0" y1="0" x2="0.15" y2="1">
+                <stop offset="0%" stopColor="#fbeeb4" />
+                <stop offset="42%" stopColor="#e0bb63" />
+                <stop offset="100%" stopColor="#a9772c" />
+              </linearGradient>
+              {/* Raised bevel edge */}
+              <linearGradient id="bkBevel" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="rgba(255,250,224,0.95)" />
+                <stop offset="100%" stopColor="rgba(86,58,18,0.55)" />
+              </linearGradient>
+              {/* Screw head */}
+              <radialGradient id="bkScrew" cx="38%" cy="34%" r="70%">
+                <stop offset="0%" stopColor="#f6f6f6" />
+                <stop offset="55%" stopColor="#c4c4c4" />
+                <stop offset="100%" stopColor="#6c6c6c" />
+              </radialGradient>
+              {/* Cast ground shadow */}
+              <radialGradient id="bkGround" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="rgba(0,0,0,0.38)" />
+                <stop offset="100%" stopColor="rgba(0,0,0,0)" />
+              </radialGradient>
+              {/* Top specular sheen */}
+              <linearGradient id="bkSheen" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="rgba(255,255,255,0.5)" />
+                <stop offset="100%" stopColor="rgba(255,255,255,0)" />
               </linearGradient>
             </defs>
 
-            {/* Sky */}
-            <rect x="0" y="0" width="400" height="320" rx="22" fill="url(#bkSky)" />
+            {/* Ground shadow */}
+            <ellipse cx="200" cy="232" rx="152" ry="18" fill="url(#bkGround)" />
 
-            {/* Sun glow */}
-            <circle cx="320" cy="62" r="58" fill="url(#bkSun)" />
-            <circle cx="320" cy="62" r="22" fill="#ffe066" />
-
-            {/* Drifting clouds */}
-            <g opacity="0.85" fill="#ffffff">
-              <ellipse cx="90" cy="60" rx="34" ry="15" />
-              <ellipse cx="120" cy="52" rx="26" ry="14" />
-              <ellipse cx="64" cy="52" rx="22" ry="12" />
+            {/* Wooden plaque — thickness (side) + top face */}
+            <rect x="34" y="74" width="332" height="150" rx="22" fill="#3a2410" />
+            <rect x="34" y="58" width="332" height="150" rx="22" fill="url(#bkWood)" stroke="#2c1a0b" strokeWidth="2" />
+            {/* subtle wood grain */}
+            <g stroke="#3c2611" strokeWidth="1" opacity="0.25" fill="none">
+              <path d="M50 96 Q 200 86 350 98" />
+              <path d="M50 124 Q 200 116 350 126" />
+              <path d="M50 156 Q 200 148 350 158" />
+              <path d="M50 184 Q 200 178 350 186" />
             </g>
 
-            {/* Flower bed soil */}
-            <path d="M0 232 Q 200 206 400 232 L 400 298 Q 200 312 0 298 Z" fill="#7c5a3a" />
-            <path d="M0 232 Q 200 206 400 232 L 400 244 Q 200 220 0 244 Z" fill="#8a6743" />
+            {/* Brass nameplate — thickness (side) + top face */}
+            <rect x="66" y="102" width="268" height="100" rx="14" fill="#6f4f1b" />
+            <rect x="66" y="92" width="268" height="100" rx="14" fill="url(#bkBrass)" />
+            {/* raised bevel edge */}
+            <rect x="74" y="100" width="252" height="84" rx="10" fill="none" stroke="url(#bkBevel)" strokeWidth="2.5" />
+            {/* top sheen across the brass */}
+            <path d="M78 100 Q 200 92 322 100 L 322 118 Q 200 110 78 118 Z" fill="url(#bkSheen)" opacity="0.5" />
+            {/* corner specular blob */}
+            <ellipse cx="112" cy="112" rx="58" ry="18" fill="#ffffff" opacity="0.12" />
 
-            {/* Grass tufts across the bed */}
-            <g>
-              {[28, 70, 120, 175, 230, 285, 340, 372].map((gx, i) => (
-                <Grass key={gx} x={gx} y={238 + (i % 2) * 4} height={22 + (i % 3) * 6} delay={i * 0.4} />
-              ))}
-            </g>
+            {/* Corner screws */}
+            {[
+              [88, 112],
+              [312, 112],
+              [88, 172],
+              [312, 172],
+            ].map(([cx, cy], i) => (
+              <g key={i}>
+                <circle cx={cx} cy={cy} r="7.5" fill="url(#bkScrew)" stroke="#5a5a5a" strokeWidth="1" />
+                <line x1={cx - 4.5} y1={cy} x2={cx + 4.5} y2={cy} stroke="#6a6a6a" strokeWidth="1.6" strokeLinecap="round" />
+              </g>
+            ))}
 
-            {/* Flowers — bright natural palette */}
-            <Flower x={70} y={236} scale={1.05} petal="#ff9ec4" petalDark="#f06fa6" center="#ffd23f" delay={0} duration={4.2} />
-            <Flower x={135} y={240} scale={0.9} petal="#ffd23f" petalDark="#f4b400" center="#ff9a3c" delay={0.8} duration={3.6} />
-            <Flower x={300} y={238} scale={1.1} petal="#ffb3c1" petalDark="#ef7fa0" center="#fff0a8" delay={0.4} duration={4.6} />
-            <Flower x={345} y={242} scale={0.85} petal="#c8a4ff" petalDark="#a87fe0" center="#ffd23f" delay={1.2} duration={3.9} />
-            <Flower x={205} y={244} scale={0.8} petal="#ff8fa3" petalDark="#e8657f" center="#ffe066" delay={1.6} duration={4.0} />
-
-            {/* Butterflies */}
-            <Butterfly x={110} y={150} color="#ff9ec4" colorDark="#e06a98" delay={0} />
-            <Butterfly x={250} y={120} color="#7fd1ff" colorDark="#3aa0e0" delay={2.5} />
-
-            {/* White picket fence across the front */}
-            <g>
-              <rect x="0" y="262" width="400" height="9" rx="3" fill="#ffffff" />
-              <rect x="0" y="288" width="400" height="9" rx="3" fill="#ffffff" />
-              {Array.from({ length: 21 }, (_, i) => 18 + i * 19).map((px) => (
-                <g key={px}>
-                  <rect x={px} y="250" width="13" height="50" rx="3" fill="#ffffff" stroke="#e7e7e7" strokeWidth="1" />
-                  <path d={`M${px} 250 l 6.5 -10 l 6.5 10 Z`} fill="#ffffff" stroke="#e7e7e7" strokeWidth="1" />
-                </g>
-              ))}
-            </g>
-
-            {/* Wooden garden sign engraved with 秋彦 */}
-            <g transform="translate(200 196)">
-              {/* posts */}
-              <rect x="-54" y="6" width="8" height="58" rx="3" fill="#9c6b38" />
-              <rect x="46" y="6" width="8" height="58" rx="3" fill="#9c6b38" />
-              {/* board */}
-              <rect x="-66" y="-34" width="132" height="48" rx="12" fill="url(#bkWood)" stroke="#8a5e2f" strokeWidth="2" />
-              {/* wood grain */}
-              <path d="M-58 -22 H 58 M-58 -10 H 58 M-58 2 H 58" stroke="#8a5e2f" strokeWidth="1" opacity="0.35" fill="none" />
-              {/* engraved monogram */}
-              <text
-                x="0"
-                y="2"
-                textAnchor="middle"
-                fontFamily="'Long Cang','Liu Jian Mao Cao','STXingkai','华文行楷','Xingkai SC','行楷','STKaiti','KaiTi','Noto Serif SC',serif"
-                fontSize="30"
-                fontWeight="700"
-                fill="#5a3a18"
-                style={{ opacity: 0.9 }}
-              >
-                秋彦
-              </text>
-              {/* engraved highlight (top-left) to read as carved */}
-              <text
-                x="-0.6"
-                y="1.2"
-                textAnchor="middle"
-                fontFamily="'Long Cang','Liu Jian Mao Cao','STXingkai','华文行楷','Xingkai SC','行楷','STKaiti','KaiTi','Noto Serif SC',serif"
-                fontSize="30"
-                fontWeight="700"
-                fill="#d9b483"
-                opacity="0.5"
-              >
-                秋彦
-              </text>
+            {/* Engraved monogram 「秋彦」 — three-layer incised emboss */}
+            <g
+              fontFamily="'Songti SC','SimSun','STSong','Noto Serif SC',Georgia,'Times New Roman',serif"
+              fontWeight="700"
+              fontSize="60"
+              textAnchor="middle"
+              dominantBaseline="central"
+            >
+              {/* shadow (down-right inside the groove) */}
+              <text x="201.5" y="144.5" fill="rgba(45,28,8,0.55)">秋彦</text>
+              {/* recessed base */}
+              <text x="200" y="143" fill="#c39a4f">秋彦</text>
+              {/* highlight (up-left lit edge) */}
+              <text x="198.5" y="141.5" fill="rgba(255,246,214,0.85)">秋彦</text>
             </g>
           </svg>
         </div>
 
         {/* ═══ Brand line ═══ */}
         <div
-          className="mt-10 flex flex-col items-center"
+          className="mt-9 flex flex-col items-center"
           style={{
             animation: visible ? 'bk-fade-up 0.6s ease-out 0.8s both' : 'none',
             opacity: visible ? undefined : 0,
           }}
         >
           <div
-            className="text-[10px] sm:text-xs font-semibold tracking-[0.34em] text-emerald-700/80"
+            className="text-[10px] sm:text-xs font-semibold tracking-[0.34em] text-amber-800/90"
             style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
           >
-            QIUYAN · 繁花温室
+            QIUYAN · 秋彦
           </div>
           <svg className="mt-2" width="120" height="10" viewBox="0 0 120 10" fill="none" aria-hidden="true">
             <defs>
               <linearGradient id="bkFlourish" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0" stopColor="#6cae5a" stopOpacity="0" />
-                <stop offset="0.5" stopColor="#6cae5a" stopOpacity="0.9" />
-                <stop offset="1" stopColor="#6cae5a" stopOpacity="0" />
+                <stop offset="0" stopColor="#b8893a" stopOpacity="0" />
+                <stop offset="0.5" stopColor="#b8893a" stopOpacity="0.9" />
+                <stop offset="1" stopColor="#b8893a" stopOpacity="0" />
               </linearGradient>
             </defs>
             <path

@@ -19,6 +19,7 @@
   "common.confirm": "تأكيد",
   "common.logout": "تسجيل الخروج",
   "common.cancel": "إلغاء",
+  "common.back": "رجوع",
   "common.adminRole": "مسؤول النظام",
   "common.appName": "Smart Cabinet Pro",
   "services.title": "إدارة الخدمات",
@@ -91,5 +92,15 @@
   "services.certApplyEmailHint": "يرجى تعبئة بريد الطلب أعلاه أولاً.",
   "services.certUploadRequired": "يرجى اختيار ملف الشهادة وملف المفتاح معاً.",
   "services.certUploadExt": "يجب أن تكون الشهادة .crt/.pem والمفتاح .key.",
-  "services.cancel": "إلغاء"
+  "services.cancel": "إلغاء",
+  "services.certbotUnavailable": "لم يتم تثبيت certbot على هذا الخادم؛ يُسمح فقط بالرفع اليدوي للشهادات.",
+  "users.resetPassword": "إعادة تعيين كلمة المرور",
+  "users.resetPasswordTitle": "إعادة تعيين كلمة مرور المستخدم",
+  "users.resetPasswordConfirm": "هل أنت متأكد من إعادة تعيين كلمة مرور هذا المستخدم؟ لا يمكن التراجع.",
+  "users.newPassword": "كلمة المرور الجديدة",
+  "users.confirmPassword": "تأكيد كلمة المرور الجديدة",
+  "users.passwordTooShort": "يجب ألا تقل كلمة المرور عن 8 أحرف.",
+  "users.passwordMismatch": "كلمتا المرور غير متطابقتين.",
+  "users.resetPasswordSuccess": "تمت إعادة تعيين كلمة المرور بنجاح.",
+  "users.resetPasswordFailed": "فشلت إعادة تعيين كلمة المرور. حاول مرة أخرى."
 }

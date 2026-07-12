@@ -12,14 +12,17 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
+  KeyRound,
 } from 'lucide-react';
 import {
   listUsers,
   updateUserStatus,
   updateUserRole,
   removeUser,
+  resetUserPassword,
   type AdminUser,
 } from '@/lib/admin/users';
+import { adminT } from '@/lib/admin-i18n';
 
 const PAGE_SIZE_OPTIONS = [10, 20, 50];
 
@@ -53,6 +56,59 @@ export default function UsersManagement() {
   const [totalPages, setTotalPages] = useState(1);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  // Reset-password modal state
+  const [resetId, setResetId] = useState<string | null>(null);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [resetBusy, setResetBusy] = useState(false);
+  const [resetMsg, setResetMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
+  /**
+   * Current admin identity (username used at login). Used to hide the reset
+   * button on the operator's own record, avoiding a self-lockout accident.
+   * Read after mount so it stays SSR-safe (no `localStorage` on the server).
+   */
+  const [currentAdmin, setCurrentAdmin] = useState<string | null>(null);
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const stored = window.localStorage.getItem('admin_user');
+    setCurrentAdmin(stored ? stored.trim() : null);
+  }, []);
+
+  const isSelf = (u: AdminUser): boolean =>
+    currentAdmin !== null && (u.email === currentAdmin || u.name === currentAdmin);
+
+  const openReset = (id: string) => {
+    setResetId(id);
+    setNewPassword('');
+    setConfirmPassword('');
+    setResetMsg(null);
+  };
+
+  const confirmReset = async () => {
+    if (!resetId) return;
+    if (newPassword.length < 8) {
+      setResetMsg({ ok: false, text: adminT('users.passwordTooShort') });
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setResetMsg({ ok: false, text: adminT('users.passwordMismatch') });
+      return;
+    }
+    setResetBusy(true);
+    setResetMsg(null);
+    try {
+      await resetUserPassword(resetId, newPassword);
+      setResetMsg({ ok: true, text: adminT('users.resetPasswordSuccess') });
+      // Close the modal shortly after a successful reset.
+      setTimeout(() => setResetId(null), 900);
+    } catch (err: any) {
+      setResetMsg({ ok: false, text: err?.message || adminT('users.resetPasswordFailed') });
+    } finally {
+      setResetBusy(false);
+    }
+  };
 
   const load = useCallback(async (p: number, size: number, q: string) => {
     setLoading(true);
@@ -253,6 +309,17 @@ export default function UsersManagement() {
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
+                        {!isSelf(u) && (
+                          <button
+                            type="button"
+                            onClick={() => openReset(u.id)}
+                            disabled={busyId === u.id}
+                            title={adminT('users.resetPassword')}
+                            className="admin-btn-action-edit"
+                          >
+                            <KeyRound className="w-4 h-4" />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -335,6 +402,92 @@ export default function UsersManagement() {
             <button
               type="button"
               onClick={() => setDeleteId(null)}
+              className="absolute top-3 right-3 text-slate-400 hover:text-slate-600"
+              aria-label="Close"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Reset password modal */}
+      {resetId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="admin-card !p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold text-slate-800 mb-1">
+              {adminT('users.resetPasswordTitle')}
+            </h3>
+            <p className="text-sm text-slate-500 mb-5">
+              {adminT('users.resetPasswordConfirm')}
+            </p>
+
+            <div className="space-y-4">
+              <div>
+                <label className="mb-1 block text-xs font-medium text-gray-600">
+                  {adminT('users.newPassword')}
+                </label>
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  autoFocus
+                  className="admin-input"
+                  dir="ltr"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-medium text-gray-600">
+                  {adminT('users.confirmPassword')}
+                </label>
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !resetBusy) confirmReset();
+                  }}
+                  className="admin-input"
+                  dir="ltr"
+                />
+              </div>
+            </div>
+
+            {resetMsg && (
+              <div
+                className={`mt-4 flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm ${
+                  resetMsg.ok
+                    ? 'border border-green-200 bg-green-50 text-green-700'
+                    : 'border border-red-200 bg-red-50 text-red-700'
+                }`}
+              >
+                {resetMsg.ok ? <CheckCircle2 className="h-4 w-4 shrink-0" /> : <XCircle className="h-4 w-4 shrink-0" />}
+                <span className="whitespace-pre-wrap break-words">{resetMsg.text}</span>
+              </div>
+            )}
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setResetId(null)}
+                className="admin-btn-secondary"
+              >
+                {adminT('common.cancel')}
+              </button>
+              <button
+                type="button"
+                onClick={confirmReset}
+                disabled={resetBusy}
+                className="admin-btn-danger inline-flex items-center gap-2"
+              >
+                {resetBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <KeyRound className="w-4 h-4" />}
+                {adminT('users.resetPassword')}
+              </button>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setResetId(null)}
               className="absolute top-3 right-3 text-slate-400 hover:text-slate-600"
               aria-label="Close"
             >

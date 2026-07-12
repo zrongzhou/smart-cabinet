@@ -192,8 +192,12 @@ export async function listCertificates(): Promise<{
   return fallbackListFromDir();
 }
 
-/** Whether certbot is installed on the host. */
-async function certbotAvailable(): Promise<boolean> {
+/**
+ * Whether certbot is installed on the host. Exported so the service API can
+ * surface this to the front-end (e.g. to disable certbot-only actions when it
+ * is missing and force manual certificate uploads).
+ */
+export async function certbotAvailable(): Promise<boolean> {
   const r = await runCommand('which', ['certbot']);
   return r.code === 0 && r.stdout.trim().length > 0;
 }
