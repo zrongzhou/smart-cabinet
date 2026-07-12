@@ -6,8 +6,10 @@
  *   - a refined gradient divider sits under the photo (thin h-px gradient rule
  *     + a factory label) — this replaced the old animated `about-showcase-flow`
  *     SVG that was removed in earlier rounds (V8.4/V8.5).
- *   - the dual-brand signature (AboutBowKnot) renders its SVG emblem carrying
- *     both 「秋彦」 and 「Qtech」 plus the `SMART STORAGE · IOT` tagline.
+ *   - the dual-brand signature (AboutBowKnot glassmorphism plate) renders both
+ *     「秋彦」 and 「Qtech」 plus the `SMART STORAGE · IOT` tagline as text
+ *     inside a frosted-glass plate — the rework is SVG-free, so the signature
+ *     is no longer an `<svg>` emblem (see AboutBowKnot glassmorphism change).
  */
 import { describe, it, expect, beforeAll, afterEach } from 'vitest';
 import { render, cleanup } from '@testing-library/react';
@@ -49,11 +51,14 @@ describe('Bug 1 — CompanyShowcase image + divider + brand signature', () => {
     expect(container.textContent).toContain('about.showcase.factoryTitle');
   });
 
-  it('renders the dual-brand signature SVG (AboutBowKnot) with 秋彦 + Qtech + tagline', () => {
+  it('renders the dual-brand signature (AboutBowKnot glass plate) with 秋彦 + Qtech + tagline', () => {
     const { container } = render(<CompanyShowcase t={t} locale="en" />);
-    const emblem = container.querySelector('svg[role="img"][aria-label*="品牌标识"]');
-    expect(emblem, 'expected the AboutBowKnot brand emblem svg').not.toBeNull();
-    const text = emblem!.textContent || '';
+    // The glassmorphism rework replaced the old `<svg role="img">` emblem with a
+    // frosted-glass plate (.bk-glass) that carries both brand names + tagline as
+    // text. Assert the signature plate exists and exposes the expected strings.
+    const signature = container.querySelector('.bk-glass');
+    expect(signature, 'expected the AboutBowKnot glass signature plate (.bk-glass)').not.toBeNull();
+    const text = signature!.textContent || '';
     expect(text).toContain('秋彦');
     expect(text).toContain('Qtech');
     expect(text).toContain('SMART STORAGE · IOT');

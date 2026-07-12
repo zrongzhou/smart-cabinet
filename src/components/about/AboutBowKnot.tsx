@@ -1,31 +1,41 @@
 'use client';
 
 /**
- * AboutBowKnot — brand colophon / signature block (tech-blue gradient glow).
- * -----------------------------------------------------------
+ * AboutBowKnot — brand colophon / signature block (glassmorphism).
+ * ----------------------------------------------------------------
  * Sits directly under the company photo inside <CompanyShowcase> and acts as a
  * refined "colophon" that carries (承托) the image above.
  *
- * Design language — "科技蓝渐变光感" (tech-blue gradient glow):
- *  - A luminous emblem: a rounded "chip" carrying the 「秋彦」 monogram, wrapped
- *    in a cyan→blue→indigo→violet gradient stroke with a soft halo and a slowly
- *    orbiting glow node — a clean, digital, "tech" read.
- *  - Beside it a dual wordmark that always shows BOTH brand names:
- *        「秋彦」  (Chinese brand, gradient + glow)
- *        「Qtech」 (Latin wordmark, gradient + glow, letter-spaced)
+ * Design language — "玻璃拟态" (Glassmorphism):
+ *  - A floating frosted-glass plate (low-opacity fill + `backdrop-filter: blur`
+ *    + saturated highlight border + soft cool-toned shadow) that reads as a
+ *    light, airy, translucent surface — not the previous tech-blue glow.
+ *  - Inside it: a smaller glass "chip" badge carrying the 「秋彦」 monogram, set
+ *    beside a dual wordmark that always shows BOTH brand names:
+ *        「秋彦」  (Chinese brand, lives inside the chip)
+ *        「Qtech」 (Latin wordmark, soft cyan→ice-blue→lilac gradient text)
  *    plus a thin letter-spaced tagline for a precise, modern finish.
- *  - Thin connecting circuit lines and scattered digital dots add texture
- *    without clutter. Everything is pure CSS/SVG (gradients, filters,
- *    drop-shadow, transform) — no external images or fonts are referenced.
+ *  - A single, very soft breathing glow blob (cool cyan/indigo) sits behind the
+ *    plate for depth — it replaces the old scattered dots, orbiting glow node
+ *    and thin circuit lines, which read as clutter. The look is now cleaner,
+ *    lighter and more "通透".
+ *  - A cool, harmonious palette (cyan / ice-blue / soft lilac) replaces the
+ *    previous conflicting violet→indigo stroke.
  *
- * RTL-safe: the whole scene is centred and the SVG uses absolute coordinates,
- * so geometry never flips. The brand lockup is explicitly forced to LTR via the
- * `locale` prop so 「秋彦 / Qtech」 always read correctly on Arabic pages.
+ * RTL-safe: the whole scene is centred and the brand lockup is explicitly forced
+ * to LTR via the `locale` prop so 「秋彦 / Qtech」 always read correctly on
+ * Arabic pages. The SVG-free layout uses absolute geometry only, so it never flips.
+ *
+ * SSR / no-backdrop-filter fallback: the translucent white gradient fill still
+ * reads as a soft glass panel even when `backdrop-filter` is unsupported, so the
+ * component degrades gracefully (solid/translucent approximation).
  *
  * i18n: the component is locale-agnostic for layout — it renders the same
  * centred lockup for `zh` / `en` / `ar`. The `locale` prop is only consumed to
  * pin the brand direction; the `t` helper is kept on the public interface for
  * API stability (brand strings are fixed and language-neutral).
+ *
+ * Constraints: pure CSS/SVG + styled-jsx, zero external images or fonts.
  */
 
 import { useState, useEffect, useRef } from 'react';
@@ -40,6 +50,9 @@ interface AboutBowKnotProps {
 const BRAND_ZH = '秋彦';
 const BRAND_EN = 'Qtech';
 const TAGLINE = 'SMART STORAGE · IOT';
+
+/** Cool, harmonious gradient stops (cyan → ice-blue → soft lilac). */
+const HUE = 'linear-gradient(120deg, #5eead4 0%, #67e8f9 22%, #7dd3fc 50%, #a5b4fc 80%, #c4b5fd 100%)';
 
 export default function AboutBowKnot({ locale }: AboutBowKnotProps) {
   // Brand names are script-fixed → always lay out left-to-right, even on `ar`.
@@ -91,35 +104,204 @@ export default function AboutBowKnot({ locale }: AboutBowKnotProps) {
           transition-delay: 0.05s;
         }
         .bk-colophon.is-visible .bk-rise-2 {
-          transition-delay: 0.22s;
+          transition-delay: 0.2s;
         }
         .bk-colophon.is-visible .bk-rise-3 {
-          transition-delay: 0.42s;
+          transition-delay: 0.4s;
         }
 
-        /* Soft breathing halo behind the emblem. */
-        .bk-halo {
-          animation: bk-breathe 5.5s ease-in-out infinite;
-          transform-origin: center;
+        /* ── Soft cool glow blob behind the plate (depth, not clutter) ── */
+        .bk-glow-blob {
+          position: absolute;
+          inset: -26% -8%;
+          z-index: 0;
+          pointer-events: none;
+          background: radial-gradient(
+              58% 58% at 28% 34%,
+              rgba(125, 211, 252, 0.5),
+              transparent 70%
+            ),
+            radial-gradient(
+              52% 52% at 76% 66%,
+              rgba(165, 180, 252, 0.42),
+              transparent 72%
+            );
+          filter: blur(28px);
+          animation: bk-breathe 7s ease-in-out infinite;
         }
         @keyframes bk-breathe {
           0%,
           100% {
-            opacity: 0.55;
+            opacity: 0.6;
+            transform: scale(1);
           }
           50% {
             opacity: 0.95;
+            transform: scale(1.04);
           }
         }
 
-        /* Glow on gradient text / strokes (keeps the source glyph crisp). */
-        .bk-glow {
-          filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.45))
-            drop-shadow(0 0 14px rgba(99, 102, 241, 0.28));
+        /* ── Floating frosted-glass plate (the glassmorphism hero) ── */
+        .bk-glass {
+          position: relative;
+          z-index: 1;
+          display: flex;
+          align-items: center;
+          gap: 22px;
+          padding: 22px 30px;
+          border-radius: 30px;
+          /* SSR / no-backdrop-filter fallback: a soft translucent panel. */
+          background: rgba(236, 244, 255, 0.5);
+          background: linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.46),
+            rgba(224, 238, 255, 0.24)
+          );
+          backdrop-filter: blur(18px) saturate(165%);
+          -webkit-backdrop-filter: blur(18px) saturate(165%);
+          border: 1px solid rgba(255, 255, 255, 0.6);
+          box-shadow: 0 18px 50px -20px rgba(99, 102, 241, 0.3),
+            0 4px 14px -6px rgba(56, 189, 248, 0.18),
+            inset 0 1px 1px rgba(255, 255, 255, 0.75);
+          overflow: hidden;
+        }
+        /* Subtle diagonal sheen across the glass surface. */
+        .bk-glass::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            118deg,
+            rgba(255, 255, 255, 0.35) 0%,
+            rgba(255, 255, 255, 0) 42%
+          );
+          pointer-events: none;
+        }
+
+        /* ── Glass chip badge carrying the 「秋彦」 monogram ── */
+        .bk-emblem {
+          position: relative;
+          z-index: 1;
+          flex-shrink: 0;
+          width: 88px;
+          height: 88px;
+          border-radius: 26px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(255, 255, 255, 0.4);
+          background: linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.6),
+            rgba(255, 255, 255, 0.18)
+          );
+          backdrop-filter: blur(12px) saturate(160%);
+          -webkit-backdrop-filter: blur(12px) saturate(160%);
+          border: 1px solid rgba(255, 255, 255, 0.72);
+          box-shadow: 0 8px 24px -8px rgba(56, 189, 248, 0.35),
+            inset 0 1px 1px rgba(255, 255, 255, 0.85),
+            inset 0 -1px 2px rgba(99, 102, 241, 0.1);
+        }
+        .bk-emblem-text {
+          font-family: 'PingFang SC', 'Microsoft YaHei', 'Hiragino Sans GB',
+            'Noto Sans SC', system-ui, -apple-system, 'Segoe UI', sans-serif;
+          font-size: 34px;
+          font-weight: 700;
+          line-height: 1;
+          letter-spacing: 1px;
+          background: ${HUE};
+          -webkit-background-clip: text;
+          background-clip: text;
+          color: transparent;
+        }
+
+        /* ── Wordmark column ── */
+        .bk-wordmark {
+          position: relative;
+          z-index: 1;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          text-align: left;
+        }
+        .bk-brand-en {
+          font-family: system-ui, -apple-system, 'Segoe UI', 'Helvetica Neue',
+            Arial, sans-serif;
+          font-size: 44px;
+          font-weight: 800;
+          line-height: 1;
+          letter-spacing: 0.5px;
+          background: ${HUE};
+          -webkit-background-clip: text;
+          background-clip: text;
+          color: transparent;
+        }
+        .bk-tag {
+          margin-top: 9px;
+          font-family: system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+          font-size: 12px;
+          font-weight: 600;
+          letter-spacing: 3px;
+          color: rgba(99, 102, 241, 0.78);
+        }
+
+        /* ── Simplified frosted dividers (no glowing nodes) ── */
+        .bk-divider {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+          width: 100%;
+          max-width: 300px;
+        }
+        .bk-line {
+          height: 1px;
+          flex: 1;
+          background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(125, 211, 252, 0.7) 55%,
+            rgba(165, 180, 252, 0.85)
+          );
+        }
+        .bk-line--flip {
+          background: linear-gradient(
+            90deg,
+            rgba(165, 180, 252, 0.85),
+            rgba(125, 211, 252, 0.7) 45%,
+            transparent
+          );
+        }
+        .bk-pearl {
+          width: 7px;
+          height: 7px;
+          border-radius: 9999px;
+          background: rgba(255, 255, 255, 0.75);
+          border: 1px solid rgba(255, 255, 255, 0.85);
+          box-shadow: 0 0 10px rgba(125, 211, 252, 0.45),
+            inset 0 1px 1px rgba(255, 255, 255, 0.9);
+        }
+
+        @media (max-width: 380px) {
+          .bk-glass {
+            gap: 16px;
+            padding: 18px 20px;
+          }
+          .bk-emblem {
+            width: 72px;
+            height: 72px;
+            border-radius: 22px;
+          }
+          .bk-emblem-text {
+            font-size: 28px;
+          }
+          .bk-brand-en {
+            font-size: 36px;
+          }
         }
 
         @media (prefers-reduced-motion: reduce) {
-          .bk-halo {
+          .bk-glow-blob {
             animation: none;
           }
           .bk-rise {
@@ -131,244 +313,50 @@ export default function AboutBowKnot({ locale }: AboutBowKnotProps) {
 
       <div
         ref={containerRef}
-        className={`bk-colophon relative w-full flex flex-col items-center text-center px-4 py-8 overflow-hidden ${
+        className={`bk-colophon relative w-full flex flex-col items-center text-center px-4 py-8 ${
           visible ? 'is-visible' : ''
         }`}
       >
-        {/* ═══ Top divider — thin gradient lines + glowing node ═══ */}
+        {/* ═══ Top divider — frosted line + glass pearl ═══ */}
         <div
-          className="bk-rise bk-rise-1 flex items-center gap-3 w-full max-w-[300px] mb-7"
+          className="bk-rise bk-rise-1 bk-divider mb-7"
           aria-hidden="true"
         >
-          <span
-            className="h-px flex-1"
-            style={{
-              background:
-                'linear-gradient(90deg, transparent, rgba(56,189,248,0.65) 60%, rgba(99,102,241,0.9))',
-            }}
-          />
-          <span
-            className="w-2 h-2 rounded-full"
-            style={{
-              background: '#38bdf8',
-              boxShadow: '0 0 8px 2px rgba(56,189,248,0.7)',
-            }}
-          />
-          <span
-            className="h-px flex-1"
-            style={{
-              background:
-                'linear-gradient(90deg, rgba(99,102,241,0.9), rgba(56,189,248,0.65) 40%, transparent)',
-            }}
-          />
+          <span className="bk-line" />
+          <span className="bk-pearl" />
+          <span className="bk-line bk-line--flip" />
         </div>
 
-        {/* ═══ Tech-blue gradient glow emblem + dual wordmark (pure SVG) ═══ */}
+        {/* ═══ Glassmorphism plate: chip + dual wordmark ═══ */}
         <div
           className="bk-rise bk-rise-2 relative"
           style={{ direction: brandDir as 'ltr' | 'rtl', width: 'min(440px, 94vw)' }}
         >
-          <svg
-            viewBox="0 0 440 170"
-            width="100%"
-            height="100%"
-            role="img"
-            aria-label={`${BRAND_ZH} ${BRAND_EN} 品牌标识`}
-            style={{ overflow: 'visible' }}
-          >
-            <defs>
-              {/* Core cyan→blue→indigo→violet gradient for strokes + text */}
-              <linearGradient id="bkHue" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stopColor="#22d3ee" />
-                <stop offset="38%" stopColor="#38bdf8" />
-                <stop offset="68%" stopColor="#6366f1" />
-                <stop offset="100%" stopColor="#a855f7" />
-              </linearGradient>
-              {/* Translucent fill for the chip body */}
-              <linearGradient id="bkChipFill" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stopColor="rgba(34,211,238,0.10)" />
-                <stop offset="100%" stopColor="rgba(168,85,247,0.16)" />
-              </linearGradient>
-              {/* Radial halo behind the emblem */}
-              <radialGradient id="bkHalo" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="rgba(59,130,246,0.50)" />
-                <stop offset="55%" stopColor="rgba(99,102,241,0.16)" />
-                <stop offset="100%" stopColor="rgba(99,102,241,0)" />
-              </radialGradient>
-              {/* Soft glow filter for the orbiting node + circuit ticks */}
-              <filter id="bkGlow" x="-60%" y="-60%" width="220%" height="220%">
-                <feGaussianBlur stdDeviation="3" result="blur" />
-                <feMerge>
-                  <feMergeNode in="blur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            </defs>
+          {/* Soft cool glow blob behind the plate for depth */}
+          <div className="bk-glow-blob" aria-hidden="true" />
 
-            {/* ── Background digital texture (faint dots) ── */}
-            <g fill="#6366f1" opacity="0.18">
-              <circle cx="14" cy="16" r="1.6" />
-              <circle cx="424" cy="26" r="1.6" />
-              <circle cx="406" cy="150" r="1.6" />
-              <circle cx="22" cy="150" r="1.6" />
-              <circle cx="250" cy="12" r="1.2" />
-              <circle cx="360" cy="158" r="1.2" />
-            </g>
+          <div className="bk-glass">
+            {/* Glass chip carrying the 「秋彦」 monogram */}
+            <div className="bk-emblem" aria-hidden="false">
+              <span className="bk-emblem-text">{BRAND_ZH}</span>
+            </div>
 
-            {/* ── Breathing halo behind the chip ── */}
-            <ellipse
-              className="bk-halo"
-              cx="89"
-              cy="85"
-              rx="96"
-              ry="96"
-              fill="url(#bkHalo)"
-            />
-
-            {/* ── Orbiting glow node (rotates around chip centre) ── */}
-            <g>
-              <animateTransform
-                attributeName="transform"
-                type="rotate"
-                from="0 89 85"
-                to="360 89 85"
-                dur="16s"
-                repeatCount="indefinite"
-              />
-              <circle cx="89" cy="14" r="3.4" fill="#22d3ee" filter="url(#bkGlow)" />
-              <circle cx="89" cy="14" r="7" fill="none" stroke="#22d3ee" strokeOpacity="0.35" />
-            </g>
-
-            {/* ── Chip: blurred stroke copy (outer glow) ── */}
-            <rect
-              x="30"
-              y="26"
-              width="118"
-              height="118"
-              rx="30"
-              fill="none"
-              stroke="url(#bkHue)"
-              strokeWidth="3"
-              opacity="0.55"
-              filter="url(#bkGlow)"
-            />
-            {/* ── Chip: body + crisp gradient stroke ── */}
-            <rect
-              x="30"
-              y="26"
-              width="118"
-              height="118"
-              rx="30"
-              fill="url(#bkChipFill)"
-              stroke="url(#bkHue)"
-              strokeWidth="2.4"
-            />
-            {/* ── Thin inner circuit ring for a precise, tech read ── */}
-            <rect
-              x="40"
-              y="36"
-              width="98"
-              height="98"
-              rx="24"
-              fill="none"
-              stroke="#38bdf8"
-              strokeOpacity="0.35"
-              strokeWidth="1"
-            />
-
-            {/* ── Monogram 「秋彦」 inside the chip ── */}
-            <text
-              className="bk-glow"
-              x="89"
-              y="87"
-              textAnchor="middle"
-              dominantBaseline="central"
-              fontFamily="'PingFang SC','Microsoft YaHei','Hiragino Sans GB','Noto Sans SC',system-ui,-apple-system,'Segoe UI',sans-serif"
-              fontSize="46"
-              fontWeight="700"
-              fill="url(#bkHue)"
-            >
-              {BRAND_ZH}
-            </text>
-
-            {/* ── Thin connector circuit from chip to wordmark ── */}
-            <g className="bk-glow">
-              <path
-                d="M150 85 H176"
-                stroke="url(#bkHue)"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-                fill="none"
-              />
-              <circle cx="176" cy="85" r="2.4" fill="#38bdf8" />
-            </g>
-
-            {/* ── Wordmark 「Qtech」 (Latin, gradient + glow) ── */}
-            <text
-              className="bk-glow"
-              x="196"
-              y="80"
-              textAnchor="start"
-              dominantBaseline="alphabetic"
-              fontFamily="system-ui,-apple-system,'Segoe UI','Helvetica Neue',Arial,sans-serif"
-              fontSize="50"
-              fontWeight="800"
-              letterSpacing="0.5"
-              fill="url(#bkHue)"
-            >
-              {BRAND_EN}
-            </text>
-
-            {/* ── Letter-spaced tagline ── */}
-            <text
-              x="198"
-              y="108"
-              textAnchor="start"
-              dominantBaseline="alphabetic"
-              fontFamily="system-ui,-apple-system,'Segoe UI',Arial,sans-serif"
-              fontSize="12.5"
-              fontWeight="600"
-              letterSpacing="3"
-              fill="rgba(99,102,241,0.85)"
-            >
-              {TAGLINE}
-            </text>
-
-            {/* ── Little circuit ticks under the wordmark ── */}
-            <g stroke="#6366f1" strokeOpacity="0.5" strokeWidth="1.4" strokeLinecap="round">
-              <path d="M198 122 H214" />
-              <path d="M222 122 H242" />
-              <path d="M250 122 H268" />
-            </g>
-          </svg>
+            {/* Dual wordmark: Qtech + tagline */}
+            <div className="bk-wordmark">
+              <span className="bk-brand-en">{BRAND_EN}</span>
+              <span className="bk-tag">{TAGLINE}</span>
+            </div>
+          </div>
         </div>
 
-        {/* ═══ Bottom flourish — gradient line + glow dot ═══ */}
+        {/* ═══ Bottom divider — frosted line + glass pearl ═══ */}
         <div
-          className="bk-rise bk-rise-3 mt-7 flex items-center gap-3 w-full max-w-[300px]"
+          className="bk-rise bk-rise-3 bk-divider mt-7"
           aria-hidden="true"
         >
-          <span
-            className="h-px flex-1"
-            style={{
-              background:
-                'linear-gradient(90deg, transparent, rgba(56,189,248,0.6) 60%, rgba(99,102,241,0.85))',
-            }}
-          />
-          <span
-            className="w-1.5 h-1.5 rounded-full"
-            style={{
-              background: '#818cf8',
-              boxShadow: '0 0 7px 2px rgba(129,140,248,0.6)',
-            }}
-          />
-          <span
-            className="h-px flex-1"
-            style={{
-              background:
-                'linear-gradient(90deg, rgba(99,102,241,0.85), rgba(56,189,248,0.6) 40%, transparent)',
-            }}
-          />
+          <span className="bk-line" />
+          <span className="bk-pearl" />
+          <span className="bk-line bk-line--flip" />
         </div>
       </div>
     </>
