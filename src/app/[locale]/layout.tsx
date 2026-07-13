@@ -58,7 +58,9 @@ export default function LocaleLayout({ children, params: { locale } }: LocaleLay
           <link rel="dns-prefetch" href="https://www.wstoolcabinet.com" />
           <link rel="preconnect" href="https://www.wstoolcabinet.com" crossOrigin="anonymous" />
           <link rel="dns-prefetch" href="https://www.wstoolcabinet.com" />
-          
+          {/* Favicon — dual four-pointed star mark (brand blue) */}
+          <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
           {/* JsonLd structured data — enhanced for SEO */}
           <JsonLd data={{
             '@context': 'https://schema.org',

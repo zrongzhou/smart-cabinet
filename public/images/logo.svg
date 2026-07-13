@@ -1,52 +1,40 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 56" fill="none">
   <defs>
-    <!-- Neutral cool slate gradient for the outer ring (replaces the old blue-indigo) -->
+    <!-- Brand-blue gradient for the outer ring -->
     <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#94A3B8"/>
-      <stop offset="50%" stop-color="#64748B"/>
-      <stop offset="100%" stop-color="#475569"/>
+      <stop offset="0%" stop-color="#60a5fa"/>
+      <stop offset="50%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#2563eb"/>
     </linearGradient>
 
-    <!-- Silver swirl gradient: light slate at the top, deeper slate at the bottom (metallic sheen) -->
-    <linearGradient id="swirlGrad" x1="20%" y1="0%" x2="80%" y2="100%">
-      <stop offset="0%" stop-color="#E2E8F0"/>
-      <stop offset="45%" stop-color="#94A3B8"/>
-      <stop offset="100%" stop-color="#475569"/>
+    <!-- Bright blue gradient for the front star -->
+    <linearGradient id="starGrad" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="#60a5fa"/>
+      <stop offset="50%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#2563eb"/>
     </linearGradient>
 
     <!-- Subtle drop shadow for a soft, professional lift -->
     <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#475569" flood-opacity="0.28"/>
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#1e40af" flood-opacity="0.25"/>
     </filter>
   </defs>
 
-  <!-- Outer ring: thin stroke with a faint fill (position preserved: cx=28 cy=28 r=24) -->
-  <circle cx="28" cy="28" r="24" fill="url(#logoGrad)" opacity="0.10" stroke="url(#logoGrad)" stroke-width="1.5"/>
+  <!-- Outer ring: brand-blue stroke with faint fill (position preserved: cx=28 cy=28 r=24) -->
+  <circle cx="28" cy="28" r="24" fill="url(#logoGrad)" opacity="0.10" stroke="url(#logoGrad)" stroke-width="1.6"/>
 
-  <!-- Elegant S-shaped / swirl mark (replaces the old four-pointed star) -->
+  <!-- Dual four-pointed star mark (replaces the old S-swirl): back slate star + front blue star, offset rotation for layered depth -->
   <g filter="url(#softShadow)">
-    <!-- Secondary swirl: a lighter echo, slightly offset to suggest interwoven motion -->
-    <path d="M37 17
-             C37 9, 19 11, 19 21
-             C19 30, 37 27, 37 37
-             C37 47, 19 49, 19 40"
-          fill="none" stroke="#CBD5E1" stroke-width="1.8" stroke-linecap="round"
-          opacity="0.55" transform="translate(1.5 1.5)"/>
+    <!-- Back star: cool slate, rotated +18° -->
+    <path d="M28 12 L31 25 L44 28 L31 31 L28 44 L25 31 L12 28 L25 25 Z"
+          fill="#64748B" opacity="0.85" transform="rotate(18 28 28)"/>
 
-    <!-- Main S / swirl ribbon flowing through the circle -->
-    <path d="M37 17
-             C37 9, 19 11, 19 21
-             C19 30, 37 27, 37 37
-             C37 47, 19 49, 19 40"
-          fill="none" stroke="url(#swirlGrad)" stroke-width="4.5" stroke-linecap="round"/>
-
-    <!-- Subtle highlight along the upper edge of the swirl for a polished, 3D feel -->
-    <path d="M36 17
-             C36 11, 21 12.5, 20.5 20.5"
-          fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="1.4" stroke-linecap="round"/>
+    <!-- Front star: bright blue gradient, rotated -12° -->
+    <path d="M28 10 L32 24 L46 28 L32 32 L28 46 L24 32 L10 28 L24 24 Z"
+          fill="url(#starGrad)" transform="rotate(-12 28 28)"/>
   </g>
 
-  <!-- Company name: Qtech / 秋彦科技 -->
+  <!-- Company name: Qtech -->
   <text x="60" y="26" font-family="'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif"
         font-size="20" font-weight="700" fill="#334155" letter-spacing="-0.3">
     Qtech
@@ -58,6 +46,6 @@
     TOOL CABINET
   </text>
 
-  <!-- Small dot separator accent (recolored to neutral slate to match the new mark) -->
-  <circle cx="59" cy="34" r="1.5" fill="#64748B" opacity="0.5"/>
+  <!-- Small dot separator accent -->
+  <circle cx="59" cy="34" r="1.5" fill="#3b82f6" opacity="0.5"/>
 </svg>

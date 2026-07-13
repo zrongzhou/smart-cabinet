@@ -1014,11 +1014,11 @@ export function AboutClient() {
         </div>
       </section>
 
+      {/* Client on-site photo gallery — real customer visits & product usage (carousel) */}
+      <ClientPhotoGallery t={t} locale={locale} />
+
       {/* Main Clients — extracted to <ClientWall> (V8 visual refresh) */}
       <ClientWall t={t} locale={locale} />
-
-      {/* Client on-site photo gallery — real customer visits & product usage */}
-      <ClientPhotoGallery t={t} locale={locale} />
 
       {/* ===== CTA v264 — 明亮水晶水族馆（Crystal-Clear Aquarium） ===== */}
       <section

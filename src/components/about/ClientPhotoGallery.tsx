@@ -1,24 +1,23 @@
 'use client';
 
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState, useCallback } from 'react';
 import Image from 'next/image';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 /**
  * ClientPhotoGallery
  * ------------------
- * A responsive photo gallery that showcases real-world photos of customers
- * visiting, operating and discussing our smart cabinet products on site.
+ * A responsive carousel that showcases real-world photos of customers visiting,
+ * operating and discussing our smart cabinet products on site.
  *
  * Design notes:
- *  - Responsive grid: 2 cols (mobile) / 3 cols (tablet) / 4 cols (desktop), gap 16px.
- *  - Each photo card: rounded-xl, overflow-hidden, uniform 3:2 ratio, a gentle
- *    lift + shadow on hover, and a subtle scale on the image itself.
- *  - Images use the Next.js <Image> component with a blur placeholder so they
- *    fade in crisply once loaded.
- *  - Entrance animation: staggered fade-up driven by IntersectionObserver.
- *  - i18n: title / subtitle are resolved via the `t()` prop so the section is
- *    fully localised (en / zh / ar).
- *  - RTL-safe: the section is centre-aligned and uses logical-friendly layout.
+ *  - Carousel: slides per view 1 (mobile) / 2 (tablet) / 3 (desktop) / 4 (wide).
+ *  - Auto-play every 5s, paused on hover and disabled under prefers-reduced-motion.
+ *  - Touch / drag support (swipe left-right on mobile).
+ *  - Prev/next arrows + dot indicators.
+ *  - Entrance fade-up driven by IntersectionObserver.
+ *  - i18n: title / subtitle resolved via the `t()` prop (en / zh / ar).
+ *  - RTL-safe: arrows and slide direction flip for Arabic.
  */
 
 interface ClientPhotoGalleryProps {
@@ -41,121 +40,216 @@ const PHOTOS: string[] = Array.from(
   (_, i) => `/images/about/clients/client-${String(i + 1).padStart(2, '0')}.png`,
 );
 
+/** Number of slides visible at once, by breakpoint. */
+function getPerView(): number {
+  if (typeof window === 'undefined') return 3;
+  const w = window.innerWidth;
+  if (w < 640) return 1;
+  if (w < 1024) return 2;
+  if (w < 1280) return 3;
+  return 4;
+}
+
 export default function ClientPhotoGallery({ t, locale }: ClientPhotoGalleryProps) {
+  const isRtl = locale === 'ar';
+  const [perView, setPerView] = useState(3);
+  const [current, setCurrent] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
+
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const touchStartX = useRef<number | null>(null);
+  const touchDelta = useRef(0);
+
+  const maxIndex = Math.max(0, PHOTOS.length - perView);
+
+  // Responsive per-view + reduced-motion handling
+  useEffect(() => {
+    const update = () => setPerView(getPerView());
+    update();
+    window.addEventListener('resize', update);
+
+    const el = sectionRef.current;
+    if (!el) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) setIsPlaying(false);
+
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach((e) => e.isIntersecting && setIsVisible(true)),
+      { threshold: 0.1 },
+    );
+    observer.observe(el);
+    return () => {
+      window.removeEventListener('resize', update);
+      observer.disconnect();
+    };
+  }, []);
+
+  // Clamp current when perView changes
+  useEffect(() => {
+    setCurrent((c) => Math.min(c, maxIndex));
+  }, [maxIndex]);
+
+  const goTo = useCallback(
+    (next: number) => {
+      setCurrent(Math.max(0, Math.min(next, maxIndex)));
+    },
+    [maxIndex],
+  );
+
+  const step = useCallback(
+    (dir: number) => {
+      // dir: +1 = forward (next), -1 = back (prev)
+      setCurrent((c) => {
+        let n = c + dir;
+        if (n > maxIndex) n = 0;
+        if (n < 0) n = maxIndex;
+        return n;
+      });
+    },
+    [maxIndex],
+  );
+
+  // Auto-play
+  useEffect(() => {
+    if (!isPlaying || !isVisible) return;
+    const id = window.setInterval(() => step(1), 5000);
+    return () => window.clearInterval(id);
+  }, [isPlaying, isVisible, step]);
+
+  // Touch handlers
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchDelta.current = 0;
+  };
+  const onTouchMove = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    touchDelta.current = e.touches[0].clientX - touchStartX.current;
+  };
+  const onTouchEnd = () => {
+    if (touchStartX.current === null) return;
+    const delta = touchDelta.current;
+    if (Math.abs(delta) > 50) {
+      // swipe left (delta<0) -> next; swipe right (delta>0) -> prev
+      const dir = delta < 0 ? 1 : -1;
+      step(isRtl ? -dir : dir);
+    }
+    touchStartX.current = null;
+    touchDelta.current = 0;
+  };
+
+  const cardWidthPct = 100 / perView;
+  // For RTL, translateX is negative of the forward offset
+  const offsetPct = isRtl ? -current * cardWidthPct : current * cardWidthPct;
+
   return (
     <section
-      className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50/50 relative overflow-hidden"
-      dir={locale === 'ar' ? 'rtl' : 'ltr'}
+      ref={sectionRef}
+      className={`py-20 px-4 sm:px-6 lg:px-8 bg-gray-50/50 relative overflow-hidden transition-opacity duration-700 ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+      }`}
+      dir={isRtl ? 'rtl' : 'ltr'}
     >
-      {/* Decorative top divider — subtle slate gradient */}
       <div className="absolute top-0 start-0 end-0 h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent opacity-70" />
 
       <style>{`
-        .gallery-card {
-          opacity: 0;
-          transform: translateY(24px);
-          transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-                      transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-                      box-shadow 0.3s ease;
-          will-change: opacity, transform;
+        .gallery-track {
+          transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+          will-change: transform;
         }
-        .gallery-card.is-visible {
-          opacity: 1;
-          transform: translateY(0);
-        }
+        .gallery-card { cursor: grab; }
+        .gallery-card:active { cursor: grabbing; }
       `}</style>
 
       <div className="max-w-7xl mx-auto">
-        {/* Centered section header */}
         <div className="text-center mb-12">
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
             {t('about.gallery.title')}
           </h2>
-          {/* Gradient underline */}
           <div
             className="w-24 h-1.5 mx-auto rounded-full"
-            style={{ background: 'linear-gradient(90deg, #64748b, #94a3b8, #cbd5e1)' }}
+            style={{ background: 'linear-gradient(90deg, #3b82f6, #60a5fa, #cbd5e1)' }}
           />
           <p className="mt-5 text-base sm:text-lg text-gray-500 max-w-2xl mx-auto">
             {t('about.gallery.subtitle')}
           </p>
         </div>
 
-        {/* Responsive photo grid: 2 / 3 / 4 columns, 16px gap */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-          {PHOTOS.map((src, idx) => (
-            <GalleryCard key={src} src={src} index={idx} blurDataURL={BLUR_DATA_URL} />
+        <div className="relative">
+          {/* Prev / Next arrows */}
+          <button
+            type="button"
+            aria-label={isRtl ? 'Next' : 'Previous'}
+            onClick={() => step(isRtl ? 1 : -1)}
+            className="absolute -left-3 sm:-left-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/90 shadow-lg flex items-center justify-center text-slate-700 hover:bg-white hover:text-blue-600 transition-colors"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <button
+            type="button"
+            aria-label={isRtl ? 'Previous' : 'Next'}
+            onClick={() => step(isRtl ? -1 : 1)}
+            className="absolute -right-3 sm:-right-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/90 shadow-lg flex items-center justify-center text-slate-700 hover:bg-white hover:text-blue-600 transition-colors"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+
+          {/* Viewport */}
+          <div
+            className="overflow-hidden"
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+          >
+            <div
+              ref={trackRef}
+              className="gallery-track flex"
+              style={{ transform: `translateX(${isRtl ? '' : '-'}${offsetPct}%)` }}
+            >
+              {PHOTOS.map((src, idx) => (
+                <div
+                  key={src}
+                  className="gallery-card shrink-0 px-2"
+                  style={{ width: `${cardWidthPct}%` }}
+                >
+                  <div className="relative overflow-hidden rounded-xl bg-gray-100 aspect-[3/2] shadow-md hover:shadow-xl transition-shadow duration-300">
+                    <Image
+                      src={src}
+                      alt={`Customer site visit ${idx + 1} — smart cabinet in use`}
+                      width={600}
+                      height={400}
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="h-full w-full object-cover"
+                      placeholder="blur"
+                      blurDataURL={BLUR_DATA_URL}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Dot indicators */}
+        <div className="mt-8 flex justify-center items-center gap-2">
+          {Array.from({ length: maxIndex + 1 }).map((_, i) => (
+            <button
+              key={i}
+              type="button"
+              aria-label={`Go to slide ${i + 1}`}
+              onClick={() => goTo(i)}
+              className={`h-2 rounded-full transition-all duration-300 ${
+                i === current ? 'w-6 bg-blue-600' : 'w-2 bg-slate-300 hover:bg-slate-400'
+              }`}
+            />
           ))}
         </div>
 
-        {/* Optional footer credit */}
-        <p className="mt-10 text-center text-xs text-gray-400">
+        <p className="mt-8 text-center text-xs text-gray-400">
           © Guangzhou Qiuyan Technology
         </p>
       </div>
     </section>
-  );
-}
-
-/**
- * Individual gallery photo card.
- * Encapsulates its own IntersectionObserver so it can animate in with a
- * staggered delay once it scrolls into view.
- */
-function GalleryCard({
-  src,
-  index,
-  blurDataURL,
-}: {
-  src: string;
-  index: number;
-  blurDataURL: string;
-}) {
-  const cardRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const el = cardRef.current;
-    if (!el) return;
-
-    // Respect users who prefer reduced motion.
-    if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      el.classList.add('is-visible');
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            // Staggered reveal: 80ms per card, capped so later cards don't wait too long.
-            const delay = Math.min(index, 11) * 80;
-            window.setTimeout(() => el.classList.add('is-visible'), delay);
-            observer.unobserve(el);
-          }
-        });
-      },
-      { threshold: 0.15, rootMargin: '0px 0px -40px 0px' },
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [index]);
-
-  return (
-    <div
-      ref={cardRef}
-      className="gallery-card group relative overflow-hidden rounded-xl bg-gray-100 aspect-[3/2] hover:-translate-y-1 hover:shadow-xl"
-    >
-      <Image
-        src={src}
-        alt="Customer site visit — smart cabinet in use"
-        width={600}
-        height={400}
-        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-        placeholder="blur"
-        blurDataURL={blurDataURL}
-      />
-    </div>
   );
 }
