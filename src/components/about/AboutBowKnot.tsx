@@ -1,25 +1,29 @@
 'use client';
 
 /**
- * AboutBowKnot — brand colophon / signature block (glassmorphism, warm).
+ * AboutBowKnot — brand colophon / signature block (glassmorphism, cool).
  * ----------------------------------------------------------------
  * Sits directly under the company photo inside <CompanyShowcase> and acts as a
  * refined "colophon" that carries (承托) the image above.
  *
- * Design language — "玻璃拟态" (Glassmorphism), warm palette:
- *  - A floating frosted-glass plate (low-opacity fill + `backdrop-filter: blur`
- *    + saturated warm highlight border + soft WARM-toned shadow) that reads as a
- *    light, airy, translucent surface — abandoning the previous cool blue/cyan
- *    glass for a 暖琥珀 / 蜜桃 / 暖金 / 暖橙 (warm amber / peach / gold / orange)
- *    translucent gradient, matching the 「秋彦 / Qiuyan」 ("秋" = autumn = warm)
- *    brand tone.
+ * Design language — "玻璃拟态" (Glassmorphism), cool ice-blue palette:
+ *  - A floating frosted-glass plate (low-opacity cool fill + `backdrop-filter:
+ *    blur` + saturated cool highlight border + soft COOL-toned shadow) that
+ *    reads as a light, airy, translucent surface — an ice crystal that seems to
+ *    grow naturally out of the deep-blue ocean hero, instead of a warm stone
+ *    dropped into the sea. Colours follow the site's deep-blue tech language:
+ *        OceanHeader  `#0050ff` (deep blue) / `#020617` (near-black navy)
+ *        accents      blue-500 `#3b82f6`, blue-400 `#60a5fa`, indigo-400 `#818cf8`
+ *    The translucent fill uses ice-blue / slate-blue / indigo tints
+ *    (sky-50 `rgba(240,249,255)` + blue-100 `rgba(219,234,254)`) and the brand
+ *    wordmark is a cool gradient blue-200 → blue-500 → indigo-500 → indigo-300.
  *  - Inside it: a smaller glass "chip" badge carrying the 「秋彦」 monogram, set
  *    beside a dual wordmark that always shows BOTH brand names:
  *        「秋彦」  (Chinese brand, lives inside the chip)
- *        「Qtech」 (Latin wordmark, warm amber→gold→orange→peach gradient text)
+ *        「Qtech」 (Latin wordmark, cool blue→indigo gradient text)
  *    plus a thin letter-spaced tagline for a precise, modern finish.
- *  - A single, soft warm glow blob (amber + gold) sits behind the plate for
- *    depth — static (no breathing), replacing the old cool breathing node.
+ *  - A single, soft cool glow blob (blue + indigo) sits behind the plate for
+ *    depth — static (no breathing) — like light catching a submerged crystal.
  *  - Refined, restrained geometry: cleaner curves, a lighter highlight border,
  *    no bloated detail. The bottom decorative line has been REMOVED entirely
  *    (only the top accent divider remains as a visual link to the photo above).
@@ -35,7 +39,7 @@
  * to LTR via the `locale` prop so 「秋彦 / Qtech」 always read correctly on
  * Arabic pages. The SVG-free layout uses absolute geometry only, so it never flips.
  *
- * SSR / no-backdrop-filter fallback: the translucent warm gradient fill still
+ * SSR / no-backdrop-filter fallback: the translucent cool gradient fill still
  * reads as a soft glass panel even when `backdrop-filter` is unsupported, so the
  * component degrades gracefully (solid/translucent approximation).
  *
@@ -60,9 +64,9 @@ const BRAND_ZH = '秋彦';
 const BRAND_EN = 'Qtech';
 const TAGLINE = 'SMART STORAGE · IOT';
 
-/** Warm, harmonious gradient stops (amber → gold → orange → peach). */
+/** Cool, harmonious gradient stops (blue-200 → blue-500 → indigo-500 → indigo-300). */
 const HUE =
-  'linear-gradient(120deg, #fcd34d 0%, #fbbf24 28%, #fb923c 60%, #fdba74 100%)';
+  'linear-gradient(120deg, #93c5fd 0%, #3b82f6 34%, #6366f1 66%, #a5b4fc 100%)';
 
 export default function AboutBowKnot({ locale }: AboutBowKnotProps) {
   // Brand names are script-fixed → always lay out left-to-right, even on `ar`.
@@ -118,7 +122,7 @@ export default function AboutBowKnot({ locale }: AboutBowKnotProps) {
           transition-delay: 0.2s;
         }
 
-        /* ── Soft WARM glow blob behind the plate (static depth, no breathing) ── */
+        /* ── Soft COOL glow blob behind the plate (static depth, no breathing) ── */
         .bk-glow-blob {
           position: absolute;
           inset: -26% -8%;
@@ -126,18 +130,18 @@ export default function AboutBowKnot({ locale }: AboutBowKnotProps) {
           pointer-events: none;
           background: radial-gradient(
               58% 58% at 28% 34%,
-              rgba(251, 146, 60, 0.42),
+              rgba(59, 130, 246, 0.35),
               transparent 70%
             ),
             radial-gradient(
               52% 52% at 76% 66%,
-              rgba(252, 211, 77, 0.36),
+              rgba(99, 102, 241, 0.28),
               transparent 72%
             );
           filter: blur(28px);
         }
 
-        /* ── Floating frosted-glass plate (the glassmorphism hero, WARM) ── */
+        /* ── Floating frosted-glass plate (the glassmorphism hero, COOL) ── */
         .bk-glass {
           position: relative;
           z-index: 1;
@@ -146,18 +150,18 @@ export default function AboutBowKnot({ locale }: AboutBowKnotProps) {
           gap: 22px;
           padding: 22px 30px;
           border-radius: 30px;
-          /* SSR / no-backdrop-filter fallback: a soft translucent warm panel. */
-          background: rgba(255, 247, 237, 0.55);
+          /* SSR / no-backdrop-filter fallback: a soft translucent cool panel. */
+          background: rgba(240, 249, 255, 0.5);
           background: linear-gradient(
             135deg,
-            rgba(255, 251, 242, 0.5),
-            rgba(254, 215, 170, 0.24)
+            rgba(240, 249, 255, 0.5),
+            rgba(219, 234, 254, 0.24)
           );
           backdrop-filter: blur(18px) saturate(165%);
           -webkit-backdrop-filter: blur(18px) saturate(165%);
-          border: 1px solid rgba(255, 237, 213, 0.7);
-          box-shadow: 0 18px 50px -20px rgba(217, 119, 6, 0.28),
-            0 4px 14px -6px rgba(249, 115, 22, 0.16),
+          border: 1px solid rgba(191, 219, 254, 0.7);
+          box-shadow: 0 18px 50px -20px rgba(30, 64, 175, 0.32),
+            0 4px 14px -6px rgba(59, 130, 246, 0.18),
             inset 0 1px 1px rgba(255, 255, 255, 0.8);
           overflow: hidden;
         }
@@ -204,7 +208,7 @@ export default function AboutBowKnot({ locale }: AboutBowKnotProps) {
           }
         }
 
-        /* ── Glass chip badge carrying the 「秋彦」 monogram (WARM) ── */
+        /* ── Glass chip badge carrying the 「秋彦」 monogram (COOL) ── */
         .bk-emblem {
           position: relative;
           z-index: 1;
@@ -218,15 +222,15 @@ export default function AboutBowKnot({ locale }: AboutBowKnotProps) {
           background: rgba(255, 255, 255, 0.42);
           background: linear-gradient(
             135deg,
-            rgba(255, 255, 255, 0.62),
-            rgba(254, 215, 170, 0.2)
+            rgba(240, 249, 255, 0.66),
+            rgba(199, 210, 254, 0.22)
           );
           backdrop-filter: blur(12px) saturate(160%);
           -webkit-backdrop-filter: blur(12px) saturate(160%);
-          border: 1px solid rgba(255, 237, 213, 0.78);
-          box-shadow: 0 8px 24px -8px rgba(249, 115, 22, 0.3),
+          border: 1px solid rgba(191, 219, 254, 0.78);
+          box-shadow: 0 8px 24px -8px rgba(59, 130, 246, 0.32),
             inset 0 1px 1px rgba(255, 255, 255, 0.88),
-            inset 0 -1px 2px rgba(217, 119, 6, 0.08);
+            inset 0 -1px 2px rgba(30, 64, 175, 0.12);
         }
         .bk-emblem-text {
           font-family: 'PingFang SC', 'Microsoft YaHei', 'Hiragino Sans GB',
@@ -268,10 +272,10 @@ export default function AboutBowKnot({ locale }: AboutBowKnotProps) {
           font-size: 12px;
           font-weight: 600;
           letter-spacing: 3px;
-          color: rgba(217, 119, 6, 0.78);
+          color: rgba(147, 197, 253, 0.88);
         }
 
-        /* ── Refined frosted top divider (WARM, links to photo above) ── */
+        /* ── Refined frosted top divider (COOL, links to photo above) ── */
         .bk-divider {
           display: flex;
           align-items: center;
@@ -286,15 +290,15 @@ export default function AboutBowKnot({ locale }: AboutBowKnotProps) {
           background: linear-gradient(
             90deg,
             transparent,
-            rgba(251, 146, 60, 0.7) 55%,
-            rgba(252, 211, 77, 0.85)
+            rgba(59, 130, 246, 0.7) 55%,
+            rgba(96, 165, 250, 0.85)
           );
         }
         .bk-top-rule--flip {
           background: linear-gradient(
             90deg,
-            rgba(252, 211, 77, 0.85),
-            rgba(251, 146, 60, 0.7) 45%,
+            rgba(96, 165, 250, 0.85),
+            rgba(59, 130, 246, 0.7) 45%,
             transparent
           );
         }
@@ -302,9 +306,9 @@ export default function AboutBowKnot({ locale }: AboutBowKnotProps) {
           width: 7px;
           height: 7px;
           border-radius: 9999px;
-          background: rgba(255, 245, 235, 0.85);
-          border: 1px solid rgba(255, 237, 213, 0.9);
-          box-shadow: 0 0 10px rgba(251, 146, 60, 0.4),
+          background: rgba(224, 242, 254, 0.85);
+          border: 1px solid rgba(191, 219, 254, 0.9);
+          box-shadow: 0 0 10px rgba(59, 130, 246, 0.4),
             inset 0 1px 1px rgba(255, 255, 255, 0.9);
         }
 
@@ -349,7 +353,7 @@ export default function AboutBowKnot({ locale }: AboutBowKnotProps) {
           visible ? 'is-visible' : ''
         }`}
       >
-        {/* ═══ Top divider — frosted rule + warm glass dot ═══ */}
+        {/* ═══ Top divider — frosted rule + cool glass dot ═══ */}
         <div className="bk-rise bk-rise-1 bk-divider mb-7" aria-hidden="true">
           <span className="bk-top-rule" />
           <span className="bk-top-dot" />
@@ -361,7 +365,7 @@ export default function AboutBowKnot({ locale }: AboutBowKnotProps) {
           className="bk-rise bk-rise-2 relative"
           style={{ direction: brandDir as 'ltr' | 'rtl', width: 'min(440px, 94vw)' }}
         >
-          {/* Soft warm glow blob behind the plate for depth (static) */}
+          {/* Soft cool glow blob behind the plate for depth (static) */}
           <div className="bk-glow-blob" aria-hidden="true" />
 
           <div className="bk-glass">
