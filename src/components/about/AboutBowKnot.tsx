@@ -280,7 +280,7 @@ export default function AboutBowKnot({ locale }: AboutBowKnotProps) {
           width: 100%;
           max-width: 300px;
         }
-        .bk-line {
+        .bk-top-rule {
           height: 1px;
           flex: 1;
           background: linear-gradient(
@@ -290,7 +290,7 @@ export default function AboutBowKnot({ locale }: AboutBowKnotProps) {
             rgba(252, 211, 77, 0.85)
           );
         }
-        .bk-line--flip {
+        .bk-top-rule--flip {
           background: linear-gradient(
             90deg,
             rgba(252, 211, 77, 0.85),
@@ -298,7 +298,7 @@ export default function AboutBowKnot({ locale }: AboutBowKnotProps) {
             transparent
           );
         }
-        .bk-pearl {
+        .bk-top-dot {
           width: 7px;
           height: 7px;
           border-radius: 9999px;
@@ -349,11 +349,11 @@ export default function AboutBowKnot({ locale }: AboutBowKnotProps) {
           visible ? 'is-visible' : ''
         }`}
       >
-        {/* ═══ Top divider — frosted line + warm glass pearl ═══ */}
+        {/* ═══ Top divider — frosted rule + warm glass dot ═══ */}
         <div className="bk-rise bk-rise-1 bk-divider mb-7" aria-hidden="true">
-          <span className="bk-line" />
-          <span className="bk-pearl" />
-          <span className="bk-line bk-line--flip" />
+          <span className="bk-top-rule" />
+          <span className="bk-top-dot" />
+          <span className="bk-top-rule bk-top-rule--flip" />
         </div>
 
         {/* ═══ Glassmorphism plate: chip + dual wordmark ═══ */}
