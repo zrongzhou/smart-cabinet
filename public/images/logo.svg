@@ -1,50 +1,49 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 56" fill="none">
   <defs>
-    <!-- Logo gradient - blue-indigo tech feel -->
+    <!-- Neutral cool slate gradient for the outer ring (replaces the old blue-indigo) -->
     <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#3b82f6"/>
-      <stop offset="50%" stop-color="#6366f1"/>
+      <stop offset="0%" stop-color="#94A3B8"/>
+      <stop offset="50%" stop-color="#64748B"/>
       <stop offset="100%" stop-color="#475569"/>
     </linearGradient>
-    <!-- Star inner gradient -->
-    <linearGradient id="starGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#60a5fa"/>
+
+    <!-- Silver swirl gradient: light slate at the top, deeper slate at the bottom (metallic sheen) -->
+    <linearGradient id="swirlGrad" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="#E2E8F0"/>
+      <stop offset="45%" stop-color="#94A3B8"/>
       <stop offset="100%" stop-color="#475569"/>
     </linearGradient>
-    <!-- Subtle shadow -->
+
+    <!-- Subtle drop shadow for a soft, professional lift -->
     <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#3b82f6" flood-opacity="0.25"/>
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#475569" flood-opacity="0.28"/>
     </filter>
   </defs>
 
-  <!-- Circle background -->
-  <circle cx="28" cy="28" r="24" fill="url(#logoGrad)" opacity="0.12" stroke="url(#logoGrad)" stroke-width="1.5"/>
+  <!-- Outer ring: thin stroke with a faint fill (position preserved: cx=28 cy=28 r=24) -->
+  <circle cx="28" cy="28" r="24" fill="url(#logoGrad)" opacity="0.10" stroke="url(#logoGrad)" stroke-width="1.5"/>
 
-  <!-- Four-pointed star (Qtech-style kite shape) -->
+  <!-- Elegant S-shaped / swirl mark (replaces the old four-pointed star) -->
   <g filter="url(#softShadow)">
-    <!-- Main star body - four points -->
-    <path d="M28 8
-             C30 16, 35 20, 40 22
-             C35 24, 30 28, 28 38
-             C26 28, 21 24, 16 22
-             C21 20, 26 16, 28 8Z"
-          fill="url(#starGrad)"/>
+    <!-- Secondary swirl: a lighter echo, slightly offset to suggest interwoven motion -->
+    <path d="M37 17
+             C37 9, 19 11, 19 21
+             C19 30, 37 27, 37 37
+             C37 47, 19 49, 19 40"
+          fill="none" stroke="#CBD5E1" stroke-width="1.8" stroke-linecap="round"
+          opacity="0.55" transform="translate(1.5 1.5)"/>
 
-    <!-- Star highlight - lighter top-left facet -->
-    <path d="M28 8
-             C29 14, 32 18, 36 20
-             L28 22
-             L20 20
-             C24 18, 27 14, 28 8Z"
-          fill="rgba(147,197,253,0.5)"/>
+    <!-- Main S / swirl ribbon flowing through the circle -->
+    <path d="M37 17
+             C37 9, 19 11, 19 21
+             C19 30, 37 27, 37 37
+             C37 47, 19 49, 19 40"
+          fill="none" stroke="url(#swirlGrad)" stroke-width="4.5" stroke-linecap="round"/>
 
-    <!-- Inner diamond accent -->
-    <path d="M28 17
-             C29.5 20, 31.5 21.5, 34 22
-             C31.5 22.5, 29.5 24, 28 28
-             C26.5 24, 24.5 22.5, 22 22
-             C24.5 21.5, 26.5 20, 28 17Z"
-          fill="rgba(255,255,255,0.15)"/>
+    <!-- Subtle highlight along the upper edge of the swirl for a polished, 3D feel -->
+    <path d="M36 17
+             C36 11, 21 12.5, 20.5 20.5"
+          fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="1.4" stroke-linecap="round"/>
   </g>
 
   <!-- Company name: Qtech / 秋彦科技 -->
@@ -59,6 +58,6 @@
     TOOL CABINET
   </text>
 
-  <!-- Small dot separator accent -->
-  <circle cx="59" cy="34" r="1.5" fill="#3b82f6" opacity="0.5"/>
+  <!-- Small dot separator accent (recolored to neutral slate to match the new mark) -->
+  <circle cx="59" cy="34" r="1.5" fill="#64748B" opacity="0.5"/>
 </svg>

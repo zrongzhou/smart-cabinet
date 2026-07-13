@@ -14,6 +14,7 @@ import Image from 'next/image';
 import CompanyShowcase from '@/components/about/CompanyShowcase';
 import ValuesBook from '@/components/about/ValuesBook';
 import ClientWall from '@/components/about/ClientWall';
+import ClientPhotoGallery from '@/components/about/ClientPhotoGallery';
 
 // Page data type (from API or localStorage)
 interface PageData {
@@ -1015,6 +1016,9 @@ export function AboutClient() {
 
       {/* Main Clients — extracted to <ClientWall> (V8 visual refresh) */}
       <ClientWall t={t} locale={locale} />
+
+      {/* Client on-site photo gallery — real customer visits & product usage */}
+      <ClientPhotoGallery t={t} locale={locale} />
 
       {/* ===== CTA v264 — 明亮水晶水族馆（Crystal-Clear Aquarium） ===== */}
       <section
