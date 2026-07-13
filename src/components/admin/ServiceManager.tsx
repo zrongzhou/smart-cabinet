@@ -29,6 +29,7 @@ import {
   FileText,
   KeyRound,
   Plus,
+  Lock,
 } from 'lucide-react';
 import { adminT } from '@/lib/admin-i18n';
 
@@ -116,6 +117,12 @@ export default function ServiceManager() {
    * know certbot is missing (the API omits the flag on older back-ends).
    */
   const [certbotAvailable, setCertbotAvailable] = useState<boolean>(true);
+
+  // Force HTTPS redirect (Round G, feature B)
+  const [httpsRedirect, setHttpsRedirect] = useState<boolean | null>(null);
+  const [httpsLoading, setHttpsLoading] = useState(true);
+  const [httpsApplying, setHttpsApplying] = useState(false);
+  const [httpsMsg, setHttpsMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
   const actions: ActionDef[] = [
     { action: 'restart-app', title: adminT('services.restartApp'), desc: adminT('services.restartAppDesc'), icon: RefreshCw, accent: 'blue' },
@@ -208,6 +215,7 @@ export default function ServiceManager() {
 
   useEffect(() => {
     void fetchCerts();
+    void fetchHttpsState();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -256,6 +264,71 @@ export default function ServiceManager() {
       setUploadMsg({ ok: false, text: e instanceof Error ? e.message : 'Upload failed' });
     } finally {
       setRunning(null);
+    }
+  };
+
+  /** Load the REAL HTTPS redirect state from the live nginx config. */
+  const fetchHttpsState = async () => {
+    setHttpsLoading(true);
+    setHttpsMsg(null);
+    try {
+      const res = await fetch('/api/admin/services/https-redirect', { method: 'GET' });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        // Conservative default: assume HTTPS is enforced.
+        setHttpsRedirect(true);
+      } else {
+        setHttpsRedirect(!!data.enabled);
+      }
+    } catch {
+      setHttpsRedirect(true);
+    } finally {
+      setHttpsLoading(false);
+    }
+  };
+
+  /** Toggle the Force-HTTPS switch (with confirm on disable + rollback on failure). */
+  const onToggleHttps = async () => {
+    if (httpsRedirect === null || httpsApplying) return;
+    const next = !httpsRedirect;
+    if (!next) {
+      const ok = window.confirm(adminT('services.httpsRedirectDisableConfirm'));
+      if (!ok) return;
+    }
+    setHttpsApplying(true);
+    setHttpsMsg(null);
+    try {
+      const res = await fetch('/api/admin/services/https-redirect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enabled: next }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.success) {
+        // Revert the optimistic toggle to the previous (real) state.
+        setHttpsRedirect(!next);
+        setHttpsMsg({
+          ok: false,
+          text: data?.message || adminT('services.httpsRedirectFail'),
+        });
+      } else {
+        setHttpsRedirect(next);
+        const backupNote = data.backupPath
+          ? `（${adminT('services.httpsRedirectBackup')}: ${data.backupPath}）`
+          : '';
+        setHttpsMsg({
+          ok: true,
+          text: (data.message || adminT('services.httpsRedirectSuccess')) + backupNote,
+        });
+      }
+    } catch (e) {
+      setHttpsRedirect(!next);
+      setHttpsMsg({
+        ok: false,
+        text: e instanceof Error ? e.message : adminT('services.httpsRedirectFail'),
+      });
+    } finally {
+      setHttpsApplying(false);
     }
   };
 
@@ -362,6 +435,58 @@ export default function ServiceManager() {
             </div>
           );
         })}
+      </div>
+
+      {/* ═══ Force HTTPS redirect (Round G, feature B) ═══ */}
+      <div className="mt-10 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <h2 className="text-xl font-bold text-gray-900">{adminT('services.httpsRedirectTitle')}</h2>
+            <p className="text-gray-600 mt-1 text-sm">{adminT('services.httpsRedirectDesc')}</p>
+          </div>
+          <div className="flex items-center gap-3">
+            {httpsLoading ? (
+              <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+            ) : (
+              <button
+                type="button"
+                role="switch"
+                aria-checked={!!httpsRedirect}
+                aria-label={adminT('services.httpsRedirectTitle')}
+                onClick={onToggleHttps}
+                disabled={httpsApplying || httpsRedirect === null}
+                className={`relative inline-flex h-7 w-12 shrink-0 items-center rounded-full transition-colors ${
+                  httpsRedirect ? 'bg-green-600' : 'bg-gray-300'
+                } ${httpsApplying ? 'opacity-60 cursor-not-allowed' : ''}`}
+              >
+                <span
+                  className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${
+                    httpsRedirect ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {httpsMsg && (
+          <div
+            className={`mt-4 flex items-start gap-2 rounded-xl px-4 py-2.5 text-sm ${
+              httpsMsg.ok
+                ? 'border border-green-200 bg-green-50 text-green-700'
+                : 'border border-red-200 bg-red-50 text-red-700'
+            }`}
+          >
+            {httpsMsg.ok ? (
+              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+            ) : (
+              <XCircle className="mt-0.5 h-4 w-4 shrink-0" />
+            )}
+            <span className="whitespace-pre-wrap break-words">{httpsMsg.text}</span>
+          </div>
+        )}
+
+        <p className="mt-3 text-xs text-gray-500 leading-relaxed">{adminT('services.httpsRedirectNote')}</p>
       </div>
 
       {/* ═══ Certificate management ═══ */}

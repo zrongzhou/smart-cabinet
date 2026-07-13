@@ -2,6 +2,7 @@
 
 import { AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
 import { useSettings } from '@/lib/xiaozhouBackend-settings-common';
+import { usePersonalWechatPush } from '@/lib/usePersonalWechatPush';
 import SettingsPageFrame from '@/components/xiaozhouBackend/SettingsPageFrame';
 
 export const dynamic = 'force-dynamic';
@@ -23,6 +24,7 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: () => void 
 export default function NotificationsSettingsPage() {
   const hook = useSettings();
   const { settings, setSettings, testingWebhook, testResult, handleTestWebhook } = hook;
+  const push = usePersonalWechatPush();
 
   return (
     <SettingsPageFrame
@@ -45,33 +47,98 @@ export default function NotificationsSettingsPage() {
           />
         </div>
 
-        {/* 个人微信通知（Server酱） */}
+        {/* 个人微信推送（询盘提醒） — Round G, feature A */}
         <div className="border-t border-gray-200 pt-6">
-          <h3 className="text-base font-semibold text-gray-900 mb-2">个人微信通知（Server酱）</h3>
-          <p className="text-sm text-gray-500 mb-4">通过 Server酱 推送通知到个人微信（需绑定微信关注号）</p>
+          <h3 className="text-base font-semibold text-gray-900 mb-2">个人微信推送（询盘提醒）</h3>
+          <p className="text-sm text-gray-500 mb-4">
+            通过第三方 Webhook（Server酱 / PushPlus 等）将前台联系表单询盘实时推送到你的个人微信。Webhook 地址经 AES-256-GCM 加密后存储，绝不返回明文。
+          </p>
 
           <div className="flex items-center justify-between mb-4">
-            <span className="text-sm font-medium text-gray-700">启用个人微信通知</span>
-            <Toggle
-              checked={settings.wechatPersonalEnabled}
-              onChange={() => setSettings((prev) => ({ ...prev, wechatPersonalEnabled: !prev.wechatPersonalEnabled }))}
-            />
+            <span className="text-sm font-medium text-gray-700">启用个人微信推送</span>
+            <Toggle checked={push.enabled} onChange={() => push.setEnabled(!push.enabled)} />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Server酱 SendKey</label>
-            <input
-              type="text"
-              value={settings.wechatPersonalSendKey || ''}
-              onChange={(e) => setSettings((prev) => ({ ...prev, wechatPersonalSendKey: e.target.value }))}
-              className="admin-form-input w-full font-mono text-sm"
-              placeholder="SCTxxxxxxxxxx（从 ftqq.com 获取）"
-            />
-            <p className="mt-1 text-xs text-gray-500">
-              1. 访问 sct.ftqq.com 注册/登录<br />
-              2. 创建一个 SendKey 并复制到这里<br />
-              3. 用微信扫描绑定 Server酱公众号即可接收消息
-            </p>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Webhook URL</label>
+              <input
+                type="text"
+                value={push.webhookUrl}
+                onChange={(e) => push.setWebhookUrl(e.target.value)}
+                className="admin-form-input w-full font-mono text-sm"
+                placeholder="https://sctapi.ftqq.com/xxxx.send 或 https://www.pushplus.plus/send?token=xxxx"
+              />
+              <p className="mt-1 text-xs text-gray-500">
+                1. 获取你的 Webhook 地址（Server酱 / PushPlus 等）<br />
+                2. 粘贴到此处并保存；明文仅在本次 HTTPS 请求中传输，服务端加密存储<br />
+                3. 系统按 URL 自动识别服务商并构造对应请求体
+              </p>
+              {push.settings.webhookMask ? (
+                <p className="mt-1 text-xs text-green-600">当前已配置：{push.settings.webhookMask}</p>
+              ) : (
+                <p className="mt-1 text-xs text-gray-400">尚未配置 Webhook。</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">推送格式</label>
+              <select
+                value={push.format}
+                onChange={(e) => push.setFormat(e.target.value as 'markdown' | 'text')}
+                className="admin-form-input w-full text-sm"
+              >
+                <option value="markdown">Markdown</option>
+                <option value="text">纯文本 (Text)</option>
+              </select>
+            </div>
+
+            <div className="flex items-center gap-3 flex-wrap">
+              <button
+                type="button"
+                onClick={push.handleSave}
+                disabled={push.saving}
+                className="btn-secondary flex items-center gap-2"
+              >
+                {push.saving && <Loader2 className="w-4 h-4 animate-spin" />}
+                保存配置
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (window.confirm('确认向该 Webhook 真实发送一条测试消息到你的个人微信？')) {
+                    void push.handleTest();
+                  }
+                }}
+                disabled={push.testing || !push.webhookUrl}
+                className="btn-secondary flex items-center gap-2"
+                title="将向该 Webhook 真实发送一条测试消息"
+              >
+                {push.testing ? <Loader2 className="w-4 h-4 animate-spin" /> : <AlertCircle className="w-4 h-4" />}
+                测试发送
+              </button>
+              {push.saveResult && (
+                <span className={`text-sm ${push.saveResult.ok ? 'text-green-600' : 'text-red-600'}`}>
+                  {push.saveResult.ok ? '已保存' : push.saveResult.message}
+                </span>
+              )}
+            </div>
+
+            {push.testResult && (
+              <div className={`flex items-center gap-2 text-sm ${push.testResult.ok ? 'text-green-600' : 'text-red-600'}`}>
+                {push.testResult.ok ? <CheckCircle className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
+                <span>{push.testResult.message}</span>
+              </div>
+            )}
+
+            {push.settings.lastTest && push.settings.lastTest.status && (
+              <p className="text-xs text-gray-500">
+                上次测试：
+                {push.settings.lastTest.status === 'success' ? '成功' : '失败'} ·{' '}
+                {new Date(push.settings.lastTest.at).toLocaleString('zh-CN')}
+                {push.settings.lastTest.message ? ` · ${push.settings.lastTest.message}` : ''}
+              </p>
+            )}
           </div>
         </div>
 

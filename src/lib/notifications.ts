@@ -1,7 +1,14 @@
 /**
  * WeChat Notification Module
- * Supports Enterprise WeChat (企业微信) group bot webhook notifications
+ * Supports Enterprise WeChat (企业微信) group bot webhook notifications.
+ *
+ * Round G (feature A) adds a third, independent channel — "personal WeChat
+ * push" — delivered through a third-party webhook (Server酱 / PushPlus /
+ * generic) whose URL is stored encrypted. See `src/lib/services/personalWechatPush.ts`.
  */
+
+import { PersonalWechatPushService } from '@/lib/services/personalWechatPush';
+import type { PushFormat, PushResult } from '@/lib/notify-types';
 
 // WeChat Webhook message types
 export interface WeChatMarkdownMessage {
@@ -48,6 +55,9 @@ export interface OrderNotificationData {
 }
 
 export type NotificationData = ContactNotificationData | OrderNotificationData;
+
+/** Shared singleton instance of the personal WeChat push service. */
+const personalWechatPush = new PersonalWechatPushService();
 
 /**
  * Fetch WeChat notification settings from database
@@ -174,69 +184,8 @@ async function sendWeChatNotification(
 }
 
 /**
- * Fetch personal WeChat (Server酱) notification settings from database
- */
-async function getPersonalWeChatSettings(): Promise<{
-  enabled: boolean;
-  sendKey: string;
-} | null> {
-  try {
-    // Dynamic import to avoid circular dependencies
-    const { PrismaClient } = await import('@prisma/client');
-    const prisma = new PrismaClient();
-    try {
-      const enabledSetting = await prisma.siteSettings.findUnique({
-        where: { key: 'wechatPersonalEnabled' },
-      });
-      const sendKeySetting = await prisma.siteSettings.findUnique({
-        where: { key: 'wechatPersonalSendKey' },
-      });
-
-      const enabled = (enabledSetting?.value as unknown as boolean) || false;
-      const sendKey = (sendKeySetting?.value as unknown as string) || '';
-
-      if (!enabled || !sendKey) return null;
-      return { enabled, sendKey };
-    } finally {
-      await prisma.$disconnect();
-    }
-  } catch (error) {
-    console.error('Error fetching personal WeChat settings:', error);
-    return null;
-  }
-}
-
-/**
- * Send personal WeChat notification via Server酱 (SCT)
- * Pushes a message to the user's personal WeChat by binding
- * the Server酱 official account (no enterprise WeChat required).
- */
-export async function sendPersonalWeChatNotification(
-  title: string,
-  content: string
-): Promise<boolean> {
-  const settings = await getPersonalWeChatSettings();
-  if (!settings || !settings.enabled || !settings.sendKey) return false;
-  try {
-    const res = await fetch(`https://sctapi.ftqq.com/${settings.sendKey}.send`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        title: title.substring(0, 30), // Server酱 title length limit
-        desp: content,
-      }),
-    });
-    const data = await res.json();
-    return data.code === 0;
-  } catch (error) {
-    console.error('Error sending personal WeChat notification:', error);
-    return false;
-  }
-}
-
-/**
  * 企业微信应用消息设置
- * 通过企业微信"自建应用"API向成员发私信
+ * 通过企业微信"自建应用"API向成员发送私信
  * 需要: corpId(企业ID) + agentId(应用ID) + secret(密钥) + toUser(接收人userId)
  */
 interface WeComAppSettings {
@@ -254,24 +203,25 @@ async function getWeComAppSettings(): Promise<WeComAppSettings | null> {
     try {
       const keys = ['wecomAppEnabled', 'wecomCorpId', 'wecomAgentId', 'wecomSecret', 'wecomToUser'];
       const entries = await Promise.all(
-        keys.map(k => prisma.siteSettings.findUnique({ where: { key: k } }))
+        keys.map((k) => prisma.siteSettings.findUnique({ where: { key: k } }))
       );
       // site_settings.value 为 Json 列，enabled 可能是 boolean 或字符串 'true'，其余为字符串
-      const raw = entries.map(e => e?.value);
+      const raw = entries.map((e) => e?.value);
       const enabled = raw[0] === true || raw[0] === 'true';
       const corpId = raw[1] != null ? String(raw[1]) : '';
       const agentId = raw[2] != null ? String(raw[2]) : '';
-      const secret = raw[3] != null ? String(raw[3]) : '';
 
-      if (!enabled || !corpId || !agentId || !secret) return null;
+      if (!enabled || !corpId || !agentId) return null;
       return {
         enabled,
         corpId,
         agentId,
-        secret,
+        secret: raw[3] != null ? String(raw[3]) : '',
         toUser: raw[4] != null ? String(raw[4]) : '@all',
       };
-    } finally { await prisma.$disconnect(); }
+    } finally {
+      await prisma.$disconnect();
+    }
   } catch (error) {
     console.error('Error fetching WeCom app settings:', error);
     return null;
@@ -296,7 +246,9 @@ async function getWeComAccessToken(corpId: string, secret: string): Promise<stri
       expiresAt: Date.now() + (data.expires_in - 300) * 1000, // 提前5分钟过期
     };
     return data.token;
-  } catch { return null; }
+  } catch {
+    return null;
+  }
 }
 
 export async function sendWeComAppNotification(title: string, content: string): Promise<boolean> {
@@ -335,64 +287,66 @@ export async function sendWeComAppNotification(title: string, content: string): 
 }
 
 /**
- * Send notification (main entry point)
- * This function is non-blocking and will not throw errors
+ * Send notification (main entry point).
+ *
+ * Non-blocking and never throws to the caller. Two independent channels run:
+ *  1. Enterprise WeChat group bot (`wechatWebhookUrl`) + WeCom app message —
+ *     the pre-existing channels, gated by `wechatNotificationEnabled`.
+ *  2. Personal WeChat push (`notify.wechat.*`, Round G feature A) — gated by its
+ *     own `enabled` flag, used for contact-form inquiries only. This REPLACES
+ *     the old Server酱 SendKey branch (decision U4) to avoid double-sending.
  */
 export async function sendNotification(data: NotificationData): Promise<void> {
   try {
-    // Fetch settings from database
+    // Channel 1: enterprise group bot + WeCom app (pre-existing).
     const settings = await getWeChatSettings();
+    if (settings && settings.enabled) {
+      const markdownContent =
+        data.type === 'contact' ? buildContactMessage(data) : buildOrderMessage(data);
 
-    if (!settings || !settings.enabled) {
-      // Notifications disabled or not configured
-      return;
+      const success = await sendWeChatNotification(settings.webhookUrl, markdownContent);
+      if (success) {
+        console.log(`WeChat notification sent successfully for ${data.type}`);
+      } else {
+        console.warn(`Failed to send WeChat notification for ${data.type}`);
+      }
+
+      // Enterprise WeChat application message (separate channel).
+      try {
+        const appTitle = data.type === 'contact' ? '📬 新联系消息' : '🛒 新订单';
+        await sendWeComAppNotification(appTitle, markdownContent);
+      } catch {
+        /* don't block the main flow */
+      }
     }
 
-    // Build message based on type
-    let markdownContent: string;
+    // Channel 2: personal WeChat push (Round G, feature A) — contact only.
     if (data.type === 'contact') {
-      markdownContent = buildContactMessage(data);
-    } else {
-      markdownContent = buildOrderMessage(data);
-    }
-
-    // Send notification
-    const success = await sendWeChatNotification(
-      settings.webhookUrl,
-      markdownContent
-    );
-
-    if (success) {
-      console.log(`WeChat notification sent successfully for ${data.type}`);
-    } else {
-      console.warn(`Failed to send WeChat notification for ${data.type}`);
-    }
-
-    // Also try personal WeChat notification (Server酱) — non-blocking
-    try {
-      const personalTitle = data.type === 'contact' ? '📬 New Contact Message' : '🛒 New Order';
-      const personalContent = markdownContent; // reuse the already-built content
-      await sendPersonalWeChatNotification(personalTitle, personalContent);
-    } catch {
-      /* don't block the main flow */
-    }
-
-    // Also try enterprise WeChat application message — non-blocking
-    try {
-      const appTitle = data.type === 'contact' ? '📬 新联系消息' : '🛒 新订单';
-      const appContent = markdownContent;
-      await sendWeComAppNotification(appTitle, appContent);
-    } catch {
-      /* don't block */
+      try {
+        await personalWechatPush.pushContact(data);
+      } catch (err) {
+        console.error('Error in personal WeChat push:', err);
+      }
     }
   } catch (error) {
-    // Never block the main flow
+    // Never block the main flow.
     console.error('Error in sendNotification:', error);
   }
 }
 
 /**
- * Send test notification (for admin settings page)
+ * Personal WeChat push test delegate (Round G, feature A).
+ * Delegates to {@link PersonalWechatPushService.sendTest}.
+ */
+export async function sendTestPersonalWechat(
+  url: string,
+  format: PushFormat = 'markdown'
+): Promise<PushResult> {
+  return personalWechatPush.sendTest(url, format);
+}
+
+/**
+ * Send test notification (for admin settings page) — enterprise group bot only.
  */
 export async function sendTestNotification(webhookUrl: string): Promise<{
   success: boolean;
@@ -435,7 +389,6 @@ export function validateWebhookUrl(url: string): boolean {
   if (!url) return false;
 
   // Enterprise WeChat webhook URL format
-  const wechatRegex =
-    /^https:\/\/qyapi\.weixin\.qq\.com\/cgi-bin\/webhook\/send\?key=/;
+  const wechatRegex = /^https:\/\/qyapi\.weixin\.qq\.com\/cgi-bin\/webhook\/send\?key=/;
   return wechatRegex.test(url);
 }

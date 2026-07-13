@@ -102,5 +102,12 @@
   "users.passwordTooShort": "密码长度至少 8 位。",
   "users.passwordMismatch": "两次输入的密码不一致。",
   "users.resetPasswordSuccess": "密码已重置成功。",
-  "users.resetPasswordFailed": "密码重置失败，请稍后重试。"
+  "users.resetPasswordFailed": "密码重置失败，请稍后重试。",
+  "services.httpsRedirectTitle": "强制 HTTPS 跳转",
+  "services.httpsRedirectDesc": "开启后所有 HTTP 请求将 301 重定向到 HTTPS；关闭后允许 HTTP 明文直访（已自动补全 location / 代理，站点不会 404）。",
+  "services.httpsRedirectNote": "切换前会自动备份当前配置至 /etc/nginx/conf.d/smart-cabinet.conf.bak。关闭跳转后，站点将通过 HTTP 明文提供服务。",
+  "services.httpsRedirectDisableConfirm": "关闭后 HTTP 可直访（明文），确定关闭强制 HTTPS 跳转吗？",
+  "services.httpsRedirectSuccess": "配置已生效（已 reload nginx）。",
+  "services.httpsRedirectFail": "配置校验未通过，已自动回滚，未影响线上。请检查 nginx 配置后重试。",
+  "services.httpsRedirectBackup": "备份"
 }

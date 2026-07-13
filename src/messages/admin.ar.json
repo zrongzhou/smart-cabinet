@@ -102,5 +102,12 @@
   "users.passwordTooShort": "يجب ألا تقل كلمة المرور عن 8 أحرف.",
   "users.passwordMismatch": "كلمتا المرور غير متطابقتين.",
   "users.resetPasswordSuccess": "تمت إعادة تعيين كلمة المرور بنجاح.",
-  "users.resetPasswordFailed": "فشلت إعادة تعيين كلمة المرور. حاول مرة أخرى."
+  "users.resetPasswordFailed": "فشلت إعادة تعيين كلمة المرور. حاول مرة أخرى.",
+  "services.httpsRedirectTitle": "تحويل HTTPS إجباري",
+  "services.httpsRedirectDesc": "عند التفعيل، تُحوّل جميع طلبات HTTP إلى HTTPS عبر 301. عند التعطيل، يُسمح بالوصول عبر HTTP (يُضاف location / وكيل تلقائياً حتى لا يظهر خطأ 404).",
+  "services.httpsRedirectNote": "قبل التبديل، يتم تلقائياً عمل نسخة احتياطية من الإعداد الحالي إلى /etc/nginx/conf.d/smart-cabinet.conf.bak. عند إيقاف التحويل، يُقدَّم الموقع عبر HTTP.",
+  "services.httpsRedirectDisableConfirm": "إيقاف التحويل يسمح بالوصول عبر HTTP. هل أنت متأكد من إيقاف التحويل الإجباري إلى HTTPS؟",
+  "services.httpsRedirectSuccess": "تم تطبيق الإعداد (تم إعادة تحميل nginx).",
+  "services.httpsRedirectFail": "فشل التحقق؛ تم التراجع عن التغيير ولم يتأثر الموقع. تحقق من إعداد nginx وحاول مجدداً.",
+  "services.httpsRedirectBackup": "نسخة احتياطية"
 }

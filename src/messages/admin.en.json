@@ -102,5 +102,12 @@
   "users.passwordTooShort": "Password must be at least 8 characters.",
   "users.passwordMismatch": "The two passwords do not match.",
   "users.resetPasswordSuccess": "Password reset successfully.",
-  "users.resetPasswordFailed": "Failed to reset password. Please try again."
+  "users.resetPasswordFailed": "Failed to reset password. Please try again.",
+  "services.httpsRedirectTitle": "Force HTTPS Redirect",
+  "services.httpsRedirectDesc": "When enabled, all HTTP requests are 301-redirected to HTTPS. When disabled, plain-HTTP access is allowed (a proxy `location /` is auto-added so the site never 404s).",
+  "services.httpsRedirectNote": "Before toggling, the current config is auto-backed up to /etc/nginx/conf.d/smart-cabinet.conf.bak. When the redirect is off, the site is served over plain HTTP.",
+  "services.httpsRedirectDisableConfirm": "Disabling allows plain-HTTP access. Are you sure you want to turn OFF the forced HTTPS redirect?",
+  "services.httpsRedirectSuccess": "Configuration applied (nginx reloaded).",
+  "services.httpsRedirectFail": "Validation failed; the change was rolled back and the site is unaffected. Check the nginx config and retry.",
+  "services.httpsRedirectBackup": "Backup"
 }
