@@ -1,131 +1,113 @@
 classDiagram
-    %% ===== 数据模型（Prisma）=====
-    class User {
-        +String id
-        +String email
-        +String role
-        +Boolean isActive
-        +Json cart
-        +Order[] orders
-    }
-    class Order {
-        +String id
-        +String userId
-        +String status
-        +Float total
-        +Json shippingAddress
-        +String paymentMethod
-        +String paymentStatus
-        +String transactionId
-        +DateTime paidAt
-        +OrderItem[] items
-        +Payment payment
-    }
-    class OrderItem {
-        +String id
-        +String orderId
-        +String productId
-        +Int quantity
-        +Float price
-        +Json name
-    }
-    class Payment {
-        +String id
-        +String orderId
-        +String method
-        +String status
-        +Float amount
-        +String currency
-        +String transactionId
-        +Json rawPayload
+    %% ===== 功能 A：个人微信推送 =====
+    class SecretStore {
+        +encrypt(plain: string): EncryptedPayload
+        +decrypt(p: EncryptedPayload): string
+        -key: Buffer  %% NOTIFY_AES_KEY
     }
 
-    User "1" --> "0..*" Order : owns
-    Order "1" --> "1..*" OrderItem : contains
-    Order "1" --> "0..1" Payment : has
-
-    %% ===== 前端购物车 =====
-    class CartContext {
-        +addItem(product)
-        +removeItem(productId)
-        +updateQty(productId, n)
-        +mergeWithUserCart()
-        -state: CartItem[]
-    }
-    class CartItem {
-        +String productId
-        +Int quantity
-        +Float price
-        +Json name
-        +String image
-    }
-    CartContext "1" --> "0..*" CartItem : holds
-
-    %% ===== 支付服务层 =====
-    class PaymentProvider {
-        <<interface>>
-        +createPayment(input) CreatePaymentResult
-        +verifyWebhook(raw, sig) WebhookResult
-    }
-    class StripeProvider
-    class PayPalProvider
-    class WechatProvider
-    class AlipayProvider
-    PaymentProvider <|.. StripeProvider
-    PaymentProvider <|.. PayPalProvider
-    PaymentProvider <|.. WechatProvider
-    PaymentProvider <|.. AlipayProvider
-
-    class PaymentConfig {
-        +isMock(method) Boolean
-        +resolveCurrency(locale) String
+    class PersonalWechatPushService {
+        +getSettings(): Promise~PersonalWechatPushSettings~
+        +pushContact(data: ContactNotificationData): Promise~void~
+        +sendTest(url: string, format: PushFormat): Promise~PushResult~
+        -detectProvider(url: string): PushProvider
+        -buildPayload(provider, data, format): object
+        -sendOnce(url, body): Promise~PushResult~
     }
 
-    %% ===== API 路由 =====
-    class OrdersApi {
-        +POST create(order)
-    }
-    class CartApi {
-        +GET getUserCart()
-        +POST mergeCart(items)
-    }
-    class PaymentApi {
-        +POST createSession()
-        +POST webhook()
-    }
-    class BlogMergeLib {
-        +getMergedBlogList(opts) MergedBlog[]
-        +getMergedBlogBySlug(slug) MergedBlog
+    class Notifications {
+        +sendNotification(data: NotificationData): Promise~void~
+        +sendTestPersonalWechat(url, format): Promise~PushResult~
     }
 
-    %% ===== 后台服务 =====
-    class AdminUserService {
-        +listUsers()
-        +updateStatus()
-        +updateRole()
+    class ContactRoute {
+        +POST(request): Promise~NextResponse~
     }
-    class AdminOrderService {
-        +listOrders(filter)
-        +updateStatus(id, status)
+
+    class NotifyWebhookApiRoute {
+        +GET(request): Promise~NextResponse~   %% 返回脱敏配置
+        +PUT(request): Promise~NextResponse~   %% 加密存储
     }
-    class ServiceManager {
-        +execWhitelisted(action, params)
+
+    class TestNotifyWebhookApiRoute {
+        +POST(request): Promise~NextResponse~
     }
-    class CommandWhitelist {
-        +validate(action, params) Boolean
+
+    class NotificationsSettingsPage {
+        +usePersonalWechatPush(): hook
     }
+
+    %% ===== 功能 B：HTTPS 跳转开关 =====
+    class HttpsRedirectService {
+        +getState(): Promise~boolean~
+        +setRedirect(enabled: boolean): Promise~SetRedirectResult~
+        -parseHttpBlock(cfg): string
+        -applyToggle(cfg, enabled, port): string
+        -audit(actor, enabled, result, detail)
+    }
+
+    class NginxConfig {
+        +writeNginxConfig(path, content)
+        +writeNginxBackup(path, content)
+        +reloadNginx(): ReloadResult
+        +NGINX_CONF_PATH: string
+    }
+
     class RunCommand {
-        +execFile(cmd, args[])
+        +runCommand(cmd, args): CommandResult
     }
-    ServiceManager --> CommandWhitelist : validates
-    ServiceManager --> RunCommand : invokes
 
-    %% ===== 关系标注 =====
-    OrdersApi ..> PaymentProvider : uses
-    OrdersApi ..> Order : persists
-    CartApi ..> User : persists cart
-    PaymentApi ..> PaymentProvider : uses
-    PaymentApi ..> Payment : updates
-    BlogMergeLib ..> Order : (none)
-    AdminUserService ..> User : queries
-    AdminOrderService ..> Order : queries
+    class HttpsRedirectApiRoute {
+        +POST(request): Promise~NextResponse~
+    }
+
+    class ServiceManager {
+        +renderHttpsToggle()
+        -fetchState()
+        -onToggle(enabled)
+    }
+
+    %% ===== 类型 =====
+    class PersonalWechatPushSettings {
+        enabled: boolean
+        webhookEnc: EncryptedPayload
+        webhookMask: string
+        format: PushFormat
+        lastTest: LastTestInfo
+    }
+    class EncryptedPayload {
+        v: 1
+        alg: "aes-256-gcm"
+        iv: string
+        tag: string
+        data: string
+    }
+    class SetRedirectResult {
+        ok: boolean
+        enabled: boolean
+        reloaded: boolean
+        rolledBack: boolean
+        backupPath: string
+        nginxError: string
+        message: string
+    }
+
+    %% ===== 关系 =====
+    ContactRoute ..> Notifications : fire-and-forget
+    Notifications ..> PersonalWechatPushService : 调用(contact)
+    PersonalWechatPushService ..> SecretStore : 解密 webhookEnc
+    PersonalWechatPushService ..> RunCommand : fetch 出站
+    NotifyWebhookApiRoute ..> PersonalWechatPushService : 读写配置
+    NotifyWebhookApiRoute ..> SecretStore : 加密存储
+    TestNotifyWebhookApiRoute ..> PersonalWechatPushService : sendTest
+    NotificationsSettingsPage ..> NotifyWebhookApiRoute : GET/PUT/测试
+    NotificationsSettingsPage ..> TestNotifyWebhookApiRoute : POST 测试
+
+    HttpsRedirectApiRoute ..> HttpsRedirectService : setRedirect
+    HttpsRedirectService ..> NginxConfig : writeNginxConfig / writeNginxBackup / reloadNginx
+    HttpsRedirectService ..> RunCommand : nginx -T 解析
+    ServiceManager ..> HttpsRedirectApiRoute : POST {enabled}
+    ServiceManager ..> HttpsRedirectService : getState(读真实状态)
+
+    PersonalWechatPushSettings *-- EncryptedPayload
+    HttpsRedirectService ..> SetRedirectResult : 返回

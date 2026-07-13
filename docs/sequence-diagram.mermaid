@@ -1,77 +1,107 @@
-%% ===== 1. 加购 -> 结算 -> 支付 -> 回调 =====
+%% ===== 4.1 功能 A：联系表单提交异步推送（访客零阻塞）=====
 sequenceDiagram
-    actor U as 用户
-    participant NC as Navbar/CartContext
-    participant PDP as ProductDetailClient
-    participant CO as /checkout
-    participant API as /api/orders
-    participant PP as Payment Provider
-    participant WH as Webhook
-    participant DB as Postgres
+    actor Visitor as 前台访客
+    participant CC as ContactClient
+    participant API as /api/contact (POST)
+    participant DB as prisma.contactMessage
+    participant SN as sendNotification (fire-and-forget)
+    participant PW as PersonalWechatPushService
+    participant SS as SecretStore
+    participant WX as 个人微信(Webhook)
 
-    U->>PDP: 点击「加入购物车」
-    PDP->>NC: addItem(product)
-    NC->>NC: 写 localStorage(sc_cart) / 已登录则 POST /api/user/cart
-    NC-->>U: 角标 +1
+    Visitor->>CC: 填写并提交询盘
+    CC->>API: POST /api/contact {name,email,phone,subject,message}
+    API->>DB: contactMessage.create(...)  %% 写库成功=提交成功
+    DB-->>API: contactMessage
+    API->>SN: sendNotification(data).catch()  %% 未 await，立即继续
+    SN-->>API: (不等待)
+    API-->>CC: 200 {success:true}  %% 访客立即看到成功，不受推送影响
+    CC-->>Visitor: 提交成功提示
 
-    U->>CO: 进入结算，填收货信息+选支付方式
-    CO->>API: POST {items, shippingAddress, paymentMethod}
-    API->>DB: 建 Order(pending,unpaid) + Payment(created)
-    API->>PP: createPayment(order)
-    alt Stripe/PayPal(有密钥)
-        PP-->>API: { payUrl: 第三方 checkout url }
-    else 微信/支付宝(mock)
-        PP-->>API: { payUrl: /checkout/mock-pay?orderId=&method= }
+    Note over SN,WX: 以下在后台异步执行，失败不影响上述响应
+    SN->>PW: pushContact(data)  %% 仅当 data.type==='contact'
+    PW->>SS: decrypt(notify.wechat.webhookEnc)
+    alt 未配置 / 未启用
+        PW-->>SN: 跳过（无推送、无报错）
+    else 已配置
+        SS-->>PW: 明文 webhookUrl
+        PW->>PW: detectProvider(url) + buildPayload(format)
+        PW->>WX: POST webhookUrl (fetch)
+        alt 失败且未超重试
+            PW->>WX: 重试 1 次
+        end
+        PW-->>SN: 结果/异常被 catch（仅 console.error）
     end
-    API-->>CO: { order, payment: { payUrl } }
-    CO->>U: 跳转 payUrl
 
-    U->>PP: 完成支付(或 mock 页确认)
-    PP->>WH: 发送 Webhook(含 orderId/transactionId)
-    WH->>WH: 验签(stripe-signature / paypal 传输签名 / mock 免验)
-    WH->>DB: Payment→paid, Order.paymentStatus=paid, paidAt, transactionId
-    WH-->>PP: 200 OK
-
-%% ===== 2. 后台用户管理 =====
+%% ===== 4.2 功能 A：后台「测试发送」=====
 sequenceDiagram
-    actor A as 管理员
-    participant UI as /admin/users
-    participant API as /api/admin/users
-    participant AUTH as requireAdmin()
-    participant SVC as userAuth.ts
-    participant DB as Postgres
+    actor Admin as 管理员
+    participant PG as 通知设置页(新区块)
+    participant API as /api/admin/settings/test-notify-webhook
+    participant PW as PersonalWechatPushService
+    participant WX as 个人微信(Webhook)
 
-    A->>UI: 打开用户列表
-    UI->>API: GET /api/admin/users?page=&search=
-    API->>AUTH: 校验 JWT + role==admin
-    AUTH-->>API: 通过
-    API->>SVC: getAllUsers()
-    SVC->>DB: 查询 users
-    DB-->>UI: 用户表格
-    A->>UI: 切换启用/停用 或 改角色
-    UI->>API: PATCH /api/admin/users/[id] {isActive|role}
-    API->>AUTH: 校验
-    API->>SVC: updateUserStatus / updateUserRole
-    SVC->>DB: UPDATE users
-    DB-->>UI: 刷新行状态
+    Admin->>PG: 输入 Webhook URL + 点「测试发送」
+    PG->>API: POST {webhookUrl, format}  %% 明文仅本次请求体内
+    API->>API: requireAdmin 校验
+    API->>PW: sendTest(webhookUrl, format)
+    PW->>PW: detectProvider + buildPayload
+    PW->>WX: POST webhookUrl
+    WX-->>PW: HTTP 状态 / 第三方 code
+    PW-->>API: PushResult{ok,provider,message}
+    API-->>PG: {success, message}
+    PG-->>Admin: 绿色/红色反馈 + 最近测试时间
 
-%% ===== 3. 后台服务管理执行（Q2 方案 C）=====
+%% ===== 4.3 功能 B：HTTPS 开关 备份→改→校验→reload→回滚 =====
 sequenceDiagram
-    actor A as 运维管理员
-    participant UI as /admin/services
-    participant API as /api/admin/services
-    participant AUTH as requireAdmin()
-    participant WL as commandWhitelist
-    participant RC as runCommand(execFile)
-    participant OS as 系统(pm2/nginx/certbot)
+    actor Admin as 管理员
+    participant SM as ServiceManager(开关卡片)
+    participant API as /api/admin/services/https-redirect
+    participant HR as HttpsRedirectService
+    participant NC as nginxConfig (writeNginxConfig/reloadNginx/writeNginxBackup)
+    participant FS as 磁盘 NGINX_CONF_PATH
+    participant NG as nginx 进程
 
-    A->>UI: 点击「重启应用」/「重载 Nginx」/「更新域名配置」
-    UI->>API: POST {action, params?}
-    API->>AUTH: 校验 admin
-    API->>WL: 校验 action∈白名单 + 参数(域名/端口/邮件)正则
-    WL-->>API: 通过 / 拒绝(400)
-    API->>RC: execFile('pm2',['restart','smart-cabinet']) 等
-    RC->>OS: 执行（无 shell，参数数组）
-    OS-->>RC: stdout/stderr + exitCode
-    RC-->>API: 结果
-    API-->>UI: 成功/失败 + 日志
+    Note over SM: 页面加载即读真实状态
+    SM->>API: GET 状态(可选) / 或 HR.getState
+    API->>HR: getState()
+    HR->>FS: readFileSync(NGINX_CONF_PATH)
+    HR-->>SM: 是否含 return 301 ...（开关初始值）
+
+    Admin->>SM: 切换开关 -> enabled
+    SM->>API: POST {enabled}
+    API->>API: requireAdmin 校验
+    API->>HR: setRedirect(enabled)
+
+    HR->>FS: 读 current 配置
+    HR->>HR: applyToggle(current, enabled, port)
+    Note right of HR: 启用: 确保 http 块含 return 301<br/>关闭: 移除 return 301 + 确保 location / proxy_pass(端口取自 https 块)
+    HR->>NC: writeNginxBackup(current)  %% 写 .bak（审计/兜底）
+    HR->>NC: writeNginxConfig(NGINX_CONF_PATH, next)
+    HR->>NC: reloadNginx()  %% 内部: nginx -t
+    NC->>NG: nginx -t
+    alt nginx -t 失败
+        NG-->>NC: stderr(配置错误)
+        NC-->>HR: {ok:false}
+        HR->>NC: writeNginxConfig(NGINX_CONF_PATH, current)  %% 回滚原文
+        Note right of HR: 关键：回滚后【不】reload，站点维持旧行为
+        HR-->>API: {ok:false, rolledBack:true, nginxError}
+        API-->>SM: 失败+错误摘要
+        SM-->>Admin: 红色「校验未通过，已回滚，未影响线上」+ 开关回原态
+    else nginx -t 通过
+        NC->>NG: nginx -s reload
+        alt reload 成功
+            NG-->>NC: ok
+            HR->>HR: audit(actor, enabled, 'ok')
+            HR-->>API: {ok:true, enabled, reloaded:true}
+            API-->>SM: 成功
+            SM-->>Admin: 绿色「配置已生效（已 reload nginx）」+ 生效时间
+        else reload 失败（如权限）
+            NG-->>NC: 失败
+            NC-->>HR: {ok:false}
+            HR->>NC: writeNginxConfig(NGINX_CONF_PATH, current)  %% 回滚
+            HR-->>API: {ok:false, rolledBack:true, message:"reload失败已回滚"}
+            API-->>SM: 失败
+            SM-->>Admin: 红色提示（权限/信号问题）
+        end
+    end
