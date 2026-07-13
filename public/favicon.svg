@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
   <defs>
-    <linearGradient id="starGrad" x1="20%" y1="0%" x2="80%" y2="100%">
+    <linearGradient id="starGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#60a5fa"/>
       <stop offset="50%" stop-color="#3b82f6"/>
       <stop offset="100%" stop-color="#2563eb"/>
@@ -10,11 +10,11 @@
   <!-- Outer ring: brand blue thin stroke -->
   <circle cx="16" cy="16" r="14" fill="none" stroke="#3b82f6" stroke-width="2"/>
 
-  <!-- Back star: cool slate, slightly rotated for layered depth -->
-  <path d="M16 7 L18.5 14 L25 16 L18.5 18 L16 25 L13.5 18 L7 16 L13.5 14 Z"
-        fill="#64748B" opacity="0.85" transform="rotate(18 16 16)"/>
+  <!-- Back star: cool slate, upper-left, rotated for a clear, separated feel -->
+  <path d="M0 -9 L2.5 -2 L9 0 L2.5 2 L0 9 L-2.5 2 L-9 0 L-2.5 -2 Z"
+        fill="#64748B" opacity="0.9" transform="translate(11.5 11.5) rotate(18) scale(0.82)"/>
 
-  <!-- Front star: bright blue gradient, counter-rotated -->
-  <path d="M16 6 L18.5 13.5 L26 16 L18.5 18.5 L16 26 L13.5 18.5 L6 16 L13.5 13.5 Z"
-        fill="url(#starGrad)" transform="rotate(-12 16 16)"/>
+  <!-- Front star: bright blue gradient, lower-right, counter-rotated -->
+  <path d="M0 -9 L2.5 -2 L9 0 L2.5 2 L0 9 L-2.5 2 L-9 0 L-2.5 -2 Z"
+        fill="url(#starGrad)" transform="translate(20.5 20.5) rotate(-14) scale(0.82)"/>
 </svg>

@@ -15,7 +15,9 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
  *  - Auto-play every 5s, paused on hover and disabled under prefers-reduced-motion.
  *  - Touch / drag support (swipe left-right on mobile).
  *  - Prev/next arrows + dot indicators.
- *  - Entrance fade-up driven by IntersectionObserver.
+ *  - Entrance fade-up via a pure-CSS mount animation (gallery-reveal) so the
+ *    section is ALWAYS visible — it never relies on JS/IntersectionObserver to
+ *    reveal content (prevents the "blank section" failure mode).
  *  - i18n: title / subtitle resolved via the `t()` prop (en / zh / ar).
  *  - RTL-safe: arrows and slide direction flip for Arabic.
  */
@@ -55,7 +57,7 @@ export default function ClientPhotoGallery({ t, locale }: ClientPhotoGalleryProp
   const [perView, setPerView] = useState(3);
   const [current, setCurrent] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
-  const [isVisible, setIsVisible] = useState(false);
+  const [inView, setInView] = useState(false);
 
   const sectionRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
@@ -64,25 +66,32 @@ export default function ClientPhotoGallery({ t, locale }: ClientPhotoGalleryProp
 
   const maxIndex = Math.max(0, PHOTOS.length - perView);
 
-  // Responsive per-view + reduced-motion handling
+  // Responsive per-view + reduced-motion + in-view detection for autoplay.
+  // NOTE: visibility is handled purely by CSS (gallery-reveal), so content is
+  // always shown regardless of whether this observer fires.
   useEffect(() => {
     const update = () => setPerView(getPerView());
     update();
     window.addEventListener('resize', update);
 
-    const el = sectionRef.current;
-    if (!el) return;
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduce) setIsPlaying(false);
 
-    const observer = new IntersectionObserver(
-      (entries) => entries.forEach((e) => e.isIntersecting && setIsVisible(true)),
-      { threshold: 0.1 },
-    );
-    observer.observe(el);
+    const el = sectionRef.current;
+    if (el) {
+      const observer = new IntersectionObserver(
+        (entries) => entries.forEach((e) => e.isIntersecting && setInView(true)),
+        { threshold: 0.1 },
+      );
+      observer.observe(el);
+      return () => {
+        window.removeEventListener('resize', update);
+        observer.disconnect();
+      };
+    }
+
     return () => {
       window.removeEventListener('resize', update);
-      observer.disconnect();
     };
   }, []);
 
@@ -111,12 +120,19 @@ export default function ClientPhotoGallery({ t, locale }: ClientPhotoGalleryProp
     [maxIndex],
   );
 
-  // Auto-play
+  // Auto-play — only after the section scrolls into view (progressive enhancement)
   useEffect(() => {
-    if (!isPlaying || !isVisible) return;
+    if (!isPlaying || !inView) return;
     const id = window.setInterval(() => step(1), 5000);
     return () => window.clearInterval(id);
-  }, [isPlaying, isVisible, step]);
+  }, [isPlaying, inView, step]);
+
+  // Pause auto-play on hover
+  const pause = () => setIsPlaying(false);
+  const resume = () => {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reduce) setIsPlaying(true);
+  };
 
   // Touch handlers
   const onTouchStart = (e: React.TouchEvent) => {
@@ -146,14 +162,24 @@ export default function ClientPhotoGallery({ t, locale }: ClientPhotoGalleryProp
   return (
     <section
       ref={sectionRef}
-      className={`py-20 px-4 sm:px-6 lg:px-8 bg-gray-50/50 relative overflow-hidden transition-opacity duration-700 ${
-        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
-      }`}
+      className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50/50 relative overflow-hidden gallery-reveal"
       dir={isRtl ? 'rtl' : 'ltr'}
+      onMouseEnter={pause}
+      onMouseLeave={resume}
     >
       <div className="absolute top-0 start-0 end-0 h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent opacity-70" />
 
       <style>{`
+        .gallery-reveal {
+          animation: galleryFadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        @keyframes galleryFadeUp {
+          from { opacity: 0; transform: translateY(24px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .gallery-reveal { animation: none; }
+        }
         .gallery-track {
           transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
           will-change: transform;

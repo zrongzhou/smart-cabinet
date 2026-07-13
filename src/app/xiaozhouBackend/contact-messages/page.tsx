@@ -59,6 +59,7 @@ export default function AdminContactMessagesPage() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
+  const [limit, setLimit] = useState(20);
 
   // Selection
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
@@ -76,7 +77,7 @@ export default function AdminContactMessagesPage() {
 
       const params = new URLSearchParams({
         page: page.toString(),
-        limit: '20',
+        limit: limit.toString(),
         isRead: activeFilter,
         ...(searchQuery && { search: searchQuery }),
       });
@@ -99,7 +100,7 @@ export default function AdminContactMessagesPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, activeFilter, searchQuery]);
+  }, [page, activeFilter, searchQuery, limit]);
 
   // Load stats
   const loadStats = useCallback(async () => {
@@ -137,10 +138,10 @@ export default function AdminContactMessagesPage() {
     loadStats();
   }, [loadStats]);
 
-  // Reset page when filter or search changes
+  // Reset page when filter, search, or page-size changes
   useEffect(() => {
     setPage(1);
-  }, [activeFilter, searchQuery]);
+  }, [activeFilter, searchQuery, limit]);
 
   // Handle select all
   useEffect(() => {
@@ -672,32 +673,77 @@ export default function AdminContactMessagesPage() {
             </div>
 
             {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex items-center justify-between mt-6 pt-6 border-t border-gray-200">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 pt-6 border-t border-gray-200">
+              <div className="flex items-center gap-3">
                 <p className="text-sm text-gray-600">
-                  第 {(page - 1) * 20 + 1}-{Math.min(page * 20, total)} 条，共 {total} 条
+                  第 {total === 0 ? 0 : (page - 1) * limit + 1}-{Math.min(page * limit, total)} 条，共 {total} 条
                 </p>
-                <div className="flex items-center gap-2">
+                <select
+                  value={limit}
+                  onChange={(e) => setLimit(Number(e.target.value))}
+                  className="text-sm border border-gray-300 rounded-lg px-2 py-1.5 text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  aria-label="每页条数"
+                >
+                  {[10, 20, 50].map((sz) => (
+                    <option key={sz} value={sz}>{sz} 条/页</option>
+                  ))}
+                </select>
+              </div>
+
+              {totalPages > 1 && (
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={() => setPage(1)}
+                    disabled={page === 1}
+                    className="px-2.5 py-1.5 rounded-lg border border-gray-300 text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    首页
+                  </button>
                   <button
                     onClick={() => setPage(page - 1)}
                     disabled={page === 1}
-                    className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                    aria-label="上一页"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </button>
-                  <span className="text-sm text-gray-600 px-3">
-                    {page} / {totalPages}
-                  </span>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1)
+                    .filter((p) => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
+                    .map((p, idx, arr) => (
+                      <span key={p} className="flex items-center">
+                        {idx > 0 && arr[idx - 1] !== p - 1 && (
+                          <span className="px-1 text-gray-400">…</span>
+                        )}
+                        <button
+                          onClick={() => setPage(p)}
+                          className={`min-w-[34px] h-[34px] rounded-lg text-sm border transition-colors ${
+                            p === page
+                              ? 'bg-blue-600 text-white border-blue-600'
+                              : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                          }`}
+                        >
+                          {p}
+                        </button>
+                      </span>
+                    ))}
                   <button
                     onClick={() => setPage(page + 1)}
                     disabled={page === totalPages}
-                    className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                    aria-label="下一页"
                   >
                     <ChevronRight className="w-4 h-4" />
                   </button>
+                  <button
+                    onClick={() => setPage(totalPages)}
+                    disabled={page === totalPages}
+                    className="px-2.5 py-1.5 rounded-lg border border-gray-300 text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    末页
+                  </button>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </>
         )}
       </div>
