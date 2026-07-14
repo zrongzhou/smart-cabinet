@@ -39,7 +39,7 @@ const BLUR_DATA_URL =
 /** Ordered list of gallery photos (client-01 … client-14). */
 const PHOTOS: string[] = Array.from(
   { length: 14 },
-  (_, i) => `/images/about/clients/client-${String(i + 1).padStart(2, '0')}.png`,
+  (_, i) => `/images/about/clients/client-${String(i + 1).padStart(2, '0')}.jpg`,
 );
 
 /** Number of slides visible at once, by breakpoint. */
@@ -58,6 +58,7 @@ export default function ClientPhotoGallery({ t, locale }: ClientPhotoGalleryProp
   const [current, setCurrent] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [inView, setInView] = useState(false);
+  const [brokenImages, setBrokenImages] = useState<Set<number>>(new Set());
 
   const sectionRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
@@ -240,16 +241,24 @@ export default function ClientPhotoGallery({ t, locale }: ClientPhotoGalleryProp
                   style={{ width: `${cardWidthPct}%` }}
                 >
                   <div className="relative overflow-hidden rounded-xl bg-gray-100 aspect-[3/2] shadow-md hover:shadow-xl transition-shadow duration-300">
-                    <Image
-                      src={src}
-                      alt={`Customer site visit ${idx + 1} — smart cabinet in use`}
-                      width={600}
-                      height={400}
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      className="h-full w-full object-cover"
-                      placeholder="blur"
-                      blurDataURL={BLUR_DATA_URL}
-                    />
+                    {brokenImages.has(idx) ? (
+                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 text-slate-400">
+                        <svg className="w-10 h-10 mb-2 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.41a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>
+                        <span className="text-xs">Photo unavailable</span>
+                      </div>
+                    ) : (
+                      <Image
+                        src={src}
+                        alt={`Customer site visit ${idx + 1} — smart cabinet in use`}
+                        width={600}
+                        height={400}
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        className="h-full w-full object-cover"
+                        placeholder="blur"
+                        blurDataURL={BLUR_DATA_URL}
+                        onError={() => setBrokenImages(prev => new Set(prev).add(idx))}
+                      />
+                    )}
                   </div>
                 </div>
               ))}
