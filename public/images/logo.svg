@@ -1,51 +1,34 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 56" fill="none">
   <defs>
-    <!-- Brand-blue gradient for the outer ring -->
-    <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#60a5fa"/>
-      <stop offset="50%" stop-color="#3b82f6"/>
-      <stop offset="100%" stop-color="#2563eb"/>
+    <!-- 深蓝水晶渐变 -->
+    <linearGradient id="cr" x1="4" y1="2" x2="52" y2="54" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0a1a4f"/>
+      <stop offset="0.35" stop-color="#1e40af"/>
+      <stop offset="0.7" stop-color="#2563eb"/>
+      <stop offset="1" stop-color="#3b82f6"/>
     </linearGradient>
-
-    <!-- Bright blue gradient for the front star -->
-    <linearGradient id="starGrad" x1="20%" y1="0%" x2="80%" y2="100%">
-      <stop offset="0%" stop-color="#60a5fa"/>
-      <stop offset="50%" stop-color="#3b82f6"/>
-      <stop offset="100%" stop-color="#2563eb"/>
+    <!-- 双星亮白渐变 -->
+    <linearGradient id="st" x1="10" y1="8" x2="40" y2="42" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#c7d2fe"/>
     </linearGradient>
-
-    <!-- Subtle drop shadow for a soft, professional lift -->
-    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#1e40af" flood-opacity="0.25"/>
-    </filter>
   </defs>
 
-  <!-- Outer ring: brand-blue stroke with faint fill (position preserved: cx=28 cy=28 r=24) -->
-  <circle cx="28" cy="28" r="24" fill="url(#logoGrad)" opacity="0.10" stroke="url(#logoGrad)" stroke-width="1.6"/>
+  <!-- 深蓝水晶菱形 -->
+  <polygon points="24,3 45,24 24,45 3,24" fill="url(#cr)" stroke="#3b82f6" stroke-width="0.8" stroke-opacity="0.7"/>
 
-  <!-- Dual four-pointed star mark (replaces the old S-swirl): back slate star + front blue star, offset rotation for layered depth -->
-  <g filter="url(#softShadow)">
-    <!-- Back star: cool slate, rotated +18° -->
-    <path d="M28 12 L31 25 L44 28 L31 31 L28 44 L25 31 L12 28 L25 25 Z"
-          fill="#64748B" opacity="0.85" transform="rotate(18 28 28)"/>
+  <!-- 水晶切面高光 -->
+  <path d="M24 3 L24 45" stroke="#ffffff" stroke-opacity="0.18" stroke-width="0.6"/>
+  <path d="M3 24 L45 24" stroke="#ffffff" stroke-opacity="0.18" stroke-width="0.6"/>
+  <path d="M24 3 L33 12 L15 12 Z" fill="#ffffff" fill-opacity="0.22"/>
 
-    <!-- Front star: bright blue gradient, rotated -12° -->
-    <path d="M28 10 L32 24 L46 28 L32 32 L28 46 L24 32 L10 28 L24 24 Z"
-          fill="url(#starGrad)" transform="rotate(-12 28 28)"/>
-  </g>
+  <!-- 主星 -->
+  <path d="M19 13 L21.8 23.6 L31 26.4 L21.8 29.2 L19 39.5 L16.2 29.2 L6.5 26.4 L16.2 23.6 Z" fill="url(#st)"/>
+  <!-- 次星 -->
+  <path d="M33 8 L34 12 L38 13 L34 14 L33 18 L32 14 L28 13 L32 12 Z" fill="url(#st)" opacity="0.75"/>
 
-  <!-- Company name: Qtech -->
-  <text x="60" y="26" font-family="'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif"
-        font-size="20" font-weight="700" fill="#334155" letter-spacing="-0.3">
-    Qtech
-  </text>
-
-  <!-- Subtitle: Tool Cabinet -->
-  <text x="60" y="44" font-family="'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif"
-        font-size="11" font-weight="500" fill="#64748b" letter-spacing="0.8">
-    TOOL CABINET
-  </text>
-
-  <!-- Small dot separator accent -->
-  <circle cx="59" cy="34" r="1.5" fill="#3b82f6" opacity="0.5"/>
+  <!-- Qtech -->
+  <text x="54" y="25" font-family="'Inter',-apple-system,sans-serif" font-size="18" font-weight="700" fill="#0f172a" letter-spacing="-0.3">Qtech</text>
+  <!-- Tool Cabinet -->
+  <text x="54" y="40" font-family="'Inter',-apple-system,sans-serif" font-size="9" font-weight="400" fill="#2563eb" letter-spacing="0.8">TOOL CABINET</text>
 </svg>

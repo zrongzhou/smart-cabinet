@@ -6,23 +6,18 @@
       <stop offset="0.7" stop-color="#2563eb"/>
       <stop offset="1" stop-color="#3b82f6"/>
     </linearGradient>
-    <linearGradient id="st" x1="4" y1="5" x2="28" y2="27" gradientUnits="userSpaceOnUse">
-      <stop stopColor="#ffffff"/>
-      <stop offset="1" stopColor="#c7d2fe"/>
-    </linearGradient>
   </defs>
 
-  <!-- 蓝紫水晶菱形 -->
-  <polygon points="16,2 30,16 16,30 2,16" fill="url(#cr)" stroke="#3b82f6" stroke-width="0.7" stroke-opacity="0.7"/>
+  <!-- 深蓝水晶菱形 -->
+  <polygon points="16,2 30,16 16,30 2,16" fill="url(#cr)" stroke="#3b82f6" stroke-width="0.8"/>
 
-  <!-- 水晶切面 -->
-  <path d="M16 2 L16 30" stroke="#fff" stroke-opacity="0.18" stroke-width="0.4"/>
-  <path d="M2 16 L30 16" stroke="#fff" stroke-opacity="0.18" stroke-width="0.4"/>
-  <path d="M16 2 L22 8 L10 8 Z" fill="#fff" fill-opacity="0.22"/>
+  <!-- 水晶切面高光 -->
+  <path d="M16 2 L16 30" stroke="#ffffff" stroke-opacity="0.2" stroke-width="0.5"/>
+  <path d="M2 16 L30 16" stroke="#ffffff" stroke-opacity="0.2" stroke-width="0.5"/>
+  <path d="M16 2 L22 9 L10 9 Z" fill="#ffffff" fill-opacity="0.25"/>
 
-  <!-- 主星 -->
-  <path d="M12.5 9 L14.3 17 L21.5 19 L14.3 20.8 L12.5 28.5 L10.7 20.8 L4 19 L10.7 17 Z" fill="url(#st)"/>
-
-  <!-- 次星 -->
-  <path d="M22 5.5 L23 9 L26.5 10 L23 11 L22 14 L21 11 L17.5 10 L21 9 Z" fill="url(#st)" opacity="0.75"/>
+  <!-- 主星 — 纯白实心（小尺寸必须高对比）-->
+  <path d="M12 8 L14.2 16.5 L22 18.5 L14.2 20.5 L12 29 L9.8 20.5 L2 18.5 L9.8 16.5 Z" fill="#ffffff"/>
+  <!-- 次星 — 纯白 + 稍透明 -->
+  <path d="M21 4 L22.2 8 L26.5 9.2 L22.2 10.4 L21 14.5 L19.8 10.4 L15.5 9.2 L19.8 8 Z" fill="#ffffff" opacity="0.85"/>
 </svg>
