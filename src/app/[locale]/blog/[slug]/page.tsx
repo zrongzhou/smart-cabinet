@@ -177,7 +177,7 @@ export default async function Page({ params }: PageProps) {
   const baseUrl = getBaseUrl();
   const blogImage = (blog?.image as string | null) || '';
   // 若无封面则用站点默认 logo 兜底
-  const imageForJsonLd = blogImage || `${baseUrl}/images/logo.png`;
+  const imageForJsonLd = blogImage || `${baseUrl}/images/logo.svg`;
   const displayTitle = blog ? (blog.title[loc] || blog.title.en) : rawSlug;
   const datePublished = blog?.publishedAt ? new Date(blog.publishedAt).toISOString() : new Date().toISOString();
 
