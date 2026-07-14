@@ -90,11 +90,10 @@ const CERT_BADGES = [
 export default function CompanyShowcase({ t, locale }: CompanyShowcaseProps) {
   return (
     <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative overflow-hidden bg-gradient-to-br from-blue-50/40 via-indigo-50/30 to-white">
-      {/* Soft animated depth layer */}
-      <div className="absolute inset-0 opacity-[0.5]" style={{
+      {/* Soft animated depth layer — 极淡蓝，无紫色闪屏 */}
+      <div className="absolute inset-0" style={{
         background:
-          'linear-gradient(135deg, rgba(59,130,246,0.06) 0%, rgba(99,102,241,0.03) 50%, rgba(139,92,246,0.06) 100%), radial-gradient(ellipse at 30% 50%, #3b82f6 0%, transparent 60%), radial-gradient(ellipse at 70% 30%, #8b5cf6 0%, transparent 55%)',
-        animation: 'about-intro-bg-pulse 10s ease-in-out infinite alternate',
+          'linear-gradient(135deg, rgba(59,130,246,0.03) 0%, rgba(99,102,241,0.02) 50%, rgba(147,197,253,0.03) 100%)',
       }} />
 
       {/* Badge */}
