@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { ArrowLeft, Package } from 'lucide-react';
 import { fetchUnifiedCategories, getBaseUrl } from '@/data/unified-data';
 import { getProductHref } from '@/lib/product-url';
+import ImageWithRetry from '@/components/ui/ImageWithRetry';
 
 // 防止静态生成时连接数据库（本页需按 slug 实时取分类 + 产品）
 export const dynamic = 'force-dynamic';
@@ -143,12 +144,15 @@ export default async function CategoryPage({ params: { locale, slug } }: Props) 
                   {/* 产品图片 */}
                   {product.images && product.images[0] ? (
                     <div className="relative h-56 overflow-hidden bg-blue-50">
-                      <img
-                        src={product.images[0]}
-                        alt={productName}
-                        className="w-full h-56 object-contain p-4 transition-transform duration-500 group-hover:scale-110"
-                        loading="lazy"
-                      />
+                      <div className="w-full h-56 transition-transform duration-500 group-hover:scale-110">
+                        <ImageWithRetry
+                          src={product.images[0]}
+                          alt={productName}
+                          className="w-full h-56 object-contain p-4"
+                          loading="lazy"
+                          fallbackSrc="/images/og-default.svg"
+                        />
+                      </div>
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-center justify-center">
                         <div className="opacity-0 group-hover:opacity-100 bg-white/90 backdrop-blur-sm text-gray-900 px-3 py-1.5 rounded-full flex items-center gap-1.5 text-xs font-medium shadow-lg">
                           {locale === 'zh' ? '查看详情' : 'View Details'}

@@ -5,6 +5,7 @@ import { Bars3Icon, XMarkIcon, ChevronDownIcon, UserIcon, ArrowRightOnRectangleI
 import { useLocale } from '@/lib/i18n';
 import { useAuth } from '@/components/AuthProvider';
 import { fetchUnifiedSettings } from '@/data/unified-data';
+import Logo from '@/components/Logo';
 
 // Touch target size for mobile (44x44px minimum as per WCAG/Apple guidelines)
 const TOUCH_TARGET_CLASSES = 'min-h-[44px] min-w-[44px]';
@@ -103,20 +104,22 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Logo + Company Name (always show both) */}
+            {/* Brand logo — unified Qtech hexagon mark (falls back to a custom
+                admin-configured logo when one is set). */}
             <a href={`/${locale}`} className="flex items-center space-x-2">
               {logoUrl && !logoError ? (
-                <img 
-                  src={logoUrl} 
-                  alt={siteName} 
-                  className="h-8 w-auto object-contain" 
+                <img
+                  src={logoUrl}
+                  alt={siteName}
+                  className="h-8 w-auto object-contain"
                   onError={() => setLogoError(true)}
                 />
               ) : (
-                <img src="/images/logo.svg" alt={siteName} className="h-8 w-auto object-contain" />
+                <Logo size={32} textClassName="text-gray-900" />
               )}
-              {/* Always show company name, regardless of logo */}
-              <span className={`text-xl font-bold text-gray-900`}>{siteName}</span>
+              {logoUrl && !logoError && siteName ? (
+                <span className="text-xl font-bold text-gray-900">{siteName}</span>
+              ) : null}
             </a>
 
             {/* ============================================================= */}
@@ -283,8 +286,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
             <div className="p-6">
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center space-x-2">
-                  <img src="/images/logo.svg" alt="" className="h-7 w-auto object-contain" />
-                  <span className="font-bold text-gray-900">Qtech</span>
+                  <Logo size={28} textClassName="text-gray-900" />
                 </div>
                 <button
                   onClick={() => setIsMobileMenuOpen(false)}

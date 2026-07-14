@@ -1,7 +1,7 @@
 import type { Product } from '@/types/product';
 import Link from 'next/link';
-import Image from 'next/image';
 import { ArrowRight, Package, Heart } from 'lucide-react';
+import ImageWithRetry from '@/components/ui/ImageWithRetry';
 import { useState, memo } from 'react';
 import { useLocale } from '@/lib/i18n';
 import { getProductHref } from '@/lib/product-url';
@@ -92,15 +92,15 @@ function ProductCard({ product, locale, showFavoriteButton = true, priority = fa
       {/* Product Image with Premium Glass Effect */}
       <div className="relative overflow-hidden h-56" style={{ background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)' }}>
         {product.images?.[0] ? (
-          <Image
-            src={imageSrc}
-            alt={product.name?.[locale as keyof typeof product.name] || (product as any).name || 'Product'}
-            fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className="object-cover group-hover:scale-110 transition-transform duration-700"
-            loading={priority ? "eager" : "lazy"}
-            priority={priority}
-          />
+          <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-110">
+            <ImageWithRetry
+              src={imageSrc}
+              alt={product.name?.[locale as keyof typeof product.name] || (product as any).name || 'Product'}
+              className="w-full h-full object-cover"
+              loading={priority ? 'eager' : 'lazy'}
+              fallbackSrc={PLACEHOLDER_SVG}
+            />
+          </div>
         ) : (
           <div className="w-full h-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%)' }}>
             <Package className="w-16 h-16 text-gray-300" />

@@ -5,6 +5,7 @@ import { Package, ArrowLeft, Share2, ChevronRight, ChevronLeft, X, Star, FileTex
 import Image from 'next/image';
 import ReviewList from '@/components/products/ReviewList';
 import SafeImage from '@/components/ui/SafeImage';
+import ImageWithRetry from '@/components/ui/ImageWithRetry';
 import { getProductHref } from '@/lib/product-url';
 
 // Safe text renderer - handles i18n objects, arrays, null, undefined
@@ -331,15 +332,12 @@ export default function ProductDetailClient({
                             selectedImage === index ? 'border-blue-500' : 'border-gray-200 hover:border-gray-300'
                           }`}
                         >
-                          <img 
-                            src={image} 
-                            alt="" 
-                            className="w-full h-full object-cover" 
+                          <ImageWithRetry
+                            src={image}
+                            alt=""
+                            className="w-full h-full object-cover"
                             loading="lazy"
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.style.display = 'none';
-                            }}
+                            fallbackSrc="/images/og-default.svg"
                           />
                         </button>
                       ))}

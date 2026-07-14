@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Facebook, Twitter, Linkedin, Mail, Phone, MapPin, Globe, ArrowRight } from 'lucide-react';
 import { useLocale } from '@/lib/i18n';
 import { fetchUnifiedSettings } from '@/data/unified-data';
+import Logo from '@/components/Logo';
 
 // Firefly component - separated to avoid hydration mismatch
 function Firefly({ index }: { index: number }) {
@@ -74,7 +75,6 @@ export default function Footer() {
   const L = (zhVal: string, enVal: string, arVal: string) =>
     locale === 'zh' ? zhVal : locale === 'ar' ? arVal : enVal;
 
-  const displayName = settings ? L(settings.companyNameZh || '', settings.companyName || '', settings.companyNameAr || '') : 'Qtech';
   const displayCompany = settings ? L(settings.companyNameZh || '广州秋彦科技有限公司', settings.companyName || 'Guangzhou Qiuyan Technology Co., Ltd.', settings.companyNameAr || '') : 'Guangzhou Qiuyan Technology Co., Ltd.';
   // Support multi-value contact info (arrays from admin settings)
   const displayEmails = (settings?.contactEmails && Array.isArray(settings.contactEmails) && settings.contactEmails.length > 0)
@@ -145,10 +145,7 @@ export default function Footer() {
           {/* Column 1: Brand & Description */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-3 mb-5">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/20">
-                <span className="text-white font-bold text-lg">WS</span>
-              </div>
-              <span className="text-white font-bold text-lg">{displayName}</span>
+              <Logo size={40} textClassName="text-white" />
             </div>
             <p className="text-sm leading-relaxed mb-5 text-gray-300">
               {t('footer.companyDescription')}

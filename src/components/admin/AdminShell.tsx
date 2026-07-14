@@ -27,6 +27,7 @@ import {
   adminLocales,
   type AdminLocale,
 } from '@/lib/admin-i18n';
+import Logo from '@/components/Logo';
 // Bug 9 fix: wrap the admin content area so a runtime exception in any
 // sub-page (e.g. the "add product" page) shows a recoverable error panel
 // instead of white-screening the whole console.
@@ -605,9 +606,7 @@ export default function AdminShell({ prefix, children }: AdminShellProps) {
         <header className="sticky top-0 z-40 h-14 bg-white/90 backdrop-blur-xl border-b border-slate-200/80 shadow-sm flex items-center justify-between px-4 sm:px-6 gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <Link href={`/${prefix}`} className="flex items-center gap-2 shrink-0">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 via-cyan-500 to-blue-600 flex items-center justify-center shadow-md shadow-blue-500/25">
-                <LayoutDashboard className="w-5 h-5 text-white" />
-              </div>
+              <Logo markOnly size={36} />
               <span className="font-bold text-slate-800 text-base whitespace-nowrap">
                 {t('common.appName')}
               </span>

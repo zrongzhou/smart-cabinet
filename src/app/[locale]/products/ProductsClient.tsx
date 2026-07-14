@@ -7,6 +7,7 @@ import { useLocale } from '@/lib/i18n';
 import { getProductHref } from '@/lib/product-url';
 import { Product, Category } from '@/lib/api';
 import OceanHeader from '@/components/OceanHeader';
+import ImageWithRetry from '@/components/ui/ImageWithRetry';
 
 // ===========================================================
 // PRODUCTS FILTER — L2 sub-category Pills (v266)
@@ -485,11 +486,15 @@ export default function ProductsClient({
                     {/* Product Image */}
                     {product.images && product.images[0] ? (
                       <div className="relative h-56 overflow-hidden bg-blue-50">
-                        <img src={product.images[0]} alt={name}
-                          className="w-full h-56 object-contain p-4 transition-transform duration-500 group-hover:scale-110"
-                          loading={isPriority ? 'eager' : 'lazy'}
-                          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                        />
+                        <div className="w-full h-56 transition-transform duration-500 group-hover:scale-110">
+                          <ImageWithRetry
+                            src={product.images[0]}
+                            alt={name}
+                            className="w-full h-56 object-contain p-4"
+                            loading={isPriority ? 'eager' : 'lazy'}
+                            fallbackSrc="/images/og-default.svg"
+                          />
+                        </div>
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-center justify-center">
                           <div className="opacity-0 group-hover:opacity-100 bg-white/90 backdrop-blur-sm text-gray-900 px-3 py-1.5 rounded-full flex items-center gap-1.5 text-xs font-medium shadow-lg">
                             <ExternalLink className="w-3.5 h-3.5" />

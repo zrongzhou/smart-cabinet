@@ -8,6 +8,7 @@ import { getProductHref } from '@/lib/product-url';
 import { Product } from '@/types/product';
 import Link from 'next/link';
 import { Heart, ArrowLeft, X, Package } from 'lucide-react';
+import ImageWithRetry from '@/components/ui/ImageWithRetry';
 
 // Bug 5 fix: this page was referenced by the account dashboard but never created,
 // so the "view all favorites" link 404'd. It shares the SAME storage key
@@ -157,11 +158,14 @@ export default function FavoritesPage() {
                 <Link href={getProductHref(product.slug, locale)} className="block">
                   <div className="aspect-square bg-gray-100 overflow-hidden">
                     {product.images && product.images[0] ? (
-                      <img
-                        src={product.images[0]}
-                        alt={getProductName(product)}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                      />
+                      <div className="w-full h-full transition-transform duration-300 group-hover:scale-110">
+                        <ImageWithRetry
+                          src={product.images[0]}
+                          alt={getProductName(product)}
+                          className="w-full h-full object-cover"
+                          fallbackSrc="/images/og-default.svg"
+                        />
+                      </div>
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-cyan-100">
                         <Package className="w-10 h-10 text-blue-400" />

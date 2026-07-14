@@ -7,6 +7,7 @@ import { Product } from '@/data/unified-data';
 import { fetchUnifiedProducts } from '@/data/unified-data';
 import { motion } from 'framer-motion';
 import { StarIcon } from '@heroicons/react/24/solid';
+import ImageWithRetry from '@/components/ui/ImageWithRetry';
 
 export default function FeaturedProducts() {
   const { locale, t } = useLocale();
@@ -132,26 +133,14 @@ export default function FeaturedProducts() {
                     <div className="relative h-64 overflow-hidden bg-gradient-to-br from-slate-50 to-blue-50/30">
                       {product.images && product.images[0] ? (
                         <>
-                          <img
-                            src={product.images[0]}
-                            alt={locale === 'zh' ? product.name.zh : locale === 'ar' ? product.name.ar : product.name.en}
-                            className="w-full h-full object-cover transition-transform duration-700"
-                            style={{ transform: 'scale(1)' }}
-                            onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; }}
-                            onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.style.display = 'none';
-                              const fallback = target.nextElementSibling as HTMLElement;
-                              if (fallback) fallback.style.display = 'flex';
-                            }}
-                            loading={index < 2 ? "eager" : "lazy"}
-                          />
-                          <div
-                            className="absolute inset-0 flex flex-col items-center justify-center"
-                            style={{ display: 'none', background: 'linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)' }}
-                          >
-                            <span className="text-sm font-medium text-white/90 relative z-10 text-center">{locale === 'zh' ? product.name.zh : locale === 'ar' ? product.name.ar : product.name.en || product.sku || 'Product'}</span>
+                          <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-105">
+                            <ImageWithRetry
+                              src={product.images[0]}
+                              alt={locale === 'zh' ? product.name.zh : locale === 'ar' ? product.name.ar : product.name.en}
+                              className="w-full h-full object-cover"
+                              loading={index < 2 ? 'eager' : 'lazy'}
+                              fallbackSrc="/images/og-default.svg"
+                            />
                           </div>
                         </>
                       ) : (

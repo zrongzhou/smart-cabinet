@@ -3,6 +3,7 @@
 import { useLocale } from '@/lib/i18n';
 import { motion } from 'framer-motion';
 import { CalendarIcon, UserIcon, ArrowRightIcon } from '@heroicons/react/24/solid';
+import ImageWithRetry from '@/components/ui/ImageWithRetry';
 import blogs, { getFeaturedBlogs } from '@/data/blogs';
 
 const fadeInUp = {
@@ -204,26 +205,14 @@ export default function BlogPreview({ locale: propLocale, blogs: propBlogs }: Bl
               {/* Post Image */}
               {post.image ? (
                 <div className="relative h-48 overflow-hidden">
-                  <img
-                    src={post.image}
-                    alt={localized(post.title, 'Blog post')}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                    onError={(e) => {
-                      const target = e.target as HTMLElement;
-                      target.style.display = 'none';
-                      const fallback = target.nextElementSibling as HTMLElement;
-                      if (fallback) fallback.style.display = 'flex';
-                    }}
-                    loading="lazy"
-                  />
-                  {/* Fallback gradient */}
-                  <div
-                    className="absolute inset-0 flex items-center justify-center"
-                    style={{ display: 'none', background: 'linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)' }}
-                  >
-                    <span className="text-white font-bold text-lg text-center px-4">
-                      {localized(post.title, 'Blog')}
-                    </span>
+                  <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-110">
+                    <ImageWithRetry
+                      src={post.image}
+                      alt={localized(post.title, 'Blog post')}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                      fallbackSrc="/images/og-default.svg"
+                    />
                   </div>
                   {/* Image overlay for glass integration */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
