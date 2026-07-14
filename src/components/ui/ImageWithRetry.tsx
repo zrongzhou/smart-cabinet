@@ -121,7 +121,14 @@ export default function ImageWithRetry({
   return (
     <>
       {showSkeleton && (
-        <div className="absolute inset-0 animate-pulse bg-slate-200" aria-hidden="true" />
+        <div className="absolute inset-0 overflow-hidden animate-pulse bg-gradient-to-br from-slate-100 to-slate-200" aria-hidden="true">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <svg className="w-8 h-8 text-slate-300 animate-spin" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2.5" opacity="0.3" />
+              <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+            </svg>
+          </div>
+        </div>
       )}
       {status === 'failed' && (
         <div className="absolute inset-0 flex items-center justify-center bg-slate-100 text-xs text-slate-400">
