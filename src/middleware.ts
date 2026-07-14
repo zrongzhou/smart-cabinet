@@ -57,5 +57,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/panel', '/((?!_next/static|_next/image|favicon.ico|images/).*)'],
+  matcher: ['/admin/:path*', '/panel', '/((?!_next/static|_next/image|favicon.ico|favicon.svg|images/).*)'],
 };
