@@ -22,8 +22,6 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
   const { locale, t } = useLocale();
   const { user, isAuthenticated, logout } = useAuth();
   const [siteName, setSiteName] = useState('Qtech Tool Cabinet');
-  const [logoUrl, setLogoUrl] = useState('/images/logo.svg');
-  const [logoError, setLogoError] = useState(false);
   const isRTL = locale === 'ar';
 
   // Load site settings from API
@@ -34,7 +32,6 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
         if (locale === 'zh' && settings.companyNameZh) setSiteName(settings.companyNameZh);
         else if (locale === 'ar' && settings.companyNameAr) setSiteName(settings.companyNameAr);
         else if (settings.companyName) setSiteName(settings.companyName);
-        if (settings.logo) setLogoUrl(settings.logo);
       } catch (e) {
         console.error('Failed to load site settings:', e);
       }
@@ -107,17 +104,11 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
             {/* Brand logo — unified Qtech hexagon mark (falls back to a custom
                 admin-configured logo when one is set). */}
             <a href={`/${locale}`} className="flex items-center space-x-2">
-              {logoUrl && !logoError ? (
-                <img
-                  src={logoUrl}
-                  alt={siteName}
-                  className="h-8 w-auto object-contain"
-                  onError={() => setLogoError(true)}
-                />
-              ) : (
-                <Logo size={32} textClassName="text-gray-900" />
-              )}
-              {logoUrl && !logoError && siteName ? (
+              {/* Unified Qtech double-star mark (matches Footer / AdminShell).
+                  Rendered directly to avoid the flash of a broken /images/logo.svg
+                  fallback on first paint. */}
+              <Logo size={32} textClassName="text-gray-900" />
+              {siteName ? (
                 <span className="text-xl font-bold text-gray-900">{siteName}</span>
               ) : null}
             </a>

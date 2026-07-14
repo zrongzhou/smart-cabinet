@@ -10,8 +10,8 @@ interface LogoProps {
 
 /**
  * Qtech brand mark — a "double star": a large four-point sparkle paired with a
- * smaller offset sparkle, both filled with the ice-blue gradient
- * (#22d3ee → #0891b2). The small star carries reduced opacity so the pair
+ * smaller offset sparkle, both filled with the deep-blue gradient
+ * (#1d4ed8 → #1e3a8a). The small star carries reduced opacity so the pair
  * reads as a balanced, layered mark without the two shapes crossing into a
  * messy overlap. Optionally paired with the wordmark "Qtech" and the
  * "TOOL CABINET" tagline.
@@ -38,8 +38,8 @@ export default function Logo({
       >
         <defs>
           <linearGradient id="qtechMark" x1="4" y1="6" x2="44" y2="42" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#22d3ee" />
-            <stop offset="1" stopColor="#0891b2" />
+            <stop stopColor="#1d4ed8" />
+            <stop offset="1" stopColor="#1e3a8a" />
           </linearGradient>
         </defs>
         {/* Primary star — large four-point sparkle */}
