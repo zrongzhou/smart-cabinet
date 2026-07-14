@@ -101,16 +101,17 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Brand logo — unified Qtech hexagon mark (falls back to a custom
-                admin-configured logo when one is set). */}
-            <a href={`/${locale}`} className="flex items-center space-x-2">
-              {/* Unified Qtech double-star mark (matches Footer / AdminShell).
-                  Rendered directly to avoid the flash of a broken /images/logo.svg
-                  fallback on first paint. */}
-              <Logo size={32} textClassName="text-gray-900" />
-              {siteName ? (
-                <span className="text-xl font-bold text-gray-900">{siteName}</span>
-              ) : null}
+            {/* Brand logo — 两列布局: 左列=菱形星标+Qtech/TOOL CABINET, 右列=公司全名 */}
+            <a href={`/${locale}`} className="flex items-center gap-3">
+              <Logo size={28} />
+              {siteName && (
+                <span
+                  className="hidden sm:inline text-slate-900 font-bold leading-snug"
+                  style={{ fontSize: '15px', maxWidth: '180px' }}
+                >
+                  {siteName}
+                </span>
+              )}
             </a>
 
             {/* ============================================================= */}
@@ -277,7 +278,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
             <div className="p-6">
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center space-x-2">
-                  <Logo size={28} textClassName="text-gray-900" />
+                  <Logo size={30} />
                 </div>
                 <button
                   onClick={() => setIsMobileMenuOpen(false)}

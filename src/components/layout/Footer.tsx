@@ -145,15 +145,17 @@ export default function Footer() {
           {/* Column 1: Brand & Description */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-3 mb-5">
-              <Logo size={40} textClassName="text-white" />
+              <Logo size={40} textClassName="text-white" subTextColor="#bfdbfe" />
+              <span
+                className="text-gray-100 font-bold leading-snug"
+                style={{ fontSize: '15px', maxWidth: '200px' }}
+              >
+                {displayCompany}
+              </span>
             </div>
             <p className="text-sm leading-relaxed mb-5 text-gray-300">
               {t('footer.companyDescription')}
             </p>
-            <div className="flex items-center gap-2 text-xs text-gray-400">
-              <Globe className="w-4 h-4 flex-shrink-0" />
-              <span>{displayCompany}</span>
-            </div>
           </div>
 
           {/* Column 2: Quick Links Part A */}

@@ -1,32 +1,34 @@
+import { useId } from 'react';
+
 interface LogoProps {
   className?: string;
   /** Pixel size of the double-star mark (width & height of the SVG). */
   size?: number;
   /** Render only the mark (no wordmark). */
   markOnly?: boolean;
-  /** Text color of the wordmark. */
+  /** Text color of the wordmark ("Qtech"). */
   textClassName?: string;
+  /** Color of the "Tool Cabinet" subtitle. */
+  subTextColor?: string;
 }
 
 /**
- * Qtech brand mark — a "double star": a large four-point sparkle paired with a
- * smaller offset sparkle, both filled with the deep-blue gradient
- * (#1d4ed8 → #1e3a8a). The small star carries reduced opacity so the pair
- * reads as a balanced, layered mark without the two shapes crossing into a
- * messy overlap. Optionally paired with the wordmark "Qtech" and the
- * "TOOL CABINET" tagline.
- *
- * The gradient id is shared by every instance on the page; because all
- * definitions are identical this is safe and avoids duplicate-id flicker.
+ * Qtech brand mark — 蓝紫水晶菱形包围双星 + 竖排 Qtech / Tool Cabinet。
+ * 菱形用蓝紫渐变，星用亮白渐变在水晶中发光。
  */
 export default function Logo({
   className = '',
-  size = 40,
+  size = 44,
   markOnly = false,
-  textClassName = 'text-ink-900',
+  textClassName = 'text-slate-900',
+  subTextColor = '#2563eb',
 }: LogoProps) {
+  const uid = useId().replace(/:/g, '');
+  const crystalId = `cr-${uid}`;
+  const starId = `st-${uid}`;
+
   return (
-    <span className={`inline-flex items-center gap-2 ${className}`}>
+    <span className={`inline-flex items-center ${className}`}>
       <svg
         width={size}
         height={size}
@@ -37,27 +39,59 @@ export default function Logo({
         className="shrink-0"
       >
         <defs>
-          <linearGradient id="qtechMark" x1="4" y1="6" x2="44" y2="42" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#1d4ed8" />
-            <stop offset="1" stopColor="#1e3a8a" />
+          {/* 深蓝水晶渐变 — 从极深蓝到鲜亮蓝，无紫色 */}
+          <linearGradient id={crystalId} x1="4" y1="2" x2="44" y2="46" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#0a1a4f" />
+            <stop offset="0.35" stopColor="#1e40af" />
+            <stop offset="0.7" stopColor="#2563eb" />
+            <stop offset="1" stopColor="#3b82f6" />
+          </linearGradient>
+          {/* 双星亮白渐变 */}
+          <linearGradient id={starId} x1="6" y1="8" x2="42" y2="40" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#ffffff" />
+            <stop offset="1" stopColor="#c7d2fe" />
           </linearGradient>
         </defs>
-        {/* Primary star — large four-point sparkle */}
-        <path
-          d="M19 11 L22.2 22.8 L34 26 L22.2 29.2 L19 41 L15.8 29.2 L4 26 L15.8 22.8 Z"
-          fill="url(#qtechMark)"
+
+        {/* 蓝紫水晶菱形 — 包围双星 */}
+        <polygon
+          points="24,3 45,24 24,45 3,24"
+          fill={`url(#${crystalId})`}
+          stroke="#3b82f6"
+          strokeWidth="0.8"
+          strokeOpacity="0.7"
         />
-        {/* Secondary star — smaller four-point sparkle, offset to the upper-right */}
+        {/* 水晶切面高光线 */}
+        <path d="M24 3 L24 45" stroke="#ffffff" strokeOpacity="0.18" strokeWidth="0.6" />
+        <path d="M3 24 L45 24" stroke="#ffffff" strokeOpacity="0.18" strokeWidth="0.6" />
+        {/* 顶部光泽 */}
+        <path d="M24 3 L33 12 L15 12 Z" fill="#ffffff" fillOpacity="0.22" />
+
+        {/* 双星 — 亮白渐变，居中包在菱形内 */}
         <path
-          d="M35 5.5 L36.4 10.6 L41.5 12 L36.4 13.4 L35 18.5 L33.6 13.4 L28.5 12 L33.6 10.6 Z"
-          fill="url(#qtechMark)"
-          opacity="0.6"
+          d="M19 13 L21.8 23.6 L31 26.4 L21.8 29.2 L19 39.5 L16.2 29.2 L6.5 26.4 L16.2 23.6 Z"
+          fill={`url(#${starId})`}
+        />
+        <path
+          d="M33 8 L34 12 L38 13 L34 14 L33 18 L32 14 L28 13 L32 12 Z"
+          fill={`url(#${starId})`}
+          opacity="0.75"
         />
       </svg>
+
       {!markOnly && (
-        <span className="flex flex-col leading-none">
-          <span className={`text-xl font-extrabold tracking-tight ${textClassName}`}>Qtech</span>
-          <span className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.22em] text-brand-600">
+        <span className="flex flex-col leading-none ml-2">
+          <span className={`text-[12px] font-semibold tracking-tight ${textClassName}`}>Qtech</span>
+          <span
+            style={{
+              marginTop: 1,
+              fontSize: '7px',
+              fontWeight: 400,
+              letterSpacing: '0.6px',
+              color: subTextColor,
+              textTransform: 'uppercase',
+            }}
+          >
             Tool Cabinet
           </span>
         </span>
