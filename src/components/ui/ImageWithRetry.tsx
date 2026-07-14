@@ -62,6 +62,7 @@ export default function ImageWithRetry({
   const [status, setStatus] = useState<Status>('loading');
   const [retries, setRetries] = useState<number>(0);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
 
   // Reset whenever the source prop changes (e.g. gallery thumbnail switch).
   useEffect(() => {
@@ -70,6 +71,21 @@ export default function ImageWithRetry({
     setStatus('loading');
     setRetries(0);
   }, [src]);
+
+  // 🔑 Critical fix: detect hydration race condition.
+  // After SSR, the browser may have already loaded the image before React
+  // hydrates and binds the onLoad listener. In that case img.complete === true
+  // but onLoad never fires → permanent white screen (skeleton visible, img opacity-0).
+  // We check complete on mount + after src changes to recover from this gap.
+  useEffect(() => {
+    const img = imgRef.current;
+    if (!img) return;
+    // If the browser already has this image cached/loaded, immediately mark ready
+    if (img.complete && img.naturalWidth > 0) {
+      setStatus('ready');
+      return;
+    }
+  }, [src, displaySrc]);
 
   useEffect(() => {
     return () => {
@@ -114,6 +130,7 @@ export default function ImageWithRetry({
       )}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
+        ref={imgRef}
         src={displaySrc}
         alt={alt}
         width={width}
