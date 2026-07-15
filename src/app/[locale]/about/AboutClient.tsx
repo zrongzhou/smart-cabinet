@@ -396,7 +396,7 @@ export function AboutClient() {
       <CompanyShowcase t={t} locale={locale} />
 
       {/* Customer Pain Points — V6 glassmorphism diagnosis rows */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-gradient-to-b from-stone-50/60 to-white">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-gradient-to-b from-blue-50/40 to-white">
         <V6FloatOrbs colors={['#fbbf24', '#fb923c', '#fca5a5']} />
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center mb-16 v6-title-reveal">
@@ -432,7 +432,7 @@ export function AboutClient() {
       </section>
 
       {/* Our Solutions — V6 centered glass feature cards */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-gradient-to-b from-cyan-50/40 to-white">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-gradient-to-b from-blue-50/40 to-white">
         <V6FloatOrbs colors={['#22d3ee', '#2dd4bf', '#38bdf8']} />
         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, #06b6d4 1px, transparent 0)', backgroundSize: '28px 28px' }} />
         <div className="max-w-7xl mx-auto relative z-10">
@@ -465,7 +465,7 @@ export function AboutClient() {
       </section>
 
       {/* Our Advantages — V6 compact numbered glass bars */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-gradient-to-b from-indigo-50/30 to-white">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-gradient-to-b from-blue-50/40 to-white">
         <V6FloatOrbs colors={['#818cf8', '#8b5cf6', '#a855f7']} />
         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, #6366f1 1px, transparent 0)', backgroundSize: '28px 28px' }} />
         <div className="max-w-7xl mx-auto relative z-10">
@@ -500,7 +500,7 @@ export function AboutClient() {
       </section>
 
       {/* Why Choose Us — V6 glass benefit cards */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-gradient-to-b from-violet-50/25 to-white">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-gradient-to-b from-blue-50/40 to-white">
         <V6FloatOrbs colors={['#8b5cf6', '#a855f7', '#d946ef']} />
         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, #8b5cf6 1px, transparent 0)', backgroundSize: '28px 28px' }} />
         <div className="max-w-7xl mx-auto relative z-10">
@@ -657,7 +657,7 @@ export function AboutClient() {
       </section>
 
       {/* Factory Photo Carousel — V7: real factory scenes grid */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-slate-50 to-white">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-blue-50/40 to-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">{t('about.factoryCarousel.title')}</h2>

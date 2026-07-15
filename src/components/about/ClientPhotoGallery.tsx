@@ -63,7 +63,7 @@ export default function ClientPhotoGallery({ t, locale }: ClientPhotoGalleryProp
 
   return (
     <section
-      className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50/50"
+      className="py-20 px-4 sm:px-6 lg:px-8 bg-blue-50/30"
       dir={isRtl ? 'rtl' : 'ltr'}
     >
       <div className="absolute top-0 start-0 end-0 h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent opacity-70" />
