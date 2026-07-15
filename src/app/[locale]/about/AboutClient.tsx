@@ -10,7 +10,6 @@ import {
 import { useLocale } from '@/lib/i18n';
 import { fetchUnifiedSettings, SiteSettings } from '@/data/unified-data';
 import OceanHeader from '@/components/OceanHeader';
-import Image from 'next/image';
 import CompanyShowcase from '@/components/about/CompanyShowcase';
 import ValuesBook from '@/components/about/ValuesBook';
 import ClientWall from '@/components/about/ClientWall';
@@ -676,7 +675,7 @@ export function AboutClient() {
                 '/images/about/factory-carousel-6.jpg',
               ].map((src, i) => (
                 <div key={i} className="relative aspect-[4/3] group">
-                  <Image src={src} alt={`Factory ${i + 1}`} fill className="object-cover" loading="lazy" quality={80} />
+                  <img src={src} alt={`Factory ${i + 1}`} className="w-full h-full object-cover" loading="lazy" decoding="async" />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300 flex items-center justify-center">
                     <span className="text-white opacity-0 group-hover:opacity-100 transition-opacity font-semibold text-sm tracking-wider">
                       {locale === 'zh'
@@ -755,14 +754,13 @@ export function AboutClient() {
               { src: '/images/about/factory-quality.jpg', altKey: 'about.factory.quality', label: { en: 'QUALITY CONTROL', zh: '质量检测', ar: 'مراقبة الجودة' }, color: '#06b6d4', desc: { en: 'CMM + optical measuring, ISO 9001 full inspection, zero-defect goal', zh: '三坐标测量仪 + 二次元影像仪，ISO 9001 全检流程，出货零缺陷目标', ar: 'مقياس CMM + قياس بصري، فحص كامل ISO 9001، هدف صفر عيب' } },
             ].map((item, index) => (
               <div key={index} className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2" style={{ height: '280px' }}>
-                {/* Image with zoom on hover */}
-                <Image
+                {/* Use native <img> to bypass next/image format detection (PNG-as-JPG breaks optimization) */}
+                <img
                   src={item.src}
                   alt={t(item.altKey)}
-                  fill={true}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                   loading="lazy"
-                  quality={80}
+                  decoding="async"
                 />
                 
                 {/* Glass overlay at bottom */}
@@ -910,13 +908,12 @@ export function AboutClient() {
 
           {/* Real certification photo wall */}
           <div className="mb-12 rounded-2xl overflow-hidden shadow-xl border border-gray-200/60">
-            <Image
+            <img
               src="/images/about/certificates-real.jpg"
               alt="Certifications"
-              width={1200}
-              height={500}
-              className="w-full h-auto object-cover"
-              quality={90}
+              className="w-full h-auto object-cover rounded-2xl"
+              loading="lazy"
+              decoding="async"
             />
           </div>
 
