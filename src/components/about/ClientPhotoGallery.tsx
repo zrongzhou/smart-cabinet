@@ -250,8 +250,8 @@ export default function ClientPhotoGallery({ t, locale }: ClientPhotoGalleryProp
                       <Image
                         src={src}
                         alt={`Customer site visit ${idx + 1} — smart cabinet in use`}
-                        width={600}
-                        height={400}
+                        width={640}
+                        height={427}
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                         className="h-full w-full object-cover"
                         placeholder="blur"
