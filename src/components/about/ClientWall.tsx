@@ -1,22 +1,21 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 /**
- * ClientWall — Card Carousel v10
+ * ClientWall — Premium Card Carousel v11
  * ----------------------------------------
- * Displays all 36 clients in an **animated card carousel** that shows 4-5 cards
- * at a time and auto-rotates through pages with smooth transitions.
+ * Polished carousel showcasing 36 clients with premium glass-morphism cards.
  *
- * Design:
- *  - Desktop: 4 cards visible per page → 9 pages of 4 (36 total)
- *  - Tablet:  3 cards visible → 12 pages
- *  - Mobile:  2 cards visible → 18 pages
- *  - Auto-advance every 5 seconds with smooth CSS transform
- *  - Pause on hover/focus
- *  - Left/right arrows + dot indicators
- *  - Each card: monogram circle + name + industry + years + slogan
- *  - Cards animate in with staggered fade+slide on page change
+ * v11 visual upgrades:
+ *  - Removed the orphaned top gradient divider line (was visually jarring)
+ *  - Cards redesigned: frosted glass base + per-card tinted gradient background
+ *    instead of harsh solid-color top bar → softer, more cohesive
+ *  - Monogram circle enlarged (14→16) with soft color-matched glow ring
+ *  - Typography refined: name bolder, tag pill sharper, slogan tucked elegantly
+ *  - Hover: gentle lift + border glow in accent color + inner highlight shift
+ *  - Background: ultra-subtle dot pattern for texture without noise
+ *  - Section header: gradient underline on the title itself (not a floating line)
  */
 
 interface ClientItem {
@@ -76,23 +75,22 @@ const CLIENTS: ClientItem[] = [
   { key: 'PHIRIDA',      nameZh: '菲瑞达',        nameEn: 'PHIRIDA',               industryKey: 'about.industries.electronics',   years: 5,  sloganKey: 'about.client.slogan2' },
 ];
 
-const ACCENTS = [
-  { solid: '#2563eb', soft: '#eff6ff', text: '#1d4ed8' },
-  { solid: '#059669', soft: '#ecfdf5', text: '#047857' },
-  { solid: '#d97706', soft: '#fffbeb', text: '#b45309' },
-  { solid: '#db2777', soft: '#fdf2f8', text: '#be185d' },
-  { solid: '#0891b2', soft: '#ecfeff', text: '#0e7490' },
-  { solid: '#7c3aed', soft: '#f5f3ff', text: '#6d28d9' },
-  { solid: '#475569', soft: '#f8fafc', text: '#334155' },
-  { solid: '#4338ca', soft: '#eef2ff', text: '#3730a3' },
-  { solid: '#16a34a', soft: '#f0fdf4', text: '#15803d' },
-  { solid: '#ea580c', soft: '#fff7ed', text: '#c2410c' },
-  { solid: '#0d9488', soft: '#f0fdfa', text: '#0f766e' },
-  { solid: '#4f46e5', soft: '#eef2ff', text: '#4338ca' },
+/** Per-card accent palette — used for monogram bg, tag tint, hover glow */
+const PALETTE = [
+  '#3b82f6', '#10b981', '#f59e0b', '#ec4899',
+  '#06b6d4', '#8b5cf6', '#64748b', '#6366f1',
+  '#22c55e', '#f97316', '#14b8a6', '#4f46e5',
 ];
 
-const AUTO_INTERVAL = 5000; // ms between auto-advances
-const TRANSITION_MS = 600;
+function hexToRgba(hex: string, alpha: number): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+const AUTO_INTERVAL = 5000;
+const TRANSITION_MS = 550;
 
 interface ClientWallProps {
   t: (key: string) => string;
@@ -103,243 +101,235 @@ export default function ClientWall({ t, locale }: ClientWallProps) {
   const [page, setPage] = useState(0);
   const [paused, setPaused] = useState(false);
   const [cardsPerRow, setCardsPerRow] = useState(4);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  /* Responsive cards-per-row detection */
+  /* Responsive cards-per-row */
   useEffect(() => {
-    const updateCardsPerRow = () => {
-      if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') return;
+    const update = () => {
       const w = window.innerWidth;
       setCardsPerRow(w >= 1024 ? 4 : w >= 640 ? 3 : 2);
     };
-    updateCardsPerRow();
-    window.addEventListener('resize', updateCardsPerRow);
-    return () => window.removeEventListener('resize', updateCardsPerRow);
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
   }, []);
 
   const totalPages = Math.ceil(CLIENTS.length / cardsPerRow);
 
-  /* Clamp page after cardsPerRow changes */
   useEffect(() => {
     setPage((p) => Math.min(p, Math.max(0, totalPages - 1)));
   }, [cardsPerRow, totalPages]);
 
-  /* Auto-advance timer */
+  /* Auto-advance */
   useEffect(() => {
-    if (paused || totalPages <= 1) {
-      if (timerRef.current) clearInterval(timerRef.current);
-      return;
-    }
-    timerRef.current = setInterval(() => {
-      setPage((prev) => (prev + 1) % totalPages);
-    }, AUTO_INTERVAL);
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+    if (paused || totalPages <= 1) return;
+    const id = setInterval(() => setPage((prev) => (prev + 1) % totalPages), AUTO_INTERVAL);
+    return () => clearInterval(id);
   }, [paused, totalPages]);
-
-  const goNext = useCallback(() => setPage((p) => (p + 1) % totalPages), [totalPages]);
-  const goPrev = useCallback(() => setPage((p) => (p - 1 + totalPages) % totalPages), [totalPages]);
-  const goTo = useCallback((idx: number) => setPage(idx), []);
 
   const displayName = (c: ClientItem) => (locale === 'zh' ? c.nameZh : c.nameEn);
 
-  /* Slice current page's clients */
   const startIdx = page * cardsPerRow;
   const visibleClients = CLIENTS.slice(startIdx, startIdx + cardsPerRow);
 
   return (
     <section
-      className="py-20 px-4 sm:px-6 lg:px-8 bg-white relative overflow-hidden"
+      className="py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
-      onFocus={() => setPaused(true)}
-      onBlur={() => setPaused(false)}
-      ref={containerRef}
     >
-      {/* Top gradient divider */}
-      <div className="absolute top-0 start-0 end-0 h-1 bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 opacity-70" />
+      {/* Subtle dot-pattern background */}
+      <div className="absolute inset-0 opacity-[0.03]"
+           style={{ backgroundImage: 'radial-gradient(circle, #64748b 1px, transparent 1px)', backgroundSize: '24px 24px' }}
+      />
 
-      {/* Per-card hover styles */}
+      {/* Very subtle top fade — replaces the harsh gradient line */}
+      <div className="absolute top-0 inset-x-0 h-32 bg-gradient-to-b from-gray-50/80 to-transparent pointer-events-none" />
+
+      {/* Global styles */}
       <style>{`
-        .cc-card {
-          filter: grayscale(0%);
-          opacity: 1;
-          transition: filter 0.45s ease, transform 0.45s ease,
-                      box-shadow 0.45s ease, opacity 0.45s ease,
-                      border-color 0.45s ease;
+        .pc-card {
+          transition: transform 0.4s cubic-bezier(.2,.8,.2,1),
+                      box-shadow 0.4s ease,
+                      border-color 0.4s ease;
         }
-        .cc-card:hover {
-          filter: saturate(1.2) brightness(1.03);
-          opacity: 1;
-          transform: translateY(-6px) scale(1.03);
-          box-shadow: 0 20px 40px -12px rgba(0,0,0,0.15);
+        .pc-card:hover {
+          transform: translateY(-8px);
+          box-shadow:
+            0 25px 50px -12px rgba(0,0,0,0.12),
+            0 12px 24px -8px rgba(0,0,0,0.06);
         }
 
-        @keyframes cc-fadeSlideIn {
-          from { opacity: 0; transform: translateY(20px) scale(0.96); }
+        @keyframes pc-in {
+          from { opacity: 0; transform: translateY(24px) scale(0.97); }
           to   { opacity: 1; transform: translateY(0) scale(1); }
         }
-        .cc-animate-in {
-          animation: cc-fadeSlideIn ${TRANSITION_MS}ms ease-out both;
-        }
-
-        @keyframes cc-shimmer {
-          0%   { background-position: -200% center; }
-          100% { background-position: 200% center; }
+        .pc-anim {
+          animation: pc-in ${TRANSITION_MS}ms cubic-bezier(.2,.8,.2,1) both;
         }
       `}</style>
 
-      <div className="max-w-7xl mx-auto">
-        {/* Section header */}
-        <div className="text-center mb-4">
-          <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">{t('about.clients.title')}</h2>
-          <p className="text-lg text-gray-500 max-w-2xl mx-auto">{t('about.clients.subtitle')}</p>
-          <div className="w-24 h-1.5 mx-auto mt-4 rounded-full"
-               style={{ background: 'linear-gradient(90deg, #3b82f6, #6366f1, #8b5cf6)' }} />
+      <div className="max-w-7xl mx-auto relative">
+        {/* ===== SECTION HEADER ===== */}
+        <div className="text-center mb-5">
+          {/* Title with gradient underline (integrated, not floating) */}
+          <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-3 inline-block">
+            {t('about.clients.title')}
+            <span className="block mt-3 mx-auto w-20 h-1 rounded-full"
+                  style={{ background: 'linear-gradient(90deg, #3b82f6, #818cf8, #a78bfa)' }} />
+          </h2>
+          <p className="text-lg text-gray-500 max-w-2xl mx-auto mt-5">{t('about.clients.subtitle')}</p>
         </div>
 
-        {/* Trust endorsement line */}
-        <div className="flex justify-center mb-10">
-          <p className="text-sm sm:text-base font-medium text-blue-700 bg-blue-50/70 border border-blue-100 rounded-full inline-flex items-center gap-2 px-4 py-2">
-            <span className="w-2 h-2 rounded-full bg-blue-500" />
+        {/* Trust endorsement */}
+        <div className="flex justify-center mb-12">
+          <span className="inline-flex items-center gap-2 text-sm font-medium text-blue-700 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100/60 rounded-full px-5 py-2.5 shadow-sm">
+            <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
             {t('about.clients.endorsement')}
-          </p>
+          </span>
         </div>
 
-        {/* === CAROUSEL STAGE === */}
-        <div className="relative">
-          {/* Cards grid — one row of N cards */}
+        {/* ===== CAROUSEL STAGE ===== */}
+        <div className="relative px-2">
+          {/* Card row */}
           <div
-            className="grid gap-4 sm:gap-5"
-            style={{
-              gridTemplateColumns: `repeat(${cardsPerRow}, minmax(0, 1fr))`,
-            }}
-            key={`page-${page}-${cardsPerRow}`} /* force re-mount for animation */
+            className="grid gap-5 lg:gap-6"
+            style={{ gridTemplateColumns: `repeat(${cardsPerRow}, minmax(0, 1fr))` }}
+            key={`pg-${page}-${cardsPerRow}`}
           >
             {visibleClients.map((client, idx) => {
-              const accent = ACCENTS[(startIdx + idx) % ACCENTS.length];
+              const color = PALETTE[(startIdx + idx) % PALETTE.length];
+              const colorRgba = hexToRgba(color, 1);
+              const colorFaint = hexToRgba(color, 0.08);
+              const colorSoft = hexToRgba(color, 0.12);
+              const colorText = hexToRgba(color, 0.85);
+
               return (
                 <div
                   key={`${client.key}-${page}`}
-                  className={`cc-card group relative rounded-2xl border bg-white/70 backdrop-blur-md p-5 text-center shadow-sm hover:shadow-2xl cursor-default cc-animate-in`}
+                  className={`pc-card group relative rounded-2xl overflow-hidden cursor-default pc-anim`}
                   style={{
-                    borderColor: 'rgba(255,255,255,0.6)',
-                    boxShadow: '0 4px 24px rgba(30,41,59,0.06), 0 1px 3px rgba(30,41,59,0.04), inset 0 1px 0 rgba(255,255,255,0.6)',
-                    animationDelay: `${idx * 80}ms`,
+                    animationDelay: `${idx * 70}ms`,
+                    background: `
+                      linear-gradient(165deg,
+                        rgba(255,255,255,0.92) 0%,
+                        ${colorFaint} 60%,
+                        rgba(255,255,255,0.95) 100%
+                      )
+                    `,
+                    border: `1px solid ${hexToRgba(color, 0.15)}`,
+                    boxShadow: `0 4px 20px ${hexToRgba(color, 0.07)}, 0 1px 3px rgba(0,0,0,0.04)`,
+                    backdropFilter: 'blur(8px)',
                   }}
                   title={displayName(client)}
                 >
-                  {/* Accent top bar */}
-                  <div className="absolute top-0 inset-x-0 h-1 rounded-t-2xl"
-                       style={{ background: accent.solid }} />
+                  {/* Top-left accent blob */}
+                  <div className="absolute -top-6 -end-6 w-24 h-24 rounded-full opacity-[0.07] blur-2xl"
+                       style={{ background: color }} />
 
-                  {/* Logo monogram */}
-                  <div
-                    className="w-12 h-12 mx-auto mb-3 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-sm"
-                    style={{ background: accent.solid }}
-                  >
-                    {client.nameEn.charAt(0)}
+                  <div className="relative p-6 pt-7 text-center">
+                    {/* Monogram circle — larger, with glow ring */}
+                    <div className="relative inline-flex items-center justify-center mb-4">
+                      <div
+                        className="w-16 h-16 rounded-2xl flex items-center justify-center text-white font-extrabold text-xl tracking-tight shadow-lg"
+                        style={{
+                          background: `linear-gradient(135deg, ${color}, ${hexToRgba(color, 0.78)})`,
+                          boxShadow: `0 8px 20px ${hexToRgba(color, 0.28)}`,
+                        }}
+                      >
+                        {client.nameEn.charAt(0)}
+                      </div>
+                    </div>
+
+                    {/* Client name */}
+                    <h3 className="font-extrabold text-gray-900 text-base tracking-tight mb-1.5 leading-snug">
+                      {displayName(client)}
+                    </h3>
+
+                    {/* Industry tag — sharper, smaller */}
+                    <span
+                      className="inline-block px-3 py-1 rounded-lg text-xs font-semibold mb-3 tracking-wide"
+                      style={{
+                        background: `${colorSoft}`,
+                        color: colorText,
+                        border: `1px solid ${hexToRgba(color, 0.1)}`,
+                      }}
+                    >
+                      {t(client.industryKey)}
+                    </span>
+
+                    {/* Years badge */}
+                    <div className="flex items-center justify-center gap-1.5 text-xs text-gray-400 mb-2.5">
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke={color} strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round"
+                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span>{client.years} {t('about.client.years')}</span>
+                    </div>
+
+                    {/* Slogan — elegant, muted */}
+                    <p className="text-[11px] leading-relaxed text-gray-400 group-hover:text-gray-500 transition-colors duration-300 max-w-[85%] mx-auto">
+                      {t(client.sloganKey)}
+                    </p>
                   </div>
 
-                  {/* Client name */}
-                  <div className="font-bold text-gray-900 text-base leading-tight mb-2">
-                    {displayName(client)}
-                  </div>
-
-                  {/* Industry tag */}
-                  <span
-                    className="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-medium mb-2"
-                    style={{ background: accent.soft, color: accent.text }}
-                  >
-                    {t(client.industryKey)}
-                  </span>
-
-                  {/* Years of partnership */}
-                  <div className="text-xs text-gray-500">
-                    {client.years} {t('about.client.years')}
-                  </div>
-
-                  {/* Trust slogan */}
-                  <p className="mt-2 text-[11px] leading-snug text-gray-400 group-hover:text-gray-500 transition-colors">
-                    {t(client.sloganKey)}
-                  </p>
+                  {/* Bottom shimmer bar on hover */}
+                  <div className="absolute bottom-0 inset-x-0 h-0.5 opacity-0 group-hover:opacity-40 transition-opacity duration-500"
+                       style={{ background: `linear-gradient(90deg, transparent, ${color}, transparent)` }} />
                 </div>
               );
             })}
 
-            {/* Fill empty slots on last page so layout stays stable */}
+            {/* Empty slot filler */}
             {Array.from({ length: Math.max(0, cardsPerRow - visibleClients.length) }).map((_, i) => (
-              <div key={`empty-${i}`} className="hidden sm:block" />
+              <div key={`e-${i}`} />
             ))}
           </div>
 
-          {/* Left arrow */}
+          {/* Navigation arrows */}
           {totalPages > 1 && (
-            <button
-              type="button"
-              onClick={goPrev}
-              aria-label="Previous clients"
-              className="absolute start-[-18px] top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 backdrop-blur shadow-md border border-gray-100 flex items-center justify-center text-gray-500 hover:text-blue-600 hover:border-blue-200 hover:shadow-lg transition-all duration-200 opacity-0 group-hover/section:opacity-100 z-10 hidden lg:flex"
-              style={{ opacity: 0.7 }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.opacity = '1'; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.opacity = '0.7'; }}
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-          )}
-
-          {/* Right arrow */}
-          {totalPages > 1 && (
-            <button
-              type="button"
-              onClick={goNext}
-              aria-label="Next clients"
-              className="absolute end-[-18px] top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 backdrop-blur shadow-md border border-gray-100 flex items-center justify-center text-gray-500 hover:text-blue-600 hover:border-blue-200 hover:shadow-lg transition-all duration-200 z-10 hidden lg:flex"
-              style={{ opacity: 0.7 }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = '1'; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = '0.7'; }}
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
+            <>
+              <button type="button" onClick={() => setPage((p) => (p - 1 + totalPages) % totalPages)}
+                aria-label="Previous"
+                className="absolute start-[-12px] top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/95 backdrop-blur-md shadow-lg border border-gray-100 flex items-center justify-center text-gray-400 hover:text-blue-600 hover:border-blue-200 hover:shadow-xl transition-all duration-200 z-10 hidden lg:flex items-center justify-center">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+              </button>
+              <button type="button" onClick={() => setPage((p) => (p + 1) % totalPages)}
+                aria-label="Next"
+                className="absolute end-[-12px] top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/95 backdrop-blur-md shadow-lg border border-gray-100 flex items-center justify-center text-gray-400 hover:text-blue-600 hover:border-blue-200 hover:shadow-xl transition-all duration-200 z-10 hidden lg:flex items-center justify-center">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+              </button>
+            </>
           )}
         </div>
 
         {/* Dot indicators + counter */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-3 mt-8">
-            {/* Page dots */}
-            <div className="flex items-center gap-1.5">
+          <div className="flex flex-col items-center gap-3 mt-10">
+            <div className="flex items-center gap-2">
               {Array.from({ length: totalPages }).map((_, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={() => goTo(i)}
-                  aria-label={`Go to page ${i + 1}`}
-                  className="rounded-full transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+                <button key={i} type="button" onClick={() => setPage(i)}
+                  aria-label={`Page ${i + 1}`}
+                  className="rounded-full transition-all duration-300 focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 cursor-pointer"
                   style={{
-                    width: i === page ? '24px' : '8px',
+                    width: i === page ? '28px' : '8px',
                     height: '8px',
+                    borderRadius: '999px',
                     background: i === page
-                      ? 'linear-gradient(90deg, #3b82f6, #6366f1)'
+                      ? 'linear-gradient(90deg, #3b82f6, #818cf8)'
                       : '#e2e8f0',
                   }}
                 />
               ))}
             </div>
-
-            {/* Counter text */}
-            <span className="text-xs text-gray-400 tabular-nums ml-2">
-              {String(page + 1).padStart(2, '0')} / {String(totalPages).padStart(2, '0')}
-            </span>
-
-            {/* Pause indicator */}
-            <span className={`text-[10px] px-1.5 py-0.5 rounded transition-colors ${paused ? 'bg-amber-50 text-amber-600' : 'text-transparent'}`}>
-              {paused ? (locale === 'zh' ? '已暂停' : 'PAUSED') : '—'}
-            </span>
+            <div className="flex items-center gap-3 text-xs text-gray-400">
+              <span className="tabular-nums font-medium">{String(page + 1).padStart(2, '0')} / {String(totalPages).padStart(2, '0')}</span>
+              {paused && (
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 font-medium">
+                  {locale === 'zh' ? '已暂停' : 'PAUSED'}
+                </span>
+              )}
+            </div>
           </div>
         )}
       </div>
