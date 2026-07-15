@@ -1,7 +1,6 @@
 'use client';
 
 import { useRef, useEffect, useState, useCallback } from 'react';
-import Image from 'next/image';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 /**
@@ -28,13 +27,6 @@ interface ClientPhotoGalleryProps {
   /** Active locale, e.g. 'en' | 'zh' | 'ar'. */
   locale: string;
 }
-
-/**
- * Shared blur placeholder (a tiny grey SVG). Used by every <Image> so the
- * gallery fades in from a neutral tone instead of flashing empty space.
- */
-const BLUR_DATA_URL =
-  'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIxNSI+PHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjE1IiBmaWxsPSIjY2JkNWUxIi8+PC9zdmc+';
 
 /** Ordered list of gallery photos (client-01 … client-14). */
 const PHOTOS: string[] = Array.from(
@@ -247,15 +239,12 @@ export default function ClientPhotoGallery({ t, locale }: ClientPhotoGalleryProp
                         <span className="text-xs">Photo unavailable</span>
                       </div>
                     ) : (
-                      <Image
+                      <img
                         src={src}
                         alt={`Customer site visit ${idx + 1} — smart cabinet in use`}
                         width={640}
                         height={427}
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                         className="h-full w-full object-cover"
-                        placeholder="blur"
-                        blurDataURL={BLUR_DATA_URL}
                         onError={() => setBrokenImages(prev => new Set(prev).add(idx))}
                       />
                     )}
