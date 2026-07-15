@@ -155,7 +155,7 @@ export default function ClientPhotoGallery({ t, locale }: ClientPhotoGalleryProp
   return (
     <section
       ref={sectionRef}
-      className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50/50 relative overflow-hidden gallery-reveal"
+      className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50/50 relative overflow-hidden"
       dir={isRtl ? 'rtl' : 'ltr'}
       onMouseEnter={pause}
       onMouseLeave={resume}
@@ -163,22 +163,16 @@ export default function ClientPhotoGallery({ t, locale }: ClientPhotoGalleryProp
       <div className="absolute top-0 start-0 end-0 h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent opacity-70" />
 
       <style>{`
-        .gallery-reveal {
-          animation: galleryFadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
-        }
-        @keyframes galleryFadeUp {
-          from { opacity: 0; transform: translateY(24px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .gallery-reveal { animation: none; }
-        }
         .gallery-track {
           transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
           will-change: transform;
         }
         .gallery-card { cursor: grab; }
         .gallery-card:active { cursor: grabbing; }
+        .gallery-img-wrap {
+          min-height: 200px;
+          background: #f1f5f9;
+        }
       `}</style>
 
       <div className="max-w-7xl mx-auto">
@@ -232,7 +226,7 @@ export default function ClientPhotoGallery({ t, locale }: ClientPhotoGalleryProp
                   className="gallery-card shrink-0 px-2"
                   style={{ width: `${cardWidthPct}%` }}
                 >
-                  <div className="relative overflow-hidden rounded-xl bg-gray-100 aspect-[3/2] shadow-md hover:shadow-xl transition-shadow duration-300">
+                  <div className="relative overflow-hidden rounded-xl bg-gray-100 aspect-[3/2] shadow-md hover:shadow-xl transition-shadow duration-300 gallery-img-wrap">
                     {brokenImages.has(idx) ? (
                       <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 text-slate-400">
                         <svg className="w-10 h-10 mb-2 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.41a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>
@@ -244,6 +238,8 @@ export default function ClientPhotoGallery({ t, locale }: ClientPhotoGalleryProp
                         alt={`Customer site visit ${idx + 1} — smart cabinet in use`}
                         width={640}
                         height={427}
+                        loading="eager"
+                        decoding="sync"
                         className="h-full w-full object-cover"
                         onError={() => setBrokenImages(prev => new Set(prev).add(idx))}
                       />
