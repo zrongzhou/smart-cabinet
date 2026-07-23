@@ -4,6 +4,7 @@ import { Calendar, User, ArrowLeft, Facebook, Twitter, Linkedin } from 'lucide-r
 import { useLocale } from '@/lib/i18n';
 import { notFound } from 'next/navigation';
 import BlogFaqSection, { type BlogFaqItem } from './BlogFaqSection';
+import { sanitizeHtml } from '@/lib/sanitize';
 
 /**
  * Blog detail DTO —— 由服务端 page.tsx 构造并作为 props 传入。
@@ -332,7 +333,7 @@ export default function BlogDetailClient({ blog, recentBlogs }: BlogDetailClient
           {/* Render content (HTML from rich text editor) — v152: 注入正文配图 */}
           <div
             className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-headings:scroll-mt-20 prose-p:text-gray-700 prose-p:leading-relaxed prose-a:text-blue-600 prose-a:font-medium hover:prose-a:text-blue-700 prose-img:rounded-xl prose-img:my-8 prose-li:my-1 prose-blockquote:border-blue-500 prose-blockquote:bg-blue-50/50 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:not-italic prose-strong:text-gray-900 dark:prose-invert"
-            dangerouslySetInnerHTML={{ __html: bodyHtml }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(bodyHtml) }}
           />
 
           {/* TASK 4: FAQ — structured accordion (mirrors ProductFaqSection).
@@ -351,7 +352,7 @@ export default function BlogDetailClient({ blog, recentBlogs }: BlogDetailClient
                   <span className="h-1 w-10 rounded-full bg-gradient-to-r from-blue-600 to-blue-400" />
                   {FAQ_HEADING[locale] || FAQ_HEADING.en}
                 </h2>
-                <div className="blog-faq" dangerouslySetInnerHTML={{ __html: faq }} />
+                <div className="blog-faq" dangerouslySetInnerHTML={{ __html: sanitizeHtml(faq) }} />
               </section>
             )
           )}

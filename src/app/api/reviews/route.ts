@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { verifyToken } from '@/lib/auth/jwt';
 
 // GET /api/reviews?slug=xxx - Get approved reviews for a product
 // Uses a query param (not a path segment) so slugs containing "/" work correctly.
@@ -180,15 +181,23 @@ export async function POST(
       );
     }
 
-    // Check if user is authenticated
-    let userId: string | undefined;
+    // Authenticate the requesting user and associate the review with them.
     const authHeader = request.headers.get('Authorization');
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      const token = authHeader.substring(7);
-      if (token) {
-        // TODO: Properly decode the token to get userId
-      }
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json(
+        { error: 'Authentication required to submit a review.' },
+        { status: 401 }
+      );
     }
+    const token = authHeader.substring(7).trim();
+    const payload = verifyToken(token);
+    if (!payload || !payload.userId) {
+      return NextResponse.json(
+        { error: 'Invalid or expired authentication token.' },
+        { status: 401 }
+      );
+    }
+    const userId: string = payload.userId;
 
     // Create review
     const review = await prisma.review.create({
