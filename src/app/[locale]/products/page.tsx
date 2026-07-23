@@ -4,6 +4,9 @@ import { getBaseUrl } from '@/lib/seo';
 import { buildListPageKeywords, buildHreflang } from '@/lib/seo-keywords';
 import ProductsClient from './ProductsClient';
 
+// 产品列表页：频繁过滤/搜索，较短的 ISR 窗口
+export const revalidate = 60;
+
 interface PageProps {
   params: { locale: string };
 }

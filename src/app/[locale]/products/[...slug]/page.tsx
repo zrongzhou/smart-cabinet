@@ -2,6 +2,9 @@ import { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import ProductDetailView, { buildProductMetadata } from './ProductDetailView';
 
+// 产品详情页：较短的 ISR 窗口
+export const revalidate = 60;
+
 interface PageProps {
   params: {
     locale: string;

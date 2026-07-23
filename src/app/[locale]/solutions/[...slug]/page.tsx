@@ -2,6 +2,9 @@ import { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import ProductDetailView, { buildProductMetadata } from '../../products/[...slug]/ProductDetailView';
 
+// 详情页，ISR 重新校验
+export const revalidate = 300;
+
 interface PageProps {
   params: {
     locale: string;

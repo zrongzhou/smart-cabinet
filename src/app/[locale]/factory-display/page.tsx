@@ -5,6 +5,9 @@ import { getBaseUrl } from '@/lib/seo';
 import { buildHreflang, buildStaticPageKeywords } from '@/lib/seo-keywords';
 import LandingPage from '@/components/landing/LandingPage';
 
+// 静态内容页，ISR 重新校验
+export const revalidate = 300;
+
 const SLUG = 'factory-display';
 
 interface PageProps {

@@ -4,6 +4,9 @@ import { getBaseUrl } from '@/lib/seo';
 import { buildListPageKeywords, buildHreflang } from '@/lib/seo-keywords';
 import { BlogListClient } from './BlogListClient';
 
+// 静态内容页，ISR 重新校验
+export const revalidate = 300;
+
 interface PageProps {
   params: { locale: string };
 }

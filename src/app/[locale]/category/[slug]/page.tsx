@@ -6,8 +6,8 @@ import { fetchUnifiedCategories, getBaseUrl } from '@/data/unified-data';
 import { getProductHref } from '@/lib/product-url';
 import ImageWithRetry from '@/components/ui/ImageWithRetry';
 
-// 防止静态生成时连接数据库（本页需按 slug 实时取分类 + 产品）
-export const dynamic = 'force-dynamic';
+// 按 slug 实时取分类 + 产品，但允许 ISR 重新校验
+export const revalidate = 300;
 
 interface Props {
   params: { locale: string; slug: string };

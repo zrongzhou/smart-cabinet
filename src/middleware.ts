@@ -43,13 +43,6 @@ export function middleware(request: NextRequest) {
 
   // 6. 合法 locale 路由
   if (seg && VALID_LOCALES.includes(seg)) {
-    if (pathname.endsWith('/products')) {
-      const response = NextResponse.next({ request: { headers: requestHeaders } });
-      response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-      response.headers.set('Pragma', 'no-cache');
-      response.headers.set('Expires', '0');
-      return response;
-    }
     return NextResponse.next({ request: { headers: requestHeaders } });
   }
 

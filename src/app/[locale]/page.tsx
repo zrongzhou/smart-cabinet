@@ -8,6 +8,9 @@ import Image from 'next/image';
 import { getMergedBlogList } from '@/lib/blogs';
 import { buildStaticPageKeywords } from '@/lib/seo-keywords';
 
+// 静态内容页，ISR 重新校验
+export const revalidate = 300;
+
 // HeroSection: canvas 星空动画 (ssr:false — 已有)
 const HeroSection = dynamic(
   () => import('@/components/home/HeroSection'),

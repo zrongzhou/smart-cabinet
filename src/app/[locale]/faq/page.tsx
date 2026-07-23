@@ -4,6 +4,9 @@ import { getBaseUrl } from '@/lib/seo';
 import { buildStaticPageKeywords, buildHreflang } from '@/lib/seo-keywords';
 import { FaqClient } from './FaqClient';
 
+// 静态内容页，ISR 重新校验
+export const revalidate = 300;
+
 const PAGE_META: Record<string, { title: string; description: string }> = {
   en: {
     title: 'FAQ | Qtech Tool Cabinet',

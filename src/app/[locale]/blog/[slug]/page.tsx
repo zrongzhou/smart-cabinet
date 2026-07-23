@@ -7,6 +7,9 @@ import staticBlogs from '@/data/blogs';
 import BlogDetailClient, { BlogDetailDTO } from './BlogDetailClient';
 import JsonLd from '@/components/JsonLd';
 
+// 静态内容页，ISR 重新校验
+export const revalidate = 300;
+
 interface PageProps {
   params: { locale: string; slug: string };
 }
