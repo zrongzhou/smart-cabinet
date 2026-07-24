@@ -4,7 +4,7 @@ import { getUserById, updateUserStatus, updateUserRole, deleteUser } from '@/lib
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> } // NEXT15: params is a Promise
 ) {
   try {
     // Verify authentication (cookie-based, consistent with other admin routes)
@@ -13,7 +13,7 @@ export async function GET(
       return unauthorizedResponse();
     }
 
-    const userId = params.id;
+    const userId = (await params).id; // NEXT15
     const user = await getUserById(userId);
 
     if (!user) {
@@ -38,7 +38,7 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> } // NEXT15: params is a Promise
 ) {
   try {
     // Verify authentication (cookie-based, consistent with other admin routes)
@@ -47,7 +47,7 @@ export async function PATCH(
       return unauthorizedResponse();
     }
 
-    const userId = params.id;
+    const userId = (await params).id; // NEXT15
     const body = await request.json();
     const { isActive, role } = body;
 
@@ -91,7 +91,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> } // NEXT15: params is a Promise
 ) {
   try {
     // Verify authentication (cookie-based, consistent with other admin routes)
@@ -100,7 +100,7 @@ export async function DELETE(
       return unauthorizedResponse();
     }
 
-    const userId = params.id;
+    const userId = (await params).id; // NEXT15
     const success = await deleteUser(userId);
 
     if (!success) {

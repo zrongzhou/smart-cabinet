@@ -23,11 +23,12 @@ const PAGE_META: Record<string, { title: string; description: string }> = {
 };
 
 interface PageProps {
-  params: { locale: string };
+  // NEXT15: params is now a Promise
+  params: Promise<{ locale: string }>;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const locale = (params.locale || 'en') as 'en' | 'zh' | 'ar';
+  const locale = ((await params).locale || 'en') as 'en' | 'zh' | 'ar'; // NEXT15: await params
   const meta = PAGE_META[locale] || PAGE_META.en;
   // 全站关键词以英文为主：主词从英文标题提炼，二级用本语言标题核心（仅本语言页出现）
   // 标题不带 " | " 分隔符，避免 buildStaticPageKeywords 按 | 切分后只保留第一段（"faq"），

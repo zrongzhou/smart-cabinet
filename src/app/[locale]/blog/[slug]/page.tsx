@@ -11,7 +11,8 @@ import JsonLd from '@/components/JsonLd';
 export const revalidate = 300;
 
 interface PageProps {
-  params: { locale: string; slug: string };
+  // NEXT15: params is now a Promise
+  params: Promise<{ locale: string; slug: string }>;
 }
 
 /**
@@ -66,7 +67,7 @@ function toBlogDto(row: {
  * BlogDetailClient，SSR HTML 即包含正文，不再依赖客户端 useEffect 拉取。
  */
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { locale, slug } = params;
+  const { locale, slug } = await params; // NEXT15: await params
   const loc = (locale || 'en') as 'en' | 'zh' | 'ar';
   // 保留真实 URL 段（可能带 .html，如外链进入）；rawSlug 仅用于提炼词元与兜底匹配
   const fullSlug = (slug || '').trim();
@@ -108,7 +109,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function Page({ params }: PageProps) {
-  const { locale, slug } = params;
+  const { locale, slug } = await params; // NEXT15: await params
   const loc = (locale || 'en') as 'en' | 'zh' | 'ar';
   // 保留真实 URL 段（可能带 .html，如外链进入）
   const fullSlug = (slug || '').trim();

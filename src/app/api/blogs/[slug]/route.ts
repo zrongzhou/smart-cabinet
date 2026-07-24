@@ -5,9 +5,10 @@ import { getMergedBlogBySlug, isBase64Image } from '@/lib/blogs';
 export const dynamic = 'force-dynamic';
 
 interface RouteParams {
-  params: {
+  // NEXT15: params is now a Promise
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 /**
@@ -16,7 +17,7 @@ interface RouteParams {
  */
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
-    const { slug } = params;
+    const { slug } = await params; // NEXT15
 
     const blog = await getMergedBlogBySlug(slug);
 

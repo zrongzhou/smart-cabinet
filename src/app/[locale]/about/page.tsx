@@ -22,11 +22,12 @@ const PAGE_META: Record<string, { title: string; description: string }> = {
 };
 
 interface PageProps {
-  params: { locale: string };
+  // NEXT15: params is now a Promise
+  params: Promise<{ locale: string }>;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const locale = (params.locale || 'en') as 'en' | 'zh' | 'ar';
+  const locale = ((await params).locale || 'en') as 'en' | 'zh' | 'ar'; // NEXT15: await params
   const meta = PAGE_META[locale] || PAGE_META.en;
   // 全站关键词以英文为主：主词从英文标题提炼，二级用本语言标题核心（仅本语言页出现）
   const en = `About Qtech Tool Cabinet | Smart Cabinet Manufacturer in China`;

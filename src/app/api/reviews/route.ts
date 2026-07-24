@@ -153,7 +153,7 @@ const rateLimitStore = new Map<string, { count: number; resetAt: number }>();
 /**
  * SECURITY: Extract the client IP from the request.
  * Prefers the first entry of `x-forwarded-for` (real client behind proxies/CDN),
- * then falls back to Next.js' `request.ip`, and finally to 'unknown'.
+ * then falls back to the `x-real-ip` header, and finally to 'unknown'.
  */
 function getClientIp(request: NextRequest): string {
   const forwarded = request.headers.get('x-forwarded-for');
@@ -161,7 +161,9 @@ function getClientIp(request: NextRequest): string {
     // x-forwarded-for may be a comma-separated list; the leftmost is the client.
     return forwarded.split(',')[0].trim();
   }
-  return request.ip || 'unknown';
+  // NEXT15: NextRequest.ip was removed in Next.js 15; fall back to the x-real-ip
+  // header (previously used to populate request.ip) or 'unknown'.
+  return request.headers.get('x-real-ip') || 'unknown';
 }
 
 /**

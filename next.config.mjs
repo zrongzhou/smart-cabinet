@@ -8,6 +8,21 @@ const withBundleAnalyzer = bundleAnalyzer({
 const nextConfig = {
   reactStrictMode: true,
 
+  // NEXT15: serverActions.bodySizeLimit moved out of experimental (now a top-level key)
+  serverActions: {
+    bodySizeLimit: '50mb',
+  },
+
+  // NEXT15: optimizePackageImports moved out of experimental (now a top-level key)
+  // Optimize package imports — tree-shake lucide-react + tiptap
+  optimizePackageImports: [
+    'lucide-react',
+    '@tiptap/react',
+    '@tiptap/pm',
+    'framer-motion',
+    'recharts',
+  ],
+
   // Allow large file uploads (50MB)
   async rewrites() {
     return [];
@@ -47,19 +62,8 @@ const nextConfig = {
   },
 
   // Increase body size limit for file uploads
-  experimental: {
-    serverActions: {
-      bodySizeLimit: '50mb',
-    },
-    // Optimize package imports — tree-shake lucide-react + tiptap
-    optimizePackageImports: [
-      'lucide-react',
-      '@tiptap/react',
-      '@tiptap/pm',
-      'framer-motion',
-      'recharts',
-    ],
-  },
+  // NEXT15: experimental block removed — serverActions & optimizePackageImports
+  // are now promoted to top-level keys (see above).
 
   // Image optimization — ENABLED (v241 performance fix)
   images: {

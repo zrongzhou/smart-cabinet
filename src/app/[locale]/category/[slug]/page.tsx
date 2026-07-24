@@ -10,7 +10,8 @@ import ImageWithRetry from '@/components/ui/ImageWithRetry';
 export const revalidate = 300;
 
 interface Props {
-  params: { locale: string; slug: string };
+  // NEXT15: params is now a Promise
+  params: Promise<{ locale: string; slug: string }>;
 }
 
 interface CategoryProduct {
@@ -48,17 +49,20 @@ function localized(value: any, locale: string): string {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params; // NEXT15: await params
   const categories = await fetchUnifiedCategories();
-  const cat = categories.find((c: any) => c.slug === params.slug);
+  const cat = categories.find((c: any) => c.slug === slug);
   if (!cat) return { title: 'Category Not Found' };
-  const name = cat.nameZh || cat.nameEn || cat.nameAr || params.slug;
+  const name = cat.nameZh || cat.nameEn || cat.nameAr || slug;
   return {
     title: `${name} - Smart Cabinet`,
     description: `View products in ${name} category.`,
   };
 }
 
-export default async function CategoryPage({ params: { locale, slug } }: Props) {
+// NEXT15: params is a Promise; await and destructure
+export default async function CategoryPage({ params }: Props) {
+  const { locale, slug } = await params; // NEXT15
   const categories = await fetchUnifiedCategories();
   const cat = categories.find((c: any) => c.slug === slug);
 

@@ -27,9 +27,10 @@ const VALID_STATUSES = Object.keys(STATUS_TRANSITIONS);
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> } // NEXT15: params is a Promise
 ) {
   try {
+    const { id } = await params; // NEXT15
     const admin = await requireAdmin(request);
     if (!admin) {
       return NextResponse.json(
@@ -39,7 +40,7 @@ export async function GET(
     }
 
     const order = await prisma.order.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         user: { select: { id: true, name: true, email: true } },
         items: {
@@ -78,9 +79,10 @@ export async function GET(
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> } // NEXT15: params is a Promise
 ) {
   try {
+    const { id } = await params; // NEXT15
     const admin = await requireAdmin(request);
     if (!admin) {
       return NextResponse.json(
@@ -89,7 +91,7 @@ export async function PATCH(
       );
     }
 
-    const existing = await prisma.order.findUnique({ where: { id: params.id } });
+    const existing = await prisma.order.findUnique({ where: { id } });
     if (!existing) {
       return NextResponse.json(
         { success: false, error: 'Order not found' },
@@ -140,7 +142,7 @@ export async function PATCH(
     }
 
     const updated = await prisma.order.update({
-      where: { id: params.id },
+      where: { id },
       data,
       include: {
         user: { select: { id: true, name: true, email: true } },

@@ -6,26 +6,30 @@ import ProductDetailView, { buildProductMetadata } from '../../products/[...slug
 export const revalidate = 300;
 
 interface PageProps {
-  params: {
+  // NEXT15: params is now a Promise
+  params: Promise<{
     locale: string;
     slug: string[];
-  };
+  }>;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const lookupSlug = `applications/${params.slug.join('/')}`;
-  const locale = params.locale as 'en' | 'zh' | 'ar';
+  const { locale: rawLocale, slug } = await params; // NEXT15
+  const lookupSlug = `applications/${slug.join('/')}`;
+  const locale = rawLocale as 'en' | 'zh' | 'ar';
   const product = await prisma.product.findFirst({
     where: { slug: lookupSlug, deletedAt: null },
   });
   return product ? buildProductMetadata(locale, product, lookupSlug) : {};
 }
 
-export default function Page({ params }: PageProps) {
-  const lookupSlug = `applications/${params.slug.join('/')}`;
+// NEXT15: Page must be async and await the params Promise
+export default async function Page({ params }: PageProps) {
+  const { locale: rawLocale, slug } = await params; // NEXT15
+  const lookupSlug = `applications/${slug.join('/')}`;
   return (
     <ProductDetailView
-      locale={params.locale as 'en' | 'zh' | 'ar'}
+      locale={rawLocale as 'en' | 'zh' | 'ar'}
       lookupSlug={lookupSlug}
       canonicalPath={lookupSlug}
     />

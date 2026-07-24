@@ -4,10 +4,10 @@ import { prisma } from '@/lib/prisma';
 // POST /api/reviews/[reviewId]/helpful - Mark review as helpful or not
 export async function POST(
   request: NextRequest,
-  { params }: { params: { reviewId: string } }
+  { params }: { params: Promise<{ reviewId: string }> } // NEXT15: params is a Promise
 ) {
   try {
-    const reviewId = params.reviewId;
+    const { reviewId } = await params; // NEXT15
     const body = await request.json();
     const { helpful } = body; // true for helpful, false for not helpful
 

@@ -3,11 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-export default function DataMigrationPage({
-  params: { locale },
-}: {
-  params: { locale: string };
-}) {
+// NEXT15: params is now a Promise; this page never used `locale`, so drop the prop.
+export default function DataMigrationPage() {
   const router = useRouter();
   const [exporting, setExporting] = useState(false);
   const [importing, setImporting] = useState(false);

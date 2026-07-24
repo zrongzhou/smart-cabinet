@@ -8,11 +8,13 @@ import LandingPage from '@/components/landing/LandingPage';
 const SLUG = 'shipping-delivery';
 
 interface PageProps {
-  params: { locale: string };
+  // NEXT15: params is now a Promise
+  params: Promise<{ locale: string }>;
 }
 
-export function generateMetadata({ params }: PageProps): Metadata {
-  const loc = normalizeLocale(params.locale);
+// NEXT15: generateMetadata must be async and await the params Promise
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const loc = normalizeLocale((await params).locale); // NEXT15
   const item = landingPageMap[SLUG];
   const meta = landingPageMeta[SLUG];
   const englishTitle = (item.metaTitle || '').split(/\s*\|\s*/)[0] || item.metaTitle || '';
@@ -27,8 +29,9 @@ export function generateMetadata({ params }: PageProps): Metadata {
   };
 }
 
-export default function Page({ params }: PageProps) {
-  const loc = normalizeLocale(params.locale);
+// NEXT15: Page must be async and await the params Promise
+export default async function Page({ params }: PageProps) {
+  const loc = normalizeLocale((await params).locale); // NEXT15
   const item = landingPageMap[SLUG];
   if (!item) return null;
   return <LandingPage locale={loc} content={item} basePath={SLUG} />;

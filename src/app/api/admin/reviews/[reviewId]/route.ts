@@ -5,7 +5,7 @@ import { verifyAuth, unauthorizedResponse } from '@/lib/auth';
 // PUT /api/admin/reviews/[reviewId] - Approve or reject review
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { reviewId: string } }
+  { params }: { params: Promise<{ reviewId: string }> } // NEXT15: params is a Promise
 ) {
   try {
     // Check admin authentication
@@ -14,7 +14,7 @@ export async function PUT(
       return unauthorizedResponse();
     }
 
-    const reviewId = params.reviewId;
+    const { reviewId } = await params; // NEXT15
     const body = await request.json();
     const { isApproved } = body;
 
@@ -57,7 +57,7 @@ export async function PUT(
 // DELETE /api/admin/reviews/[reviewId] - Delete review
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { reviewId: string } }
+  { params }: { params: Promise<{ reviewId: string }> } // NEXT15: params is a Promise
 ) {
   try {
     // Check admin authentication
@@ -66,7 +66,7 @@ export async function DELETE(
       return unauthorizedResponse();
     }
 
-    const reviewId = params.reviewId;
+    const { reviewId } = await params; // NEXT15
 
     const review = await prisma.review.findUnique({
       where: { id: reviewId },

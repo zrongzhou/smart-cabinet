@@ -8,7 +8,8 @@ import { BlogListClient } from './BlogListClient';
 export const revalidate = 300;
 
 interface PageProps {
-  params: { locale: string };
+  // NEXT15: params is now a Promise
+  params: Promise<{ locale: string }>;
 }
 
 const PAGE_META: Record<string, { title: string; description: string }> = {
@@ -29,7 +30,7 @@ const PAGE_META: Record<string, { title: string; description: string }> = {
 const PAGE_SIZE = 9;
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const locale = (params.locale || 'en') as 'en' | 'zh' | 'ar';
+  const locale = ((await params).locale || 'en') as 'en' | 'zh' | 'ar'; // NEXT15: await params
   const meta = PAGE_META[locale] || PAGE_META.en;
   // 从数据库取近期已发布博客标题，关键词随 DB 新增博客自动更新
   const blogs = await prisma.blogPost.findMany({
@@ -57,7 +58,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function Page({ params }: PageProps) {
-  const locale = (params.locale || 'en') as 'en' | 'zh' | 'ar';
+  const locale = ((await params).locale || 'en') as 'en' | 'zh' | 'ar'; // NEXT15: await params
   const meta = PAGE_META[locale] || PAGE_META.en;
   const displayTitle = meta.title;
   const { canonical } = buildHreflang(getBaseUrl(), locale, '/blog');

@@ -87,8 +87,9 @@ const PAGE_META: Record<string, { title: string; description: string }> = {
   },
 };
 
-export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
-  const locale = params.locale;
+// NEXT15: params is now a Promise
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const locale = (await params).locale; // NEXT15
   const meta = PAGE_META[locale] || PAGE_META.en;
   // 全站关键词以英文为主：主词从英文标题提炼，二级用本语言标题核心（仅本语言页出现）
   const keywords = buildStaticPageKeywords(PAGE_META.en.title, meta.title).join(', ');
@@ -131,12 +132,15 @@ export async function generateMetadata({ params }: { params: { locale: string } 
 }
 
 interface HomePageProps {
-  params: {
+  // NEXT15: params is now a Promise
+  params: Promise<{
     locale: string;
-  };
+  }>;
 }
 
-export default async function HomePage({ params: { locale } }: HomePageProps) {
+// NEXT15: params is a Promise; await and destructure
+export default async function HomePage({ params }: HomePageProps) {
+  const { locale } = await params; // NEXT15
   // 首页博客预览改为读取合并列表（DB + 静态 seed），这样后台新建并设为精选的
   // 博客也能出现在首页。失败时回退为空，BlogPreview 会改用静态数据兜底。
   let blogItems: PreviewBlog[] = [];
