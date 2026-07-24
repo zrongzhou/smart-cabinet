@@ -107,7 +107,7 @@ describe('PersonalWechatPushService.getSettings', () => {
     expect(settings.webhookMask).toBe('https://sctapi.ftqq.com/****.send');
     expect(settings.lastTest?.status).toBe('success');
     // The masked shape must NEVER expose the encrypted payload.
-    expect((settings as Record<string, unknown>).webhookEnc).toBeUndefined();
+    expect((settings as unknown as Record<string, unknown>).webhookEnc).toBeUndefined();
     expect(JSON.stringify(settings)).not.toContain('aes-256-gcm');
   });
 

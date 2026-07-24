@@ -236,16 +236,14 @@ describe('ProductCard Component', () => {
     expect(screen.getByText('View Details')).toBeInTheDocument();
   });
 
-  it('should handle products with complex category objects', () => {
-    const productWithCategoryObject = {
+  it('should handle products with category strings', () => {
+    const productWithCategoryStrings = {
       ...mockProduct,
-      categories: [
-        { id: '1', name: { en: 'Smart Cabinets', zh: '智能柜', ar: 'خزانات ذكية' } },
-      ],
+      categories: ['Smart Cabinets'],
     };
-    
-    render(<ProductCard product={productWithCategoryObject} locale="en" />);
-    
+
+    render(<ProductCard product={productWithCategoryStrings} locale="en" />);
+
     expect(screen.getByText('Smart Cabinets')).toBeInTheDocument();
   });
 

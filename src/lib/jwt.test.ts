@@ -6,7 +6,7 @@ import {
   verifyRefreshToken,
   hashPassword,
   comparePassword,
-} from './jwt';
+} from './auth/jwt';
 
 describe('user JWT + password utils (V8 auth)', () => {
   it('round-trips an access token', () => {
