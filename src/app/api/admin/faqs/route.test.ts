@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import type { NextRequest } from 'next/server';
 
 // ---------------------------------------------------------------------------
 // REAL SOURCE UNDER TEST: src/app/api/admin/faqs/route.ts
@@ -70,11 +71,11 @@ vi.mock('next/server', () => ({
 import { GET, POST, PUT, DELETE } from '@/app/api/admin/faqs/route';
 import * as authLib from '@/lib/auth';
 
-const mkReq = (url: string, init?: { method?: string; body?: unknown }) =>
+const mkReq = (url: string, init?: { method?: string; body?: unknown }): NextRequest =>
   new MockNextRequest(url, {
     method: init?.method,
     body: init?.body !== undefined ? JSON.stringify(init.body) : undefined,
-  });
+  }) as unknown as NextRequest;
 
 beforeEach(() => {
   mockFaq.findMany.mockReset();

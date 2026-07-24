@@ -13,7 +13,7 @@ const EXPECTED = 'https://www.wstoolcabinet.com/images/logo.svg';
 
 describe('N1 homepage metadata — absolute og:image / twitter:image', () => {
   it('en: openGraph.images[0].url and twitter.images[0] are the absolute logo URL', async () => {
-    const md = (await generateMetadata({ params: { locale: 'en' } })) as Metadata;
+    const md = (await generateMetadata({ params: Promise.resolve({ locale: 'en' }) })) as Metadata;
     expect(md.openGraph).toBeDefined();
     expect(Array.isArray(md.openGraph!.images)).toBe(true);
     const og = (md.openGraph!.images as any[])[0];
@@ -25,19 +25,19 @@ describe('N1 homepage metadata — absolute og:image / twitter:image', () => {
   });
 
   it('zh: same absolute og/twitter image', async () => {
-    const md = (await generateMetadata({ params: { locale: 'zh' } })) as Metadata;
+    const md = (await generateMetadata({ params: Promise.resolve({ locale: 'zh' }) })) as Metadata;
     expect((md.openGraph!.images as any[])[0].url).toBe(EXPECTED);
     expect((md.twitter!.images as string[])[0]).toBe(EXPECTED);
   });
 
   it('ar: same absolute og/twitter image', async () => {
-    const md = (await generateMetadata({ params: { locale: 'ar' } })) as Metadata;
+    const md = (await generateMetadata({ params: Promise.resolve({ locale: 'ar' }) })) as Metadata;
     expect((md.openGraph!.images as any[])[0].url).toBe(EXPECTED);
     expect((md.twitter!.images as string[])[0]).toBe(EXPECTED);
   });
 
   it('image URL is absolute (starts with https://), never a relative path', async () => {
-    const md = (await generateMetadata({ params: { locale: 'en' } })) as Metadata;
+    const md = (await generateMetadata({ params: Promise.resolve({ locale: 'en' }) })) as Metadata;
     const ogUrl = (md.openGraph!.images as any[])[0].url as string;
     expect(ogUrl.startsWith('https://')).toBe(true);
     expect(ogUrl.startsWith('/')).toBe(false);
