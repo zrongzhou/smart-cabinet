@@ -24,8 +24,26 @@ import bcrypt from 'bcryptjs';
 const ADMIN_COOKIE_NAME = 'admin_auth';
 const ADMIN_COOKIE_MAX_AGE = 60 * 60 * 8; // 8 hours
 
+/**
+ * Derive the cookie `Domain` attribute from the request host.
+ *
+ * We set the parent domain (eTLD+1, e.g. `.wstoolcabinet.com`) so the
+ * `admin_auth` cookie is shared across subdomains (www. and test. both reach
+ * the admin console on the same machine). On localhost or raw IP addresses we
+ * return `undefined` to keep a host-only cookie — setting a bare `Domain`
+ * attribute there would be rejected by the browser as illegal.
+ */
+function cookieDomain(request: NextRequest): string | undefined {
+  const host = request.headers.get('host')?.split(':')[0] || '';
+  // localhost or IP address: don't set domain (host-only, avoids illegal Domain attr)
+  if (host === 'localhost' || /^[\d.]+$/.test(host) || host.includes(':')) return undefined;
+  const parts = host.split('.');
+  if (parts.length < 2) return undefined;
+  return '.' + parts.slice(-2).join('.');
+}
+
 /** Issue a signed admin JWT and set it on an httpOnly cookie. */
-function issueToken(username: string, mustChangePassword: boolean) {
+function issueToken(request: NextRequest, username: string, mustChangePassword: boolean) {
   const token = generateAdminToken({ sub: username, username });
   const response = NextResponse.json({
     success: true,
@@ -43,6 +61,7 @@ function issueToken(username: string, mustChangePassword: boolean) {
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
     path: '/',
+    domain: cookieDomain(request),
     maxAge: ADMIN_COOKIE_MAX_AGE,
   });
 
@@ -82,7 +101,7 @@ export async function POST(request: NextRequest) {
     if (dbUser && dbUser.passwordHash) {
       const valid = await bcrypt.compare(password, dbUser.passwordHash);
       if (valid) {
-        return issueToken(username, false);
+        return issueToken(request, username, false);
       }
       return NextResponse.json(
         { success: false, error: 'Invalid credentials' },
@@ -114,7 +133,7 @@ export async function POST(request: NextRequest) {
         // If the DB write fails we still allow this one bootstrap login; the
         // operator should set a password once the database is reachable.
       }
-      return issueToken(username, true);
+      return issueToken(request, username, true);
     }
 
     return NextResponse.json(
@@ -132,6 +151,10 @@ export async function POST(request: NextRequest) {
 // POST /api/admin/logout
 export async function DELETE(request: NextRequest) {
   const response = NextResponse.json({ success: true, message: 'Logout successful' });
-  response.cookies.delete('admin_auth');
+  response.cookies.delete({
+    name: ADMIN_COOKIE_NAME,
+    domain: cookieDomain(request),
+    path: '/',
+  });
   return response;
 }
