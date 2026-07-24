@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { verifyToken } from '@/lib/auth/jwt';
+import { sanitizeHtml } from '@/lib/sanitize';
 
 // GET /api/reviews?slug=xxx - Get approved reviews for a product
 // Uses a query param (not a path segment) so slugs containing "/" work correctly.
@@ -204,11 +205,11 @@ export async function POST(
       data: {
         productId: product.id,
         userId,
-        authorName,
+        authorName: sanitizeHtml(authorName),
         authorEmail: authorEmail || null,
         rating: rating || 5,
-        title: title || null,
-        content,
+        title: title ? sanitizeHtml(title) : null,
+        content: sanitizeHtml(content),
         images: images || [],
         isVerified: false,
         isApproved: false, // Requires admin approval
