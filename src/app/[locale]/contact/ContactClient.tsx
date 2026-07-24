@@ -29,11 +29,11 @@ export function ContactClient() {
   }, []);
 
   // V8.x fix: OSM iframe timeout fallback — cross-origin iframe onError is unreliable;
-  // if map hasn't loaded within 8s, show static address card instead of broken gray icon
+  // if map hasn't loaded within 5s, show static address card instead of broken gray icon
   useEffect(() => {
     const tid = (window as any).__scMapTimeoutId = window.setTimeout(() => {
       setMapError(true);
-    }, 8000);
+    }, 5000);
     return () => {
       if ((window as any).__scMapTimeoutId !== undefined) { clearTimeout((window as any).__scMapTimeoutId); }
     };
@@ -258,8 +258,8 @@ export function ContactClient() {
                     onError={() => setMapError(true)}
                   />
                 )}
-                {/* Fallback card — shown when iframe fails to load or times out (8s) */}
-                <div className={`absolute inset-0 flex-col items-center justify-center ${mapError ? 'flex' : 'hidden'}`}
+                {/* Fallback card — shown when iframe fails to load or times out (5s) */}
+                <div className={`absolute inset-0 z-10 flex-col items-center justify-center ${mapError ? 'flex' : 'hidden'}`}
                   style={{ background: 'linear-gradient(135deg, #dbeafe 0%, #e0e7ff 50%, #fce7f3 100%)' }}
                 >
                   <MapPin className="w-12 h-12 text-red-500 mb-3 animate-bounce" />
