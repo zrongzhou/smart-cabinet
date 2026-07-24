@@ -44,13 +44,13 @@ interface StarLayer {
 
 const STAR_LAYERS: StarLayer[] = [
   // Layer 0: 远景微尘 — 基础亮度提升 + 更大尺寸
-  { count: 120, sizeRange: [0.18, 0.5], opacityRange: [0.15, 0.38], color: 'rgba(170,185,220,', speedFactor: 0 },
+  { count: 120, sizeRange: [0.18, 0.5], opacityRange: [0.32, 0.55], color: 'rgba(170,185,220,', speedFactor: 0 },
   // Layer 1: 中景星群 — 明显可见的背景星星
-  { count: 65, sizeRange: [0.35, 0.8], opacityRange: [0.25, 0.55], color: 'rgba(190,210,245,', speedFactor: 0 },
+  { count: 65, sizeRange: [0.35, 0.8], opacityRange: [0.45, 0.72], color: 'rgba(190,210,245,', speedFactor: 0 },
   // Layer 2: 近景中等亮度 — 清晰可辨
-  { count: 30, sizeRange: [0.6, 1.5], opacityRange: [0.4, 0.72], color: 'rgba(218,235,255,', speedFactor: 0 },
+  { count: 30, sizeRange: [0.6, 1.5], opacityRange: [0.58, 0.88], color: 'rgba(218,235,255,', speedFactor: 0 },
   // Layer 3: 亮星 — 带十字光芒，强闪烁
-  { count: 12, sizeRange: [1.8, 3.5], opacityRange: [0.6, 1.0], color: 'rgba(255,255,255,', speedFactor: 0.008 },
+  { count: 12, sizeRange: [1.8, 3.5], opacityRange: [0.72, 1.0], color: 'rgba(255,255,255,', speedFactor: 0.008 },
   // Layer 4: 超亮星 — 最醒目，最慢移动
   { count: 4, sizeRange: [3.2, 5.5], opacityRange: [0.82, 1.0], color: 'rgba(240,248,255,', speedFactor: 0.004 },
 ];

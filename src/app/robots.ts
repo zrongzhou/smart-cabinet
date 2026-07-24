@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/xiaozhouBackend/', '/api/', '/login', '/register', '/checkout/', '/account/'],
+        disallow: ['/login', '/register', '/checkout/', '/account/'],
       },
     ],
     sitemap: 'https://www.wstoolcabinet.com/sitemap.xml',

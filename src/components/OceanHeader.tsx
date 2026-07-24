@@ -109,7 +109,7 @@ function StarryScene() {
         x: Math.random() * w,
         y: Math.random() * h,
         radius,
-        baseAlpha: 0.3 + Math.random() * 0.6,
+        baseAlpha: 0.45 + Math.random() * 0.55,
         pulse: Math.random() * Math.PI * 2,
         twinkleSpeed: 0.3 + Math.random() * 0.7,
       });

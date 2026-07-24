@@ -28,6 +28,17 @@ export function ContactClient() {
     loadSettings();
   }, []);
 
+  // V8.x fix: OSM iframe timeout fallback — cross-origin iframe onError is unreliable;
+  // if map hasn't loaded within 8s, show static address card instead of broken gray icon
+  useEffect(() => {
+    const tid = (window as any).__scMapTimeoutId = window.setTimeout(() => {
+      setMapError(true);
+    }, 8000);
+    return () => {
+      if ((window as any).__scMapTimeoutId !== undefined) { clearTimeout((window as any).__scMapTimeoutId); }
+    };
+  }, []);
+
   // Support multi-value contact info
   const rawEmails = settings?.contactEmails;
   const rawPhones = settings?.contactPhones;
@@ -56,6 +67,8 @@ export function ContactClient() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  // V8.x fix: map error state — OSM iframe may fail to load from CN; timeout-based fallback is more reliable than iframe onError
+  const [mapError, setMapError] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -226,30 +239,31 @@ export function ContactClient() {
               </div>
             )}
 
-            {/* Map - Use iframe embedding OSM (most reliable method) */}
+            {/* Map - OSM embed with timeout fallback (onError unreliable for cross-origin iframes) */}
             <div className="mt-6 rounded-2xl overflow-hidden border relative" style={{ borderColor: 'var(--border-color, #e5e7eb)', backgroundColor: 'var(--section-alt-bg, #f0f4ff)' }}>
-              {/* Interactive OSM Map via iframe - most reliable method */}
               <div className="relative w-full" style={{ height: '300px' }}>
-                <iframe
-                  title={locale === 'zh' ? '公司位置' : locale === 'ar' ? 'موقع الشركة' : 'Company Location'}
-                  src="https://www.openstreetmap.org/export/embed.html?bbox=113.45%2C23.15%2C113.55%2C23.25&layer=mapnik&marker=23.20%2C113.50"
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  loading="lazy"
-                  onError={(e) => {
-                    // Fallback to static image if iframe fails
-                    const target = e.target as HTMLIFrameElement;
-                    target.style.display = 'none';
-                    const fallback = target.parentElement?.querySelector('.map-fallback');
-                    if (fallback) (fallback as HTMLElement).style.display = 'flex';
-                  }}
-                />
-                <div className="map-fallback absolute inset-0 flex-col items-center justify-center hidden"
+                {!mapError && (
+                  <iframe
+                    title={locale === 'zh' ? '公司位置' : locale === 'ar' ? 'موقع الشركة' : 'Company Location'}
+                    src="https://www.openstreetmap.org/export/embed.html?bbox=113.45%2C23.15%2C113.55%2C23.25&layer=mapnik&marker=23.20%2C113.50"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    onLoad={() => {
+                      // V8.x fix: clear timeout on successful iframe load
+                      if ((window as any).__scMapTimeoutId !== undefined) { clearTimeout((window as any).__scMapTimeoutId); }
+                    }}
+                    onError={() => setMapError(true)}
+                  />
+                )}
+                {/* Fallback card — shown when iframe fails to load or times out (8s) */}
+                <div className={`absolute inset-0 flex-col items-center justify-center ${mapError ? 'flex' : 'hidden'}`}
                   style={{ background: 'linear-gradient(135deg, #dbeafe 0%, #e0e7ff 50%, #fce7f3 100%)' }}
                 >
                   <MapPin className="w-12 h-12 text-red-500 mb-3 animate-bounce" />
-                  <p className="text-sm font-semibold text-gray-700">{displayAddress || 'Panyu District, Guangzhou, China'}</p>
+                  <p className="text-sm font-semibold text-gray-700">{displayAddress || (locale === 'zh' ? '广州市番禺区万泰路49号标准工业园' : 'Standard Industrial Park, No. 49 Wantai Road, Nansha District, Guangzhou, China')}</p>
                   <p className="text-xs text-gray-500 mt-1">📍 23.20°N, 113.50°E</p>
                   <a href="https://www.openstreetmap.org/?mlat=23.20&mlon=113.50#map=13/23.20/113.50"
                     target="_blank" rel="noopener noreferrer"
