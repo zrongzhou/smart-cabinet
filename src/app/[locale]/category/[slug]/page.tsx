@@ -49,14 +49,23 @@ function localized(value: any, locale: string): string {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params; // NEXT15: await params
+  const { locale, slug } = await params; // NEXT15: await params
   const categories = await fetchUnifiedCategories();
   const cat = categories.find((c: any) => c.slug === slug);
   if (!cat) return { title: 'Category Not Found' };
   const name = cat.nameZh || cat.nameEn || cat.nameAr || slug;
+  const baseUrl = getBaseUrl();
+  // D-code(OG): 补充分类详情页 Open Graph 标签；无独立封面图时复用站点默认分享图。
   return {
     title: `${name} - Smart Cabinet`,
     description: `View products in ${name} category.`,
+    openGraph: {
+      title: `${name} - Smart Cabinet`,
+      description: `View products in ${name} category.`,
+      url: `${baseUrl}/${locale}/category/${slug}`,
+      images: [{ url: `${baseUrl}/images/logo.svg` }],
+      type: 'website',
+    },
   };
 }
 

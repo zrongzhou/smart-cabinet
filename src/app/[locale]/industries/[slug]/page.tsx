@@ -24,12 +24,21 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const englishTitle = (item.metaTitle || '').split(/\s*\|\s*/)[0] || item.metaTitle || '';
   const description = pickTrilingualDescription(meta, loc, englishTitle);
   const keywords = buildStaticPageKeywords(englishTitle, item.metaTitle || englishTitle).join(', ');
-  const { canonical, languages } = buildHreflang(getBaseUrl(), loc, `/industries/${slug}`);
+  const baseUrl = getBaseUrl();
+  const { canonical, languages } = buildHreflang(baseUrl, loc, `/industries/${slug}`);
+  // D-code(OG): 补充行业详情页 Open Graph 标签；无独立封面图时复用站点默认分享图。
   return {
     title: item.metaTitle,
     description,
     keywords,
     alternates: { canonical, languages },
+    openGraph: {
+      title: item.metaTitle,
+      description,
+      url: `${baseUrl}/${locale}/industries/${slug}`,
+      images: [{ url: `${baseUrl}/images/logo.svg` }],
+      type: 'website',
+    },
   };
 }
 
