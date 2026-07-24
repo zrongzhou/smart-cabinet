@@ -31,12 +31,12 @@ function isPublicCacheable(pathname: string, method: string): boolean {
 }
 
 /**
- * Attach `Cache-Control: public, s-maxage=300, stale-while-revalidate=600` to a
- * response when the request targets a cacheable public page.
+ * Attach `Cache-Control: public, s-maxage=2592000, stale-while-revalidate=604800` to a
+ * response when the request targets a cacheable public page (30-day edge cache).
  */
 function withPublicCache(response: NextResponse, request: NextRequest): NextResponse {
   if (isPublicCacheable(request.nextUrl.pathname, request.method)) {
-    response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
+    response.headers.set('Cache-Control', 'public, s-maxage=2592000, stale-while-revalidate=604800');
   }
   return response;
 }
