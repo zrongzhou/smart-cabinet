@@ -4,6 +4,8 @@ import { Metadata } from 'next';
 import FeaturedProducts from '@/components/home/FeaturedProducts';
 import AdvantagesSection from '@/components/home/AdvantagesSection';
 import SolutionsPreview from '@/components/home/SolutionsPreview';
+import HeroSection from '@/components/home/HeroSectionLazy';
+import TestimonialsSection from '@/components/home/TestimonialsSectionLazy';
 import Image from 'next/image';
 import { getMergedBlogList } from '@/lib/blogs';
 import { buildStaticPageKeywords } from '@/lib/seo-keywords';
@@ -11,41 +13,10 @@ import { buildStaticPageKeywords } from '@/lib/seo-keywords';
 // 静态内容页，ISR 重新校验
 export const revalidate = 300;
 
-// HeroSection: canvas 星空动画 (ssr:false — 已有)
-const HeroSection = dynamic(
-  () => import('@/components/home/HeroSection'),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="min-h-[80vh] flex flex-col items-center justify-center relative overflow-hidden" style={{ background: 'linear-gradient(175deg, #03010a 0%, #0c1229 50%, #060e1f 100%)' }}>
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full blur-3xl animate-pulse" style={{ backgroundColor: 'rgba(59,130,246,0.08)', animationDuration: '3s' }} />
-        <div className="absolute bottom-1/3 right-1/4 w-48 h-48 rounded-full blur-3xl animate-pulse" style={{ backgroundColor: 'rgba(99,102,241,0.06)', animationDuration: '4s' }} />
-        <div className="relative z-10 flex flex-col items-center gap-5">
-          <Image
-            src="/images/logo.svg"
-            alt="Qtech"
-            width={120}
-            height={48}
-            className="h-12 w-auto opacity-90 animate-pulse"
-            style={{ animationDuration: '2s' }}
-            priority={true}
-          />
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: '0ms' }} />
-            <div className="w-2 h-2 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '150ms' }} />
-            <div className="w-2 h-2 rounded-full bg-indigo-400 animate-bounce" style={{ animationDelay: '300ms' }} />
-          </div>
-        </div>
-      </div>
-    ),
-  }
-);
-
 // 首屏以下的重组件懒加载（减少首屏 JS bundle）
-const TestimonialsSection = dynamic(
-  () => import('@/components/home/TestimonialsSection'),
-  { ssr: false, loading: () => <div className="py-20 flex justify-center"><div className="w-8 h-8 border-2 border-blue-300 border-t-blue-600 rounded-full animate-spin" /></div> }
-);
+// 注意：HeroSection / TestimonialsSection 的 ssr:false 动态导入已移至对应的
+// *Lazy 客户端包装组件（HeroSectionLazy / TestimonialsSectionLazy），因为 Next 15
+// 禁止在 Server Component 内对 next/dynamic 使用 ssr:false。
 const BlogPreview = dynamic(
   () => import('@/components/home/BlogPreview'),
   { loading: () => <div className="py-16" /> }
