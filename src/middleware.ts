@@ -41,7 +41,7 @@ function isPublicCacheable(pathname: string, method: string): boolean {
  */
 function withPublicCache(response: NextResponse, request: NextRequest): NextResponse {
   if (isPublicCacheable(request.nextUrl.pathname, request.method)) {
-    response.headers.set('Cache-Control', 'public, max-age=7776000, s-maxage=7776000, stale-while-revalidate=604800');
+    response.headers.set('Cache-Control', 'public, s-maxage=7776000, stale-while-revalidate=604800');
   }
   return response;
 }
