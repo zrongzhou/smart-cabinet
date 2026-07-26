@@ -4,8 +4,12 @@ import { getBaseUrl } from '@/lib/seo';
 import { buildListPageKeywords, buildHreflang } from '@/lib/seo-keywords';
 import ProductsClient from './ProductsClient';
 
+// 产品列表页：频繁过滤/搜索，较短的 ISR 窗口
+export const revalidate = 60;
+
 interface PageProps {
-  params: { locale: string };
+  // NEXT15: params is now a Promise
+  params: Promise<{ locale: string }>;
 }
 
 const PAGE_META: Record<string, { title: string; description: string }> = {
@@ -24,7 +28,7 @@ const PAGE_META: Record<string, { title: string; description: string }> = {
 };
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const locale = params.locale as 'en' | 'zh' | 'ar';
+  const locale = (await params).locale as 'en' | 'zh' | 'ar'; // NEXT15: await params
   const meta = PAGE_META[locale] || PAGE_META.en;
   const products = await prisma.product.findMany({
     where: { status: 'active', deletedAt: null },
@@ -47,7 +51,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function Page({ params }: PageProps) {
-  const locale = (params.locale || 'en') as 'en' | 'zh' | 'ar';
+  const locale = ((await params).locale || 'en') as 'en' | 'zh' | 'ar'; // NEXT15: await params
   const meta = PAGE_META[locale] || PAGE_META.en;
   const displayTitle = meta.title;
   const { canonical } = buildHreflang(getBaseUrl(), locale, '/products');

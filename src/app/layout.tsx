@@ -14,14 +14,16 @@ export const viewport: Viewport = {
   maximumScale: 5,
 };
 
-export default function RootLayout({
+// NEXT15: headers() now returns a Promise and must be awaited.
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   // 服务端根据 pathname 渲染正确的 lang/dir，
   // 确保阿语页在服务端 HTML 即带 dir="rtl"，而非依赖客户端 useEffect。
-  const pathname = (headers().get('x-pathname') || '/');
+  const h = await headers();
+  const pathname = (h.get('x-pathname') || '/');
   const seg = pathname.split('/')[1];
   const lang = seg === 'zh' ? 'zh-CN' : seg === 'ar' ? 'ar' : 'en';
   const dir = seg === 'ar' ? 'rtl' : 'ltr';

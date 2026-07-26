@@ -364,14 +364,25 @@ const ReviewList: React.FC<ReviewListProps> = ({
               {/* Review Images */}
               {review.images && review.images.length > 0 && (
                 <div className="flex gap-2 mb-4">
-                  {review.images.map((image, index) => (
-                    <img
-                      key={index}
-                      src={image}
-                      alt={`Review image ${index + 1}`}
-                      className="w-20 h-20 object-cover rounded"
-                    />
-                  ))}
+                  {review.images.map((image, index) => {
+                    // SECURITY: Only render images whose URL is http:// or https://.
+                    // Defensive against any non-http(s) URI (e.g. javascript:, data:)
+                    // that may have slipped into the data store — skip it silently.
+                    if (
+                      typeof image !== 'string' ||
+                      (!image.startsWith('http://') && !image.startsWith('https://'))
+                    ) {
+                      return null;
+                    }
+                    return (
+                      <img
+                        key={index}
+                        src={image}
+                        alt={`Review image ${index + 1}`}
+                        className="w-20 h-20 object-cover rounded"
+                      />
+                    );
+                  })}
                 </div>
               )}
 

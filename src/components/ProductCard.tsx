@@ -5,6 +5,7 @@ import ImageWithRetry from '@/components/ui/ImageWithRetry';
 import { useState, memo } from 'react';
 import { useLocale } from '@/lib/i18n';
 import { getProductHref } from '@/lib/product-url';
+import { sanitizeHtml } from '@/lib/sanitize';
 
 interface ProductCardProps {
   product: Product;
@@ -164,9 +165,9 @@ function ProductCard({ product, locale, showFavoriteButton = true, priority = fa
         {product.description && (
           <div className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
             {(typeof product.description === 'string')
-              ? <span dangerouslySetInnerHTML={{ __html: product.description }} />
+              ? <span dangerouslySetInnerHTML={{ __html: sanitizeHtml(product.description) }} />
               : <span dangerouslySetInnerHTML={{
-                  __html: (product.description?.[locale as keyof typeof product.description]
+                  __html: sanitizeHtml(product.description?.[locale as keyof typeof product.description]
                     || product.description?.en
                     || product.description?.zh
                     || product.description?.ar

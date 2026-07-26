@@ -8,7 +8,23 @@ const withBundleAnalyzer = bundleAnalyzer({
 const nextConfig = {
   reactStrictMode: true,
 
-  // Allow large file uploads (50MB)
+  experimental: {
+    // NEXT15: in 15.5.x, serverActions & optimizePackageImports are only valid
+    // under `experimental` (top-level keys are rejected by the config schema),
+    // which previously caused the 50mb upload limit to be silently ignored.
+    serverActions: {
+      bodySizeLimit: '50mb',
+    },
+    optimizePackageImports: [
+      'lucide-react',
+      '@tiptap/react',
+      '@tiptap/pm',
+      'framer-motion',
+      'recharts',
+    ],
+  },
+
+  // Allow large file uploads (50MB — see experimental.serverActions above)
   async rewrites() {
     return [];
   },
@@ -46,20 +62,9 @@ const nextConfig = {
     ];
   },
 
-  // Increase body size limit for file uploads
-  experimental: {
-    serverActions: {
-      bodySizeLimit: '50mb',
-    },
-    // Optimize package imports — tree-shake lucide-react + tiptap
-    optimizePackageImports: [
-      'lucide-react',
-      '@tiptap/react',
-      '@tiptap/pm',
-      'framer-motion',
-      'recharts',
-    ],
-  },
+  // Increase body size limit for file uploads — handled by experimental.serverActions
+  // (NEXT15: serverActions & optimizePackageImports live under `experimental` again,
+  // see the block near the top of this config).
 
   // Image optimization — ENABLED (v241 performance fix)
   images: {
@@ -90,6 +95,42 @@ const nextConfig = {
           {
             key: 'google',
             value: 'notranslate',
+          },
+          // SECURITY: Defense-in-depth security headers emitted at the origin so
+          // they survive even if the upstream CDN (EdgeOne) strips them. These are
+          // the authoritative response headers for every route.
+          // SECURITY: Enforce HTTPS for 2 years, including subdomains, preload.
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains; preload',
+          },
+          // SECURITY: Prevent MIME sniffing.
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          // SECURITY: Block framing by other origins (clickjacking defense); allow same-origin framing.
+          {
+            key: 'X-Frame-Options',
+            value: 'SAMEORIGIN',
+          },
+          // SECURITY: Limit referrer leakage.
+          {
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin',
+          },
+          // SECURITY: Disable powerful features not used by this app.
+          {
+            key: 'Permissions-Policy',
+            value: 'geolocation=(), microphone=(), camera=(), payment=(), usb=()',
+          },
+          // SECURITY: Restrict content sources to self (+https images/data) and
+          // forbid third-party framing. script-src/style-src keep 'unsafe-inline'
+          // because the site uses <style dangerouslySetInnerHTML> and inline styles.
+          {
+            key: 'Content-Security-Policy',
+            value:
+              "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; frame-ancestors 'self'; base-uri 'self'; form-action 'self'",
           },
         ],
       },

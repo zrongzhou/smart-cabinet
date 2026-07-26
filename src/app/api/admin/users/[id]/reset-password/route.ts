@@ -20,7 +20,7 @@ const MIN_PASSWORD_LENGTH = 8;
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> } // NEXT15: params is a Promise
 ) {
   // 1) Admin authorization gate.
   const admin = await requireAdmin(request);
@@ -28,7 +28,7 @@ export async function POST(
     return unauthorizedResponse();
   }
 
-  const userId = params.id;
+  const userId = (await params).id; // NEXT15
 
   // 2) Parse + validate the JSON body.
   let body: { newPassword?: unknown };

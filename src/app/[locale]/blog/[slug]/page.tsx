@@ -7,8 +7,12 @@ import staticBlogs from '@/data/blogs';
 import BlogDetailClient, { BlogDetailDTO } from './BlogDetailClient';
 import JsonLd from '@/components/JsonLd';
 
+// 静态内容页，ISR 重新校验
+export const revalidate = 300;
+
 interface PageProps {
-  params: { locale: string; slug: string };
+  // NEXT15: params is now a Promise
+  params: Promise<{ locale: string; slug: string }>;
 }
 
 /**
@@ -63,7 +67,7 @@ function toBlogDto(row: {
  * BlogDetailClient，SSR HTML 即包含正文，不再依赖客户端 useEffect 拉取。
  */
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { locale, slug } = params;
+  const { locale, slug } = await params; // NEXT15: await params
   const loc = (locale || 'en') as 'en' | 'zh' | 'ar';
   // 保留真实 URL 段（可能带 .html，如外链进入）；rawSlug 仅用于提炼词元与兜底匹配
   const fullSlug = (slug || '').trim();
@@ -86,7 +90,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   // 留空则回落到自动两级关键词生成器。resolvePageKeywords 返回已 join 的串。
   const manualKw = (blog?.seoKeywords as unknown as string | null) || '';
   const keywords = resolvePageKeywords(manualKw, buildDetailPageKeywords(enTitle, displayTitle, rawSlug));
-  const { canonical, languages } = buildHreflang(getBaseUrl(), loc, `blog/${fullSlug}`);
+  // D-code(OG): 提前取得 baseUrl，供 hreflang 与 openGraph 的 og:url、og:image 复用，确保绝对地址一致。
+  const baseUrl = getBaseUrl();
+  const { canonical, languages } = buildHreflang(baseUrl, loc, `blog/${fullSlug}`);
 
   // V8.10: 优先使用 xlsx 策划的 blogMeta 描述（按真实 slug 匹配），回退到 DB excerpt
   const xlsxDesc = pickTrilingual(blogMeta[fullSlug], loc) || pickTrilingual(blogMeta[rawSlug], loc);
@@ -96,16 +102,32 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       ? excerptObj
       : (excerptObj?.[loc] || excerptObj?.en || ''));
 
+  // D-code(OG): 复用文章封面图作为 og:image；无封面时回退站点默认分享图（与首页一致）。
+  const rawImage = (blog?.image as string | undefined) || '';
+  const ogImageUrl = rawImage
+    ? rawImage.startsWith('http')
+      ? rawImage
+      : `${baseUrl}${rawImage.startsWith('/') ? '' : '/'}${rawImage}`
+    : `${baseUrl}/images/logo.svg`;
+
   return {
     title: `${enTitle} | Qtech`,
     description,
     keywords: keywords,
     alternates: { canonical, languages },
+    // D-code(OG): 补充博客详情页 Open Graph 标签，提升社媒分享卡片质量。
+    openGraph: {
+      title: displayTitle || enTitle,
+      description,
+      url: `${baseUrl}/${locale}/blog/${fullSlug}`,
+      images: [{ url: ogImageUrl }],
+      type: 'article',
+    },
   };
 }
 
 export default async function Page({ params }: PageProps) {
-  const { locale, slug } = params;
+  const { locale, slug } = await params; // NEXT15: await params
   const loc = (locale || 'en') as 'en' | 'zh' | 'ar';
   // 保留真实 URL 段（可能带 .html，如外链进入）
   const fullSlug = (slug || '').trim();

@@ -10,10 +10,11 @@ import jwt from 'jsonwebtoken';
  * role here. `requireAdmin` is the single gate used by every admin API route.
  */
 
-const ADMIN_JWT_SECRET =
-  process.env.ADMIN_JWT_SECRET ||
-  process.env.JWT_SECRET ||
-  'change-me-admin-secret-v8';
+const ADMIN_JWT_SECRET_RAW = process.env.ADMIN_JWT_SECRET || process.env.JWT_SECRET;
+if (!ADMIN_JWT_SECRET_RAW) {
+  throw new Error('[auth] ADMIN_JWT_SECRET / JWT_SECRET is not configured');
+}
+const ADMIN_JWT_SECRET: string = ADMIN_JWT_SECRET_RAW;
 
 const ADMIN_TOKEN_TTL = '8h';
 

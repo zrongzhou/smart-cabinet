@@ -4,8 +4,12 @@ import { buildListPageKeywords, buildHreflang } from '@/lib/seo-keywords';
 import solutions from '@/data/solutions';
 import SolutionsClient from './SolutionsClient';
 
+// 静态内容页，ISR 重新校验
+export const revalidate = 300;
+
 interface PageProps {
-  params: { locale: string };
+  // NEXT15: params is now a Promise
+  params: Promise<{ locale: string }>;
 }
 
 const PAGE_META: Record<string, { title: string; description: string }> = {
@@ -24,7 +28,7 @@ const PAGE_META: Record<string, { title: string; description: string }> = {
 };
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const locale = params.locale as 'en' | 'zh' | 'ar';
+  const locale = (await params).locale as 'en' | 'zh' | 'ar'; // NEXT15: await params
   const meta = PAGE_META[locale] || PAGE_META.en;
   // 主关键词从英文标题提炼（全站英文为主）；二级用本语言完整方案名（仅本语言页出现）
   const englishNames = solutions.map((s) => (s.title?.en || '') as string).filter(Boolean);
@@ -42,8 +46,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default function Page({ params }: PageProps) {
-  const locale = (params.locale || 'en') as 'en' | 'zh' | 'ar';
+// NEXT15: Page must be async and await the params Promise
+export default async function Page({ params }: PageProps) {
+  const locale = ((await params).locale || 'en') as 'en' | 'zh' | 'ar'; // NEXT15
   const meta = PAGE_META[locale] || PAGE_META.en;
   const displayTitle = meta.title;
   const { canonical } = buildHreflang(getBaseUrl(), locale, '/solutions');
@@ -61,7 +66,7 @@ export default function Page({ params }: PageProps) {
           }),
         }}
       />
-      <SolutionsClient locale={params.locale} />
+      <SolutionsClient locale={locale} />
     </>
   );
 }

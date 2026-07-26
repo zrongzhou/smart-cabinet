@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import BackToTop from '@/components/BackToTop';
@@ -14,12 +14,15 @@ import arMessages from '@/messages/ar.json';
 
 interface LocaleLayoutProps {
   children: React.ReactNode;
-  params: {
+  // NEXT15: params is now a Promise
+  params: Promise<{
     locale: string;
-  };
+  }>;
 }
 
-export default function LocaleLayout({ children, params: { locale } }: LocaleLayoutProps) {
+// NEXT15: params is a Promise; unwrap it with React's use() (client component).
+export default function LocaleLayout({ children, params }: LocaleLayoutProps) {
+  const { locale } = use(params);
   const [currentLocale, setCurrentLocale] = useState<Locale>(locale as Locale);
   const [mounted, setMounted] = useState(false);
 

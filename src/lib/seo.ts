@@ -9,7 +9,6 @@
  */
 
 import { Metadata } from 'next';
-import { headers } from 'next/headers';
 import { getProductPublicPath } from './product-url';
 
 // ============================================================
@@ -21,23 +20,14 @@ import { getProductPublicPath } from './product-url';
  * Falls back to relative URL (empty string) for client components
  */
 export function getBaseUrl(): string {
-  // 优先使用环境变量中配置的标准域名，确保所有 canonical/hreflang/og 链接一致，
-  // 避免通过服务器 IP 访问时 canonical 指向 IP 而与首页硬编码域名混用。
-  const canonicalBase = process.env.NEXT_PUBLIC_BASE_URL || process.env.SITE_URL;
+  // Cache-friendly: resolve canonical base ONLY from NEXT_PUBLIC_BASE_URL so the
+  // render mode stays static (no per-request headers()). Mirrors qtechvending R2 (T06):
+  // the previous headers() fallback forced every page that calls this into dynamic
+  // rendering, silently blocking ISR/revalidate for the whole site.
+  const canonicalBase = process.env.NEXT_PUBLIC_BASE_URL;
   if (canonicalBase) {
     return canonicalBase.replace(/\/+$/, '');
   }
-  try {
-    const headersList = headers();
-    const host = headersList.get('host');
-    if (host) {
-      const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
-      return `${protocol}://${host}`;
-    }
-  } catch {
-    // headers() throws if called in Client Component or during build
-  }
-  // Fallback: use relative URL (empty string = same origin)
   return '';
 }
 
@@ -47,7 +37,7 @@ export function getBaseUrl(): string {
 // ============================================================
 
 export const SITE_CONFIG = {
-  name: 'Qtech',
+  name: 'WS Tool Cabinet',
   nameZh: '智能工具柜',
   locale: 'en_US',
   alternateLocale: 'zh_CN,ar_SA',
@@ -207,9 +197,9 @@ export function jsonLdOrganization() {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'Guangzhou Qiuyan Technology Co., Ltd.',
-    alternateName: '广州秋彦科技有限公司 / Qtech',
+    alternateName: '广州秋彦科技有限公司 / WS Tool Cabinet',
     ...(baseUrl && { url: baseUrl }),
-    ...(baseUrl && { logo: `${baseUrl}/images/logo.svg` }),
+    ...(baseUrl && { logo: `${baseUrl}/images/logo.png` }),
     contactPoint: {
       '@type': 'ContactPoint',
       telephone: '+86-156-2216-0659',
@@ -334,12 +324,12 @@ export function jsonLdArticle(post: {
     dateModified: post.dateModified || post.datePublished,
     author: {
       '@type': 'Person',
-      name: post.author || 'Qtech Team',
+      name: post.author || 'WS Tool Cabinet Team',
     },
     publisher: {
       '@type': 'Organization',
       name: 'Guangzhou Qiuyan Technology Co., Ltd.',
-      ...(baseUrl && { logo: { '@type': 'ImageObject', url: `${baseUrl}/images/logo.svg` } }),
+      ...(baseUrl && { logo: { '@type': 'ImageObject', url: `${baseUrl}/images/logo.png` } }),
     },
   };
 }
@@ -354,7 +344,7 @@ export function jsonLdLocalBusiness() {
     '@type': 'LocalBusiness',
     ...(baseUrl && { '@id': `${baseUrl}/#organization` }),
     name: 'Guangzhou Qiuyan Technology Co., Ltd.',
-    alternateName: ['广州秋彦科技有限公司', 'Qtech', 'Qiuyan Technology'],
+    alternateName: ['广州秋彦科技有限公司', 'WS Tool Cabinet', 'Qiuyan Technology'],
     description: SITE_CONFIG.defaultDescription,
     ...(baseUrl && { url: baseUrl }),
     ...(baseUrl && { logo: `${baseUrl}/images/about/company-logo.png` }),

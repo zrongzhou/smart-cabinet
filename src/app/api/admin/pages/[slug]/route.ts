@@ -13,7 +13,7 @@ function isTableNotExistError(error: any): boolean {
 // GET /api/admin/pages/[slug] - Fetch single page
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> } // NEXT15: params is a Promise
 ) {
   try {
     const isAuthenticated = await verifyAuth(request);
@@ -21,7 +21,7 @@ export async function GET(
       return unauthorizedResponse();
     }
 
-    const slug = params.slug;
+    const { slug } = await params; // NEXT15
     const page = await prisma.page.findUnique({
       where: { slug },
     });
@@ -47,7 +47,7 @@ export async function GET(
 // PUT /api/admin/pages/[slug] - Update page
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> } // NEXT15: params is a Promise
 ) {
   try {
     const isAuthenticated = await verifyAuth(request);
@@ -55,7 +55,7 @@ export async function PUT(
       return unauthorizedResponse();
     }
 
-    const slug = params.slug;
+    const { slug } = await params; // NEXT15
     const body = await request.json();
     const { title, blocks } = body;
 
@@ -88,7 +88,7 @@ export async function PUT(
 // DELETE /api/admin/pages/[slug] - Delete page
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> } // NEXT15: params is a Promise
 ) {
   try {
     const isAuthenticated = await verifyAuth(request);
@@ -96,7 +96,7 @@ export async function DELETE(
       return unauthorizedResponse();
     }
 
-    const slug = params.slug;
+    const { slug } = await params; // NEXT15
     await prisma.page.delete({
       where: { slug },
     });

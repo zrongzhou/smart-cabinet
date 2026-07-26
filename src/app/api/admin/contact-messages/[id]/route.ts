@@ -10,7 +10,7 @@ export const dynamic = 'force-dynamic';
 // DELETE /api/admin/contact-messages/:id - Delete a single message
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> } // NEXT15: params is a Promise
 ) {
   try {
     const isAuthenticated = await verifyAuth(request);
@@ -18,7 +18,8 @@ export async function DELETE(
       return unauthorizedResponse();
     }
 
-    const id = parseInt(params.id);
+    const { id: idStr } = await params; // NEXT15
+    const id = parseInt(idStr);
     if (isNaN(id)) {
       return NextResponse.json(
         { error: 'Invalid ID' },
@@ -53,7 +54,7 @@ export async function DELETE(
 // PATCH /api/admin/contact-messages/:id - Update a single message (mark as read/unread)
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> } // NEXT15: params is a Promise
 ) {
   try {
     const isAuthenticated = await verifyAuth(request);
@@ -61,7 +62,8 @@ export async function PATCH(
       return unauthorizedResponse();
     }
 
-    const id = parseInt(params.id);
+    const { id: idStr } = await params; // NEXT15
+    const id = parseInt(idStr);
     if (isNaN(id)) {
       return NextResponse.json(
         { error: 'Invalid ID' },
