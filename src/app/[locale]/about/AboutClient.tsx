@@ -667,12 +667,12 @@ export function AboutClient() {
           <div className="relative rounded-2xl overflow-hidden shadow-2xl">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0">
               {[
-                '/images/about/factory-carousel-1.jpg',
-                '/images/about/factory-carousel-2.jpg',
-                '/images/about/factory-carousel-3.jpg',
-                '/images/about/factory-carousel-4.jpg',
-                '/images/about/factory-carousel-5.jpg',
-                '/images/about/factory-carousel-6.jpg',
+                '/images/about/factory-carousel-1.webp',
+                '/images/about/factory-carousel-2.webp',
+                '/images/about/factory-carousel-3.webp',
+                '/images/about/factory-carousel-4.webp',
+                '/images/about/factory-carousel-5.webp',
+                '/images/about/factory-carousel-6.webp',
               ].map((src, i) => (
                 <div key={i} className="relative aspect-[4/3] group">
                   <img src={src} alt={`Factory ${i + 1}`} className="w-full h-full object-cover" loading="lazy" decoding="async" />
@@ -746,12 +746,12 @@ export function AboutClient() {
           {/* Factory Images Grid — Local images with Glass Effect & Rich Descriptions */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
             {[
-              { src: '/images/about/factory-design.jpg', altKey: 'about.factory.design', label: { en: 'DESIGN', zh: '设计', ar: 'تصميم' }, color: '#3b82f6', desc: { en: 'CAD/CAM engineering center with SolidWorks, UG & DFM analysis', zh: 'CAD/CAM 工程设计中心，支持 SolidWorks、UG 等主流软件，DFM 面向制造设计分析', ar: 'مركز هندسة CAD/CAM مع SolidWorks و UG وتحليل DFM' } },
-              { src: '/images/about/factory-cutting.jpg', altKey: 'about.factory.cutting', label: { en: 'CUTTING', zh: '钣金切割', ar: 'قص الصفائح' }, color: '#ef4444', desc: { en: 'High-precision laser cutting + CNC punching, ±0.01mm accuracy', zh: '高精度激光切割 + 数控冲床，精度 ±0.01mm，支持碳钢/不锈钢/铝板多材质', ar: 'قص بالليزر عالي الدقة + قطع CNC، دقة ±0.01mm' } },
-              { src: '/images/about/factory-bending.jpg', altKey: 'about.factory.bending', label: { en: 'BENDING', zh: '折弯工艺', ar: 'ثني الصفائح' }, color: '#10b981', desc: { en: 'CNC bending machine 100T/3200, multi-angle complex bending', zh: '数控折弯机 100T/3200，多角度复合折弯，圆弧折弯最小 R0.5', ar: 'ماكينة ثني CNC 100T/3200، ثني زاوي معقد، أدنى نصف قطر R0.5' } },
-              { src: '/images/about/factory-assembly.jpg', altKey: 'about.factory.assembly', label: { en: 'ASSEMBLY', zh: '组装流水线', ar: 'خط التجميع' }, color: '#f59e0b', desc: { en: 'Standardized assembly workstations + pneumatic fixtures, 200+ units/day', zh: '标准化装配工作站 + 气动夹具，模块化组装流程，日产能 200+ 台', ar: 'محطات تجميع قياسية + مشابك هوائية، خط تجميع معياري، 200+ وحدة/يوم' } },
-              { src: '/images/about/factory-welding.jpg', altKey: 'about.factory.welding', label: { en: 'WELDING', zh: '焊接工艺', ar: 'لحام' }, color: '#dc2626', desc: { en: 'Robotic welding + TIG/MIG manual welding, weld strength 95%+', zh: '机器人焊接 + TIG/MIG 手工焊，氩弧焊保护，焊缝强度达母材 95%+', ar: 'لحام روبوتي + لحام TIG/MIG يدوي، حماية لحام بالغاز الخامل، قوة اللحام 95%+ عام' } },
-              { src: '/images/about/factory-quality.jpg', altKey: 'about.factory.quality', label: { en: 'QUALITY CONTROL', zh: '质量检测', ar: 'مراقبة الجودة' }, color: '#06b6d4', desc: { en: 'CMM + optical measuring, ISO 9001 full inspection, zero-defect goal', zh: '三坐标测量仪 + 二次元影像仪，ISO 9001 全检流程，出货零缺陷目标', ar: 'مقياس CMM + قياس بصري، فحص كامل ISO 9001، هدف صفر عيب' } },
+              { src: '/images/about/factory-design.webp', altKey: 'about.factory.design', label: { en: 'DESIGN', zh: '设计', ar: 'تصميم' }, color: '#3b82f6', desc: { en: 'CAD/CAM engineering center with SolidWorks, UG & DFM analysis', zh: 'CAD/CAM 工程设计中心，支持 SolidWorks、UG 等主流软件，DFM 面向制造设计分析', ar: 'مركز هندسة CAD/CAM مع SolidWorks و UG وتحليل DFM' } },
+              { src: '/images/about/factory-cutting.webp', altKey: 'about.factory.cutting', label: { en: 'CUTTING', zh: '钣金切割', ar: 'قص الصفائح' }, color: '#ef4444', desc: { en: 'High-precision laser cutting + CNC punching, ±0.01mm accuracy', zh: '高精度激光切割 + 数控冲床，精度 ±0.01mm，支持碳钢/不锈钢/铝板多材质', ar: 'قص بالليزر عالي الدقة + قطع CNC، دقة ±0.01mm' } },
+              { src: '/images/about/factory-bending.webp', altKey: 'about.factory.bending', label: { en: 'BENDING', zh: '折弯工艺', ar: 'ثني الصفائح' }, color: '#10b981', desc: { en: 'CNC bending machine 100T/3200, multi-angle complex bending', zh: '数控折弯机 100T/3200，多角度复合折弯，圆弧折弯最小 R0.5', ar: 'ماكينة ثني CNC 100T/3200، ثني زاوي معقد، أدنى نصف قطر R0.5' } },
+              { src: '/images/about/factory-assembly.webp', altKey: 'about.factory.assembly', label: { en: 'ASSEMBLY', zh: '组装流水线', ar: 'خط التجميع' }, color: '#f59e0b', desc: { en: 'Standardized assembly workstations + pneumatic fixtures, 200+ units/day', zh: '标准化装配工作站 + 气动夹具，模块化组装流程，日产能 200+ 台', ar: 'محطات تجميع قياسية + مشابك هوائية، خط تجميع معياري، 200+ وحدة/يوم' } },
+              { src: '/images/about/factory-welding.webp', altKey: 'about.factory.welding', label: { en: 'WELDING', zh: '焊接工艺', ar: 'لحام' }, color: '#dc2626', desc: { en: 'Robotic welding + TIG/MIG manual welding, weld strength 95%+', zh: '机器人焊接 + TIG/MIG 手工焊，氩弧焊保护，焊缝强度达母材 95%+', ar: 'لحام روبوتي + لحام TIG/MIG يدوي، حماية لحام بالغاز الخامل، قوة اللحام 95%+ عام' } },
+              { src: '/images/about/factory-quality.webp', altKey: 'about.factory.quality', label: { en: 'QUALITY CONTROL', zh: '质量检测', ar: 'مراقبة الجودة' }, color: '#06b6d4', desc: { en: 'CMM + optical measuring, ISO 9001 full inspection, zero-defect goal', zh: '三坐标测量仪 + 二次元影像仪，ISO 9001 全检流程，出货零缺陷目标', ar: 'مقياس CMM + قياس بصري، فحص كامل ISO 9001، هدف صفر عيب' } },
             ].map((item, index) => (
               <div key={index} className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2" style={{ height: '280px' }}>
                 {/* Use native <img> to bypass next/image format detection (PNG-as-JPG breaks optimization) */}
@@ -909,7 +909,7 @@ export function AboutClient() {
           {/* Real certification photo wall */}
           <div className="mb-12 rounded-2xl overflow-hidden shadow-xl border border-gray-200/60">
             <img
-              src="/images/about/certificates-real.jpg"
+              src="/images/about/certificates-real.webp"
               alt="Certifications"
               className="w-full h-auto object-cover rounded-2xl"
               loading="lazy"

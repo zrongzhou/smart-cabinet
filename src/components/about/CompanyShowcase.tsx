@@ -111,7 +111,7 @@ export default function CompanyShowcase({ t, locale }: CompanyShowcaseProps) {
             className="w-full rounded-2xl overflow-hidden shadow-lg border border-gray-200/60 relative group transition-all duration-700 hover:shadow-[0_22px_55px_-18px_rgba(59,130,246,0.30)] hover:-translate-y-1 aspect-[4/3] lg:aspect-[3/2] max-h-[300px]"
           >
             <Image
-              src="/images/about/company-building.jpg"
+              src="/images/about/company-building.webp"
               alt={t('company.name')}
               fill
               sizes="(max-width: 1024px) 100vw, 45vw"

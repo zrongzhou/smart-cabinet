@@ -70,12 +70,26 @@ async function safeConvert(srcFile, target, cap) {
       .resize(resize || {})
       .toFile(tmpOut);
   } catch (e) {
-    // fall back to direct path (in case temp approach also fails)
-    const meta = await sharp(srcFile).metadata();
-    const resize = meta.width && meta.width > cap ? { width: cap } : undefined;
-    await sharp(srcFile).rotate().webp({ quality: 90, effort: 4 }).resize(resize || {}).toFile(target);
+    // Inspect raw content: SVG-as-.jpg should be rasterized; HTML junk is skipped.
+    const buf = await fs.readFile(srcFile).catch(() => Buffer.alloc(0));
+    const head = buf.slice(0, 256).toString('utf8').toLowerCase().replace(/^\s+/, '');
+    const rel = path.relative(repoRoot, srcFile).replace(/\\/g, '/');
+    if ((head.includes('<svg') || head.startsWith('<?xml')) && !head.startsWith('<!doctype')) {
+      try {
+        const metas = await sharp(buf).metadata().catch(() => null);
+        const resize = metas && metas.width && metas.width > cap ? { width: cap } : undefined;
+        await sharp(buf).webp({ quality: 90, effort: 4 }).resize(resize || {}).toFile(target);
+        await fs.unlink(tmpIn).catch(() => {});
+        return 'svg-content';
+      } catch (e2) {
+        console.log(`    SKIP svg-unreadable: ${rel}`);
+        await fs.unlink(tmpIn).catch(() => {});
+        return 'skip-unsupported';
+      }
+    }
+    console.log(`    SKIP unsupported/junk: ${rel}`);
     await fs.unlink(tmpIn).catch(() => {});
-    return;
+    return 'skip-unsupported';
   }
   await fs.copyFile(tmpOut, target); // copy (cross-device safe); Node handles long dest path
   await fs.unlink(tmpOut).catch(() => {});
@@ -91,16 +105,16 @@ for (const f of rasterFiles) {
   const rel = path.relative(repoRoot, f).replace(/\\/g, '/');
   const cap = widthCapFor(rel);
   const target = await decideTarget(f);
-  try {
-    await safeConvert(f, target, cap);
-  } catch (e) {
-    console.log(`    SKIP (unsupported/unreadable): ${rel} - ${e.message.slice(0, 60)}`);
+  const status = await safeConvert(f, target, cap);
+  if (status === 'skip-unsupported') {
+    console.log(`    SKIP (unsupported/junk): ${rel}`);
+    convertSkipped++;
     continue;
   }
   convertedOriginals.push(f);
   const oldRef = '/' + rel;
   const newRef = '/' + path.relative(repoRoot, target).replace(/\\/g, '/');
-  mapping.push({ oldFile: f, newFile: target, oldRef, newRef, reason: 'raster->webp' });
+  mapping.push({ oldFile: f, newFile: target, oldRef, newRef, reason: status === 'svg-content' ? 'svg->webp' : 'raster->webp' });
   converted++;
   if (converted % 10 === 0) console.log(`    converted ${converted}/${rasterFiles.length}`);
 }

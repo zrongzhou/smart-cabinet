@@ -90,63 +90,63 @@ export function BlogListClient({ initialBlogs = [], initialTotal = 0 }: { initia
 
   // === v151 图片方案：按 slug 精确匹配主题图片，确保图文相关 ===
   const BLOG_IMAGE_FALLBACKS = [
-    '/images/blog/industry-trends.jpg',
-    '/images/blog/case-study.jpg',
-    '/images/blog/technical-guide.jpg',
-    '/images/blog/best-practice.jpg',
-    '/images/blog/use-case.jpg',
-    '/images/blog/customer-story.jpg',
-    '/images/blog/smart-cabinet-warehouse.jpg',
-    '/images/blog/roi-cost-analysis.jpg',
-    '/images/blog/rfid-tool-tracking.jpg',
-    '/images/blog/iot-mes-integration.jpg',
-    '/images/blog/cnc-machining-roi.jpg',
-    '/images/blog/aerospace-fod-prevention.jpg',
-    '/images/blog/ai-industry-4-0.jpg',
-    '/images/blog/digital-transformation.jpg',
-    '/images/blog/future-smart-factory.jpg',
-    '/images/blog/ppe-safety-equipment.jpg',
-    '/images/blog/buying-guide-smart-cabinet.jpg',
-    '/images/blog/general.jpg',
+    '/images/blog/industry-trends.webp',
+    '/images/blog/case-study.webp',
+    '/images/blog/technical-guide.webp',
+    '/images/blog/best-practice.webp',
+    '/images/blog/use-case.webp',
+    '/images/blog/customer-story.webp',
+    '/images/blog/smart-cabinet-warehouse.webp',
+    '/images/blog/roi-cost-analysis.webp',
+    '/images/blog/rfid-tool-tracking.webp',
+    '/images/blog/iot-mes-integration.webp',
+    '/images/blog/cnc-machining-roi.webp',
+    '/images/blog/aerospace-fod-prevention.webp',
+    '/images/blog/ai-industry-4-0.webp',
+    '/images/blog/digital-transformation.webp',
+    '/images/blog/future-smart-factory.webp',
+    '/images/blog/ppe-safety-equipment.webp',
+    '/images/blog/buying-guide-smart-cabinet.webp',
+    '/images/blog/general.webp',
   ];
 
   // 按 slug（API 返回的的是数字 ID）精确匹配：每篇博客显示与其主题相关的真实照片
   const SLUG_TO_IMAGE: Record<string, string> = {
     // API 返回的 slug 是数字 ID，按文章主题匹配图片
-    '1': '/images/blog/ai-industry-4-0.jpg',           // The Future of Intelligent Tool Storage
-    '2': '/images/blog/cnc-machining-roi.jpg',          // How Smart Cabinets Reduce CNC Downtime
-    '3': '/images/blog/rfid-tool-tracking.jpg',         // Complete Guide to RFID Tool Management
-    '4': '/images/blog/smart-cabinet-warehouse.jpg',     // 5 Ways Smart Cabinets Improve Inventory Accuracy
-    '5': '/images/blog/ppe-safety-equipment.jpg',        // PPE Vending: Compliance Made Easy
-    '6': '/images/blog/digital-transformation.jpg',      // From Manual to Smart Manufacturing
-    '7': '/images/blog/roi-cost-analysis.jpg',           // Smart Cabinet ROI Calculator
-    '8': '/images/blog/iot-mes-integration.jpg',        // IoT Integration: Connecting Smart Cabinets
-    '9': '/images/blog/buying-guide-smart-cabinet.jpg', // Top 10 Features When Buying
-    '10': '/images/blog/aerospace-fod-prevention.jpg',   // Aerospace Manufacturers Smart Tool Mgmt
-    '11': '/images/blog/best-practice.jpg',              // Smart Cabinet Security Best Practices
-    '12': '/images/blog/future-smart-factory.jpg',      // Future of Smart Warehousing Beyond Tool Cabinets
+    '1': '/images/blog/ai-industry-4-0.webp',           // The Future of Intelligent Tool Storage
+    '2': '/images/blog/cnc-machining-roi.webp',          // How Smart Cabinets Reduce CNC Downtime
+    '3': '/images/blog/rfid-tool-tracking.webp',         // Complete Guide to RFID Tool Management
+    '4': '/images/blog/smart-cabinet-warehouse.webp',     // 5 Ways Smart Cabinets Improve Inventory Accuracy
+    '5': '/images/blog/ppe-safety-equipment.webp',        // PPE Vending: Compliance Made Easy
+    '6': '/images/blog/digital-transformation.webp',      // From Manual to Smart Manufacturing
+    '7': '/images/blog/roi-cost-analysis.webp',           // Smart Cabinet ROI Calculator
+    '8': '/images/blog/iot-mes-integration.webp',        // IoT Integration: Connecting Smart Cabinets
+    '9': '/images/blog/buying-guide-smart-cabinet.webp', // Top 10 Features When Buying
+    '10': '/images/blog/aerospace-fod-prevention.webp',   // Aerospace Manufacturers Smart Tool Mgmt
+    '11': '/images/blog/best-practice.webp',              // Smart Cabinet Security Best Practices
+    '12': '/images/blog/future-smart-factory.webp',      // Future of Smart Warehousing Beyond Tool Cabinets
     // 文字 slug 兼容（静态数据源时使用）
-    'future-of-intelligent-tool-storage': '/images/blog/ai-industry-4-0.jpg',
-    'smart-cabinets-reduce-cnc-downtime': '/images/blog/cnc-machining-roi.jpg',
-    'complete-guide-rfid-tool-management': '/images/blog/rfid-tool-tracking.jpg',
-    '5-ways-smart-cabinets-improve-inventory-accuracy': '/images/blog/smart-cabinet-warehouse.jpg',
-    'ppe-vending-compliance-made-easy': '/images/blog/ppe-safety-equipment.jpg',
-    'from-manual-to-smart-manufacturing-transformation': '/images/blog/digital-transformation.jpg',
-    'smart-cabinet-roi-calculator-guide': '/images/blog/roi-cost-analysis.jpg',
-    'iot-integration-smart-cabinets-factory-network': '/images/blog/iot-mes-integration.jpg',
-    'top-10-features-smart-tool-cabinets-buying-guide': '/images/blog/buying-guide-smart-cabinet.jpg',
-    'aerospace-manufacturers-smart-tool-management-benefits': '/images/blog/aerospace-fod-prevention.jpg',
-    'future-of-smart-warehousing-beyond-tool-cabinets': '/images/blog/future-smart-factory.jpg',
+    'future-of-intelligent-tool-storage': '/images/blog/ai-industry-4-0.webp',
+    'smart-cabinets-reduce-cnc-downtime': '/images/blog/cnc-machining-roi.webp',
+    'complete-guide-rfid-tool-management': '/images/blog/rfid-tool-tracking.webp',
+    '5-ways-smart-cabinets-improve-inventory-accuracy': '/images/blog/smart-cabinet-warehouse.webp',
+    'ppe-vending-compliance-made-easy': '/images/blog/ppe-safety-equipment.webp',
+    'from-manual-to-smart-manufacturing-transformation': '/images/blog/digital-transformation.webp',
+    'smart-cabinet-roi-calculator-guide': '/images/blog/roi-cost-analysis.webp',
+    'iot-integration-smart-cabinets-factory-network': '/images/blog/iot-mes-integration.webp',
+    'top-10-features-smart-tool-cabinets-buying-guide': '/images/blog/buying-guide-smart-cabinet.webp',
+    'aerospace-manufacturers-smart-tool-management-benefits': '/images/blog/aerospace-fod-prevention.webp',
+    'future-of-smart-warehousing-beyond-tool-cabinets': '/images/blog/future-smart-factory.webp',
     // 新增博客 2026 (id 13, 14)
-    '13': '/images/blog/vending-machine-trends-2026.jpg',
-    '14': '/images/blog/cnc-tool-inventory-guide.jpg',
+    '13': '/images/blog/vending-machine-trends-2026.webp',
+    '14': '/images/blog/cnc-tool-inventory-guide.webp',
     // V8.6: 旧两篇 + 新增 4 篇（slug 均带 .html）
-    'industrial-vending-machine-trends-2026.html': '/images/blog/vending-machine-trends-2026.jpg',
-    'cnc-tool-inventory-management-guide.html': '/images/blog/cnc-tool-inventory-guide.jpg',
-    'ppe-vending-machine-safety-supplies-management.html': '/images/blog/ppe-vending-machine-safety-supplies-management.jpeg',
-    'cutting-tool-distributors-tool-vending-machine.html': '/images/blog/cutting-tool-distributors-tool-vending-machine.jpg',
-    'tool-vending-machine-functions-cnc-workshop.html': '/images/blog/tool-vending-machine-functions-cnc-workshop.jpg',
-    'manual-tool-crib-to-smart-tool-cabinet.html': '/images/blog/manual-tool-crib-to-smart-tool-cabinet.jpeg',
+    'industrial-vending-machine-trends-2026.html': '/images/blog/vending-machine-trends-2026.webp',
+    'cnc-tool-inventory-management-guide.html': '/images/blog/cnc-tool-inventory-guide.webp',
+    'ppe-vending-machine-safety-supplies-management.html': '/images/blog/ppe-vending-machine-safety-supplies-management.webp',
+    'cutting-tool-distributors-tool-vending-machine.html': '/images/blog/cutting-tool-distributors-tool-vending-machine.webp',
+    'tool-vending-machine-functions-cnc-workshop.html': '/images/blog/tool-vending-machine-functions-cnc-workshop.webp',
+    'manual-tool-crib-to-smart-tool-cabinet.html': '/images/blog/manual-tool-crib-to-smart-tool-cabinet.webp',
   };
 
   // 分类颜色映射（用于 badge 颜色）
