@@ -34,7 +34,7 @@ const testimonials: Testimonial[] = [
       ar: 'لقد غيّر تنفيذ حلول الخزائن الذكية إدارة المخزون لدينا بالكامل. لقد قللنا الهدر بنسبة 35% وحسّنا الكفاءة بنسبة 50%. أدى التتبع في الوقت الفعلي والتنبيهات الآلية إلى القضاء على حالات نفاد المخزون والفراط في المخزون. كان عائد الاستثمار واضحاً في غضون أول 6 أشهر.',
     },
     rating: 5,
-    image: '/images/testimonials/john-smith.jpg',
+    image: '/images/testimonials/john-smith.webp',
     industry: 'Technology',
   },
   {
@@ -51,7 +51,7 @@ const testimonials: Testimonial[] = [
       ar: 'أحدثت الخزائن الذكية ثورة في نظام خزائن الموظفين لدينا. يحب الموظفون تكامل تطبيق الجوال، وقد شهدنا انخفاضاً بنسبة 90% في حوادث فقدان العناصر. كانت عملية التركيب سلسة، وكان فريق الدعم استثنائياً طوال العملية.',
     },
     rating: 5,
-    image: '/images/testimonials/sarah-johnson.jpg',
+    image: '/images/testimonials/sarah-johnson.webp',
     industry: 'Healthcare',
   },
   {
@@ -68,7 +68,7 @@ const testimonials: Testimonial[] = [
       ar: 'قمنا بتركيب 20 خزانة ذكية عبر مراكز التوزيع لدينا، وكانت النتائج استثنائية. تساعدنا التحليلات المدعومة بالذكاء الاصطناعي على التنبؤ بأنماط الطلب، وتكامل IoT مع نظام إدارة المستودعات لدينا قد بسّط عمليتنا بالكامل. أوصي بشدة بالخزائن الذكية لأي شركة لوجستيات.',
     },
     rating: 5,
-    image: '/images/testimonials/michael-chen.jpg',
+    image: '/images/testimonials/michael-chen.webp',
     industry: 'Logistics',
   },
 ];

@@ -32,7 +32,7 @@ interface ClientPhotoGalleryProps {
 /** Ordered list of gallery photos (client-01 … client-14). */
 const PHOTOS: string[] = Array.from(
   { length: 14 },
-  (_, i) => `/images/about/clients/client-${String(i + 1).padStart(2, '0')}.jpg`,
+  (_, i) => `/images/about/clients/client-${String(i + 1).padStart(2, '0')}.webp`,
 );
 
 const TOTAL = PHOTOS.length;

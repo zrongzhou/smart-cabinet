@@ -536,7 +536,7 @@ export default function AddProductPage() {
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
               {form.images.map((img, idx) => (
                 <div key={idx} className="relative group aspect-square bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
-                  <img src={img} alt={`Image ${idx + 1}`} className="w-full h-full object-cover" onError={(e) => {(e.target as HTMLImageElement).src = '/images/placeholder.png'}} />
+                  <img src={img} alt={`Image ${idx + 1}`} className="w-full h-full object-cover" onError={(e) => {(e.target as HTMLImageElement).src = '/images/placeholder.webp'}} />
                   <button type="button" onClick={() => removeImage(idx)}
                     className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <X className="w-3.5 h-3.5" />
