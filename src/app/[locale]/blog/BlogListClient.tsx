@@ -46,6 +46,19 @@ const categoryColorMap: Record<string, string> = {
   'General': '#a18cd1',
 };
 
+/**
+ * Safe trilingual resolver. Guarantees a STRING is always returned so a
+ * `{ zh, en, ar }` object can never be rendered as a React child (the
+ * "object was rendered as a React child" crash class). Falls back to the
+ * English value, then to an empty string.
+ */
+function pickLocalized(value: any, locale: string): string {
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    return value[locale] || value.en || '';
+  }
+  return value ? String(value) : '';
+}
+
 // Translate blog category name
 function getCategoryLabel(category: string, locale: string): string {
   const catLabels: Record<string, Record<string, string>> = {
@@ -309,13 +322,9 @@ export function BlogListClient({ initialBlogs = [], initialTotal = 0 }: { initia
             {blogs.map((post, index) => {
               const isPriority = index < 3;
               const detailHref = `/${locale}/blog/${post.slug}`;
-              // === Direct i18n access (v138): API guarantees {en,zh,ar} objects ===
-              const title = (typeof post.title === 'object' && post.title !== null)
-                ? (post.title[locale] || post.title.en || '')
-                : String(post.title || '');
-              const excerpt = (typeof post.excerpt === 'object' && post.excerpt !== null)
-                ? (post.excerpt[locale] || post.excerpt.en || '')
-                : String(post.excerpt || '');
+              // === Safe i18n access: never render an object as a React child ===
+              const title = pickLocalized(post.title, locale);
+              const excerpt = pickLocalized(post.excerpt, locale);
 
               // === 封面图优先级（v239 修正）：上传/封面图 优先 → slug 主题图 → 轮换兜底 ===
               let cardImage: string;
