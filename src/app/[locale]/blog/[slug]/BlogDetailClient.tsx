@@ -202,6 +202,18 @@ export default function BlogDetailClient({ blog, recentBlogs }: BlogDetailClient
     ar: 'الأسئلة الشائعة',
   };
 
+  // 图片优化后，/images/ 下的静态栅格图已全部转成 .webp，但数据库里可能
+  // 还存着旧的 .jpg/.jpeg/.png 路径。这里把这类静态路径统一归一化为 .webp，
+  // 避免线上出现 404 灰图；/api/media/ 上传图和外链保持原样。
+  function normalizeStaticImageUrl(img?: string | null): string | undefined {
+    if (!img) return undefined;
+    const lower = img.toLowerCase();
+    if (lower.startsWith('/images/') && /\.(jpe?g|png)$/.test(lower)) {
+      return img.replace(/\.(jpe?g|png)$/i, '.webp');
+    }
+    return img;
+  }
+
   // 判断字符串是否为有效封面图 URL（排除 .svg 占位图）。
   // 与 BlogListClient.isValidCoverImage 保持一致：兼容 /images、/uploads、
   // /api/media 等本地路径与外链（http/https），确保用户上传封面优先展示。
@@ -219,7 +231,8 @@ export default function BlogDetailClient({ blog, recentBlogs }: BlogDetailClient
   // Recent Posts 图片选择 - 上传封面优先 → slug 主题图 → 兜底轮换
   function getInlineBlogImage(post: BlogDetailDTO, index: number): string {
     const postSlug = post.slug || '';
-    if (isValidCoverImage(post.image)) return post.image as string;
+    const normalizedImage = normalizeStaticImageUrl(post.image);
+    if (isValidCoverImage(normalizedImage)) return normalizedImage as string;
     if (SLUG_TO_IMAGE[postSlug]) return SLUG_TO_IMAGE[postSlug];
     return BLOG_IMAGE_FALLBACKS[index % BLOG_IMAGE_FALLBACKS.length];
   }
@@ -227,7 +240,8 @@ export default function BlogDetailClient({ blog, recentBlogs }: BlogDetailClient
   // 详情页图片选择 - 上传封面优先 → slug 主题图 → 兜底哈希
   function getInlineBlogDetailImage(post: BlogDetailDTO): string {
     const postSlug = post.slug || '';
-    if (isValidCoverImage(post.image)) return post.image as string;
+    const normalizedImage = normalizeStaticImageUrl(post.image);
+    if (isValidCoverImage(normalizedImage)) return normalizedImage as string;
     if (SLUG_TO_IMAGE[postSlug]) return SLUG_TO_IMAGE[postSlug];
     // fallback：按 slug 哈希稳定取图
     let hash = 0;

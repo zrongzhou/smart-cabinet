@@ -20,6 +20,20 @@ function getBlogIcon(category: string) {
 }
 
 /**
+ * 图片优化后，/images/ 下的静态栅格图已全部转成 .webp，但数据库里可能
+ * 还存着旧的 .jpg/.jpeg/.png 路径。这里把这类静态路径统一归一化为 .webp，
+ * 避免线上出现 404 灰图；/api/media/ 上传图和外链保持原样。
+ */
+function normalizeStaticImageUrl(img?: string): string | undefined {
+  if (!img) return undefined;
+  const lower = img.toLowerCase();
+  if (lower.startsWith('/images/') && /\.(jpe?g|png)$/.test(lower)) {
+    return img.replace(/\.(jpe?g|png)$/i, '.webp');
+  }
+  return img;
+}
+
+/**
  * 判断字符串是否为有效封面图 URL（排除 .svg 占位图）。
  * 兼容本地路径（如 /images、/uploads、/api/media 等）与外链（http/https），
  * 确保数据库上传封面（如 /api/media/xxx）与种子图都能被正确识别并优先展示。
@@ -332,8 +346,10 @@ export function BlogListClient({ initialBlogs = [], initialTotal = 0 }: { initia
               // 1. 优先使用文章自带的上传封面图（数据库 post.image / 种子 image）。
               //    兼容 /images、/uploads、/api/media 等多种来源，仅排除 .svg 占位图，
               //    确保用户通过后台上传的封面（如 /api/media/xxx）始终优先生效。
-              if (isValidCoverImage(post.image)) {
-                cardImage = post.image as string;
+              //    同时归一化 /images/ 下旧 .jpg/.jpeg/.png 路径为 .webp（图片优化遗留）。
+              const normalizedPostImage = normalizeStaticImageUrl(post.image);
+              if (isValidCoverImage(normalizedPostImage)) {
+                cardImage = normalizedPostImage as string;
               } else if (SLUG_TO_IMAGE[postSlug]) {
                 // 2. 无上传封面时，按 slug 匹配主题相关图片
                 cardImage = SLUG_TO_IMAGE[postSlug];
