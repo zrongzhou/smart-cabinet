@@ -7,6 +7,29 @@ import staticBlogs from '@/data/blogs';
 import BlogDetailClient, { BlogDetailDTO } from './BlogDetailClient';
 import JsonLd from '@/components/JsonLd';
 
+/**
+ * 图片优化后 /images/ 下静态栅格图已全部转成 .webp，但数据库里可能仍存着
+ * 旧的 .jpg/.jpeg/.png 路径。这里统一归一化为 .webp，避免 og:image / JSON-LD
+ * 等元信息输出已删除的旧图导致 404（社交分享卡片/富媒体结果裂图）。
+ * /api/media/ 上传图与外链保持原样。
+ */
+function normalizeStaticImageUrl(img?: string | null): string | undefined {
+  if (!img) return undefined;
+  const lower = img.toLowerCase();
+  if (lower.startsWith('/images/') && /\.(jpe?g|png)$/.test(lower)) {
+    return img.replace(/\.(jpe?g|png)$/i, '.webp');
+  }
+  return img;
+}
+
+/** 归一化 + 转绝对地址；无图时回退站点默认 logo。 */
+function resolveOgImage(src?: string | null, baseUrl = ''): string {
+  const n = normalizeStaticImageUrl(src);
+  if (!n) return `${baseUrl}/images/logo.svg`;
+  if (n.startsWith('http')) return n;
+  return `${baseUrl}${n.startsWith('/') ? '' : '/'}${n}`;
+}
+
 // 静态内容页，ISR 重新校验
 export const revalidate = 300;
 
@@ -103,12 +126,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       : (excerptObj?.[loc] || excerptObj?.en || ''));
 
   // D-code(OG): 复用文章封面图作为 og:image；无封面时回退站点默认分享图（与首页一致）。
-  const rawImage = (blog?.image as string | undefined) || '';
-  const ogImageUrl = rawImage
-    ? rawImage.startsWith('http')
-      ? rawImage
-      : `${baseUrl}${rawImage.startsWith('/') ? '' : '/'}${rawImage}`
-    : `${baseUrl}/images/logo.svg`;
+  // 封面图经 normalizeStaticImageUrl 归一化为 .webp，避免旧 .jpg 删除后 404。
+  const ogImageUrl = resolveOgImage(blog?.image, baseUrl);
 
   return {
     title: `${enTitle} | Qtech`,
@@ -197,9 +216,8 @@ export default async function Page({ params }: PageProps) {
   }
 
   const baseUrl = getBaseUrl();
-  const blogImage = (blog?.image as string | null) || '';
-  // 若无封面则用站点默认 logo 兜底
-  const imageForJsonLd = blogImage || `${baseUrl}/images/logo.svg`;
+  // 封面图归一化为 .webp 并转绝对地址，避免 JSON-LD 输出已删除的旧 .jpg 导致 404。
+  const imageForJsonLd = resolveOgImage(blog?.image, baseUrl);
   const displayTitle = blog ? (blog.title[loc] || blog.title.en) : rawSlug;
   const datePublished = blog?.publishedAt ? new Date(blog.publishedAt).toISOString() : new Date().toISOString();
 
