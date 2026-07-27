@@ -14,7 +14,8 @@
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
     "seed:keywords": "tsx scripts/seed/seed-keywords.ts",
-    "seed:blog-translations": "tsx scripts/seed/seed-blog-translations.ts"
+    "seed:blog-translations": "tsx scripts/seed/seed-blog-translations.ts",
+    "purge:cache": "node scripts/purge-eo-cache.mjs"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -72,6 +73,7 @@
     "tailwindcss": "^3.4.0",
     "tsx": "^4.23.0",
     "typescript": "^5.3.3",
-    "vitest": "^2.1.9"
+    "vitest": "^2.1.9",
+    "tencentcloud-sdk-nodejs-teo": "^4.1.276"
   }
 }
