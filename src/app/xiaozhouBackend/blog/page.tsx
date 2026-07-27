@@ -5,6 +5,16 @@ import Link from 'next/link';
 import { Plus, Pencil, Trash2, ArrowLeft, Star, StarOff, Search, X, Loader2, AlertCircle } from 'lucide-react';
 import { fetchUnifiedBlogs, fetchUnifiedCategories, adminApi, type BlogPostAPI } from '@/data/unified-data';
 
+/** Normalize /images/*.jpg|png -> .webp to fix broken covers after WebP conversion. */
+function normalizeStaticImageUrl(img?: string | null): string | undefined {
+  if (!img) return undefined;
+  const lower = img.toLowerCase();
+  if (lower.startsWith('/images/') && /\.(jpe?g|png)$/.test(lower)) {
+    return img.replace(/\.(jpe?g|png)$/i, '.webp');
+  }
+  return img;
+}
+
 // Force dynamic rendering (no static generation)
 export const dynamic = 'force-dynamic';
 
@@ -228,7 +238,7 @@ export default function AdminBlogPage() {
                     >
                       <td className="px-6 py-5">
                         {post.image ? (
-                          <img src={post.image} alt="" className="w-20 h-16 object-cover rounded-xl shadow-sm" />
+                          <img src={normalizeStaticImageUrl(post.image) || post.image} alt="" className="w-20 h-16 object-cover rounded-xl shadow-sm" />
                         ) : (
                           <div className="w-20 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center">
                             <svg className="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
