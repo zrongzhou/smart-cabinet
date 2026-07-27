@@ -41,6 +41,18 @@ interface BlogPreviewProps {
   blogs?: BlogPreviewItem[];
 }
 
+// 图片优化后，/images/ 下的静态栅格图已全部转成 .webp，但数据库里可能
+// 还存着旧的 .jpg/.jpeg/.png 路径。这里把这类静态路径统一归一化为 .webp，
+// 避免线上出现 404 灰图；/api/media/ 上传图和外链保持原样。
+function normalizeStaticImageUrl(img?: string): string | undefined {
+  if (!img) return undefined;
+  const lower = img.toLowerCase();
+  if (lower.startsWith('/images/') && /\.(jpe?g|png)$/.test(lower)) {
+    return img.replace(/\.(jpe?g|png)$/i, '.webp');
+  }
+  return img;
+}
+
 // Cracked Glass Card wrapper - applies the shattered glass texture
 function CrackedGlassCard({ children, className = '', href }: { children: React.ReactNode; className?: string; href: string }) {
   return (
@@ -157,7 +169,7 @@ export default function BlogPreview({ locale: propLocale, blogs: propBlogs }: Bl
       summary: blog.excerpt,
       date: blog.publishedAt,
       author: blog.author,
-      image: blog.image || '',
+      image: normalizeStaticImageUrl(blog.image) || '',
       tags: blog.tags || [],
     }));
 
