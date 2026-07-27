@@ -347,7 +347,7 @@ export function jsonLdLocalBusiness() {
     alternateName: ['广州秋彦科技有限公司', 'WS Tool Cabinet', 'Qiuyan Technology'],
     description: SITE_CONFIG.defaultDescription,
     ...(baseUrl && { url: baseUrl }),
-    ...(baseUrl && { logo: `${baseUrl}/images/about/company-logo.png` }),
+    ...(baseUrl && { logo: `${baseUrl}/images/about/company-logo.webp` }),
     telephone: '+86-156-2216-0659',
     email: 'sabina@wstoolcabinet.com',
     address: {
@@ -512,7 +512,7 @@ export function jsonLdWebPage(page: {
     publisher: {
       '@type': 'Organization',
       name: 'Guangzhou Qiuyan Technology Co., Ltd.',
-      ...(baseUrl && { logo: { '@type': 'ImageObject', url: `${baseUrl}/images/about/company-logo.png` } }),
+      ...(baseUrl && { logo: { '@type': 'ImageObject', url: `${baseUrl}/images/about/company-logo.webp` } }),
     },
   };
 }
