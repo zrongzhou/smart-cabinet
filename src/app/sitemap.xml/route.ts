@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
     // 核心静态页 + 23 个新增落地页（managed-items ×10、industries ×10、standalone ×3）。
     // sitemap 仍仅生成英文 URL（用户要求：sitemap 只保留英文版）。
     const staticPages = [
-      '', '/about', '/products', '/solutions', '/blog', '/faq', '/contact',
+      '', '/about', '/products', '/applications', '/solutions', '/blog', '/faq', '/contact',
       '/custom-smart-cabinet', '/factory-display', '/shipping-delivery',
       '/managed-items/cnc-tool-management',
       '/managed-items/ppe-safety-supplies',
@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
         const priority =
           page === ''
             ? '1.0'
-            : page === '/products'
+            :           page === '/products' || page === '/applications'
               ? '0.9'
               : page === '/about'
                 ? '0.8'
