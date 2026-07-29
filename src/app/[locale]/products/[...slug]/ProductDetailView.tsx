@@ -81,7 +81,7 @@ function generateJsonLd(product: Product, locale: string) {
     image: images,
     brand: {
       '@type': 'Brand',
-      name: 'WSToolCabinet',
+      name: 'Qtech',
     },
     sku: product.sku,
   };

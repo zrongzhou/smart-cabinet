@@ -37,7 +37,7 @@ export function getBaseUrl(): string {
 // ============================================================
 
 export const SITE_CONFIG = {
-  name: 'WS Tool Cabinet',
+  name: 'Qtech',
   nameZh: '智能工具柜',
   locale: 'en_US',
   alternateLocale: 'zh_CN,ar_SA',
@@ -197,7 +197,7 @@ export function jsonLdOrganization() {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'Guangzhou Qiuyan Technology Co., Ltd.',
-    alternateName: '广州秋彦科技有限公司 / WS Tool Cabinet',
+    alternateName: '广州秋彦科技有限公司 / Qtech',
     ...(baseUrl && { url: baseUrl }),
     ...(baseUrl && { logo: `${baseUrl}/images/logo.webp` }),
     contactPoint: {
@@ -324,7 +324,7 @@ export function jsonLdArticle(post: {
     dateModified: post.dateModified || post.datePublished,
     author: {
       '@type': 'Person',
-      name: post.author || 'WS Tool Cabinet Team',
+      name: post.author || 'Qtech Team',
     },
     publisher: {
       '@type': 'Organization',
@@ -344,7 +344,7 @@ export function jsonLdLocalBusiness() {
     '@type': 'LocalBusiness',
     ...(baseUrl && { '@id': `${baseUrl}/#organization` }),
     name: 'Guangzhou Qiuyan Technology Co., Ltd.',
-    alternateName: ['广州秋彦科技有限公司', 'WS Tool Cabinet', 'Qiuyan Technology'],
+    alternateName: ['广州秋彦科技有限公司', 'Qtech', 'Qiuyan Technology'],
     description: SITE_CONFIG.defaultDescription,
     ...(baseUrl && { url: baseUrl }),
     ...(baseUrl && { logo: `${baseUrl}/images/about/company-logo.webp` }),

@@ -170,6 +170,7 @@ export default function Footer() {
                 { label: t('nav.products'), href: `/${locale}/products` },
                 { label: t('nav.about'), href: `/${locale}/about` },
                 { label: t('nav.solutions'), href: `/${locale}/solutions` },
+                { label: t('nav.applications'), href: `/${locale}/applications` },
               ].map((link) => (
                 <li key={link.label}>
                   <a

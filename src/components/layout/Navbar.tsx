@@ -52,6 +52,7 @@ export default function Navbar({ onLocaleChange }: NavbarProps) {
     { key: 'products', label: t('nav.products'), href: `/${locale}/products` },
     { key: 'about', label: t('nav.about'), href: `/${locale}/about` },
     { key: 'solutions', label: t('nav.solutions'), href: `/${locale}/solutions` },
+    { key: 'applications', label: t('nav.applications'), href: `/${locale}/applications` },
     { key: 'blog', label: t('nav.blog'), href: `/${locale}/blog` },
     { key: 'faq', label: t('nav.faq'), href: `/${locale}/faq` },
     { key: 'contact', label: t('nav.contact'), href: `/${locale}/contact` },
